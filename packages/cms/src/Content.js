@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
-import TextField from 'material-ui/TextField'
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
+import FontIcon from 'material-ui/FontIcon';
+import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
+import {Card, CardText} from 'material-ui/Card';
 import urlRegex from 'url-regex';
 import {client} from './index';
+import EditSheet from './EditSheet'
+import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar'
+import TopicDialog from './TopicDialog'
 
 export default class Content extends Component {
 
@@ -12,19 +15,18 @@ export default class Content extends Component {
         super(props)
         this.state = {
             title: props.link.title,
-            subtitle: this.getSubtitle(props.link.text),
             description: props.link.text,
             link: props.link.url,
             linkError: '',
             hasChanged: false,
-            expanded: false
+            expanded: false,
+            open: false
         }
     }
 
     handleDescChange = (e) => {
         this.setState({
             description: e.target.value,
-            subtitle: this.getSubtitle(e.target.value),
             hasChanged: true
         })
     }
@@ -44,30 +46,6 @@ export default class Content extends Component {
         })
     }
 
-    getSubtitle = (description) => {
-        if (description.length >= 50) {
-            return description.substring(0, 50) + '...'
-        }
-        return description
-    }
-
-    showChange = () => {
-        if (this.state.hasChanged) {
-            return (
-                <RaisedButton
-                    style={{
-                        marginTop: '30px'
-                    }}
-                    fullWidth={true}
-                    label={"Save Changes"}
-                    primary={true}
-                    onTouchTap={() => {
-                        this.onSave()
-                    }}
-                />)
-        }
-    }
-
     onSave = () => {
         client.mutate(`{
           updateLink(id: "${this.props.link.id}", title: "${this.state.title}", text: "${this.state.description}",
@@ -81,66 +59,49 @@ export default class Content extends Component {
         })
     }
 
-    handleExpandChange = (expanded) => {
-        this.setState({expanded: expanded});
+    handleExpandChange = () => {
+        this.setState({expanded: !this.state.expanded});
     };
+
+    showTopics = () => {
+        this.setState({
+            open: true
+        })
+    }
 
     render() {
         return (
-            <Card expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
-                <CardHeader
-                    style={{
-                        textAlign: 'left',
-                    }}
-                    title={this.state.title}
-                    subtitle={this.state.subtitle}
-                    actAsExpander={true}
-                    showExpandableButton={true}>
-                </CardHeader>
+            <Card expanded={this.state.expanded} onExpandChange={this.handleExpandChange}
+                  style={{
+                      boxShadow: '0',
+                      backgroundColor: '#F5F5F5',
+                      marginTop: '5px'
+                  }}>
+
+                <Toolbar>
+                    <ToolbarGroup style={{ overflow: 'hidden'}} >
+                        <ToolbarTitle style={{color: 'black'}} text={this.state.title}/>
+                    </ToolbarGroup>
+                    <ToolbarGroup>
+                        <FontIcon className="material-icons" onTouchTap={this.showTopics}>input</FontIcon>
+                        <IconButton touch={true} onTouchTap={this.handleExpandChange}>
+                            <NavigationExpandMoreIcon />
+                        </IconButton>
+                    </ToolbarGroup>
+                </Toolbar>
+                <TopicDialog open={this.state.open} topics={this.props.topics} linkId={this.props.linkId}
+                    handleClose={() => {this.setState({open: false})}} refresh={this.props.refresh}
+                />
                 <CardText expandable={true}
                           style={{
                               textAlign: 'left',
+                              backgroundColor: '#eee'
                           }}>
-                    <TextField
-                        fullWidth={true}
-                        floatingLabelText={"Title"}
-                        value={this.state.title}
-                        onChange={this.handleTitleChange}
+                    <EditSheet title={this.state.title} link={this.state.link} linkError={this.state.linkError}
+                               hasChanged={this.state.hasChanged} description={this.state.description}
+                        handlers={{handleTitleChange: this.handleTitleChange, handleDescChange: this.handleDescChange,
+                        handleLinkChange: this.handleLinkChange, onSave: this.onSave}}
                     />
-                    <TextField
-                        fullWidth={true}
-                        floatingLabelText={"Description for " + this.state.title}
-                        multiLine={true}
-                        value={this.state.description}
-                        onChange={this.handleDescChange}
-                    />
-                    <div>
-                    <span>
-                        <TextField
-                            style={{
-                                width: '70%'
-                            }}
-                            floatingLabelText={"Link"}
-                            value={this.state.link}
-                            onChange={this.handleLinkChange}
-                            errorText={this.state.linkError}
-                        />
-                        <FlatButton
-                            style={{
-                                marginLeft: '5%',
-                                width: '25%'
-                            }}
-                            label={"Go"}
-                            primary={true}
-                            onTouchTap={
-                                () => {
-                                    window.open(this.state.link)
-                                }
-                            }
-                        />
-                    </span>
-                    </div>
-                    {this.showChange()}
                 </CardText>
             </Card>
         )

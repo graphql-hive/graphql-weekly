@@ -122,7 +122,7 @@ export default class LinkAdder extends React.Component {
                 />
                 <FlatButton
                     disabled={this.state.loading}
-                    label={"Add Link"}
+                    label={"Add Issue"}
                     onTouchTap={this.submitIssueChange}
                 />
             </div>)

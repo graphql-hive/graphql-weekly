@@ -5,11 +5,21 @@ import Topic from './Topic'
 import './App.css';
 import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton'
+import List from 'material-ui/List'
+import PageHeader from './PageHeader'
 
 class App extends Component {
 
     constructor(props) {
         super(props)
+        this.refreshEverything()
+        this.state = {
+            unassignedLinks: [],
+            topics: []
+        }
+    }
+
+    refreshEverything = () => {
         client.query(`{
             allLinks {
                 topic {
@@ -27,7 +37,7 @@ class App extends Component {
         })
 
         client.query(`{
-            Issue(id:"cirkrzrix19oi0190g27zvqh1"){
+            Issue(id:"${this.props.params.id}"){
                 title
                 topics{
                   id
@@ -45,11 +55,6 @@ class App extends Component {
                 topics: result.Issue.topics
             })
         })
-
-        this.state = {
-            unassignedLinks: [],
-            topics: []
-        }
     }
 
     handleTopicChange = (e) => {
@@ -64,38 +69,50 @@ class App extends Component {
         })
         client.mutate(`{
           createTopic(issue_comment:" " title:"${this.state.newTopic}", issueId:"${this.props.params.id}"){id}
-        }`).then(() => this.setState({loading: false, newTopic: ''}))
+        }`).then(() => {
+                this.setState({loading: false, newTopic: ''})
+                this.refreshEverything()
+            }
+        )
     }
 
     render() {
         return (
             <div className="App">
-                <div className="App-header">
-                    <h2>{this.props.params.id}</h2>
-                </div>
+                <PageHeader id={this.props.params.id}/>
                 <div style={{
-                    width: '50%',
-                    float: 'left'
+                    marginTop: '25px'
                 }}>
-                    {this.state.unassignedLinks.map((link) => <Content link={link} key={link.id}/>)}
-                </div>
+                    <div style={{
+                        width: '45%',
+                        float: 'left',
+                        marginLeft: '4%'
+                    }}>
+                        {this.state.unassignedLinks.map((link) => <Content link={link} key={link.id}
+                                                                           topics={this.state.topics}
+                                                                           linkId={link.id} refresh={this.refreshEverything}/>)}
+                    </div>
 
-                <div style={{
-                    width: '50%',
-                    float: 'right'
-                }}>
-                    {this.state.topics.map((topic) => <Topic key={topic.id} topic={topic}/>)}
-                    <TextField
-                        disabled={this.state.loading}
-                        floatingLabelText={"Topic Title"}
-                        value={this.state.newTopic}
-                        onChange={this.handleTopicChange}
-                    />
-                    <FlatButton
-                        disabled={this.state.loading}
-                        label={"Add Topic"}
-                        onTouchTap={this.submitTopic}
-                    />
+                    <List style={{
+                        width: '45%',
+                        float: 'right',
+                        marginRight: '4%'
+                    }}>
+                        {this.state.topics.map((topic, index) =>
+                            <Topic key={topic.id} topic={topic} topics={this.state.topics} refresh={this.refreshEverything}/>
+                        )}
+                        <TextField
+                            disabled={this.state.loading}
+                            floatingLabelText={"Topic Title"}
+                            value={this.state.newTopic}
+                            onChange={this.handleTopicChange}
+                        />
+                        <FlatButton
+                            disabled={this.state.loading}
+                            label={"Add Topic"}
+                            onTouchTap={this.submitTopic}
+                        />
+                    </List>
                 </div>
             </div>
 

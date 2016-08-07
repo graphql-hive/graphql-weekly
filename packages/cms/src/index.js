@@ -8,15 +8,22 @@ import './index.css';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {Lokka} from 'lokka';
 import {Transport} from 'lokka-transport-http';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 export const client = new Lokka({
     transport: new Transport('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf')
 });
 
+const theme = getMuiTheme({
+    palette: {
+        primary1Color: "#00C853"
+    }
+})
+
 injectTapEventPlugin();
 
 ReactDOM.render(
-    <MuiThemeProvider>
+    <MuiThemeProvider muiTheme={theme}>
         <Router history={browserHistory}>
             <Route path='/' component={LinkAdder}/>
             <Route path='/issue/:id' component={App}/>

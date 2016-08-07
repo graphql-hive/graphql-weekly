@@ -1,0 +1,17 @@
+.publish {
+    cursor: hand;
+    cursor: pointer;
+    user-select: none;
+    padding: 2%;
+    width: 12%;
+    display: inline-block;
+    background-color: #00C853;
+}
+
+.publish:hover {
+    background-color: #00B149;
+}
+
+.publish:active {
+    background-color: #00C853;
+}
