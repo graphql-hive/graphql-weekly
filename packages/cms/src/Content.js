@@ -4,18 +4,20 @@ import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import urlRegex from 'url-regex';
+import {client} from './index';
 
 export default class Content extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            title: props.title,
-            subtitle: this.getSubtitle(props.description),
-            description: props.description,
-            link: props.link,
+            title: props.link.title,
+            subtitle: this.getSubtitle(props.link.text),
+            description: props.link.text,
+            link: props.link.url,
             linkError: '',
-            hasChanged: false
+            hasChanged: false,
+            expanded: false
         }
     }
 
@@ -60,15 +62,32 @@ export default class Content extends Component {
                     label={"Save Changes"}
                     primary={true}
                     onTouchTap={() => {
-                        this.props.save(this.state)
+                        this.onSave()
                     }}
                 />)
         }
     }
 
+    onSave = () => {
+        client.mutate(`{
+          updateLink(id: "${this.props.link.id}", title: "${this.state.title}", text: "${this.state.description}",
+           url: "${this.state.link}") {
+            id
+          }
+        }`).then(() => {
+            this.setState({
+                expanded: false
+            })
+        })
+    }
+
+    handleExpandChange = (expanded) => {
+        this.setState({expanded: expanded});
+    };
+
     render() {
         return (
-            <Card>
+            <Card expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
                 <CardHeader
                     style={{
                         textAlign: 'left',
