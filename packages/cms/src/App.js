@@ -6,6 +6,11 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import './App.css';
 
 class App extends Component {
+
+    handleChange = (content) => {
+
+    }
+
     render() {
         return (
             <MuiThemeProvider>
@@ -14,9 +19,23 @@ class App extends Component {
                         <img src={logo} className="App-logo" alt="logo"/>
                         <h2>Welcome to React</h2>
                     </div>
-                    <div>
-                        <Content title={"hello"} description={"Hello world! hoatunshoeatnsuhtnasooaeuheoatnsuh ansoethusoantehustnao hutaoehutnaseoh tnoehu teaonshu tnsaeoh unsteaohu.,rlchutoebku'.p,h euh r'.,uh seuh senotauh    21402chkbqjtnkh.',p7284 gpc,.hteonuh9321[0pcuoehtnuhaoesuhaoes"}>
+                    <div style={{
+                        width: '50%',
+                        float: 'left'
+                    }}>
+                        <Content title={"hello"} link={"http://www.google.com"}
+                                 description={"Hello world! hoatunshoeatnsuhtnasooaeuheoatnsuh ansoethusoantehustnao hutaoehutnaseoh tnoehu teaonshu tnsaeoh unsteaohu.,rlchutoebku'.p,h euh r'.,uh seuh senotauh    21402chkbqjtnkh.',p7284 gpc,.hteonuh9321[0pcuoehtnuhaoesuhaoes"}
+                        save={this.handleChange}>
+                        </Content>
+                    </div>
 
+                    <div style={{
+                        width: '50%',
+                        float: 'right'
+                    }}>
+                        <Content title={"hello"} link={"http://www.google.com"}
+                                 description={"Hello world! hoatunshoeatnsuhtnasooaeuheoatnsuh ansoethusoantehustnao hutaoehutnaseoh tnoehu teaonshu tnsaeoh unsteaohu.,rlchutoebku'.p,h euh r'.,uh seuh senotauh    21402chkbqjtnkh.',p7284 gpc,.hteonuh9321[0pcuoehtnuhaoesuhaoes"}
+                                 save={this.handleChange}>
                         </Content>
                     </div>
                 </div>
@@ -25,5 +44,4 @@ class App extends Component {
         );
     }
 }
-
 export default App;
