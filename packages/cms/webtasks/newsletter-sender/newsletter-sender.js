@@ -1,8 +1,8 @@
 var mcapi = require('mailchimp-api')
 var urlParser = require('url')
 
-var mailchimpKey = "f3a7f873a8c8066589f3484cabc8897f-us1"
-var mailchimpListId = "4f4e60c9c1"
+var mailchimpKey = "MAILCHIMP_API_KEY_REDACTED"
+var mailchimpListId = "0792cc8e13"
 
 var mc = new mcapi.Mailchimp(mailchimpKey);
 
@@ -10,7 +10,7 @@ module.exports = function (context, cb) {
   console.log(context)
   var shouldRun = 
     context.data.updatedModel.published === true &&
-    context.data.updatedFields.filter(function(c){ return x === "published"}).length === 1
+    context.data.changedFields.filter(function(x){ return x === "published"}).length === 1
 
   if (!shouldRun){
     cb(null, "aborted")
@@ -21,9 +21,9 @@ module.exports = function (context, cb) {
   mc.campaigns.create({
     options: {
       list_id:mailchimpListId,
-      subject: "The Weekly",
-      from_email: "sorenbs@gmail.com",
-      from_name: "Bramer Weekly"
+      subject: `GraphQL Weekly - ${updatedModel.title}`,
+      from_email: "hello@graphqlweekly.com",
+      from_name: "GraphQL Weekly"
     },
     content: {
       html:formatTemplate(updatedModel)
@@ -33,14 +33,15 @@ module.exports = function (context, cb) {
     function(success){
       var campaignId = success.id
 
-      mc.campaigns.send({cid: campaignId},
-        function(success){
-          cb(null, "success")
-        },
-        function(error){
-          console.log(error)
-          cb(null, "error")
-        })
+      cb(null, "success")
+      // mc.campaigns.send({cid: campaignId},
+      //   function(success){
+      //     cb(null, "success")
+      //   },
+      //   function(error){
+      //     console.log(error)
+      //     cb(null, "error")
+      //   })
     },
     function(error){
       console.log(error)
@@ -48,59 +49,6 @@ module.exports = function (context, cb) {
     })
 
 }
-
-// var updatedModel = {
-//   "title": "Issue 14",
-//   "topics": [
-//     {
-//       "title": "Articles & Videos",
-//       "links": [
-//         {
-//           "title": "Relay: State of the State",
-//           "text": "These are super exciting news about the state of Relay. Joseph Savona summarizes the advancements in Relay over the last few months and gives an overview of what's next in Relay such as a performance-optimized core and more expressive mutations. Oh yes!",
-//           "url": "https://facebook.github.io/react/blog/2016/08/05/relay-state-of-the-state.html"
-//         },
-//         {
-//           "title": "Versioning an API in GraphQL vs. REST",
-//           "text": "This article shows the benefits of using GraphQL compared to REST when it comes to API versioning. The following quote nails it: \"If you dig out that old iPhone 3GS from your top drawer and fire up the Facebook client, it will likely still work. This is because it already used GraphQL and while there have been plenty changes to the API, the client requests have stayed the same.\"",
-//           "url": "https://www.symfony.fi/entry/versioning-an-api-in-graphql-vs-rest"
-//         },
-//         {
-//           "title": "Modernize your Angular apps with GraphQL",
-//           "text": "Uri Goldshtein (or ng-jesus - just kidding...) gives an extensive introduction to GraphQL and how to use it inside your Angular applications using the Apollo client. Definitely check out this video if you're using Angular and are still uncertain whether you'd want to use GraphQL or not.",
-//           "url": "https://www.youtube.com/watch?v=qpGnPbpkcZM"
-//         }
-//       ]
-//     },
-//     {
-//       "title": "Community",
-//       "links": [
-//         {
-//           "title": "Your GraphQL talk at React London",
-//           "text": "The React London meetup is currently looking for speakers about GraphQL. Maybe that's something for you?",
-//           "url": "https://twitter.com/ReactLondon_/status/761533501250437120"
-//         }
-//       ]
-//     },
-//     {
-//       "title": "Open Source",
-//       "links": [
-//         {
-//           "title": "folkloreatelier/laravel-graphql",
-//           "text": "Laraval is one of the most popular PHP frameworks out there and it's now easier than ever to expose your data through a GraphQL API using the laravel-graphql module based on the PHP GraphQL implementation.",
-//           "url": "https://github.com/Folkloreatelier/laravel-graphql"
-//         },
-//         {
-//           "title": "jwerle/three.graphql",
-//           "text": "This is probably the most creative use case of GraphQL so far. Joseph Werle created a little tool that let's you build and render ThreeJS scenes using GraphiQL. Absolutely brilliant!",
-//           "url": "https://github.com/jwerle/three.graphql"
-//         }
-//       ]
-//     }
-//   ]
-// }
-
-
 
 function formatTemplate(updatedModel) {
 
