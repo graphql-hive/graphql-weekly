@@ -9,24 +9,24 @@ var mc = new mcapi.Mailchimp(mailchimpKey);
 module.exports = function (context, cb) {
   console.log(context)
   var shouldRun = 
-    context.data.updatedModel.published === true &&
+    context.data.updatedNode.published === true &&
     context.data.changedFields.filter(function(x){ return x === "published"}).length === 1
 
   if (!shouldRun){
     cb(null, "aborted")
   }
 
-  var updatedModel = context.data.updatedModel
+  var updatedNode = context.data.updatedNode
 
   mc.campaigns.create({
     options: {
       list_id:mailchimpListId,
-      subject: `GraphQL Weekly - ${updatedModel.title}`,
+      subject: `GraphQL Weekly - ${updatedNode.title}`,
       from_email: "hello@graphqlweekly.com",
       from_name: "GraphQL Weekly"
     },
     content: {
-      html:formatTemplate(updatedModel)
+      html:formatTemplate(updatedNode)
     },
     type: "regular"
   },
@@ -50,7 +50,7 @@ module.exports = function (context, cb) {
 
 }
 
-function formatTemplate(updatedModel) {
+function formatTemplate(updatedNode) {
 
   function formatTopic (topicName) { 
     return `<div class="topic" mc:repeatable="block" mc:variant="topic">
@@ -72,7 +72,7 @@ function formatTemplate(updatedModel) {
     </div>`
   }
 
-  var content = updatedModel.topics.map(function(topic){
+  var content = updatedNode.topics.map(function(topic){
     return formatTopic(topic.title) + topic.links.map(function(link){
       return formatLink(link.title, link.text, link.url)
     }).join("")

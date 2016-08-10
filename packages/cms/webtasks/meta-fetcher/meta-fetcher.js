@@ -24,10 +24,10 @@ module.exports = function (context, cb) {
     });
   }
 
-  fetchMetaData(context.data.createdModel.url, function(metaData){
+  fetchMetaData(context.data.createdNode.url, function(metaData){
     client.mutate(`{
       setMetaInfo: updateLink(
-        id: "${context.data.createdModel.id}",
+        id: "${context.data.createdNode.id}",
         title: "${metaData.title}",
         text: "${metaData.description}") {
           id
