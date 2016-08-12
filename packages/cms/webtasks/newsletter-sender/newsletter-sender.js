@@ -23,7 +23,8 @@ module.exports = function (context, cb) {
       list_id:mailchimpListId,
       subject: `GraphQL Weekly - ${updatedNode.title}`,
       from_email: "hello@graphqlweekly.com",
-      from_name: "GraphQL Weekly"
+      from_name: "GraphQL Weekly",
+      inline_css: true
     },
     content: {
       html:formatTemplate(updatedNode)
