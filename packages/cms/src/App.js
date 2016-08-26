@@ -39,7 +39,7 @@ class App extends Component {
         client.query(`{
             Issue(id:"${this.props.params.id}"){
                 title
-                topics{
+                topics (orderBy: position_ASC) {
                   id
                   title
                   links{
