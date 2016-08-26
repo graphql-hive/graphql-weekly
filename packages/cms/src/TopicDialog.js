@@ -23,7 +23,7 @@ export default class TopicDialog extends React.Component {
 
     handleClick = () => {
         client.mutate(`{
-            addToLinksOnTopic(topicTopicId:"${this.state.topicId}", linksLinkId:"${this.props.linkId}"){id}
+            addToLinksOnTopic(topicTopicId:"${this.state.topicId}", linksLinkId:"${this.props.linkId}"){topicTopic {id}}
         }`).then(() => {
             this.props.refresh()
             this.props.handleClose()
