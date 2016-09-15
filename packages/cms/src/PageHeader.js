@@ -31,7 +31,7 @@ export default class PageHeader extends React.Component {
 
     increaseVersion = () => {
       client.mutate(`{
-        updatedIssue: updateIssue(id: "${this.props.id}", versionCount: "${this.state.versionCount}") {
+        updatedIssue: updateIssue(id: "${this.props.id}", versionCount: ${this.state.versionCount + 1}) {
           id,
           versionCount
         }
