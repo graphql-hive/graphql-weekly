@@ -18,7 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npm run build && surge build -d qlator.surge.sh"
   },
   "eslintConfig": {
     "extends": "./node_modules/react-scripts/config/eslint.js"
