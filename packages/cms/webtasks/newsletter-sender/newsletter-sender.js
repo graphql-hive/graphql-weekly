@@ -10,7 +10,7 @@ module.exports = function (context, cb) {
   console.log(context)
   var shouldRun = 
     context.data.updatedNode.published === true &&
-    context.data.changedFields.filter(function(x){ return x === "published"}).length === 1
+    context.data.changedFields.filter(function(x){ return x === "versionCount"}).length === 1
 
   if (!shouldRun){
     cb(null, "aborted")
