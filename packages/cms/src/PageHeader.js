@@ -10,11 +10,16 @@ export default class PageHeader extends React.Component {
         client.query(`{
             Issue(id: "${this.props.id}") {
                 title
+                versionCount
             }
-        }`).then((result) => this.setState({title: result.Issue.title}))
+        }`).then((result) => this.setState({
+          title: result.Issue.title,
+          versionCount: result.Issue.versionCount
+        }))
 
         this.state = {
-            title: ''
+            title: '',
+            versionCount: 0
         }
     }
 
@@ -22,6 +27,17 @@ export default class PageHeader extends React.Component {
         client.mutate(`{
             updateIssue(id: "${this.props.id}", published: true) { id }
         }`)
+    }
+
+    increaseVersion = () => {
+      client.mutate(`{
+        updatedIssue: updateIssue(id: "${this.props.id}", versionCount: "${this.state.versionCount}") {
+          id,
+          versionCount
+        }
+      }`).then(result => {
+        setState({versionCount: result.updatedIssue.versionCount})
+      })
     }
 
     render() {
@@ -41,7 +57,7 @@ export default class PageHeader extends React.Component {
                 }}>
                     Curating: <span style={{
                         fontWeight: '900'
-                    }}>{this.state.title}</span>
+                    }}>{this.state.title}</span> (version {this.state.versionCount})
                 </div>
 
                 <div style={{}} onClick={this.handlePublish} className="publish">
@@ -50,6 +66,14 @@ export default class PageHeader extends React.Component {
                         width: '100%'
                     }}>
                         Publish
+                    </div>
+                </div>
+                <div style={{}} onClick={this.increaseVersion} className="publish">
+                    <div style={{
+                        textAlign: 'center',
+                        width: '100%'
+                    }}>
+                        Create Email
                     </div>
                 </div>
             </div>
