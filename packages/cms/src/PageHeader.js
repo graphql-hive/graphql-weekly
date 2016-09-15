@@ -51,7 +51,7 @@ export default class PageHeader extends React.Component {
             }}>
                 <div style={{
                     padding: '2%',
-                    width: '80%',
+                    width: '60%',
                     display: 'inline-block',
                     backgroundColor: '#424242'
                 }}>
