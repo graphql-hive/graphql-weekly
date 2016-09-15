@@ -36,7 +36,7 @@ export default class PageHeader extends React.Component {
           versionCount
         }
       }`).then(result => {
-        setState({versionCount: result.updatedIssue.versionCount})
+        this.setState({versionCount: result.updatedIssue.versionCount})
       })
     }
 
