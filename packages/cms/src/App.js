@@ -42,7 +42,7 @@ class App extends Component {
                 topics (orderBy: position_ASC) {
                   id
                   title
-                  links (orderBy: id_ASC) {
+                  links (orderBy: position_ASC) {
                     title
                     text
                     url
