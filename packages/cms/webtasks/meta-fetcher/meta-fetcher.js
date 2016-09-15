@@ -19,7 +19,7 @@ module.exports = function (context, cb) {
         description: results.data.ogDescription || "n/a",
         image: results.data.ogImage || "n/a"
       }
-      
+
       cb(metaData)
     });
   }

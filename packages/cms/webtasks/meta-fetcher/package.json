@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "lokka": "^1.7.0",
-    "lokka-transport-http": "^1.4.0"
+    "lokka-transport-http": "^1.4.0",
+    "open-graph-scraper": "^2.3.2"
   }
 }
