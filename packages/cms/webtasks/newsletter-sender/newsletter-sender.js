@@ -8,13 +8,15 @@ var mc = new mcapi.Mailchimp(mailchimpKey);
 
 module.exports = function (context, cb) {
   console.log(context)
-  var shouldRun = 
+  var shouldRun =
+    context.data.updatedNode &&
     context.data.updatedNode.published === true &&
     context.data.changedFields.filter(function(x){ return x === "versionCount"}).length === 1
 
   if (!shouldRun){
+    console.log("abort")
     cb(null, "aborted")
-  }
+  } else {
 
   var updatedNode = context.data.updatedNode
 
@@ -48,12 +50,12 @@ module.exports = function (context, cb) {
       console.log(error)
       cb(null, "error")
     })
-
+  }
 }
 
 function formatTemplate(updatedNode) {
 
-  function formatTopic (topicName) { 
+  function formatTopic (topicName) {
     return `<div class="topic" mc:repeatable="block" mc:variant="topic">
       <div class="line"></div>
       <div class="category" mc:edit="article_topic">${topicName}</div>
@@ -62,7 +64,7 @@ function formatTemplate(updatedNode) {
 
   function formatLink (title, text, url) {
     var host = urlParser.parse(url).hostname
-    
+
     return `<div class="article" mc:repeatable="block" mc:variant="article">
       <div class="article_headline" mc:edit="article_title"><a href="${url}">${title}</a></div>
       <p mc:edit="article_content">
@@ -85,7 +87,7 @@ function formatTemplate(updatedNode) {
   <meta charset="UTF-8">
   <title>*|MC:SUBJECT|*</title>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400italic,600,600italic,700,800,700italic,800italic,300,300italic,400" rel="stylesheet" type="text/css">
-  
+
 <style type="text/css">
     #outlook a{
       padding:0;
