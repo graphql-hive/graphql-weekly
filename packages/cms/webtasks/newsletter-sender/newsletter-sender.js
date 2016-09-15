@@ -26,7 +26,8 @@ module.exports = function (context, cb) {
       subject: `GraphQL Weekly - ${updatedNode.title}`,
       from_email: "hello@graphqlweekly.com",
       from_name: "GraphQL Weekly",
-      inline_css: true
+      inline_css: true,
+      title: `GraphQL Weekly - ${updatedNode.title} (version ${updatedNode.versionCount})`
     },
     content: {
       html:formatTemplate(updatedNode)
