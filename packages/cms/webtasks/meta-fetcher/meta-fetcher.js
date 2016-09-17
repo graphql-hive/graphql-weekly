@@ -16,7 +16,6 @@ module.exports = function (context, cb) {
     console.log('results:', results);
       var metaData = {
         title: results.data.ogTitle || "n/a",
-        description: results.data.ogDescription || "n/a",
         image: results.data.ogImage || "n/a"
       }
 
@@ -24,12 +23,11 @@ module.exports = function (context, cb) {
     });
   }
 
-  fetchMetaData(context.data.createdNode.url, function(metaData){
+  fetchMetaData(context.data.createdNode.url, function(metaData) {
     client.mutate(`{
       setMetaInfo: updateLink(
         id: "${context.data.createdNode.id}",
-        title: "${metaData.title}",
-        text: "${metaData.description}") {
+        title: "${metaData.title}) {
           id
         }
     }`)
