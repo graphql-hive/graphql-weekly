@@ -27,7 +27,7 @@ module.exports = function (context, cb) {
     client.mutate(`{
       setMetaInfo: updateLink(
         id: "${context.data.createdNode.id}",
-        title: "${metaData.title}) {
+        title: "${metaData.title}") {
           id
         }
     }`)
