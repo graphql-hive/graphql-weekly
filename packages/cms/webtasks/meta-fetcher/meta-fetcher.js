@@ -15,8 +15,7 @@ module.exports = function (context, cb) {
     console.log('err:', err);
     console.log('results:', results);
       var metaData = {
-        title: results.data.ogTitle || "n/a",
-        image: results.data.ogImage || "n/a"
+        title: results.data.ogTitle || "n/a"
       }
 
       cb(metaData)
