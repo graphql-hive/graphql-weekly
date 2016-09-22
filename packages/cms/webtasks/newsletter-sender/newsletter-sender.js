@@ -9,14 +9,13 @@ var mc = new mcapi.Mailchimp(mailchimpKey);
 module.exports = function (context, cb) {
   console.log(context)
   var shouldRun =
-    context.data.updatedNode &&
     context.data.updatedNode.published === true &&
     context.data.changedFields.filter(function(x){ return x === "versionCount"}).length === 1
 
-  if (!shouldRun){
+  if (!shouldRun) {
     console.log("abort")
     cb(null, "aborted")
-  } else {
+  }
 
   var updatedNode = context.data.updatedNode
 
@@ -50,8 +49,8 @@ module.exports = function (context, cb) {
     function(error){
       console.log(error)
       cb(null, "error")
-    })
-  }
+    }
+  )
 }
 
 function formatTemplate(updatedNode) {
