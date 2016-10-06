@@ -2,7 +2,7 @@ var mcapi = require('mailchimp-api')
 var urlParser = require('url')
 
 var mailchimpKey = "MAILCHIMP_API_KEY_REDACTED"
-var mailchimpListId = "0792cc8e13"
+var mailchimpListId = "b07e0b3012"
 
 var mc = new mcapi.Mailchimp(mailchimpKey);
 
