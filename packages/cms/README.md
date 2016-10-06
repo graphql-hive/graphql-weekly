@@ -9,7 +9,7 @@ The workflow to publish a new GraphQL Weekly issue for both the [homepage](https
 * Create new topics in qlator for that issue, usually we use `Articles & Videos`, `Open Source` and `Community` (the latter only sometimes)
 * Assign usually 5 or 6 links to these topics. Choose a good mix of different material.
 * Edit the descriptions of the links. If the description should contain links in the end, **do not include the `<a href>` tag yet**.
-* Click `Publish` to publish the links on [GraphQL Weekly](https://graphqlweekly.com/) and share the link with anyone who might want to proof read the newsletter.
+* Click `Publish` to publish the links on [GraphQL Weekly](https://graphqlweekly.com/) and share the link with anyone who might want to proof read the newsletter. Clicking `Publish` will set the published state of the issue to `true`.
 * Work in feedback.
 
 ### Sort links and topics and add HTML tags in the [Graphcool dashboard](http://dashboard.graph.cool)
@@ -20,7 +20,7 @@ The workflow to publish a new GraphQL Weekly issue for both the [homepage](https
 
 ### Create the Mailchimp email from inside the [qlator app](qlator.surge.sh)
 
-* Once you're happy with the email, click `Create Email` on the issue page in the qlator app. If you closed the issue page tab before, you have to set `published` to `false` for this issue, otherwise you cannot open it (see #3).
+* Once you're happy with the email, click `Create Email` on the issue page in the qlator app. If you closed the issue page tab before, you have to set `published` to `false` for this issue, otherwise you cannot open it (see #3). Clicking `Create Email` will increase the version count of the issue, triggering the `newsletter-sender` webtask to create a new campaign at Mailchimp. The webtask will only trigger, if the issue published state is `true`.
 
 ### Send a test email and schedule it in [Mailchimp](http://mailchimp.com)
 
