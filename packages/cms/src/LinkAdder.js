@@ -25,9 +25,10 @@ export default class LinkAdder extends React.Component {
         });
 
         this.state = {
-            link: "",
+            link: '',
             loading: false,
-            linkError: "",
+            linkError: '',
+            number: '',
             issues: []
         }
     }
@@ -45,25 +46,25 @@ export default class LinkAdder extends React.Component {
         })
         client.mutate(`{ addLink:
         createLink(url:"${this.state.link}"){id}
-      
+
     }`).then(() => {
             this.setState({
                 loading: false,
-                link: "",
-                linkError: ""
+                link: '',
+                linkError: ''
             })
         }).catch(() => {
             this.setState({
                 loading: false,
-                link: "",
+                link: '',
                 linkError: "Error while submitting"
             })
         })
     }
 
-    handleIssueChange = (e) => {
+    handleNumberChange = (e) => {
         this.setState({
-            issue: e.target.value
+            number: e.target.value
         })
     }
 
@@ -73,11 +74,17 @@ export default class LinkAdder extends React.Component {
         })
         client.mutate(`
         {
-          createIssue(title: "${this.state.issue}", date:"${new Date().toISOString()}", published: false){id}
+          createIssue(title: "Issue ${this.state.number}", number: ${this.state.number}, date:"${new Date().toISOString()}", published: false){id}
         }
         `).then(() => {
             location.reload()
         })
+    }
+
+    isAddButtonDisabled() {
+      return this.state.loading // disabled while loading
+      || this.state.number === '' // disabled for empty number
+      || isNaN(this.state.number) // disabled while no numerical issue number
     }
 
     renderIssues() {
@@ -117,11 +124,11 @@ export default class LinkAdder extends React.Component {
                 </div>
                 <TextField
                     disabled={this.state.loading}
-                    floatingLabelText={"Issue Title"}
-                    onChange={this.handleIssueChange}
+                    floatingLabelText={"Issue Number"}
+                    onChange={this.handleNumberChange}
                 />
                 <FlatButton
-                    disabled={this.state.loading}
+                    disabled={this.isAddButtonDisabled()}
                     label={"Add Issue"}
                     onTouchTap={this.submitIssueChange}
                 />
