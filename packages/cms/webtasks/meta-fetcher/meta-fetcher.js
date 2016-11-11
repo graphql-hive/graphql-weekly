@@ -3,8 +3,12 @@ var ogs = require('open-graph-scraper');
 var Lokka = require('lokka').Lokka;
 var Transport = require('lokka-transport-http').Transport;
 
-var client = new Lokka({
-  transport: new Transport('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf', {Authorization: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzA1Nzc5MzcsImNsaWVudElkIjoiY2lvcTk1b2VjMDJrajAxbzBvbmpvcHBmOSIsInByb2plY3RJZCI6ImNpcGIxMTFwdzVmZ3QwMW8wZTdodngybGYiLCJzeXN0ZW1Ub2tlbklkIjoiY2lya280dXJtMG1udTAxMjRjMGgzZ3M0cyJ9.W_gizkkXVZ56hPqS9MZB6fzA5Ti15UP8q9pADoMEk60"})
+const headers = {
+  'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzA1Nzc5MzcsImNsaWVudElkIjoiY2lvcTk1b2VjMDJrajAxbzBvbmpvcHBmOSIsInByb2plY3RJZCI6ImNpcGIxMTFwdzVmZ3QwMW8wZTdodngybGYiLCJzeXN0ZW1Ub2tlbklkIjoiY2lya280dXJtMG1udTAxMjRjMGgzZ3M0cyJ9.W_gizkkXVZ56hPqS9MZB6fzA5Ti15UP8q9pADoMEk60'
+}
+
+const client = new Lokka({
+  transport: new Transport('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf', {headers})
 });
 
 module.exports = function (context, cb) {
