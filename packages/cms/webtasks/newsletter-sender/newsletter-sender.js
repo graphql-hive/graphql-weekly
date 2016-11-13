@@ -8,49 +8,49 @@ var mc = new mcapi.Mailchimp(mailchimpKey);
 
 module.exports = function (context, cb) {
   console.log(context)
-  var shouldRun =
-    context.data.updatedNode.published === true &&
-    context.data.changedFields.filter(function(x){ return x === "versionCount"}).length === 1
+  var shouldRun = context.data.updatedNode.published
+      && context.data.changedFields.filter(function(x){ return x === "versionCount"}).length === 1
 
   if (!shouldRun) {
     console.log("abort")
     cb(null, "aborted")
+  } else {
+    console.log("not aborted")
+    var updatedNode = context.data.updatedNode
+
+    mc.campaigns.create({
+        options: {
+          list_id: mailchimpListId,
+          subject: `GraphQL Weekly - ${updatedNode.title}`,
+          from_email: "hello@graphqlweekly.com",
+          from_name: "GraphQL Weekly",
+          inline_css: true,
+          title: `GraphQL Weekly - ${updatedNode.title} (version ${updatedNode.versionCount})`
+        },
+        content: {
+          html: formatTemplate(updatedNode)
+        },
+        type: "regular"
+      },
+      function (success) {
+        var campaignId = success.id
+        
+        cb(null, "success")
+        // mc.campaigns.send({cid: campaignId},
+        //   function(success){
+        //     cb(null, "success")
+        //   },
+        //   function(error){
+        //     console.log(error)
+        //     cb(null, "error")
+        //   })
+      },
+      function (error) {
+        console.log(error)
+        cb(null, "error")
+      }
+    )
   }
-
-  var updatedNode = context.data.updatedNode
-
-  mc.campaigns.create({
-    options: {
-      list_id:mailchimpListId,
-      subject: `GraphQL Weekly - ${updatedNode.title}`,
-      from_email: "hello@graphqlweekly.com",
-      from_name: "GraphQL Weekly",
-      inline_css: true,
-      title: `GraphQL Weekly - ${updatedNode.title} (version ${updatedNode.versionCount})`
-    },
-    content: {
-      html:formatTemplate(updatedNode)
-    },
-    type: "regular"
-  },
-    function(success){
-      var campaignId = success.id
-
-      cb(null, "success")
-      // mc.campaigns.send({cid: campaignId},
-      //   function(success){
-      //     cb(null, "success")
-      //   },
-      //   function(error){
-      //     console.log(error)
-      //     cb(null, "error")
-      //   })
-    },
-    function(error){
-      console.log(error)
-      cb(null, "error")
-    }
-  )
 }
 
 function formatTemplate(updatedNode) {
