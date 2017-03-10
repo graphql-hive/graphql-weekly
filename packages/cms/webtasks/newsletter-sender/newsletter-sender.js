@@ -36,14 +36,6 @@ module.exports = function (context, cb) {
         var campaignId = success.id
         
         cb(null, "success")
-        // mc.campaigns.send({cid: campaignId},
-        //   function(success){
-        //     cb(null, "success")
-        //   },
-        //   function(error){
-        //     console.log(error)
-        //     cb(null, "error")
-        //   })
       },
       function (error) {
         console.log(error)
@@ -271,7 +263,7 @@ function formatTemplate(updatedNode) {
       <div class="title">*|MC:SUBJECT|*</div>
     </div>
     <div class="subtitle">
-      <p>A weekly newsletter of the best news, articles and<br>projects about GraphQL, Relay and more.</p>
+      <p>Weekly updates about GraphQL & Apollo</p>
       <a href="*|LIST:URL|*" target="_blank">Read online</a>
     </div>
 
