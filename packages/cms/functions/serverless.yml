@@ -1,0 +1,40 @@
+service: qlator
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  deploymentBucket: serverless-deployments-${env:AWS_REGION}-${env:AWS_ACCOUNT_ID}
+  region: eu-west-1
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+functions:
+
+  MetaFetcher:
+    handler: src/meta-fetcher.default
+    memorySize: 128
+    events:
+      - http:
+          path: '/meta-fetcher'
+          method: post
+
+  NewsletterSender:
+    handler: src/newsletter-sender.default
+    memorySize: 128
+    events:
+      - http:
+          path: '/newsletter-sender'
+          method: post
+
+resources:
+  Resources:
+
+    MetaFetcherLogGroup:
+      Properties:
+        RetentionInDays: 7
+    NewsletterSenderLogGroup:
+      Properties:
+        RetentionInDays: 7
