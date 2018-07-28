@@ -22,8 +22,8 @@ ReactDOM.render(
       <Router>
         <Fragment>
           <Navbar />
-          <Route path="/" component={LinkAdder} />
-          <Route path="/issue/:id" component={App} />
+          <Route path="/" exact component={LinkAdder} />
+          <Route path="/issue/:id" exact component={App} />
         </Fragment>
       </Router>
     </MuiThemeProvider>

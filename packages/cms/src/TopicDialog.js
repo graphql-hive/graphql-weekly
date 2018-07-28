@@ -14,7 +14,6 @@ export default class TopicDialog extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(this.props.open)
         this.state = {
             topicId: '',
             open: this.props.open
