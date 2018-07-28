@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "react-emotion";
 
 export default styled("section")`
@@ -10,6 +9,5 @@ export default styled("section")`
   border-radius: 8px;
   position: relative;
   opacity: 1;
-  pointer-events: all;
   padding: 24px;
 `;

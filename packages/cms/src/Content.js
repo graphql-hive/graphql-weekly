@@ -4,7 +4,7 @@ import FontIcon from 'material-ui/FontIcon';
 import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import {Card, CardText} from 'material-ui/Card';
 import urlRegex from 'url-regex';
-import {client} from './index';
+import client from './client';
 import EditSheet from './EditSheet'
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar'
 import TopicDialog from './TopicDialog'
