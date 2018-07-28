@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import Content from './Content'
 import {client} from './index'
 import Topic from './Topic'
-import './App.css';
 import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton'
 import List from 'material-ui/List'
@@ -79,6 +78,8 @@ class App extends Component {
     render() {
         return (
             <div className="App">
+
+
                 <PageHeader id={this.props.params.id}/>
                 <div style={{
                     marginTop: '25px'

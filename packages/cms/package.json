@@ -6,11 +6,13 @@
     "react-scripts": "0.2.1"
   },
   "dependencies": {
+    "emotion": "^9.2.6",
     "lokka": "^1.7.0",
     "lokka-transport-http": "^1.4.0",
     "material-ui": "^0.15.3",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
+    "react-emotion": "^9.2.6",
     "react-router": "^2.6.1",
     "react-tap-event-plugin": "^1.0.0",
     "url-regex": "^3.2.0"
