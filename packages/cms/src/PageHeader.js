@@ -1,106 +1,121 @@
 import React from "react";
-import client from "./client";
-import "./PageHeader.css";
+import styled from "react-emotion";
+import withRouter from "react-router-dom/withRouter";
+import { graphql, compose } from "react-apollo";
+import { gql } from "apollo-boost";
+import { Button } from "./components/Button";
+import Flex from "./components/Flex";
+import FlexCell from "./components/FlexCell";
 
-export default class PageHeader extends React.Component {
-  constructor(props) {
-    super(props);
+const Title = styled("h1")`
+  margin: 0;
+`;
 
-    client
-      .query(
-        `{
-            Issue(id: "${this.props.id}") {
-                title
-                versionCount
-            }
-        }`
-      )
-      .then(result =>
-        this.setState({
-          title: result.Issue.title,
-          versionCount: result.Issue.versionCount
-        })
-      );
-
-    this.state = {
-      title: "",
-      versionCount: 0
-    };
+const publishIssue = gql`
+  mutation pub($id: ID!, $published: Boolean) {
+    updateIssue(id: $id, published: $published) {
+      id
+    }
   }
+`;
 
+const incrVersion = gql`
+  mutation incrVersion($id: ID!, $versionCount: Int) {
+    updateIssue(id: $id, versionCount: $versionCount) {
+      id
+      versionCount
+    }
+  }
+`;
+
+const deleteIssue = gql`
+  mutation delete($id: ID!) {
+    deleteIssue(id: $id) {
+      id
+    }
+  }
+`;
+
+class PageHeader extends React.Component {
   handlePublish = () => {
-    client.mutate(`{
-            updateIssue(id: "${this.props.id}", published: true) { id }
-        }`);
+    return this.props.publishIssue({
+      variables: {
+        id: this.props.id,
+        published: true
+      }
+    });
   };
 
   increaseVersion = () => {
-    client
-      .mutate(
-        `{
-        updatedIssue: updateIssue(id: "${this.props.id}", versionCount: ${this
-          .state.versionCount + 1}) {
-          id,
-          versionCount
+    return this.props.increaseVersion({
+      variables: {
+        id: this.props.id,
+        versionCount: this.props.versionCount + 1
+      }
+    });
+  };
+
+  deleteIssue = () => {
+    return this.props
+      .deleteIssue({
+        variables: {
+          id: this.props.id
         }
-      }`
-      )
-      .then(result => {
-        this.setState({ versionCount: result.updatedIssue.versionCount });
+      })
+      .then(() => {
+        this.props.history.push("/");
       });
   };
 
   render() {
-    return (
-      <div
-        style={{
-          width: "100vw",
-          fontSize: "1.5em",
-          textAlign: "left",
-          color: "white",
-          fontFamily: "monospace"
-        }}
-      >
-        <div
-          style={{
-            padding: "2%",
-            width: "60%",
-            display: "inline-block",
-            backgroundColor: "#424242"
-          }}
-        >
-          Curating:{" "}
-          <span
-            style={{
-              fontWeight: "900"
-            }}
-          >
-            {this.state.title}
-          </span>{" "}
-          (version {this.state.versionCount})
-        </div>
+    const { published } = this.props;
 
-        <div style={{}} onClick={this.handlePublish} className="publish">
-          <div
-            style={{
-              textAlign: "center",
-              width: "100%"
-            }}
-          >
-            Publish
-          </div>
-        </div>
-        <div style={{}} onClick={this.increaseVersion} className="publish">
-          <div
-            style={{
-              textAlign: "center",
-              width: "100%"
-            }}
-          >
-            Create Email
-          </div>
-        </div>
-      </div>
+    return (
+      <Flex>
+        <FlexCell align="center">
+          <Title>
+            Curating: <strong>{this.props.title}</strong> (version{" "}
+            {this.props.versionCount})
+          </Title>
+        </FlexCell>
+        <FlexCell align="center">
+          <Flex align="flex-end">
+            <FlexCell align="center" grow="0" basis="auto">
+              <Button onClick={this.handlePublish}>Publish</Button>
+            </FlexCell>
+            <FlexCell align="center" grow="0" basis="auto" margin="0 0 0 10px">
+              <Button color="grey-bg" onClick={this.increaseVersion}>
+                Create Email
+              </Button>
+            </FlexCell>
+            {!published && (
+              <FlexCell
+                align="center"
+                grow="0"
+                basis="auto"
+                margin="0 0 0 10px"
+              >
+                <Button color="red" onClick={this.deleteIssue}>
+                  Delete Issue
+                </Button>
+              </FlexCell>
+            )}
+          </Flex>
+        </FlexCell>
+      </Flex>
     );
   }
 }
+
+export default compose(
+  withRouter,
+  graphql(publishIssue, {
+    name: "publishIssue"
+  }),
+  graphql(incrVersion, {
+    name: "increaseVersion"
+  }),
+  graphql(deleteIssue, {
+    name: "deleteIssue"
+  })
+)(PageHeader);

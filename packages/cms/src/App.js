@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Fragment, Component } from "react";
 import withRouter from "react-router-dom/withRouter";
 import { graphql, compose } from "react-apollo";
 import { gql } from "apollo-boost";
@@ -10,7 +10,7 @@ import FlexItem from "./components/FlexCell";
 import InputWithButton from "./components/InputWithButton";
 
 import { colors } from "./style/colors";
-
+import LinkCreator from "./product/LinkCreator";
 import Topic from "./product/Topic";
 import Content from "./product/Content";
 import { Header, HeaderContainer } from "./product/Headers";
@@ -36,6 +36,8 @@ const issueQuery = gql`
   query issue($id: ID!) {
     Issue(id: $id) {
       title
+      published
+      versionCount
       topics(orderBy: position_ASC) {
         id
         title
@@ -109,19 +111,27 @@ class App extends Component {
         <HeaderContainer>
           <Header>Unassigned Links</Header>
         </HeaderContainer>
-        <section style={{ border: `1px solid ${colors.gray}` }}>
-          {data.map(link => {
-            return (
-              <Content
-                link={link}
-                key={link.id}
-                topics={this.props.issues.Issue.topics}
-                linkId={link.id}
-                refresh={this.refreshEverything}
-              />
-            );
-          })}
-        </section>
+        {data.length > 0 ? (
+          <section style={{ border: `1px solid ${colors.gray}` }}>
+            {data.map(link => {
+              return (
+                <Content
+                  hasDelete
+                  link={link}
+                  key={link.id}
+                  topics={this.props.issues.Issue.topics}
+                  linkId={link.id}
+                  refresh={this.refreshEverything}
+                />
+              );
+            })}
+          </section>
+        ) : (
+          <section>
+            <p>No Links found! Add some below:</p>
+            <LinkCreator refresh={this.refreshEverything} />
+          </section>
+        )}
       </section>
     );
   }
@@ -136,28 +146,34 @@ class App extends Component {
     }
 
     return (
-      <Card>
-        <Flex>
-          <FlexItem>{this.renderUnassignedLinks()}</FlexItem>
-          <FlexItem margin="0 0 0 10px">
-            {this.renderTopics()}
+      <Fragment>
+        <Card>
+          <PageHeader
+            id={this.props.match.params.id}
+            {...this.props.issues.Issue}
+          />
+        </Card>
+        <Card>
+          <Flex>
+            <FlexItem>{this.renderUnassignedLinks()}</FlexItem>
+            <FlexItem margin="0 0 0 10px">
+              {this.renderTopics()}
 
-            <Flex align="center" style={{ padding: 16 }}>
-              <InputWithButton
-                buttonLabel={"Add Topic"}
-                buttonDisabled={this.state.loading}
-                onClick={this.submitTopic}
-                value={this.state.newTopic}
-                disabled={this.state.loading}
-                onChange={this.handleTopicChange}
-                placeholder="Topic Title"
-              />
-            </Flex>
-          </FlexItem>
-        </Flex>
-
-        {/* <PageHeader id={this.props.params.id} /> */}
-      </Card>
+              <Flex align="center" style={{ padding: 16 }}>
+                <InputWithButton
+                  buttonLabel={"Add Topic"}
+                  buttonDisabled={this.state.loading}
+                  onClick={this.submitTopic}
+                  value={this.state.newTopic}
+                  disabled={this.state.loading}
+                  onChange={this.handleTopicChange}
+                  placeholder="Topic Title"
+                />
+              </Flex>
+            </FlexItem>
+          </Flex>
+        </Card>
+      </Fragment>
     );
   }
 }

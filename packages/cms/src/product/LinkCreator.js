@@ -5,7 +5,7 @@ import { graphql } from "react-apollo";
 import InputWithButton from "../components/InputWithButton";
 
 const createLink = gql`
-  mutation create($url: String) {
+  mutation create($url: String!) {
     createLink(url: $url) {
       id
     }
@@ -59,6 +59,10 @@ class LinkCreator extends React.PureComponent {
           link: "",
           linkError: ""
         });
+
+        if (this.props.refresh) {
+          this.props.refresh();
+        }
       })
       .catch(() => {
         this.setState({

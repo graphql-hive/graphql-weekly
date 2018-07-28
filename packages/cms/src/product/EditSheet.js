@@ -13,7 +13,8 @@ export default class EditSheet extends React.Component {
       linkError,
       link,
       title,
-      handlers
+      handlers,
+      hasDelete
     } = this.props;
 
     return (
@@ -53,6 +54,21 @@ export default class EditSheet extends React.Component {
           >
             <Button style={{ width: "100%" }} onClick={handlers.onSave}>
               Save Changes
+            </Button>
+          </section>
+        )}
+        {hasDelete && (
+          <section
+            style={{
+              marginTop: "16px"
+            }}
+          >
+            <Button
+              style={{ width: "100%" }}
+              color="red"
+              onClick={handlers.onDelete}
+            >
+              Delete
             </Button>
           </section>
         )}

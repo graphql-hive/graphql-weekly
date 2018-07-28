@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "react-emotion";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 import urlRegex from "url-regex";
 import { gql } from "apollo-boost";
 import Flex from "../components/Flex";
@@ -19,6 +19,14 @@ const Row = styled("div")`
 const updateMutation = gql`
   mutation update($id: ID!, $title: String!, $text: String!, $url: String!) {
     updateLink(id: $id, title: $title, text: $text, url: $url) {
+      id
+    }
+  }
+`;
+
+const deleteMutation = gql`
+  mutation delete($id: ID!) {
+    deleteLink(id: $id) {
       id
     }
   }
@@ -70,7 +78,7 @@ class Content extends React.Component {
 
   onSave = () => {
     return this.props
-      .mutate({
+      .updateLink({
         variables: {
           id: this.props.link.id,
           title: this.state.title,
@@ -79,6 +87,23 @@ class Content extends React.Component {
         }
       })
       .then(() => {
+        this.props.refresh();
+        this.setState({
+          expanded: false
+        });
+      });
+  };
+
+  onDelete = () => {
+    return this.props
+      .deleteLink({
+        variables: {
+          id: this.props.link.id
+        }
+      })
+      .then(() => {
+        this.props.refresh();
+
         this.setState({
           expanded: false
         });
@@ -94,6 +119,8 @@ class Content extends React.Component {
       hasChanged,
       description
     } = this.state;
+
+    const { hasDelete } = this.props;
 
     return (
       <Row>
@@ -118,6 +145,7 @@ class Content extends React.Component {
         {expanded && (
           <section style={{ marginTop: 16 }}>
             <EditSheet
+              hasDelete={hasDelete}
               title={title}
               link={link}
               linkError={linkError}
@@ -127,7 +155,8 @@ class Content extends React.Component {
                 handleTitleChange: this.handleTitleChange,
                 handleDescChange: this.handleDescChange,
                 handleLinkChange: this.handleLinkChange,
-                onSave: this.onSave
+                onSave: this.onSave,
+                onDelete: this.onDelete
               }}
             />
           </section>
@@ -137,4 +166,11 @@ class Content extends React.Component {
   }
 }
 
-export default graphql(updateMutation)(Content);
+export default compose(
+  graphql(deleteMutation, {
+    name: "deleteLink"
+  }),
+  graphql(updateMutation, {
+    name: "updateLink"
+  })
+)(Content);
