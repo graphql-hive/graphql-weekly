@@ -6,6 +6,7 @@ import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import App from "./App";
 import "./index.css";
+import Navbar from './components/Navbar';
 import LinkAdder from "./LinkAdder";
 import client from "./client";
 
@@ -20,6 +21,7 @@ ReactDOM.render(
     <MuiThemeProvider muiTheme={theme}>
       <Router>
         <Fragment>
+          <Navbar />
           <Route path="/" component={LinkAdder} />
           <Route path="/issue/:id" component={App} />
         </Fragment>

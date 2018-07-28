@@ -9,6 +9,7 @@
     "apollo-boost": "^0.1.12",
     "emotion": "^9.2.6",
     "graphql": "^0.13.2",
+    "lodash.chunk": "^4.2.0",
     "lokka": "^1.7.0",
     "lokka-transport-http": "^1.4.0",
     "material-ui": "^0.20.1",

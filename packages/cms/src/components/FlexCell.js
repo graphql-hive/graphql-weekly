@@ -1,7 +1,6 @@
 import styled from "react-emotion";
 
 export default styled("section")`
-  display: flex;
-  flex-direction: ${p => p.direction || "row"};
+  flex: 1 0 0px;
   margin: ${p => p.margin || 0};
 `;

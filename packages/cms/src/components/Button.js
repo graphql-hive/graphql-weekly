@@ -1,6 +1,7 @@
 import styled from "react-emotion";
 import { darken } from "polished";
 import { Link } from "react-router-dom";
+import { shadows } from "../style/colors";
 
 const colorMap = {
   red: "white",
@@ -65,7 +66,7 @@ export const ButtonLink = styled(Link)`
   pointer-events: ${p => (p.disabled ? "none" : "all")};
   border-radius: 6px;
 
-  box-shadow: ${p => p.theme.shadows.normal};
+  box-shadow: ${p => shadows.normal};
 
   transition: 0.2s linear all;
 
