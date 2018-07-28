@@ -1,20 +1,7 @@
 import React from "react";
-import styled from "react-emotion";
 import { colors } from "../style/colors";
-
+import { HeaderContainer, Header } from "./Headers";
 import Content from "./Content";
-
-const HeaderContainer = styled("section")`
-  background-color: ${colors.dark};
-  padding: 16px;
-`;
-
-const Header = styled("h1")`
-  font-size: 19px;
-  line-height: 24px;
-  color: white;
-  margin: 0;
-`;
 
 export default function Topic({ topic, topics, refresh }) {
   return (

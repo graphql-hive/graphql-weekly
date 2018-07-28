@@ -10,13 +10,17 @@ export default function InputWithButton({
   disabled,
   onChange,
   onClick,
+  style,
   placeholder,
-  errorText
+  errorText,
+  value
 }) {
   return (
     <Fragment>
       <Flex>
         <Input
+          style={style}
+          value={value}
           disabled={disabled}
           onChange={onChange}
           placeholder={placeholder}

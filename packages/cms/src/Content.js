@@ -3,10 +3,6 @@ import IconButton from "material-ui/IconButton";
 import FontIcon from "material-ui/FontIcon";
 import NavigationExpandMoreIcon from "material-ui/svg-icons/navigation/expand-more";
 import { Card, CardText } from "material-ui/Card";
-import urlRegex from "url-regex";
-import client from "./client";
-import EditSheet from "./EditSheet";
-import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar";
 import TopicDialog from "./TopicDialog";
 
 export default class Content extends Component {
@@ -23,53 +19,6 @@ export default class Content extends Component {
     };
   }
 
-  handleDescChange = e => {
-    this.setState({
-      description: e.target.value,
-      hasChanged: true
-    });
-  };
-
-  handleTitleChange = e => {
-    this.setState({
-      title: e.target.value,
-      hasChanged: true
-    });
-  };
-
-  handleLinkChange = e => {
-    this.setState({
-      link: e.target.value,
-      linkError: urlRegex({ exact: true }).test(e.target.value)
-        ? ""
-        : "This is not a valid url",
-      hasChanged: true
-    });
-  };
-
-  onSave = () => {
-    client
-      .mutate(
-        `{
-          updateLink(id: "${this.props.link.id}", title: "${
-          this.state.title
-        }", text: "${this.state.description}",
-           url: "${this.state.link}") {
-            id
-          }
-        }`
-      )
-      .then(() => {
-        this.setState({
-          expanded: false
-        });
-      });
-  };
-
-  handleExpandChange = () => {
-    this.setState({ expanded: !this.state.expanded });
-  };
-
   showTopics = () => {
     this.setState({
       open: true
@@ -82,19 +31,6 @@ export default class Content extends Component {
         expanded={this.state.expanded}
         onExpandChange={this.handleExpandChange}
       >
-        <Toolbar>
-          <ToolbarGroup style={{ overflow: "hidden" }}>
-            <ToolbarTitle style={{ color: "black" }} text={this.state.title} />
-          </ToolbarGroup>
-          <ToolbarGroup>
-            <FontIcon className="material-icons" onTouchTap={this.showTopics}>
-              input
-            </FontIcon>
-            <IconButton touch={true} onTouchTap={this.handleExpandChange}>
-              <NavigationExpandMoreIcon />
-            </IconButton>
-          </ToolbarGroup>
-        </Toolbar>
         <TopicDialog
           open={this.state.open}
           topics={this.props.topics}
@@ -104,27 +40,6 @@ export default class Content extends Component {
           }}
           refresh={this.props.refresh}
         />
-        <CardText
-          expandable={true}
-          style={{
-            textAlign: "left",
-            backgroundColor: "#eee"
-          }}
-        >
-          <EditSheet
-            title={this.state.title}
-            link={this.state.link}
-            linkError={this.state.linkError}
-            hasChanged={this.state.hasChanged}
-            description={this.state.description}
-            handlers={{
-              handleTitleChange: this.handleTitleChange,
-              handleDescChange: this.handleDescChange,
-              handleLinkChange: this.handleLinkChange,
-              onSave: this.onSave
-            }}
-          />
-        </CardText>
       </Card>
     );
   }

@@ -9,13 +9,13 @@ import Flex from "./components/Flex";
 import FlexItem from "./components/FlexCell";
 import InputWithButton from "./components/InputWithButton";
 
-import Topic from './product/Topic';
+import { colors } from "./style/colors";
 
-import Content from "./Content";
+import Topic from "./product/Topic";
+import Content from "./product/Content";
+import { Header, HeaderContainer } from "./product/Headers";
+
 import client from "./client";
-import TextField from "material-ui/TextField";
-import FlatButton from "material-ui/FlatButton";
-import List from "material-ui/List";
 import PageHeader from "./PageHeader";
 
 const allLinksQuery = gql`
@@ -104,17 +104,26 @@ class App extends Component {
   renderUnassignedLinks() {
     const data = this.props.links.allLinks.filter(link => link.topic === null);
 
-    return data.map(link => {
-      return (
-        <Content
-          link={link}
-          key={link.id}
-          topics={this.props.issues.Issue.topics}
-          linkId={link.id}
-          refresh={this.refreshEverything}
-        />
-      );
-    });
+    return (
+      <section>
+        <HeaderContainer>
+          <Header>Unassigned Links</Header>
+        </HeaderContainer>
+        <section style={{ border: `1px solid ${colors.gray}` }}>
+          {data.map(link => {
+            return (
+              <Content
+                link={link}
+                key={link.id}
+                topics={this.props.issues.Issue.topics}
+                linkId={link.id}
+                refresh={this.refreshEverything}
+              />
+            );
+          })}
+        </section>
+      </section>
+    );
   }
 
   render() {
@@ -133,15 +142,17 @@ class App extends Component {
           <FlexItem margin="0 0 0 10px">
             {this.renderTopics()}
 
-            <InputWithButton
-              buttonLabel={"Add Topic"}
-              buttonDisabled={this.state.loading}
-              onClick={this.submitTopic}
-              value={this.state.newTopic}
-              disabled={this.state.loading}
-              onChange={this.handleTopicChange}
-              placeholder="Topic Title"
-            />
+            <Flex align="center" style={{ padding: 16 }}>
+              <InputWithButton
+                buttonLabel={"Add Topic"}
+                buttonDisabled={this.state.loading}
+                onClick={this.submitTopic}
+                value={this.state.newTopic}
+                disabled={this.state.loading}
+                onChange={this.handleTopicChange}
+                placeholder="Topic Title"
+              />
+            </Flex>
           </FlexItem>
         </Flex>
 
