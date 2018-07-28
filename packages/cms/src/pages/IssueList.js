@@ -3,20 +3,20 @@ import withRouter from "react-router-dom/withRouter";
 import { graphql, compose } from "react-apollo";
 import { gql } from "apollo-boost";
 
-import Loading from "./components/Loading";
-import Card from "./components/Card";
-import Flex from "./components/Flex";
-import FlexItem from "./components/FlexCell";
-import InputWithButton from "./components/InputWithButton";
+import Loading from "../components/Loading";
+import Card from "../components/Card";
+import Flex from "../components/Flex";
+import FlexItem from "../components/FlexCell";
+import InputWithButton from "../components/InputWithButton";
 
-import { colors } from "./style/colors";
-import LinkCreator from "./product/LinkCreator";
-import Topic from "./product/Topic";
-import Content from "./product/Content";
-import { Header, HeaderContainer } from "./product/Headers";
+import { colors } from "../style/colors";
+import LinkCreator from "../product/LinkCreator";
+import Topic from "../product/Topic";
+import Content from "../product/Content";
+import { Header, HeaderContainer } from "../product/Headers";
+import PageHeader from "../product/PageHeader";
 
-import client from "./client";
-import PageHeader from "./PageHeader";
+import client from "../client";
 
 const allLinksQuery = gql`
   query allLinks {
@@ -52,6 +52,22 @@ const issueQuery = gql`
   }
 `;
 
+const createTopicMutation = gql`
+  mutation createTopic(
+    $issue_comment: String!
+    $title: String!
+    $issueId: ID!
+  ) {
+    createTopic(
+      issue_comment: $issue_comment
+      title: $title
+      issueId: $issueId
+    ) {
+      id
+    }
+  }
+`;
+
 class App extends Component {
   constructor() {
     super();
@@ -76,14 +92,15 @@ class App extends Component {
     this.setState({
       loading: true
     });
-    client
-      .mutate(
-        `{
-          createTopic(issue_comment:" " title:"${
-            this.state.newTopic
-          }", issueId:"${this.props.params.id}"){id}
-        }`
-      )
+
+    this.props
+      .createTopic({
+        variables: {
+          issue_comment: " ",
+          title: this.state.newTopic,
+          issueId: this.props.match.params.id
+        }
+      })
       .then(() => {
         this.setState({ loading: false, newTopic: "" });
         this.refreshEverything();
@@ -191,5 +208,8 @@ export default compose(
         }
       };
     }
+  }),
+  graphql(createTopicMutation, {
+    name: "createTopic"
   })
 )(App);

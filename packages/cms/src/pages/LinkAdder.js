@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
 import withRouter from "react-router-dom/withRouter";
-import Flex from "./components/Flex";
-import FlexCell from "./components/FlexCell";
-import Card from "./components/Card";
-import LinkCreator from "./product/LinkCreator";
-import IssueCreator from "./product/IssueCreator";
-import IssuesList from "./product/IssuesList";
+import Flex from "../components/Flex";
+import FlexCell from "../components/FlexCell";
+import Card from "../components/Card";
+import LinkCreator from "../product/LinkCreator";
+import IssueCreator from "../product/IssueCreator";
+import IssuesList from "../product/IssuesList";
 
 function Curations() {
   return (

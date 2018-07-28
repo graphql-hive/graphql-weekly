@@ -3,9 +3,9 @@ import styled from "react-emotion";
 import withRouter from "react-router-dom/withRouter";
 import { graphql, compose } from "react-apollo";
 import { gql } from "apollo-boost";
-import { Button } from "./components/Button";
-import Flex from "./components/Flex";
-import FlexCell from "./components/FlexCell";
+import { Button } from "../components/Button";
+import Flex from "../components/Flex";
+import FlexCell from "../components/FlexCell";
 
 const Title = styled("h1")`
   margin: 0;

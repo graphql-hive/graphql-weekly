@@ -45,7 +45,7 @@ class IssuesList extends React.PureComponent {
                     disabled={issue.published}
                     to={`/issue/${issue.id}`}
                   >
-                    {issue.title}
+                    # {issue.title.split(' ')[1]}
                   </ButtonLink>
                 </FlexCell>
               );

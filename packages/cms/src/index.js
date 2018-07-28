@@ -2,31 +2,25 @@ import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import App from "./App";
-import "./index.css";
-import Navbar from './components/Navbar';
-import LinkAdder from "./LinkAdder";
+import { PanelProvider, PanelRoot } from './components/Panels';
+import Navbar from "./components/Navbar";
+import IssueList from "./pages/IssueList";
+import LinkAdder from "./pages/LinkAdder";
 import client from "./client";
-
-const theme = getMuiTheme({
-  palette: {
-    primary1Color: "#00C853"
-  }
-});
+import "./index.css";
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <MuiThemeProvider muiTheme={theme}>
+    <PanelProvider>
+      <PanelRoot />
       <Router>
         <Fragment>
           <Navbar />
           <Route path="/" exact component={LinkAdder} />
-          <Route path="/issue/:id" exact component={App} />
+          <Route path="/issue/:id" exact component={IssueList} />
         </Fragment>
       </Router>
-    </MuiThemeProvider>
+    </PanelProvider>
   </ApolloProvider>,
   document.getElementById("root")
 );
