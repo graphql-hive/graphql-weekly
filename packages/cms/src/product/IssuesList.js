@@ -33,7 +33,6 @@ class IssuesList extends React.PureComponent {
               );
             })
             .map(issue => {
-              console.log(issue);
               return (
                 <FlexCell
                   key={issue.id}

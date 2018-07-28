@@ -8,7 +8,9 @@ const headers = {
 // Pass your GraphQL endpoint to uri
 export default new ApolloClient({
   uri: "https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf",
-  fetchOptions: {
-    headers
+  request: operation => {
+    operation.setContext({
+      headers
+    });
   }
 });

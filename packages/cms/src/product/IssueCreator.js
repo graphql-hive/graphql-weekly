@@ -4,8 +4,18 @@ import { graphql } from "react-apollo";
 import InputWithButton from "../components/InputWithButton";
 
 const createIssue = gql`
-  mutation create($title: String, $number: Int, $date: String, $published: Boolean) {
-    createIssue(title: $title, number: $number, date: $date, published: $published) {
+  mutation create(
+    $title: String!
+    $number: Int!
+    $date: DateTime!
+    $published: Boolean!
+  ) {
+    createIssue(
+      title: $title
+      number: $number
+      date: $date
+      published: $published
+    ) {
       id
     }
   }
@@ -42,17 +52,23 @@ class IssueCreator extends React.PureComponent {
       });
     }
 
-    this.props
+    return this.props
       .mutate({
         variables: {
-          title: "Issue ${this.state.number}",
+          title: `Issue ${this.state.number}`,
           date: `${new Date().toISOString()}`,
-          number: this.state.number,
+          number: parseInt(this.state.number, 10),
           published: false
         }
       })
       .then(() => {
         location.reload();
+      })
+      .catch(e => {
+        return this.setState({
+          loading: false,
+          numberError: e.message,
+        });
       });
   };
 
@@ -69,7 +85,7 @@ class IssueCreator extends React.PureComponent {
       <InputWithButton
         disabled={this.state.loading}
         placeholder="Issue Number"
-        onTouchTap={this.submitIssueChange}
+        onClick={this.submitIssueChange}
         onChange={this.handleNumberChange}
         buttonLabel="Add Issue"
         buttonDisabled={this.isAddButtonDisabled()}
