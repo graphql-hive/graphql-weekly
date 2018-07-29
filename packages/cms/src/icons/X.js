@@ -1,17 +1,17 @@
 import React from "react";
 
-export default function X() {
+export default function X({ size = 8, color = '#FFF' }) {
   return (
     <svg
-      width="8"
-      height="8"
+      width={size}
+      height={size}
       viewBox="0 0 8 8"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <g
         id="x"
-        stroke="#fff"
+        stroke={color}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

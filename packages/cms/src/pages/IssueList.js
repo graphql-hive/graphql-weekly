@@ -16,8 +16,6 @@ import Content from "../product/Content";
 import { Header, HeaderContainer } from "../product/Headers";
 import PageHeader from "../product/PageHeader";
 
-import client from "../client";
-
 const allLinksQuery = gql`
   query allLinks {
     allLinks {
@@ -46,6 +44,9 @@ const issueQuery = gql`
           text
           url
           id
+          topic {
+            id
+          }
         }
       }
     }

@@ -2,6 +2,8 @@ import React from "react";
 import styled, { keyframes } from "react-emotion";
 import CardBody from "../CardBody";
 import ClickTarget from "../ClickTarget";
+import X from "../../icons/X";
+import { colors } from "../../style/colors";
 import PanelConsumer from "./PanelConsumer";
 
 const FadeRight = keyframes`
@@ -20,7 +22,7 @@ const FadeRight = keyframes`
 const Scrim = styled("div")`
   position: fixed;
   width: 100%;
-  z-index: 3;
+  z-index: 11;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.56);
 `;
@@ -30,7 +32,7 @@ const Panel = styled("div")`
   height: 100vh;
   overflow: hidden;
   margin: 0 0 0 auto;
-  z-index: 4;
+  z-index: 11;
   animation: ${FadeRight};
   -webkit-animation-duration: 0.15s;
   animation-duration: 0.15s;
@@ -85,7 +87,9 @@ class PanelBody extends React.Component {
             <section>
               <PanelHeader>
                 <ClickTarget onClick={hidePanel}>
-                  <PanelClose>Close</PanelClose>
+                  <PanelClose>
+                    <X size={14} color={colors.blue} />
+                  </PanelClose>
                 </ClickTarget>
               </PanelHeader>
               <CardBody>

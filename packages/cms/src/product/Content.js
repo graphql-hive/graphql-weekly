@@ -3,6 +3,7 @@ import styled from "react-emotion";
 import { graphql, compose } from "react-apollo";
 import urlRegex from "url-regex";
 import { gql } from "apollo-boost";
+import { OpenPanel } from "../components/Panels";
 import Flex from "../components/Flex";
 import FlexCell from "../components/FlexCell";
 import ClickTarget from "../components/ClickTarget";
@@ -10,6 +11,7 @@ import LinkIcon from "../icons/Link";
 import { ArrowDownIcon, ArrowUpIcon } from "../icons/Arrow";
 import { colors } from "../style/colors";
 import EditSheet from "./EditSheet";
+import TopicDialog from "./TopicDialog";
 
 const Row = styled("div")`
   padding: 16px;
@@ -132,9 +134,19 @@ class Content extends React.Component {
         >
           <FlexCell align="center">{title}</FlexCell>
           <FlexCell basis="auto" grow="0" margin="0 10px 0" align="center">
-            <ClickTarget>
-              <LinkIcon />
-            </ClickTarget>
+            <OpenPanel>
+              {({ showPanel }) => {
+                return (
+                  <ClickTarget
+                    onClick={() => {
+                      return showPanel(TopicDialog, this.props);
+                    }}
+                  >
+                    <LinkIcon />
+                  </ClickTarget>
+                );
+              }}
+            </OpenPanel>
           </FlexCell>
           <FlexCell basis="auto" grow="0" margin="0 0 0 10px" align="center">
             <ClickTarget onClick={this.expandContent}>
