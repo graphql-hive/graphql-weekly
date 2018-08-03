@@ -19,8 +19,10 @@ class TopicDialog extends React.Component {
   constructor(props) {
     super(props);
 
+    console.log(props);
+
     this.state = {
-      topicId: props.link.topic.id || ''
+      topicId: (props.link && props.link.topic && props.link.topic.id) || ''
     };
   }
 

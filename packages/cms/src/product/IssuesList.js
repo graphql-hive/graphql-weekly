@@ -1,10 +1,12 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { gql } from "apollo-boost";
 import { graphql } from "react-apollo";
 import chunk from "lodash.chunk";
-import Card from "../components/Card";
 import Flex from "../components/Flex";
 import FlexCell from "../components/FlexCell";
+import Card from "../components/Card";
+import LinkCreator from "../product/LinkCreator";
+import IssueCreator from "../product/IssueCreator";
 import { ButtonLink } from "../components/Button";
 import Loading from "../components/Loading";
 
@@ -45,7 +47,7 @@ class IssuesList extends React.PureComponent {
                     disabled={issue.published}
                     to={`/issue/${issue.id}`}
                   >
-                    # {issue.title.split(' ')[1]}
+                    # {issue.title.split(" ")[1]}
                   </ButtonLink>
                 </FlexCell>
               );
@@ -54,6 +56,11 @@ class IssuesList extends React.PureComponent {
       );
     });
   }
+
+  refresh = () => {
+    return this.props.data.refetch();
+  };
+
   render() {
     const { data } = this.props;
 
@@ -65,8 +72,28 @@ class IssuesList extends React.PureComponent {
       );
     }
 
-    return <Card>{this.renderIssues()}</Card>;
+    return (
+      <Fragment>
+        <Card>
+          <Flex>
+            <FlexCell grow="0" basis="auto">
+              <LinkCreator />
+            </FlexCell>
+            <FlexCell grow="0" basis="auto">
+              <div style={{ marginLeft: 10 }}>
+                <IssueCreator refresh={this.refresh} />
+              </div>
+            </FlexCell>
+          </Flex>
+        </Card>
+        <Card>{this.renderIssues()}</Card>
+      </Fragment>
+    );
   }
 }
 
-export default graphql(query)(IssuesList);
+export default graphql(query, {
+  options: {
+    fetchPolicy: "cache-and-network"
+  }
+})(IssuesList);

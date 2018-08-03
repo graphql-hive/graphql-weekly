@@ -79,6 +79,7 @@ class LinkCreator extends React.PureComponent {
   render() {
     return (
       <InputWithButton
+        value={this.state.link}
         disabled={this.state.loading}
         placeholder="Link"
         onClick={this.submitChange}

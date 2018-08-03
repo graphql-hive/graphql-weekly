@@ -62,12 +62,20 @@ class IssueCreator extends React.PureComponent {
         }
       })
       .then(() => {
-        location.reload();
+        if (this.props.refresh) {
+          this.props.refresh();
+        }
+
+        return this.setState({
+          loading: false,
+          number: "",
+          numberError: ""
+        });
       })
       .catch(e => {
         return this.setState({
           loading: false,
-          numberError: e.message,
+          numberError: e.message
         });
       });
   };
