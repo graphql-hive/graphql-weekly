@@ -130,20 +130,25 @@ class App extends Component {
           <Header>Unassigned Links</Header>
         </HeaderContainer>
         {data.length > 0 ? (
-          <section style={{ border: `1px solid ${colors.gray}` }}>
-            {data.map(link => {
-              return (
-                <Content
-                  hasDelete
-                  link={link}
-                  key={link.id}
-                  topics={this.props.issues.Issue.topics}
-                  linkId={link.id}
-                  refresh={this.refreshEverything}
-                />
-              );
-            })}
-          </section>
+          <Fragment>
+            <section style={{ border: `1px solid ${colors.gray}` }}>
+              {data.map(link => {
+                return (
+                  <Content
+                    hasDelete
+                    link={link}
+                    key={link.id}
+                    topics={this.props.issues.Issue.topics}
+                    linkId={link.id}
+                    refresh={this.refreshEverything}
+                  />
+                );
+              })}
+            </section>
+            <div style={{ marginTop: 16 }}>
+              <LinkCreator refresh={this.refreshEverything} />
+            </div>
+          </Fragment>
         ) : (
           <section>
             <p>No Links found! Add some below:</p>
@@ -198,7 +203,10 @@ class App extends Component {
 export default compose(
   withRouter,
   graphql(allLinksQuery, {
-    name: "links"
+    name: "links",
+    options: {
+      fetchPolicy: "cache-and-network"
+    }
   }),
   graphql(issueQuery, {
     name: "issues",
@@ -206,7 +214,8 @@ export default compose(
       return {
         variables: {
           id: match.params.id
-        }
+        },
+        fetchPolicy: "cache-and-network"
       };
     }
   }),
