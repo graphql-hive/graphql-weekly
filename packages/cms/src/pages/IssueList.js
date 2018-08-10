@@ -21,6 +21,7 @@ const allLinksQuery = gql`
     allLinks {
       topic {
         id
+        position
       }
       url
       text
@@ -39,6 +40,7 @@ const issueQuery = gql`
       topics(orderBy: position_ASC) {
         id
         title
+        position
         links(orderBy: position_ASC) {
           title
           text
@@ -46,6 +48,7 @@ const issueQuery = gql`
           id
           topic {
             id
+            position
           }
         }
       }
@@ -113,6 +116,7 @@ class App extends Component {
 
     return data.map((topic, index) => (
       <Topic
+        topicIndex={index}
         key={topic.id}
         topic={topic}
         topics={data}
