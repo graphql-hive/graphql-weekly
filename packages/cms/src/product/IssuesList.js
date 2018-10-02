@@ -44,7 +44,6 @@ class IssuesList extends React.PureComponent {
                   <ButtonLink
                     style={{ width: "100%" }}
                     color="grey-bg"
-                    disabled={issue.published}
                     to={`/issue/${issue.id}`}
                   >
                     # {issue.title.split(" ")[1]}
