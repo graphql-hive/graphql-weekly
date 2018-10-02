@@ -11,6 +11,7 @@ import InputWithButton from "../components/InputWithButton";
 
 import { colors } from "../style/colors";
 import LinkCreator from "../product/LinkCreator";
+import PreviewImageUpdate from "../product/PreviewImageUpdate";
 import Topic from "../product/Topic";
 import Content from "../product/Content";
 import { Header, HeaderContainer } from "../product/Headers";
@@ -34,9 +35,11 @@ const allLinksQuery = gql`
 const issueQuery = gql`
   query issue($id: ID!) {
     Issue(id: $id) {
+      id
       title
       published
       versionCount
+      previewImage
       topics(orderBy: position_ASC) {
         id
         title
@@ -163,6 +166,23 @@ class App extends Component {
     );
   }
 
+  renderPreviewImage() {
+    return (
+      <section>
+        <section>
+          <p>Change Preview image</p>
+          <PreviewImageUpdate
+            refresh={this.refreshEverything}
+            id={this.props.issues.Issue.id}
+          />
+        </section>
+        <section>
+          <img src={this.props.issues.Issue.previewImage} />
+        </section>
+      </section>
+    )
+  }
+
   render() {
     if (this.props.links.loading || this.props.issues.loading) {
       return (
@@ -200,6 +220,7 @@ class App extends Component {
             </FlexItem>
           </Flex>
         </Card>
+        <Card>{this.renderPreviewImage()}</Card>
       </Fragment>
     );
   }
