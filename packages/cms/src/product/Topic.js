@@ -79,6 +79,7 @@ export default function Topic({ topic, topicIndex, topics, refresh }) {
       <section style={{ border: `1px solid ${colors.gray}` }}>
         {topic.links.map((link, index) => (
           <Content
+            hasDelete
             link={link}
             key={link.id}
             linkId={link.id}
