@@ -169,18 +169,16 @@ class App extends Component {
   renderPreviewImage() {
     return (
       <section>
-        <section>
-          <p>Change Preview image</p>
-          <PreviewImageUpdate
-            refresh={this.refreshEverything}
-            id={this.props.issues.Issue.id}
-          />
-        </section>
-        <section>
-          <img src={this.props.issues.Issue.previewImage} />
-        </section>
+        <HeaderContainer>
+          <Header>Preview Image</Header>
+        </HeaderContainer>
+        <PreviewImageUpdate
+          previewImage={this.props.issues.Issue.previewImage}
+          refresh={this.refreshEverything}
+          id={this.props.issues.Issue.id}
+        />
       </section>
-    )
+    );
   }
 
   render() {

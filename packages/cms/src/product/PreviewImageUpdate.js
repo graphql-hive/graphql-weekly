@@ -5,14 +5,8 @@ import { graphql } from "react-apollo";
 import InputWithButton from "../components/InputWithButton";
 
 const updateIssue = gql`
-  mutation update(
-    $id: ID!
-    $previewImage: String!
-  ) {
-    updateIssue(
-      id: $id
-      previewImage: $previewImage
-    ) {
+  mutation update($id: ID!, $previewImage: String!) {
+    updateIssue(id: $id, previewImage: $previewImage) {
       id
       previewImage
     }
@@ -23,7 +17,7 @@ class PreviewImageUpdate extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      link: "",
+      link: props.previewImage || "",
       loading: false,
       linkError: ""
     };
@@ -59,7 +53,7 @@ class PreviewImageUpdate extends React.PureComponent {
       .mutate({
         variables: {
           previewImage,
-          id,
+          id
         }
       })
       .then(() => {
@@ -87,16 +81,31 @@ class PreviewImageUpdate extends React.PureComponent {
   }
   render() {
     return (
-      <InputWithButton
-        value={this.state.link}
-        disabled={this.state.loading}
-        placeholder="Preview Image"
-        onClick={this.submitChange}
-        onChange={this.handleChange}
-        buttonLabel="Update Preview Image"
-        buttonDisabled={this.isAddButtonDisabled()}
-        errorText={this.state.linkError}
-      />
+      <section>
+        {this.props.previewImage ? (
+          <div style={{ maxWidth: 320, height: "auto", marginBottom: 16 }}>
+            <img
+              style={{ maxWidth: "100%", height: "auto" }}
+              src={this.props.previewImage}
+            />
+          </div>
+        ) : (
+          <p style={{ margin: '0 0 16px' }}>
+            Enter an imgur url to display a image for social networks
+          </p>
+        )}
+
+        <InputWithButton
+          value={this.state.link}
+          disabled={this.state.loading}
+          placeholder="Preview Image"
+          onClick={this.submitChange}
+          onChange={this.handleChange}
+          buttonLabel="Update Preview Image"
+          buttonDisabled={this.isAddButtonDisabled()}
+          errorText={this.state.linkError}
+        />
+      </section>
     );
   }
 }
