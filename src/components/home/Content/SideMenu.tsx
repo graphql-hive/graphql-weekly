@@ -7,6 +7,7 @@ import { getTopicColor } from '../topicColors'
 interface Props {
   heading: string
   primaryColor?: string
+  isExpanded?: boolean
   items: Array<{
     to?: string
     href?: string
@@ -18,11 +19,11 @@ interface Props {
   }>
 }
 
-export const SideMenu = ({ heading, primaryColor, items }: Props) => {
+export const SideMenu = ({ heading, primaryColor, isExpanded, items }: Props) => {
   return (
     <Wrapper>
       <Title>{heading}</Title>
-      <ItemsWrapper>
+      <ItemsWrapper isExpanded={isExpanded}>
         {items &&
           items.map((e, i) => (
             <Item
@@ -94,7 +95,9 @@ const IconWrapper = styled.div`
   margin-bottom: -1px;
 `
 
-const ItemsWrapper = styled.div`
-  /* overflow: auto; */
-  max-height: 900px;
+const ItemsWrapper = styled.div<{ isExpanded?: boolean }>`
+  ${p => p.isExpanded && `
+    overflow-y: scroll;
+    max-height: 600px;
+  `}
 `

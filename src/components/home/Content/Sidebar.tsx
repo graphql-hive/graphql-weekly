@@ -13,7 +13,7 @@ import { IssueType } from '../../../types'
 import { getTopicUrlFriendly } from '../../../api'
 
 type Props = {
-  currentIssueNumber: number
+  currentIssueNumber?: number
   topicsTitles: string[]
   allIssues: IssueType[]
 }
@@ -69,6 +69,7 @@ export class Sidebar extends React.Component<Props, State> {
         <SideMenu
           heading="Recent issues"
           primaryColor="#D60690"
+          isExpanded={this.state.showAllIssues}
           items={[
             ...props.allIssues
               .slice(0, this.state.showAllIssues ? undefined : 11)

@@ -66,6 +66,7 @@ export const Issue = ({ issue, lastIssueNumber, firstIssueNumber }: Props) => {
                   title={link.title}
                   text={link.text}
                   url={link.url}
+                  topicColor={getTopicColor(topic.title)}
                 />
               ))}
             // Show the blue tag on the first topic card if no header card is there
