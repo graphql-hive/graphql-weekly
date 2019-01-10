@@ -3,7 +3,6 @@ import 'source-map-support/register'
 import mcapi = require('mailchimp-api')
 import urlParser = require('url')
 
-
 interface Payload {
   data: {
     Issue: {
@@ -32,63 +31,74 @@ interface Link {
   text: string
 }
 
-export default callbackRuntime(async (event: APIGatewayEvent): Promise<any> => {
+export default callbackRuntime(
+  async (event: APIGatewayEvent): Promise<any> => {
+    const payload = JSON.parse(event.body) as Payload
+    const issue = payload.data.Issue.node
 
-  const payload = JSON.parse(event.body) as Payload
-  const issue = payload.data.Issue.node
+    const mailchimpKey = 'MAILCHIMP_API_KEY_REDACTED'
+    const mailchimpListId = 'b07e0b3012'
 
-  const mailchimpKey = 'MAILCHIMP_API_KEY_REDACTED'
-  const mailchimpListId = 'b07e0b3012'
+    const mc = new mcapi.Mailchimp(mailchimpKey)
 
-  const mc = new mcapi.Mailchimp(mailchimpKey)
+    const shouldRun =
+      issue.published &&
+      payload.data.Issue.updatedFields.includes('versionCount')
 
-  const shouldRun = issue.published && payload.data.Issue.updatedFields.includes('versionCount')
+    if (!shouldRun) {
+      console.log('Nothing to do here...')
+      return {
+        statusCode: 204,
+      }
+    }
 
-  if (!shouldRun) {
-    console.log('Nothing to do here...')
+    await new Promise((resolve, reject) => {
+      const params = {
+        options: {
+          list_id: mailchimpListId,
+          subject: `GraphQL Weekly - ${issue.title}`,
+          from_email: 'hello@graphqlweekly.com',
+          from_name: 'GraphQL Weekly',
+          inline_css: true,
+          title: `GraphQL Weekly - ${issue.title} (version ${
+            issue.versionCount
+          })`,
+        },
+        content: {
+          html: formatTemplate(issue),
+        },
+        type: 'regular',
+      }
+
+      mc.campaigns.create(params, resolve, reject)
+    })
+
     return {
       statusCode: 204,
     }
-  }
+  },
+)
 
+const colorMap = {
+  default: '#f531b1',
+  articles: '#f531b1',
+  tutorials: '#6560E2',
+  'community & events': '#009BE3',
+  videos: '#27AE60',
+  'tools & open source': '#F0950C',
+}
 
-  await new Promise((resolve, reject) => {
-    const params = {
-      options: {
-        list_id: mailchimpListId,
-        subject: `GraphQL Weekly - ${issue.title}`,
-        from_email: 'hello@graphqlweekly.com',
-        from_name: 'GraphQL Weekly',
-        inline_css: true,
-        title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`
-      },
-      content: {
-        html: formatTemplate(issue)
-      },
-      type: 'regular',
-    }
-
-    mc.campaigns.create(params, resolve, reject)
-  })
-
-  return {
-    statusCode: 204,
-  }
-})
-
-function formatTemplate(issue: Issue) {
-
-  function formatTopic (topicName) {
-    return `<div class="topic" mc:repeatable="block" mc:variant="topic">
+function formatTopic(topicName) {
+  return `<div class="topic" mc:repeatable="block" mc:variant="topic">
       <div class="line"></div>
       <div class="category" mc:edit="article_topic">${topicName}</div>
     </div>`
-  }
+}
 
-  function formatLink (title, text, url) {
-    var host = urlParser.parse(url).hostname
+function formatLink(title, text, url) {
+  const host = urlParser.parse(url).hostname
 
-    return `<div class="article" mc:repeatable="block" mc:variant="article">
+  return `<div class="article" mc:repeatable="block" mc:variant="article">
       <div class="article_headline" mc:edit="article_title"><a href="${url}">${title}</a></div>
       <p mc:edit="article_content">
         ${text}
@@ -96,13 +106,21 @@ function formatTemplate(issue: Issue) {
         <em><a href="${url}">${host}</a></em>
       </p>
     </div>`
-  }
+}
 
-  var content = issue.topics.map(function(topic){
-    return formatTopic(topic.title) + topic.links.map(function(link){
-      return formatLink(link.title, link.text, link.url)
-    }).join("")
-  }).join("")
+function formatTemplate(issue: Issue) {
+  const content = issue.topics
+    .map(function(topic) {
+      return (
+        formatTopic(topic.title) +
+        topic.links
+          .map(function(link) {
+            return formatLink(link.title, link.text, link.url)
+          })
+          .join('')
+      )
+    })
+    .join('')
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -166,7 +184,7 @@ function formatTemplate(issue: Issue) {
       text-decoration:none;
     }
     .container{
-      background-color:#ffffff;
+      background-color:#ff00ff;
       max-width:700px;
       margin:0 auto;
     }

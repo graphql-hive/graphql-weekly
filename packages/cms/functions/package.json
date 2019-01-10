@@ -10,5 +10,8 @@
     "mailchimp-api": "^2.0.7",
     "open-graph-scraper": "^2.5.4",
     "source-map-support": "^0.4.15"
+  },
+  "scripts": {
+    "build": "tsc"
   }
 }
