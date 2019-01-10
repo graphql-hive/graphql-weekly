@@ -43,8 +43,8 @@ export default class HTML extends React.Component {
             href="/favicons/safari-pinned-tab.svg"
             color="#0c344b"
           />
-          <meta name="apple-mobile-web-app-title" content="Prisma" />
-          <meta name="application-name" content="Prisma" />
+          <meta name="apple-mobile-web-app-title" content="GraphQL Weekly" />
+          <meta name="application-name" content="GraphQL Weekly" />
           <meta name="msapplication-TileColor" content="#0c344b" />
           <meta name="theme-color" content="#ffffff" />
 
