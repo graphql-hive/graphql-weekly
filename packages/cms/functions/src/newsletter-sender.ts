@@ -94,23 +94,25 @@ const colorMap = {
  * Render the first section and all other Topics of an issue
  * @param issue
  */
-function renderContent(issue: Issue): { articles: string; content: string } {
-  let articlesTopic = issue.topics.find(
-    t => t.title.toLowerCase() === 'articles',
-  )
-  let restTopics: Topic[] = []
-
-  if (articlesTopic) {
-    const index = issue.topics.indexOf(articlesTopic)
-    restTopics = issue.topics.slice()
-    restTopics.splice(index, 1)
-  } else {
-    articlesTopic = issue.topics.slice(0, 1)[0]
-    restTopics = issue.topics.slice(1)
+function renderContent(
+  issue: Issue,
+): {
+  firstTopic: {
+    text: string
+    color: string
+    title: string
   }
+  content: string
+} {
+  const firstTopic = issue.topics.slice(0, 1)[0]
+  const restTopics = issue.topics.slice(1)
 
   return {
-    articles: renderTopicContent(articlesTopic),
+    firstTopic: {
+      title: firstTopic.title,
+      color: getColor(firstTopic.title),
+      text: renderTopicContent(firstTopic),
+    },
     content: renderTopics(restTopics),
   }
 }
@@ -119,8 +121,12 @@ function renderTopics(topics: Topic[]) {
   return topics.map(renderTopic).join('\n')
 }
 
+function getColor(title: string): string {
+  return colorMap[title.toLowerCase()] || colorMap.default
+}
+
 function renderTopic(topic: Topic) {
-  const color = colorMap[topic.title.toLowerCase()] || colorMap.default
+  const color = getColor(topic.title)
 
   const slug = slugify(topic.title)
   const className = `article-box-${slug}`
@@ -166,7 +172,7 @@ function renderLink({ url, title, text }: Link) {
 }
 
 function formatTemplate(issue: Issue) {
-  const { articles, content } = renderContent(issue)
+  const { firstTopic, content } = renderContent(issue)
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
@@ -565,7 +571,7 @@ function formatTemplate(issue: Issue) {
                                     >
                                       <tr>
                                         <td
-                                          bgcolor="#F531B1"
+                                          bgcolor="${firstTopic.color}"
                                           class="colorBorder"
                                           width="8px"
                                         ></td>
@@ -589,8 +595,12 @@ function formatTemplate(issue: Issue) {
                                               </td>
                                             </tr>
                                           </table>
+
+                                          <h2 class="articleTitle" style="color: ${
+                                            firstTopic.color
+                                          }">${firstTopic.title}</h2>
   
-                                          ${articles}
+                                          ${firstTopic.text}
   
                                           <!-- Author details -->
   
@@ -723,7 +733,7 @@ function formatTemplate(issue: Issue) {
                                   <td align="center" style="padding-top: 42px;">
                                     <p class="footerText" style="margin-bottom: 64px;">
                                       If you were forwarded this newsletter and you like it, you
-                                      can <a href="*|SUB|*">subscribe here</a>.<br />If you don't want
+                                      can <a href="https://graphqlweekly.com/">subscribe here</a>.<br />If you don't want
                                       these updates anymore, you can
                                       <a href="*|UNSUB|*">unsubscribe here</a>. <br />
                                       <br />
