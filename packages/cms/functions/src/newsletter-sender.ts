@@ -1,55 +1,55 @@
-import { callbackRuntime, APIGatewayEvent } from 'lambda-helpers'
-import 'source-map-support/register'
-import mcapi = require('mailchimp-api')
-import urlParser = require('url')
+import { callbackRuntime, APIGatewayEvent } from "lambda-helpers";
+import "source-map-support/register";
+import mcapi = require("mailchimp-api");
+import urlParser = require("url");
 
 interface Payload {
   data: {
     Issue: {
-      updatedFields: string[]
-      node: Issue
-    }
-  }
+      updatedFields: string[];
+      node: Issue;
+    };
+  };
 }
 
 interface Issue {
-  id: string
-  title: string
-  published: boolean
-  versionCount: number
-  topics: Topic[]
+  id: string;
+  title: string;
+  published: boolean;
+  versionCount: number;
+  topics: Topic[];
 }
 
 interface Topic {
-  title: string
-  links: Link[]
+  title: string;
+  links: Link[];
 }
 
 interface Link {
-  url: string
-  title: string
-  text: string
+  url: string;
+  title: string;
+  text: string;
 }
 
 export default callbackRuntime(
   async (event: APIGatewayEvent): Promise<any> => {
-    const payload = JSON.parse(event.body) as Payload
-    const issue = payload.data.Issue.node
+    const payload = JSON.parse(event.body) as Payload;
+    const issue = payload.data.Issue.node;
 
-    const mailchimpKey = 'MAILCHIMP_API_KEY_REDACTED'
-    const mailchimpListId = 'b07e0b3012'
+    const mailchimpKey = "MAILCHIMP_API_KEY_REDACTED";
+    const mailchimpListId = "b07e0b3012";
 
-    const mc = new mcapi.Mailchimp(mailchimpKey)
+    const mc = new mcapi.Mailchimp(mailchimpKey);
 
     const shouldRun =
       issue.published &&
-      payload.data.Issue.updatedFields.includes('versionCount')
+      payload.data.Issue.updatedFields.includes("versionCount");
 
     if (!shouldRun) {
-      console.log('Nothing to do here...')
+      console.log("Nothing to do here...");
       return {
-        statusCode: 204,
-      }
+        statusCode: 204
+      };
     }
 
     await new Promise((resolve, reject) => {
@@ -57,79 +57,79 @@ export default callbackRuntime(
         options: {
           list_id: mailchimpListId,
           subject: `GraphQL Weekly - ${issue.title}`,
-          from_email: 'hello@graphqlweekly.com',
-          from_name: 'GraphQL Weekly',
+          from_email: "hello@graphqlweekly.com",
+          from_name: "GraphQL Weekly",
           inline_css: true,
           title: `GraphQL Weekly - ${issue.title} (version ${
             issue.versionCount
-          })`,
+          })`
         },
         content: {
-          html: formatTemplate(issue),
+          html: formatTemplate(issue)
         },
-        type: 'regular',
-      }
+        type: "regular"
+      };
 
-      mc.campaigns.create(params, resolve, reject)
-    })
+      mc.campaigns.create(params, resolve, reject);
+    });
 
     return {
-      statusCode: 204,
-    }
-  },
-)
+      statusCode: 204
+    };
+  }
+);
 
 const colorMap = {
-  default: '#f531b1',
-  articles: '#f531b1',
-  tutorials: '#6560E2',
-  'community & events': '#009BE3',
-  videos: '#27AE60',
-  'tools & open source': '#F0950C',
-  'open source': '#F0950C',
-  conference: '#6560E2',
-}
+  default: "#f531b1",
+  articles: "#f531b1",
+  tutorials: "#6560E2",
+  "community & events": "#009BE3",
+  videos: "#27AE60",
+  "tools & open source": "#F0950C",
+  "open source": "#F0950C",
+  conference: "#6560E2"
+};
 
 /**
  * Render the first section and all other Topics of an issue
  * @param issue
  */
 function renderContent(
-  issue: Issue,
+  issue: Issue
 ): {
   firstTopic: {
-    text: string
-    color: string
-    title: string
-  }
-  content: string
+    text: string;
+    color: string;
+    title: string;
+  };
+  content: string;
 } {
-  const firstTopic = issue.topics.slice(0, 1)[0]
-  const restTopics = issue.topics.slice(1)
+  const firstTopic = issue.topics.slice(0, 1)[0];
+  const restTopics = issue.topics.slice(1);
 
   return {
     firstTopic: {
       title: firstTopic.title,
       color: getColor(firstTopic.title),
-      text: renderTopicContent(firstTopic),
+      text: renderTopicContent(firstTopic)
     },
-    content: renderTopics(restTopics),
-  }
+    content: renderTopics(restTopics)
+  };
 }
 
 function renderTopics(topics: Topic[]) {
-  return topics.map(renderTopic).join('\n')
+  return topics.map(renderTopic).join("\n");
 }
 
 function getColor(title: string): string {
-  return colorMap[title.toLowerCase()] || colorMap.default
+  return colorMap[title.toLowerCase()] || colorMap.default;
 }
 
 function renderTopic(topic: Topic) {
-  const color = getColor(topic.title)
+  const color = getColor(topic.title);
 
-  const slug = slugify(topic.title)
-  const className = `article-box-${slug}`
+  const slug = slugify(topic.title);
+  const className = `article-box-${slug}`;
 
   return `<table
   border="0"
@@ -155,11 +155,11 @@ function renderTopic(topic: Topic) {
   </tr>
 </table>
 <div class="hSpace"></div> 
-`
+`;
 }
 
 function renderTopicContent(topic: Topic) {
-  return topic.links.map(renderLink).join('\n<div class="hr"></div>\n')
+  return topic.links.map(renderLink).join('\n<div class="hr"></div>\n');
 }
 
 function renderLink({ url, title, text }: Link) {
@@ -168,11 +168,11 @@ function renderLink({ url, title, text }: Link) {
   </a>
   <p mc:edit="article_content">
     ${text}
-  </p>`
+  </p>`;
 }
 
 function formatTemplate(issue: Issue) {
-  const { firstTopic, content } = renderContent(issue)
+  const { firstTopic, content } = renderContent(issue);
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
@@ -683,7 +683,7 @@ function formatTemplate(issue: Issue) {
                               >
                                 <tr>
                                   <td valign="top">
-                                    <a href="#"
+                                    <a href="https://www.graphqlconf.org/"
                                       ><img
                                         src="https://weeklyletter.netlify.com/assets/GraphQL_Conf.jpg"
                                         class="ConfImage"
@@ -705,19 +705,19 @@ function formatTemplate(issue: Issue) {
                               >
                                 <tr>
                                   <td align="center" valign="center">
-                                    <a href="#" class="footerItems__items">
+                                    <a href="https://www.graphqlweekly.com/" class="footerItems__items">
                                       <img
                                         src="https://weeklyletter.netlify.com/assets/Archive.png"
                                         class="archiveIcon"
                                       /><span>View all issues</span>
                                     </a>
-                                    <a href="#" class="footerItems__items">
+                                    <a href="https://twitter.com/graphqlweekly?lang=en" class="footerItems__items">
                                       <img
                                         src="https://weeklyletter.netlify.com/assets/Twitter.png"
                                         class="twitterIcon"
                                       /><span>Follow on Twitter</span>
                                     </a>
-                                    <a href="#" class="footerItems__items">
+                                    <a href="https://slack.prisma.io/" class="footerItems__items">
                                       <img
                                         src="https://weeklyletter.netlify.com/assets/Slack.png"
                                         class="slackIcon"
@@ -768,16 +768,16 @@ function formatTemplate(issue: Issue) {
   </html>
   
 
-`
+`;
 }
 
 function slugify(text: string) {
   return text
     .toString()
     .toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, '') // Trim - from end of text
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+    .replace(/\-\-+/g, "-") // Replace multiple - with single -
+    .replace(/^-+/, "") // Trim - from start of text
+    .replace(/-+$/, ""); // Trim - from end of text
 }
