@@ -5,9 +5,8 @@ const defaults = {
   title: 'GraphQL Weekly - Newsletter about GraphQL, Apollo and more',
   description:
     'A weekly newsletter of the best news, articles and projects about GraphQL, Apollo and more.',
-  image: 'https://www.prisma.io/og-image.png',
-  video: 'https://www.youtube.com/watch?v=jF9VULLzwVk',
-  url: 'https://www.prisma.io',
+  image: 'https://www.graphqlweekly.com/og-image.png',
+  url: 'https://www.graphqlweekly.com',
 }
 
 type Props = {
@@ -27,7 +26,6 @@ export const MetaTags = ({
 }: Props = defaults) => {
   image = image || defaults.image
   description = description || defaults.description
-  video = video || defaults.video
   url = url || defaults.url
   title = title || defaults.title
   return (
@@ -41,10 +39,9 @@ export const MetaTags = ({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:site" content="@prisma" />
-      <meta name="twitter:creator" content="@prisma" />
+      <meta name="twitter:site" content="@graphqlweekly" />
+      <meta name="twitter:creator" content="@graphqlweekly" />
       <meta name="twitter:image:src" content={image} />
-      <meta name="twitter:player" content={video} />
       <meta name="og:title" content={title} />
       <meta name="og:description" content={description} />
       <meta name="og:image" content={image} />
@@ -52,8 +49,7 @@ export const MetaTags = ({
         name="og:url"
         content={typeof location !== 'undefined' ? location.href : url}
       />
-      <meta name="og:site_name" content="Prisma" />
-      <meta name="og:video" content={video} />
+      <meta name="og:site_name" content="GraphQL Weekly" />
       <meta name="og:type" content="website" />
     </Helmet>
   )

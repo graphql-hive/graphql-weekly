@@ -28,6 +28,7 @@ export const Topic = ({ title, topicLinks }: Props) => {
                 title={link.title}
                 text={link.text}
                 url={link.url}
+                topicColor={getTopicColor(title)}
               />
             ))}
           />

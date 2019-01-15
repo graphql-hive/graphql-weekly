@@ -71,6 +71,7 @@ const TextareaTag = styled.textarea`
   border: none;
   outline: none;
   color: ${p => p.theme.lightDark};
+  resize: vertical;
 
   ${mobile(css`
     font-size: 16px;

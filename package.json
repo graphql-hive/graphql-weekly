@@ -1,6 +1,6 @@
 {
   "name": "graphqlweekly",
-  "description": "Prisma homepage",
+  "description": "GraphQL Weekly Homepage",
   "version": "1.0.0",
   "author": "Mo Rajabifard <mo.rajbi@gmail.com>",
   "dependencies": {
