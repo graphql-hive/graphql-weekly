@@ -705,7 +705,7 @@ function formatTemplate(issue: Issue) {
                               >
                                 <tr>
                                   <td align="center" valign="center">
-                                    <a href="#" class="footerItems__items">
+                                    <a href="https://www.graphqlweekly.com/" class="footerItems__items">
                                       <img
                                         src="https://weeklyletter.netlify.com/assets/Archive.png"
                                         class="archiveIcon"
@@ -717,7 +717,7 @@ function formatTemplate(issue: Issue) {
                                         class="twitterIcon"
                                       /><span>Follow on Twitter</span>
                                     </a>
-                                    <a href="#" class="footerItems__items">
+                                    <a href="https://slack.prisma.io/" class="footerItems__items">
                                       <img
                                         src="https://weeklyletter.netlify.com/assets/Slack.png"
                                         class="slackIcon"
