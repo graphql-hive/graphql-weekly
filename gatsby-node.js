@@ -31,7 +31,7 @@ exports.createPages = async ({ actions: { createPage } }) => {
   // Create a page for each issue.
   allIssues.forEach(issue => {
     createPage({
-      path: `/issue/${issue.number}/`,
+      path: `/issues/${issue.number}/`,
       component: require.resolve('./src/templates/index.tsx'),
       context: {
         issue,

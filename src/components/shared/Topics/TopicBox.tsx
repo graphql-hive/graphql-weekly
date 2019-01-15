@@ -32,7 +32,7 @@ export const TopicBox = ({
       {/* Blue Issue Tag */}
       {issueNumber && (
         <IssueTagAligner>
-          <IssueTitle to={`/issue/${issueNumber}/#content`}>
+          <IssueTitle to={`/issues/${issueNumber}/#content`}>
             Issue {issueNumber}
             {issueDate && <IssueDate>{issueDate}</IssueDate>}
           </IssueTitle>

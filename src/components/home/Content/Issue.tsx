@@ -4,7 +4,7 @@ import * as React from 'react'
 import { TopicBox } from '../../shared/Topics/TopicBox'
 import { TopicArticle } from '../../shared/Topics/TopicArticle'
 import { NavIssue } from './NavIssue'
-import { IssueType, IssueLink } from '../../../types'
+import { IssueType } from '../../../types'
 import { getTopicColor } from '../topicColors'
 import { ContentWrapper } from './style'
 
@@ -39,7 +39,7 @@ export const Issue = ({ issue, lastIssueNumber, firstIssueNumber }: Props) => {
             <TopicArticle
               title={issue.title}
               text={issue.description || ''}
-              url={`/issue/${issue.number}`}
+              url={`/issues/${issue.number}`}
               specialPerk={issue.specialPerk}
             />,
           ]}

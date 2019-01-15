@@ -73,7 +73,7 @@ export class Sidebar extends React.Component<Props, State> {
             ...props.allIssues
               .slice(0, this.state.showAllIssues ? undefined : 11)
               .map(issue => {
-                const url = `/issue/${issue.number}`
+                const url = `/issues/${issue.number}`
                 return {
                   to: `${url}#content`,
                   text: `Issue ${issue.number}`,

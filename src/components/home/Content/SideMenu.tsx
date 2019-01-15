@@ -18,7 +18,7 @@ interface Props {
   }>
 }
 
-export const SideMenu = ({ heading, primaryColor, items }: Props) => {
+export const SideMenu = ({ heading, items }: Props) => {
   return (
     <Wrapper>
       <Title>{heading}</Title>
