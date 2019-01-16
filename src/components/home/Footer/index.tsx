@@ -5,6 +5,7 @@ import { Container } from '../../shared/Container'
 import styled, { css } from '../../style/styled'
 import { TopFooter } from './TopFooter'
 import { Playground } from './Playground'
+import { About } from './About'
 import { FooterLine } from './FooterLine'
 import { mobile } from '../../style/media'
 
@@ -15,6 +16,8 @@ export const Footer = () => {
         <TopFooter />
         <FooterLine />
         <Playground />
+        <FooterLine />
+        <About/>
       </Container>
     </FooterWrapper>
   )
