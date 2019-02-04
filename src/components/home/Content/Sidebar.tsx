@@ -4,6 +4,7 @@ import styled, { css } from '../../style/styled'
 // Local
 import { Space } from '../../shared/Space'
 import { SideMenu } from './SideMenu'
+import { Submit } from './Submit'
 import { SidebarLine } from './SidebarLine'
 import Twitter from '../../vectors/Twitter'
 import Slack from '../../vectors/Slack'
@@ -13,6 +14,7 @@ import { IssueType } from '../../../types'
 import { getTopicUrlFriendly } from '../../../api'
 
 type Props = {
+  submitModalClickHandler: Function
   currentIssueNumber?: number
   topicsTitles: string[]
   allIssues: IssueType[]
@@ -32,7 +34,10 @@ export class Sidebar extends React.Component<Props, State> {
 
     return (
       <Wrapper>
-        <Space height={64} />
+        <Submit submitModalClickHandler={props.submitModalClickHandler} />
+
+        <SidebarLine />
+
         <SideMenu
           heading="Join the community"
           items={[
@@ -65,7 +70,7 @@ export class Sidebar extends React.Component<Props, State> {
           })}
         />
 
-        <Space height={64} />
+        <SidebarLine />
         <SideMenu
           heading="Recent issues"
           primaryColor="#D60690"

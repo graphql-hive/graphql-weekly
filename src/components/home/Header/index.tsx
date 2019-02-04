@@ -9,10 +9,14 @@ import { Subscription } from '../Subscription'
 import Slack from '../../vectors/Slack'
 import Twitter from '../../vectors/Twitter'
 
-export const Header = () => {
+type Props = {
+  submitModalClickHandler: Function
+}
+
+export const Header = (props: Props) => {
   return (
     <HeaderWrapper>
-      <Nav />
+      <Nav submitModalClickHandler={props.submitModalClickHandler} />
 
       <Space height={80} heightOnMobile={27} />
 

@@ -16,23 +16,16 @@ import { Space } from '../Space'
 import Button from './Button'
 import Close from './Close'
 import { Arrow } from '../../vectors/Arrow'
-import { SubmitForm } from '../../home/Header/SubmitForm'
 
-type Props = {}
-type State = { isOpened: boolean; SubmitForm: boolean }
+type Props = { submitModalClickHandler: Function }
+type State = { isOpened: boolean }
 
 export class Nav extends React.Component<Props, State> {
-  state = { isOpened: false, SubmitForm: false }
+  state = { isOpened: false }
 
   menuClickHandler = () => {
     this.setState({
       isOpened: !this.state.isOpened,
-    })
-  }
-
-  submitLinkClickHandler = () => {
-    this.setState({
-      SubmitForm: !this.state.SubmitForm,
     })
   }
 
@@ -58,14 +51,10 @@ export class Nav extends React.Component<Props, State> {
               <NavText>What is GraphQL?</NavText>
               <Arrow />
             </NavItem>
-            <NavItemButton onClick={this.submitLinkClickHandler}>
+            <NavItemButton onClick={() => this.props.submitModalClickHandler()}>
               <NavText>Submit a link</NavText>
             </NavItemButton>
           </NavItems>
-
-          {this.state.SubmitForm && (
-            <SubmitForm onCancelClicked={this.submitLinkClickHandler} />
-          )}
         </Wrapper>
       </Container>
     )

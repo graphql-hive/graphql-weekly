@@ -6,5 +6,5 @@ export const SidebarLine = styled.div`
   background: #9da0b5;
   opacity: 0.5;
 
-  margin: 48px 0 48px 23px;
+  margin: 40px 0 40px 23px;
 `

@@ -17,7 +17,7 @@ export class Subscription extends React.Component<Props, State> {
     loading: false,
   }
 
-  subscribeSubmited = async e => {
+  subscribeSubmited = async (e: any) => {
     e.preventDefault()
     if (
       this.state.name !== '' &&

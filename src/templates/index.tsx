@@ -10,8 +10,10 @@ import { Container } from '../components/shared/Container'
 import { Issue } from '../components/home/Content/Issue'
 import { Sidebar } from '../components/home/Content/Sidebar'
 import { Footer } from '../components/home/Footer'
+import { SubmitForm } from '../components/home/Header/SubmitForm'
 import { IssueType } from '../types'
 
+type State = { submitModal: boolean }
 type Props = {
   pageContext: {
     issue: IssueType
@@ -21,32 +23,44 @@ type Props = {
   }
 }
 
-export default (props: Props) => {
-  return (
-    <Layout>
-      <MetaTags />
-      <Helmet />
+export default class IndexTemplate extends React.Component<Props, State> {
+  state = { submitModal: false }
 
-      <Header />
+  submitModalClickHandler = () => {
+    this.setState({ submitModal: !this.state.submitModal })
+  }
 
-      <Container>
-        <LayoutWrapper>
-          <Issue
-            issue={props.pageContext.issue}
-            lastIssueNumber={props.pageContext.allIssues[0].number}
-            firstIssueNumber={props.pageContext.firstIssueNumber}
-          />
-          <Sidebar
-            currentIssueNumber={props.pageContext.issue.number}
-            topicsTitles={props.pageContext.topicsTitles}
-            allIssues={props.pageContext.allIssues}
-          />
-        </LayoutWrapper>
-      </Container>
+  render() {
+    return (
+      <Layout>
+        <MetaTags />
+        <Helmet />
 
-      <Footer />
-    </Layout>
-  )
+        <Header submitModalClickHandler={this.submitModalClickHandler} />
+
+        <Container>
+          <LayoutWrapper>
+            <Issue
+              issue={this.props.pageContext.issue}
+              lastIssueNumber={this.props.pageContext.allIssues[0].number}
+              firstIssueNumber={this.props.pageContext.firstIssueNumber}
+            />
+            <Sidebar
+              submitModalClickHandler={this.submitModalClickHandler}
+              currentIssueNumber={this.props.pageContext.issue.number}
+              topicsTitles={this.props.pageContext.topicsTitles}
+              allIssues={this.props.pageContext.allIssues}
+            />
+          </LayoutWrapper>
+        </Container>
+
+        <Footer />
+        {this.state.submitModal && (
+          <SubmitForm onCancelClicked={() => this.submitModalClickHandler()} />
+        )}
+      </Layout>
+    )
+  }
 }
 
 const LayoutWrapper = styled.div`

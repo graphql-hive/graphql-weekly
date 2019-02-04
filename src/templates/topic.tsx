@@ -10,8 +10,10 @@ import { Container } from '../components/shared/Container'
 import { Topic } from '../components/home/Content/Topic'
 import { Sidebar } from '../components/home/Content/Sidebar'
 import { Footer } from '../components/home/Footer'
+import { SubmitForm } from '../components/home/Header/SubmitForm'
 import { IssueType, TopicLinksType } from '../types'
 
+type State = { submitModal: boolean }
 type Props = {
   pageContext: {
     topicTitle: string
@@ -22,30 +24,42 @@ type Props = {
   }
 }
 
-export default (props: Props) => {
-  return (
-    <Layout>
-      <MetaTags />
-      <Helmet />
+export default class TopicTemplate extends React.Component<Props, State> {
+  state = { submitModal: false }
 
-      <Header />
+  submitModalClickHandler = () => {
+    this.setState({ submitModal: !this.state.submitModal })
+  }
 
-      <Container>
-        <LayoutWrapper>
-          <Topic
-            title={props.pageContext.topicTitle}
-            topicLinks={props.pageContext.topicLinks}
-          />
-          <Sidebar
-            topicsTitles={props.pageContext.topicsTitles}
-            allIssues={props.pageContext.allIssues}
-          />
-        </LayoutWrapper>
-      </Container>
+  render() {
+    return (
+      <Layout>
+        <MetaTags />
+        <Helmet />
 
-      <Footer />
-    </Layout>
-  )
+        <Header submitModalClickHandler={this.submitModalClickHandler} />
+
+        <Container>
+          <LayoutWrapper>
+            <Topic
+              title={this.props.pageContext.topicTitle}
+              topicLinks={this.props.pageContext.topicLinks}
+            />
+            <Sidebar
+              submitModalClickHandler={this.submitModalClickHandler}
+              topicsTitles={this.props.pageContext.topicsTitles}
+              allIssues={this.props.pageContext.allIssues}
+            />
+          </LayoutWrapper>
+        </Container>
+
+        <Footer />
+        {this.state.submitModal && (
+          <SubmitForm onCancelClicked={() => this.submitModalClickHandler()} />
+        )}
+      </Layout>
+    )
+  }
 }
 
 const LayoutWrapper = styled.div`
