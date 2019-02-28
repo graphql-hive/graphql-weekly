@@ -683,9 +683,9 @@ function formatTemplate(issue: Issue) {
                               >
                                 <tr>
                                   <td valign="top">
-                                    <a href="https://www.graphqlday.org/"
+                                    <a href="https://www.graphqlconf.org/"
                                       ><img
-                                        src="https://prisma-tutorial-images.ams3.cdn.digitaloceanspaces.com/GraphQL%20Day%20(1).png"
+                                        src="https://prisma-tutorial-images.ams3.cdn.digitaloceanspaces.com/GraphQL%20Conf.jpg"
                                         class="ConfImage"
                                         width="680"
                                         height="340"
