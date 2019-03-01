@@ -4,7 +4,7 @@ import Helmet from 'react-helmet'
 const defaults = {
   title: 'GraphQL Weekly - Newsletter about GraphQL, Apollo and more',
   description:
-    'A weekly newsletter of the best news, articles and projects about GraphQL, Apollo and more.',
+    'A weekly newsletter of the best news, articles and projects about GraphQL',
   image: 'https://www.graphqlweekly.com/og-image.png',
   url: 'https://www.graphqlweekly.com',
 }
