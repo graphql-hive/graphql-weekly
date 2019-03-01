@@ -10,7 +10,7 @@ export const About = () => {
       <Logo>
         <LogoSvg />
       </Logo>
-      <Text>Curated by <Link href='https://www.prisma.io/'>Prisma</Link> and it’s awesome community.</Text>
+      <Text>Curated by <Link href='https://www.prisma.io/'>Prisma</Link> and its awesome community.</Text>
     </Wrapper>
   )
 }
