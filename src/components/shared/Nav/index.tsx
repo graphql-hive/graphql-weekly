@@ -47,7 +47,7 @@ export class Nav extends React.Component<Props, State> {
               <NavText>GraphQL Conf 2019</NavText>
               <Arrow />
             </NavItem>
-            <NavItem href="https://graphql.org">
+            <NavItem href="https://www.howtographql.com">
               <NavText>What is GraphQL?</NavText>
               <Arrow />
             </NavItem>
