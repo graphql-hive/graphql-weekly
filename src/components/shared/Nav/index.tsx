@@ -43,11 +43,11 @@ export class Nav extends React.Component<Props, State> {
           </MenuButton>
 
           <NavItems isOpened={this.state.isOpened}>
-            <NavItem href="https://graphqlconf.org">
+            <NavItem href="https://graphqlconf.org" target="_blank">
               <NavText>GraphQL Conf 2019</NavText>
               <Arrow />
             </NavItem>
-            <NavItem href="https://www.howtographql.com">
+            <NavItem href="https://www.howtographql.com" target="_blank">
               <NavText>What is GraphQL?</NavText>
               <Arrow />
             </NavItem>
