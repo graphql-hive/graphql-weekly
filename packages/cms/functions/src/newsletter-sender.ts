@@ -726,7 +726,7 @@ function formatTemplate(issue: Issue) {
                                     </tr>
                                     </table>
 
-                                    <span class="projectSpacer"></span>
+                                    <!-- <span class="projectSpacer"></span> -->
 
                                     <!-- Prisma Day -->
                                     <table
