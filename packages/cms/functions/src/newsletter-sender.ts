@@ -701,7 +701,7 @@ function formatTemplate(issue: Issue) {
                                 cellspacing="0"
                               >
                                 <tr>
-                                  <td valign="top" width="100%>
+                                  <td valign="top" width="100%">
 
                                     <!-- GraphQL Conf -->
                                     <table
