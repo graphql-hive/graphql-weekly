@@ -444,6 +444,22 @@ function formatTemplate(issue: Issue) {
           height: 22px;
         }
   
+        .halfBannersTable {
+          width: 100%;
+        }
+
+        .halfBanner {
+          width: 332px;
+          height: 340px;
+          display: inline-block;
+        }
+
+        .projectSpacer {
+          width: 8px;
+          height: 8px;
+          display: inline-block;
+        }
+
         .footerText {
           line-height: 20px;
           font-size: 14px;
@@ -505,6 +521,10 @@ function formatTemplate(issue: Issue) {
             font-size: 14px !important;
           }
   
+          .halfBannersTable {
+            width: 50%;
+          }
+
           .footerItems__items {
             padding-bottom: 8px !important;
           }
@@ -671,26 +691,65 @@ function formatTemplate(issue: Issue) {
                               <div class="hSpace"></div>
 
                               ${content}
-  
-                              <!-- TOPIC -->
-                              <!-- 7th Content Box (GraphQL_Conf) -->
+
+                              <!-- BANNERS -->
+                              <!-- 7th Content Box -->
                               <table
+                                class="halfBannersTable"
                                 border="0"
                                 cellpadding="0"
                                 cellspacing="0"
-                                width="100%"
-                                class="ConfBox"
                               >
                                 <tr>
-                                  <td valign="top">
-                                    <a href="https://www.graphqlconf.org/"
-                                      ><img
-                                        src="https://prisma-tutorial-images.ams3.cdn.digitaloceanspaces.com/gqlc-newsletter-680x340%20(2).png"
-                                        class="ConfImage"
-                                        width="680"
-                                        height="340"
-                                        style="max-width: 100%; height: auto;"
-                                    /></a>
+                                  <td valign="top" width="100%>
+
+                                    <!-- GraphQL Conf -->
+                                    <table
+                                      align="center"
+                                      class="halfBanner"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      border="0"
+                                    >
+                                    <tr>
+                                      <td>
+                                        <a href="https://www.graphqlconf.org/">
+                                          <img
+                                            class="halfBannerImage"
+                                            src="https://i.imgur.com/sTG3RW8.png"
+                                            width="332"
+                                            height="340"
+                                            style="max-width: 100%; height: auto;"
+                                          />
+                                        </a>
+                                      </td>
+                                    </tr>
+                                    </table>
+
+                                    <span class="projectSpacer"></span>
+
+                                    <!-- Prisma Day -->
+                                    <table
+                                      class="halfBanner"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      border="0"
+                                    >
+                                    <tr>
+                                      <td>
+                                        <a href="https://www.prisma.io/day">
+                                          <img
+                                            class="halfBannerImage"
+                                            src="https://i.imgur.com/Zk376KR.png"
+                                            width="332"
+                                            height="340"
+                                            style="max-width: 100%; height: auto;"
+                                          />
+                                        </a>
+                                      </td>
+                                    </tr>
+                                    </table>
+
                                   </td>
                                 </tr>
                               </table>
