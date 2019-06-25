@@ -1,7 +1,7 @@
-import { callbackRuntime, APIGatewayEvent } from "lambda-helpers";
-import "source-map-support/register";
-import mcapi = require("mailchimp-api");
-import urlParser = require("url");
+import { callbackRuntime, APIGatewayEvent } from 'lambda-helpers';
+import 'source-map-support/register';
+import mcapi = require('mailchimp-api');
+import urlParser = require('url');
 
 interface Payload {
   data: {
@@ -36,19 +36,19 @@ export default callbackRuntime(
     const payload = JSON.parse(event.body) as Payload;
     const issue = payload.data.Issue.node;
 
-    const mailchimpKey = "MAILCHIMP_API_KEY_REDACTED";
-    const mailchimpListId = "b07e0b3012";
+    const mailchimpKey = 'MAILCHIMP_API_KEY_REDACTED';
+    const mailchimpListId = 'b07e0b3012';
 
     const mc = new mcapi.Mailchimp(mailchimpKey);
 
     const shouldRun =
       issue.published &&
-      payload.data.Issue.updatedFields.includes("versionCount");
+      payload.data.Issue.updatedFields.includes('versionCount');
 
     if (!shouldRun) {
-      console.log("Nothing to do here...");
+      console.log('Nothing to do here...');
       return {
-        statusCode: 204
+        statusCode: 204,
       };
     }
 
@@ -57,37 +57,37 @@ export default callbackRuntime(
         options: {
           list_id: mailchimpListId,
           subject: `GraphQL Weekly - ${issue.title}`,
-          from_email: "hello@graphqlweekly.com",
-          from_name: "GraphQL Weekly",
+          from_email: 'hello@graphqlweekly.com',
+          from_name: 'GraphQL Weekly',
           inline_css: true,
           title: `GraphQL Weekly - ${issue.title} (version ${
             issue.versionCount
-          })`
+          })`,
         },
         content: {
-          html: formatTemplate(issue)
+          html: formatTemplate(issue),
         },
-        type: "regular"
+        type: 'regular',
       };
 
       mc.campaigns.create(params, resolve, reject);
     });
 
     return {
-      statusCode: 204
+      statusCode: 204,
     };
-  }
+  },
 );
 
 const colorMap = {
-  default: "#f531b1",
-  articles: "#f531b1",
-  tutorials: "#6560E2",
-  "community & events": "#009BE3",
-  videos: "#27AE60",
-  "tools & open source": "#F0950C",
-  "open source": "#F0950C",
-  conference: "#6560E2"
+  default: '#f531b1',
+  articles: '#f531b1',
+  tutorials: '#6560E2',
+  'community & events': '#009BE3',
+  videos: '#27AE60',
+  'tools & open source': '#F0950C',
+  'open source': '#F0950C',
+  conference: '#6560E2',
 };
 
 /**
@@ -95,7 +95,7 @@ const colorMap = {
  * @param issue
  */
 function renderContent(
-  issue: Issue
+  issue: Issue,
 ): {
   firstTopic: {
     text: string;
@@ -111,14 +111,14 @@ function renderContent(
     firstTopic: {
       title: firstTopic.title,
       color: getColor(firstTopic.title),
-      text: renderTopicContent(firstTopic)
+      text: renderTopicContent(firstTopic),
     },
-    content: renderTopics(restTopics)
+    content: renderTopics(restTopics),
   };
 }
 
 function renderTopics(topics: Topic[]) {
-  return topics.map(renderTopic).join("\n");
+  return topics.map(renderTopic).join('\n');
 }
 
 function getColor(title: string): string {
@@ -695,64 +695,25 @@ function formatTemplate(issue: Issue) {
                               <!-- BANNERS -->
                               <!-- 7th Content Box -->
                               <table
-                                class="halfBannersTable"
-                                border="0"
-                                cellpadding="0"
-                                cellspacing="0"
-                              >
-                                <tr>
-                                  <td valign="top" width="100%">
-
-                                    <!-- GraphQL Conf -->
-                                    <table
-                                      align="center"
-                                      class="halfBanner"
-                                      cellpadding="0"
-                                      cellspacing="0"
-                                      border="0"
-                                    >
-                                    <tr>
-                                      <td>
-                                        <a href="https://www.graphqlconf.org/">
-                                          <img
-                                            class="halfBannerImage"
-                                            src="https://i.imgur.com/sTG3RW8.png"
-                                            width="332"
-                                            height="340"
-                                            style="max-width: 100%; height: auto;"
-                                          />
-                                        </a>
-                                      </td>
-                                    </tr>
-                                    </table>
-
-                                    <!-- <span class="projectSpacer"></span> -->
-
-                                    <!-- Prisma Day -->
-                                    <table
-                                      class="halfBanner"
-                                      cellpadding="0"
-                                      cellspacing="0"
-                                      border="0"
-                                    >
-                                    <tr>
-                                      <td>
-                                        <a href="https://www.prisma.io/day">
-                                          <img
-                                            class="halfBannerImage"
-                                            src="https://i.imgur.com/Zk376KR.png"
-                                            width="332"
-                                            height="340"
-                                            style="max-width: 100%; height: auto;"
-                                          />
-                                        </a>
-                                      </td>
-                                    </tr>
-                                    </table>
-
-                                  </td>
-                                </tr>
-                              </table>
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              width="100%"
+                              class="ConfBox"
+                            >
+                              <tr>
+                                <td valign="top">
+                                  <a href="https://youtu.be/783ccP__No8"
+                                    ><img
+                                      src="https://prisma-newsletter.ams3.cdn.digitaloceanspaces.com/201906_GraphQLDoc_GraphQL_Weekly_Thumbnail.png"
+                                      class="ConfImage"
+                                      width="680"
+                                      height="340"
+                                      style="max-width: 100%; height: auto;"
+                                  /></a>
+                                </td>
+                              </tr>
+                            </table>
   
                               <div class="hSpace"></div>
                               <table
@@ -834,9 +795,9 @@ function slugify(text: string) {
   return text
     .toString()
     .toLowerCase()
-    .replace(/\s+/g, "-") // Replace spaces with -
-    .replace(/[^\w\-]+/g, "") // Remove all non-word chars
-    .replace(/\-\-+/g, "-") // Replace multiple - with single -
-    .replace(/^-+/, "") // Trim - from start of text
-    .replace(/-+$/, ""); // Trim - from end of text
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, ''); // Trim - from end of text
 }
