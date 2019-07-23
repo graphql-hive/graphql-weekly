@@ -62,7 +62,7 @@ export default callbackRuntime(
           inline_css: true,
           title: `GraphQL Weekly - ${issue.title} (version ${
             issue.versionCount
-          })`,
+            })`,
         },
         content: {
           html: formatTemplate(issue),
@@ -617,8 +617,8 @@ function formatTemplate(issue: Issue) {
                                           </table>
 
                                           <h2 class="articleTitle" style="color: ${
-                                            firstTopic.color
-                                          }">${firstTopic.title}</h2>
+    firstTopic.color
+    }">${firstTopic.title}</h2>
   
                                           ${firstTopic.text}
   
@@ -703,9 +703,9 @@ function formatTemplate(issue: Issue) {
                             >
                               <tr>
                                 <td valign="top">
-                                  <a href="https://youtu.be/783ccP__No8"
+                                  <a href="https://www.graphqlday.org/bodensee"
                                     ><img
-                                      src="https://prisma-newsletter.ams3.cdn.digitaloceanspaces.com/201906_GraphQLDoc_GraphQL_Weekly_Thumbnail.png"
+                                      src="https://i.imgur.com/MMMeN6M.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
