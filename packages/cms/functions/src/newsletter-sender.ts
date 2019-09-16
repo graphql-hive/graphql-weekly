@@ -703,9 +703,9 @@ function formatTemplate(issue: Issue) {
                             >
                               <tr>
                                 <td valign="top">
-                                  <a href="https://www.graphqlday.org/bodensee"
+                                  <a href="https://videos.honeypot.io/graphql-documentary-2019/"
                                     ><img
-                                      src="https://i.imgur.com/MMMeN6M.png"
+                                      src="https://i.imgur.com/MiAkF3U.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
