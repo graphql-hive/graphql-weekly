@@ -703,14 +703,13 @@ function formatTemplate(issue: Issue) {
                             >
                               <tr>
                                 <td valign="top">
-                                  <a href="https://videos.honeypot.io/graphql-documentary-2019/"
-                                    ><img
-                                      src="https://i.imgur.com/MiAkF3U.png"
+                                  <img
+                                      src="https://i.imgur.com/9AHra8X.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
                                       style="max-width: 100%; height: auto;"
-                                  /></a>
+                                  />
                                 </td>
                               </tr>
                             </table>
