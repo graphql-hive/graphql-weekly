@@ -1,1 +1,1 @@
-# homepage-v6
+# GraphQL Weekly Site
