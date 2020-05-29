@@ -19,7 +19,7 @@ import PageHeader from "../product/PageHeader";
 
 const allLinksQuery = gql`
   query allLinks {
-    allLinks {
+    allLinks(orderBy: id_DESC) {
       topic {
         id
         position
