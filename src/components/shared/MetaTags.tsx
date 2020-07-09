@@ -51,6 +51,7 @@ export const MetaTags = ({
       />
       <meta name="og:site_name" content="GraphQL Weekly" />
       <meta name="og:type" content="website" />
+      <meta name="google-site-verification" content="8mvxYJWD6tZ7qVWE0vpH64C08tVEj3SN0KH8bE60QLo" />
     </Helmet>
   )
 }
