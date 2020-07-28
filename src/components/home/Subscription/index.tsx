@@ -101,12 +101,11 @@ const subscribeUser = async ({
   const variables = { name, email }
   const operationName = 'createSubscriber'
 
-  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/index', {
+  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/graphql', {
     method: 'POST',
-    mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, variables, operationName }),
-  }).then(res => console.log(res))
+  }).then(res => res.json())
 }
 
 const BoxWrapper = styled.form`
