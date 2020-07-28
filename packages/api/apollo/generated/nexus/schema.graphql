@@ -6,10 +6,12 @@ type Author {
   avatarUrl: String!
   description: String!
   id: String!
+  issues: [Issue!]!
   name: String!
 }
 
 type Issue {
+  author: Author
   authorId: String
   comment: String
   description: String
@@ -19,16 +21,41 @@ type Issue {
   published: Boolean!
   specialPerk: String
   title: String!
-  topics: [Topic!]
+  topics: [Topic!]!
   versionCount: Int!
 }
 
+type Link {
+  id: String!
+  position: Int
+  text: String
+  title: String
+  topic: Topic!
+  topicId: String
+  url: String!
+}
+
+type LinkSubmission {
+  description: String!
+  email: String!
+  id: String!
+  name: String!
+  title: String!
+  url: String!
+}
+
+type Mutation {
+  createSubmissionLink(description: String!, email: String!, name: String!, title: String!, url: String!): LinkSubmission!
+  createSubscriber(email: String!, name: String!): Subscriber!
+}
+
 type Query {
-  authors: [Author!]!
-  issues: [Issue!]!
-  subscribers: [Subscriber!]!
-  topic(topicId: String!): Topic!
-  topics: [Topic!]!
+  allAuthors: [Author!]!
+  allIssues: [Issue!]!
+  allLinks: [Link!]!
+  allLinkSubmissions: [LinkSubmission!]!
+  allSubscribers: [Subscriber!]!
+  allTopics: [Topic!]!
 }
 
 type Subscriber {
@@ -39,4 +66,15 @@ type Subscriber {
 
 type Topic {
   id: String!
+  issue: Issue
+  issue_comment: String!
+  issueId: String
+  links: [Link!]!
+  position: Int
+  title: String!
+}
+
+type User {
+  id: String!
+  roles: [String!]!
 }
