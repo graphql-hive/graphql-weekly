@@ -8,8 +8,7 @@
     "clean": "rm -rf dist",
     "style": "prettier --write 'src/**/*'",
     "build": "npm -s run clean && nexus build",
-    "dev": "nexus dev",
-    "data:seed": "ts-node prisma/seed.ts"
+    "dev": "nexus dev"
   },
   "dependencies": {
     "nexus": "0.25.0",
