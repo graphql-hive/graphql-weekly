@@ -12,6 +12,6 @@
       "outDir": "./dist"
   },
   "include": [
-      "./server/index.ts"
+      "./server/graphql.ts"
   ]
 }
