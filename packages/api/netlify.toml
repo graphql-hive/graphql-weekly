@@ -1,2 +1,2 @@
 [build]
-functions = ".nexus/build/api"
+functions = ".nexus/build/api-functions"

@@ -8,7 +8,9 @@
     "clean": "rm -rf dist",
     "style": "prettier --write 'src/**/*'",
     "build": "npm -s run clean && nexus build",
-    "dev": "nexus dev"
+    "dev": "nexus dev",
+    "netlify:lambda": "netlify-lambda build .nexus/build/api",
+    "netlify:serve": "netlify-lambda serve .nexus/build/api"
   },
   "dependencies": {
     "nexus": "0.25.0",
