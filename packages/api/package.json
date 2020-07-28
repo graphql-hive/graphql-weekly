@@ -1,29 +1,22 @@
 {
-  "name": "plugin-prisma",
+  "name": "graphqlweekly-api",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "node .nexus/build/api",
-    "test": "jest",
-    "clean": "rm -rf dist",
-    "style": "prettier --write 'src/**/*'",
-    "build": "npm -s run clean && nexus build",
-    "dev": "nexus dev",
-    "netlify:lambda": "netlify-lambda build .nexus/build/api",
-    "netlify:serve": "netlify-lambda serve .nexus/build/api"
+    "build": "yarn generate && yarn lambda:build",
+    "lambda:build": "tsc -p apollo/tsconfig.json",
+    "generate": "yarn generate:prisma && yarn generate:nexus",
+    "generate:prisma": "prisma generate",
+    "generate:nexus": "ts-node --transpile-only apollo/index"
   },
   "dependencies": {
-    "nexus": "0.25.0",
-    "nexus-plugin-prisma": "0.16.1"
+    "@nexus/schema": "0.14.0",
+    "@prisma/client": "^2.3.0",
+    "apollo-server-lambda": "^2.16.0",
+    "nexus-prisma": "0.12.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.0",
-    "jest": "26.0.1",
-    "jest-environment-node": "^26.0.1",
-    "nanoid": "^3.1.10",
-    "pg": "^8.2.1",
-    "prettier": "2.0.5",
-    "ts-jest": "26.1.0"
+    "@prisma/cli": "^2.3.0"
   },
   "prettier": {
     "semi": false,
