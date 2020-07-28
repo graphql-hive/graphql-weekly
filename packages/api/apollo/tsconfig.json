@@ -12,6 +12,6 @@
       "outDir": "./dist"
   },
   "include": [
-      "./index.ts"
+      "./server/index.ts"
   ]
 }

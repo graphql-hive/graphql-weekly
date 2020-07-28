@@ -4,9 +4,17 @@
  */
 
 import * as Context from "../../context"
-
-
-
+import { core } from "@nexus/schema"
+declare global {
+  interface NexusGenCustomInputMethods<TypeName extends string> {
+    date<FieldName extends string>(fieldName: FieldName, opts?: core.ScalarInputFieldConfig<core.GetGen3<"inputTypes", TypeName, FieldName>>): void // "Date";
+  }
+}
+declare global {
+  interface NexusGenCustomOutputMethods<TypeName extends string> {
+    date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "Date";
+  }
+}
 declare global {
   interface NexusGenCustomOutputProperties<TypeName extends string> {
     crud: NexusPrisma<TypeName, 'crud'>
@@ -27,13 +35,16 @@ export interface NexusGenEnums {
 export interface NexusGenRootTypes {
   Author: { // root type
     avatarUrl: string; // String!
+    createdAt: any; // Date!
     description: string; // String!
     id: string; // String!
     name: string; // String!
+    updatedAt: any; // Date!
   }
   Issue: { // root type
     authorId?: string | null; // String
     comment?: string | null; // String
+    date: any; // Date!
     description?: string | null; // String
     id: string; // String!
     number: number; // Int!
@@ -43,6 +54,25 @@ export interface NexusGenRootTypes {
     title: string; // String!
     versionCount: number; // Int!
   }
+  Link: { // root type
+    id: string; // String!
+    position?: number | null; // Int
+    text?: string | null; // String
+    title?: string | null; // String
+    topicId?: string | null; // String
+    url: string; // String!
+  }
+  LinkSubmission: { // root type
+    createdAt: any; // Date!
+    description: string; // String!
+    email: string; // String!
+    id: string; // String!
+    name: string; // String!
+    title: string; // String!
+    updatedAt: any; // Date!
+    url: string; // String!
+  }
+  Mutation: {};
   Query: {};
   Subscriber: { // root type
     email: string; // String!
@@ -51,12 +81,20 @@ export interface NexusGenRootTypes {
   }
   Topic: { // root type
     id: string; // String!
+    issue_comment: string; // String!
+    issueId?: string | null; // String
+    position?: number | null; // Int
+    title: string; // String!
+  }
+  User: { // root type
+    id: string; // String!
   }
   String: string;
   Int: number;
   Float: number;
   Boolean: boolean;
   ID: string;
+  Date: any;
 }
 
 export interface NexusGenAllTypes extends NexusGenRootTypes {
@@ -65,13 +103,18 @@ export interface NexusGenAllTypes extends NexusGenRootTypes {
 export interface NexusGenFieldTypes {
   Author: { // field return type
     avatarUrl: string; // String!
+    createdAt: any; // Date!
     description: string; // String!
     id: string; // String!
+    issues: NexusGenRootTypes['Issue'][]; // [Issue!]!
     name: string; // String!
+    updatedAt: any; // Date!
   }
   Issue: { // field return type
+    author: NexusGenRootTypes['Author'] | null; // Author
     authorId: string | null; // String
     comment: string | null; // String
+    date: any; // Date!
     description: string | null; // String
     id: string; // String!
     number: number; // Int!
@@ -79,15 +122,39 @@ export interface NexusGenFieldTypes {
     published: boolean; // Boolean!
     specialPerk: string | null; // String
     title: string; // String!
-    topics: NexusGenRootTypes['Topic'][] | null; // [Topic!]
+    topics: NexusGenRootTypes['Topic'][]; // [Topic!]!
     versionCount: number; // Int!
   }
-  Query: { // field return type
-    authors: NexusGenRootTypes['Author'][]; // [Author!]!
-    issues: NexusGenRootTypes['Issue'][]; // [Issue!]!
-    subscribers: NexusGenRootTypes['Subscriber'][]; // [Subscriber!]!
+  Link: { // field return type
+    id: string; // String!
+    position: number | null; // Int
+    text: string | null; // String
+    title: string | null; // String
     topic: NexusGenRootTypes['Topic']; // Topic!
-    topics: NexusGenRootTypes['Topic'][]; // [Topic!]!
+    topicId: string | null; // String
+    url: string; // String!
+  }
+  LinkSubmission: { // field return type
+    createdAt: any; // Date!
+    description: string; // String!
+    email: string; // String!
+    id: string; // String!
+    name: string; // String!
+    title: string; // String!
+    updatedAt: any; // Date!
+    url: string; // String!
+  }
+  Mutation: { // field return type
+    createSubmissionLink: NexusGenRootTypes['LinkSubmission']; // LinkSubmission!
+    createSubscriber: NexusGenRootTypes['Subscriber']; // Subscriber!
+  }
+  Query: { // field return type
+    allAuthors: NexusGenRootTypes['Author'][]; // [Author!]!
+    allIssues: NexusGenRootTypes['Issue'][]; // [Issue!]!
+    allLinks: NexusGenRootTypes['Link'][]; // [Link!]!
+    allLinkSubmissions: NexusGenRootTypes['LinkSubmission'][]; // [LinkSubmission!]!
+    allSubscribers: NexusGenRootTypes['Subscriber'][]; // [Subscriber!]!
+    allTopics: NexusGenRootTypes['Topic'][]; // [Topic!]!
   }
   Subscriber: { // field return type
     email: string; // String!
@@ -96,13 +163,31 @@ export interface NexusGenFieldTypes {
   }
   Topic: { // field return type
     id: string; // String!
+    issue: NexusGenRootTypes['Issue'] | null; // Issue
+    issue_comment: string; // String!
+    issueId: string | null; // String
+    links: NexusGenRootTypes['Link'][]; // [Link!]!
+    position: number | null; // Int
+    title: string; // String!
+  }
+  User: { // field return type
+    id: string; // String!
+    roles: string[]; // [String!]!
   }
 }
 
 export interface NexusGenArgTypes {
-  Query: {
-    topic: { // args
-      topicId: string; // String!
+  Mutation: {
+    createSubmissionLink: { // args
+      description: string; // String!
+      email: string; // String!
+      name: string; // String!
+      title: string; // String!
+      url: string; // String!
+    }
+    createSubscriber: { // args
+      email: string; // String!
+      name: string; // String!
     }
   }
 }
@@ -112,7 +197,7 @@ export interface NexusGenAbstractResolveReturnTypes {
 
 export interface NexusGenInheritedFields {}
 
-export type NexusGenObjectNames = "Author" | "Issue" | "Query" | "Subscriber" | "Topic";
+export type NexusGenObjectNames = "Author" | "Issue" | "Link" | "LinkSubmission" | "Mutation" | "Query" | "Subscriber" | "Topic" | "User";
 
 export type NexusGenInputNames = never;
 
@@ -120,7 +205,7 @@ export type NexusGenEnumNames = never;
 
 export type NexusGenInterfaceNames = never;
 
-export type NexusGenScalarNames = "Boolean" | "Float" | "ID" | "Int" | "String";
+export type NexusGenScalarNames = "Boolean" | "Date" | "Float" | "ID" | "Int" | "String";
 
 export type NexusGenUnionNames = never;
 
