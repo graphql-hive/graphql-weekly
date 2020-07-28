@@ -14,6 +14,8 @@ import { createContext } from '../context'
 
 // prod..
 const server = new ApolloServer({ schema, context: createContext })
-exports.handler = server.createHandler(cors: {
-    origin: '*',
-  });
+exports.handler = server.createHandler({
+    cors: {
+      origin: '*'
+    },
+  })
