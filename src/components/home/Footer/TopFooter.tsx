@@ -14,7 +14,7 @@ export const TopFooter = () => {
         Powered by the{' '}
         <ArrowLink
           text="GraphQL Playground"
-          href="https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf"
+          href="https://graphqlweekly-api.netlify.app/.netlify/functions/index"
         />
       </Rights>
     </Wrapper>

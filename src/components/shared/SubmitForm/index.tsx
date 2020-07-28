@@ -213,8 +213,9 @@ const linkSubmission = async ({
   }
   const operationName = 'CreateLinkSubmission'
 
-  return fetch('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf', {
+  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/index', {
     method: 'POST',
+    mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, variables, operationName }),
   }).then(res => res.json())

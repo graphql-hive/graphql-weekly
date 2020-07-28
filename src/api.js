@@ -1,5 +1,5 @@
 const fetchGraphQL = async ({ query }) => {
-  return fetch('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf', {
+  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/index', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),
@@ -37,6 +37,7 @@ const getAllIssues = async () => {
 
   try {
     const { data } = await fetchGraphQL({ query })
+
     const allIssues = data.allIssues
       .filter(issue => issue.published && issue.date && issue.number)
       .sort((a, b) => Number(b.number) - Number(a.number))
