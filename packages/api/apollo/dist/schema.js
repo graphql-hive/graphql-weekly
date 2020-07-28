@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.schema = void 0;
+exports.schema = exports.GQLDate = void 0;
 const nexus_prisma_1 = require("nexus-prisma");
 // import { nexusSchemaPrisma } from 'nexus-plugin-prisma/schema'
 const schema_1 = require("@nexus/schema");
-// import { GraphQLDate } from 'graphql-iso-date'
-// export const GQLDate = asNexusMethod(GraphQLDate, 'date')
+const graphql_iso_date_1 = require("graphql-iso-date");
+exports.GQLDate = schema_1.asNexusMethod(graphql_iso_date_1.GraphQLDate, 'date');
 const Author = schema_1.objectType({
     name: 'Author',
     definition(t) {
@@ -14,8 +14,8 @@ const Author = schema_1.objectType({
         t.field('name', { type: 'String' });
         t.field('description', { type: 'String' });
         t.field('issues', { type: 'String' });
-        // t.field('createdAt', { type: 'Date' })
-        // t.field('updatedAt', { type: 'Date' })
+        t.field('createdAt', { type: 'Date' });
+        t.field('updatedAt', { type: 'Date' });
         //t.model.issues()
         t.list.field('issues', {
             type: 'Issue',
@@ -85,7 +85,7 @@ const Issue = schema_1.objectType({
         t.field('published', { type: 'Boolean' });
         t.field('specialPerk', { type: 'String', nullable: true });
         t.field('title', { type: 'String' });
-        // t.field('date', { type: 'Date' })
+        t.field('date', { type: 'Date' });
         t.field('versionCount', { type: 'Int' });
         t.list.field('topics', {
             type: 'Topic',
@@ -112,8 +112,8 @@ const LinkSubmission = schema_1.objectType({
         t.field('id', { type: 'String' });
         t.field('email', { type: 'String' });
         t.field('name', { type: 'String' });
-        // t.field('createdAt', { type: 'Date' })
-        // t.field('updatedAt', { type: 'Date' })
+        t.field('createdAt', { type: 'Date' });
+        t.field('updatedAt', { type: 'Date' });
         t.field('url', { type: 'String' });
         t.field('description', { type: 'String' });
         t.field('title', { type: 'String' });
@@ -276,7 +276,7 @@ exports.schema = schema_1.makeSchema({
         Issue,
         LinkSubmission,
         User,
-        // GQLDate,
+        exports.GQLDate,
         Mutation
     ],
     // types: [Query, Mutation, Post, User],

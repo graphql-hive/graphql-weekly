@@ -7,9 +7,9 @@ import {
   stringArg,
   asNexusMethod,
 } from '@nexus/schema'
-// import { GraphQLDate } from 'graphql-iso-date'
+import { GraphQLDate } from 'graphql-iso-date'
 
-// export const GQLDate = asNexusMethod(GraphQLDate, 'date')
+export const GQLDate = asNexusMethod(GraphQLDate, 'date')
 
 const Author = objectType({
   name: 'Author',
@@ -19,8 +19,8 @@ const Author = objectType({
     t.field('name', { type: 'String' })
     t.field('description', { type: 'String' })
     t.field('issues', { type: 'String' })
-    // t.field('createdAt', { type: 'Date' })
-    // t.field('updatedAt', { type: 'Date' })
+    t.field('createdAt', { type: 'Date' })
+    t.field('updatedAt', { type: 'Date' })
     //t.model.issues()
     t.list.field('issues', {
       type: 'Issue',
@@ -97,7 +97,7 @@ const Issue = objectType({
     t.field('published', { type: 'Boolean' })
     t.field('specialPerk', { type: 'String', nullable: true })
     t.field('title', { type: 'String' })
-    // t.field('date', { type: 'Date' })
+    t.field('date', { type: 'Date' })
     t.field('versionCount', { type: 'Int' })
     t.list.field('topics', {
       type: 'Topic',
@@ -127,8 +127,8 @@ const LinkSubmission = objectType({
     t.field('id', { type: 'String' })
     t.field('email', { type: 'String' })
     t.field('name', { type: 'String' })
-    // t.field('createdAt', { type: 'Date' })
-    // t.field('updatedAt', { type: 'Date' })
+    t.field('createdAt', { type: 'Date' })
+    t.field('updatedAt', { type: 'Date' })
     t.field('url', { type: 'String' })
     t.field('description', { type: 'String' })
     t.field('title', { type: 'String' })
@@ -305,7 +305,7 @@ export const schema = makeSchema({
     Issue,
     LinkSubmission,
     User,
-    // GQLDate,
+    GQLDate,
     Mutation
   ],
   // types: [Query, Mutation, Post, User],

@@ -4,16 +4,24 @@
 
 type Author {
   avatarUrl: String!
+  createdAt: Date!
   description: String!
   id: String!
   issues: [Issue!]!
   name: String!
+  updatedAt: Date!
 }
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
 
 type Issue {
   author: Author
   authorId: String
   comment: String
+  date: Date!
   description: String
   id: String!
   number: Int!
@@ -36,11 +44,13 @@ type Link {
 }
 
 type LinkSubmission {
+  createdAt: Date!
   description: String!
   email: String!
   id: String!
   name: String!
   title: String!
+  updatedAt: Date!
   url: String!
 }
 
