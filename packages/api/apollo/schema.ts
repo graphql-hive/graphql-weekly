@@ -406,7 +406,7 @@ const Mutation = objectType({
         return ctx.prisma.topic.update({
           where: { id : id },
           data: {
-            issue: null
+            issue: {disconnect: true}
           },
         })
       },
