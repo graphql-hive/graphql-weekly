@@ -18,8 +18,9 @@ import { Header, HeaderContainer } from "../product/Headers";
 import PageHeader from "../product/PageHeader";
 
 const allLinksQuery = gql`
-  query allLinks {
-    allLinks(orderBy: id_DESC) {
+  query allLinks { 
+    #(orderBy: id_DESC)
+    allLinks{
       topic {
         id
         position
@@ -33,18 +34,20 @@ const allLinksQuery = gql`
 `;
 
 const issueQuery = gql`
-  query issue($id: ID!) {
-    Issue(id: $id) {
+  query issue($id: String!) {
+    issue(id: $id) {
       id
       title
       published
       versionCount
       previewImage
-      topics(orderBy: position_ASC) {
+      topics {
+        #(orderBy: position_ASC)
         id
         title
         position
-        links(orderBy: position_ASC) {
+        links {
+          #(orderBy: position_ASC)
           title
           text
           url
@@ -63,7 +66,7 @@ const createTopicMutation = gql`
   mutation createTopic(
     $issue_comment: String!
     $title: String!
-    $issueId: ID!
+    $issueId: String!
   ) {
     createTopic(
       issue_comment: $issue_comment
@@ -115,7 +118,7 @@ class App extends Component {
   };
 
   renderTopics() {
-    const data = this.props.issues.Issue.topics;
+    const data = this.props.issues.issue.topics;
 
     return data.map((topic, index) => (
       <Topic
@@ -173,9 +176,9 @@ class App extends Component {
           <Header>Preview Image</Header>
         </HeaderContainer>
         <PreviewImageUpdate
-          previewImage={this.props.issues.Issue.previewImage}
+          previewImage={this.props.issues.issue.previewImage}
           refresh={this.refreshEverything}
-          id={this.props.issues.Issue.id}
+          id={this.props.issues.issue.id}
         />
       </section>
     );
@@ -195,7 +198,7 @@ class App extends Component {
         <Card>
           <PageHeader
             id={this.props.match.params.id}
-            {...this.props.issues.Issue}
+            {...this.props.issues.issue}
           />
         </Card>
         <Card>

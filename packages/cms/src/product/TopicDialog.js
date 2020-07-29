@@ -6,8 +6,8 @@ import Radio from "../components/Radio";
 import Flex from "../components/Flex";
 
 const addLinks = gql`
-  mutation addLinks($topicTopicId: ID!, $linksLinkId: ID!) {
-    addToLinksOnTopic(topicTopicId: $topicTopicId, linksLinkId: $linksLinkId) {
+  mutation addLinks($topicTopicId: String!, $linksLinkId: String!) {
+    addLinksToTopic(topicId: $topicTopicId, linkId: $linksLinkId) {
       topicTopic {
         id
       }

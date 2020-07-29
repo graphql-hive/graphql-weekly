@@ -55,7 +55,7 @@ class PositionUpdater extends React.Component {
 }
 
 PositionUpdater = graphql(gql`
-  mutation updateTopic($id: ID!, $position: Int) {
+  mutation updateTopic($id: String!, $position: Int) {
     updateTopic(id: $id, position: $position) {
       id
       position
