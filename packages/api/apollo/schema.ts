@@ -374,18 +374,12 @@ const Mutation = objectType({
       },
       resolve: (_, { id }, ctx) => {
         return ctx.prisma.issue.delete({
-          where: { id: id },
-          data: {
-            topics: {
-              disconnect: true,
-            },
-            author: {
-              disconnect: true
-            }
-          },
+          where: { id: id }
         })
       },
     })
+
+    
 
     t.field('updateTopic', {
       type: 'Topic',
@@ -398,6 +392,21 @@ const Mutation = objectType({
           where: { id: id },
           data: {
             position,
+          },
+        })
+      },
+    })
+
+    t.field('updateTopicWhenIssueDeleted', {
+      type: 'Topic',
+      args: {
+        issueId: stringArg({ nullable: false }),
+      },
+      resolve: (_, { issueId }, ctx) => {
+        return ctx.prisma.topic.update({
+          where: { issueId: issueId },
+          data: {
+            issueId: null
           },
         })
       },

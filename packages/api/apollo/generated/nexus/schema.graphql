@@ -38,7 +38,7 @@ type Link {
   position: Int
   text: String
   title: String
-  topic: Topic!
+  topic: Topic
   topicId: String
   url: String!
 }
@@ -66,6 +66,7 @@ type Mutation {
   updateIssue(id: String!, previewImage: String, published: Boolean, versionCount: Int): Issue!
   updateLink(id: String!, text: String, title: String!, url: String): Link!
   updateTopic(id: String!, position: Int): Topic!
+  updateTopicWhenIssueDeleted(issueId: String!): Topic!
 }
 
 type Query {

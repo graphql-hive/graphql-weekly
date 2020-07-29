@@ -130,7 +130,7 @@ export interface NexusGenFieldTypes {
     position: number | null; // Int
     text: string | null; // String
     title: string | null; // String
-    topic: NexusGenRootTypes['Topic']; // Topic!
+    topic: NexusGenRootTypes['Topic'] | null; // Topic
     topicId: string | null; // String
     url: string; // String!
   }
@@ -156,6 +156,7 @@ export interface NexusGenFieldTypes {
     updateIssue: NexusGenRootTypes['Issue']; // Issue!
     updateLink: NexusGenRootTypes['Link']; // Link!
     updateTopic: NexusGenRootTypes['Topic']; // Topic!
+    updateTopicWhenIssueDeleted: NexusGenRootTypes['Topic']; // Topic!
   }
   Query: { // field return type
     allAuthors: NexusGenRootTypes['Author'][]; // [Author!]!
@@ -238,6 +239,9 @@ export interface NexusGenArgTypes {
     updateTopic: { // args
       id: string; // String!
       position?: number | null; // Int
+    }
+    updateTopicWhenIssueDeleted: { // args
+      issueId: string; // String!
     }
   }
   Query: {
