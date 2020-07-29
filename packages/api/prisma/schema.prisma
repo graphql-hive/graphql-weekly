@@ -23,7 +23,7 @@ model Issue {
   comment      String?
   date         DateTime
   description  String?
-  id           String   @id
+  id           String   @id @default(cuid())
   number       Int      @unique
   previewImage String?
   published    Boolean

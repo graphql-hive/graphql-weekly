@@ -145,10 +145,17 @@ export interface NexusGenFieldTypes {
     url: string; // String!
   }
   Mutation: { // field return type
+    addLinksToTopic: NexusGenRootTypes['Topic']; // Topic!
+    createIssue: NexusGenRootTypes['Issue']; // Issue!
+    createLink: NexusGenRootTypes['Link']; // Link!
     createSubmissionLink: NexusGenRootTypes['LinkSubmission']; // LinkSubmission!
     createSubscriber: NexusGenRootTypes['Subscriber']; // Subscriber!
     createTopic: NexusGenRootTypes['Topic']; // Topic!
+    deleteIssue: NexusGenRootTypes['Issue']; // Issue!
+    deleteLink: NexusGenRootTypes['Link']; // Link!
+    updateIssue: NexusGenRootTypes['Issue']; // Issue!
     updateLink: NexusGenRootTypes['Link']; // Link!
+    updateTopic: NexusGenRootTypes['Topic']; // Topic!
   }
   Query: { // field return type
     allAuthors: NexusGenRootTypes['Author'][]; // [Author!]!
@@ -181,6 +188,19 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    addLinksToTopic: { // args
+      linkId: string; // String!
+      topicId: string; // String!
+    }
+    createIssue: { // args
+      date?: any | null; // Date
+      number: number; // Int!
+      published: boolean; // Boolean!
+      title: string; // String!
+    }
+    createLink: { // args
+      url: string; // String!
+    }
     createSubmissionLink: { // args
       description: string; // String!
       email: string; // String!
@@ -197,9 +217,27 @@ export interface NexusGenArgTypes {
       issueId: string; // String!
       title: string; // String!
     }
+    deleteIssue: { // args
+      id: string; // String!
+    }
+    deleteLink: { // args
+      id: string; // String!
+    }
+    updateIssue: { // args
+      id: string; // String!
+      previewImage?: string | null; // String
+      published?: boolean | null; // Boolean
+      versionCount?: number | null; // Int
+    }
     updateLink: { // args
       id: string; // String!
+      text?: string | null; // String
       title: string; // String!
+      url?: string | null; // String
+    }
+    updateTopic: { // args
+      id: string; // String!
+      position?: number | null; // Int
     }
   }
   Query: {

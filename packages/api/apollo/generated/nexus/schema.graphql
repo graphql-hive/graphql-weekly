@@ -55,10 +55,17 @@ type LinkSubmission {
 }
 
 type Mutation {
+  addLinksToTopic(linkId: String!, topicId: String!): Topic!
+  createIssue(date: Date, number: Int!, published: Boolean!, title: String!): Issue!
+  createLink(url: String!): Link!
   createSubmissionLink(description: String!, email: String!, name: String!, title: String!, url: String!): LinkSubmission!
   createSubscriber(email: String!, name: String!): Subscriber!
   createTopic(issue_comment: String!, issueId: String!, title: String!): Topic!
-  updateLink(id: String!, title: String!): Link!
+  deleteIssue(id: String!): Issue!
+  deleteLink(id: String!): Link!
+  updateIssue(id: String!, previewImage: String, published: Boolean, versionCount: Int): Issue!
+  updateLink(id: String!, text: String, title: String!, url: String): Link!
+  updateTopic(id: String!, position: Int): Topic!
 }
 
 type Query {

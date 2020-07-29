@@ -5,6 +5,8 @@ import {
   objectType,
   stringArg,
   asNexusMethod,
+  booleanArg,
+  arg,
 } from '@nexus/schema'
 import { GraphQLDate } from 'graphql-iso-date'
 
@@ -231,6 +233,40 @@ const Mutation = objectType({
       },
     })
 
+    t.field('createLink', {
+      type: 'Link',
+      args: {
+        url: stringArg({ nullable: false }),
+      },
+      resolve: (_, { url }, ctx) => {
+        return ctx.prisma.link.create({
+          data: {
+            url,
+          },
+        })
+      },
+    })
+
+    t.field('createIssue', {
+      type: 'Issue',
+      args: {
+        title: stringArg({ nullable: false }),
+        number: intArg({ nullable: false }),
+        date: arg({ type: 'Date' }),
+        published: booleanArg({ nullable: false }),
+      },
+      resolve: (_, { title, number, published, date }, ctx) => {
+        return ctx.prisma.issue.create({
+          data: {
+            date,
+            published,
+            title,
+            number,
+          },
+        })
+      },
+    })
+
     t.field('createTopic', {
       type: 'Topic',
       args: {
@@ -278,13 +314,94 @@ const Mutation = objectType({
       args: {
         id: stringArg({ nullable: false }),
         title: stringArg({ nullable: false }),
+        text: stringArg(),
+        url: stringArg(),
       },
-      resolve: (_, { id, title }, ctx) => {
+      resolve: (_, { id, title, text, url }, ctx) => {
         return ctx.prisma.link.update({
           where: { id: id },
           data: {
             title,
-            id,
+            text,
+            url,
+          },
+        })
+      },
+    })
+
+    t.field('deleteLink', {
+      type: 'Link',
+      args: {
+        id: stringArg({ nullable: false }),
+      },
+      resolve: (_, { id }, ctx) => {
+        return ctx.prisma.link.delete({
+          where: { id: id },
+        })
+      },
+    })
+
+    t.field('updateIssue', {
+      type: 'Issue',
+      args: {
+        id: stringArg({ nullable: false }),
+        published: booleanArg(),
+        versionCount: intArg(),
+        previewImage: stringArg(),
+      },
+      resolve: (_, { id, published, versionCount, previewImage }, ctx) => {
+        return ctx.prisma.issue.update({
+          where: { id: id },
+          data: {
+            versionCount,
+            published,
+            previewImage,
+          },
+        })
+      },
+    })
+
+    t.field('deleteIssue', {
+      type: 'Issue',
+      args: {
+        id: stringArg({ nullable: false }),
+      },
+      resolve: (_, { id }, ctx) => {
+        return ctx.prisma.issue.delete({
+          where: { id: id },
+        })
+      },
+    })
+
+    t.field('updateTopic', {
+      type: 'Topic',
+      args: {
+        id: stringArg({ nullable: false }),
+        position: intArg(),
+      },
+      resolve: (_, { id, position }, ctx) => {
+        return ctx.prisma.topic.update({
+          where: { id: id },
+          data: {
+            position,
+          },
+        })
+      },
+    })
+
+    t.field('addLinksToTopic', {
+      type: 'Topic',
+      args: {
+        topicId: stringArg({ nullable: false }),
+        linkId: stringArg({ nullable: false }),
+      },
+      resolve: (_, { topicId, linkId }, ctx) => {
+        return ctx.prisma.topic.update({
+          where: { id: topicId },
+          data: {
+            links: {
+              connect: { id: linkId },
+            },
           },
         })
       },
