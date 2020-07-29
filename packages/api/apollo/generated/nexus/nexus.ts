@@ -7,12 +7,12 @@ import * as Context from "../../context"
 import { core } from "@nexus/schema"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
-    date<FieldName extends string>(fieldName: FieldName, opts?: core.ScalarInputFieldConfig<core.GetGen3<"inputTypes", TypeName, FieldName>>): void // "Date";
+    DateTime<FieldName extends string>(fieldName: FieldName, opts?: core.ScalarInputFieldConfig<core.GetGen3<"inputTypes", TypeName, FieldName>>): void // "DateTime";
   }
 }
 declare global {
   interface NexusGenCustomOutputMethods<TypeName extends string> {
-    date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "Date";
+    DateTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
   }
 }
 declare global {
@@ -35,16 +35,16 @@ export interface NexusGenEnums {
 export interface NexusGenRootTypes {
   Author: { // root type
     avatarUrl: string; // String!
-    createdAt: any; // Date!
+    createdAt: any; // DateTime!
     description: string; // String!
     id: string; // String!
     name: string; // String!
-    updatedAt: any; // Date!
+    updatedAt: any; // DateTime!
   }
   Issue: { // root type
     authorId?: string | null; // String
     comment?: string | null; // String
-    date: any; // Date!
+    date: any; // DateTime!
     description?: string | null; // String
     id: string; // String!
     number: number; // Int!
@@ -63,13 +63,13 @@ export interface NexusGenRootTypes {
     url: string; // String!
   }
   LinkSubmission: { // root type
-    createdAt: any; // Date!
+    createdAt: any; // DateTime!
     description: string; // String!
     email: string; // String!
     id: string; // String!
     name: string; // String!
     title: string; // String!
-    updatedAt: any; // Date!
+    updatedAt: any; // DateTime!
     url: string; // String!
   }
   Mutation: {};
@@ -94,7 +94,7 @@ export interface NexusGenRootTypes {
   Float: number;
   Boolean: boolean;
   ID: string;
-  Date: any;
+  DateTime: any;
 }
 
 export interface NexusGenAllTypes extends NexusGenRootTypes {
@@ -103,18 +103,18 @@ export interface NexusGenAllTypes extends NexusGenRootTypes {
 export interface NexusGenFieldTypes {
   Author: { // field return type
     avatarUrl: string; // String!
-    createdAt: any; // Date!
+    createdAt: any; // DateTime!
     description: string; // String!
     id: string; // String!
     issues: NexusGenRootTypes['Issue'][]; // [Issue!]!
     name: string; // String!
-    updatedAt: any; // Date!
+    updatedAt: any; // DateTime!
   }
   Issue: { // field return type
     author: NexusGenRootTypes['Author'] | null; // Author
     authorId: string | null; // String
     comment: string | null; // String
-    date: any; // Date!
+    date: any; // DateTime!
     description: string | null; // String
     id: string; // String!
     number: number; // Int!
@@ -135,13 +135,13 @@ export interface NexusGenFieldTypes {
     url: string; // String!
   }
   LinkSubmission: { // field return type
-    createdAt: any; // Date!
+    createdAt: any; // DateTime!
     description: string; // String!
     email: string; // String!
     id: string; // String!
     name: string; // String!
     title: string; // String!
-    updatedAt: any; // Date!
+    updatedAt: any; // DateTime!
     url: string; // String!
   }
   Mutation: { // field return type
@@ -193,7 +193,7 @@ export interface NexusGenArgTypes {
       topicId: string; // String!
     }
     createIssue: { // args
-      date?: any | null; // Date
+      date?: any | null; // DateTime
       number: number; // Int!
       published: boolean; // Boolean!
       title: string; // String!
@@ -260,7 +260,7 @@ export type NexusGenEnumNames = never;
 
 export type NexusGenInterfaceNames = never;
 
-export type NexusGenScalarNames = "Boolean" | "Date" | "Float" | "ID" | "Int" | "String";
+export type NexusGenScalarNames = "Boolean" | "DateTime" | "Float" | "ID" | "Int" | "String";
 
 export type NexusGenUnionNames = never;
 

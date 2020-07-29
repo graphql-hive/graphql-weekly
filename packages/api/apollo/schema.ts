@@ -8,9 +8,9 @@ import {
   booleanArg,
   arg,
 } from '@nexus/schema'
-import { GraphQLDate } from 'graphql-iso-date'
+import { GraphQLDateTime } from 'graphql-iso-date'
 
-export const GQLDate = asNexusMethod(GraphQLDate, 'date')
+export const GQLDate = asNexusMethod(GraphQLDateTime, 'DateTime')
 
 const Author = objectType({
   name: 'Author',
@@ -20,8 +20,8 @@ const Author = objectType({
     t.field('name', { type: 'String' })
     t.field('description', { type: 'String' })
     t.field('issues', { type: 'String' })
-    t.field('createdAt', { type: 'Date' })
-    t.field('updatedAt', { type: 'Date' })
+    t.field('createdAt', { type: 'DateTime' })
+    t.field('updatedAt', { type: 'DateTime' })
     t.list.field('issues', {
       type: 'Issue',
       resolve: (parent, args, ctx) =>
@@ -45,6 +45,7 @@ const Link = objectType({
     t.field('url', { type: 'String' })
     t.field('topic', {
       type: 'Topic',
+      nullable: true,
       resolve: (parent, args, ctx) =>
         ctx.prisma.link
           .findOne({
@@ -97,7 +98,7 @@ const Issue = objectType({
     t.field('published', { type: 'Boolean' })
     t.field('specialPerk', { type: 'String', nullable: true })
     t.field('title', { type: 'String' })
-    t.field('date', { type: 'Date' })
+    t.field('date', { type: 'DateTime' })
     t.field('versionCount', { type: 'Int' })
     t.list.field('topics', {
       type: 'Topic',
@@ -127,8 +128,8 @@ const LinkSubmission = objectType({
     t.field('id', { type: 'String' })
     t.field('email', { type: 'String' })
     t.field('name', { type: 'String' })
-    t.field('createdAt', { type: 'Date' })
-    t.field('updatedAt', { type: 'Date' })
+    t.field('createdAt', { type: 'DateTime' })
+    t.field('updatedAt', { type: 'DateTime' })
     t.field('url', { type: 'String' })
     t.field('description', { type: 'String' })
     t.field('title', { type: 'String' })
@@ -252,7 +253,7 @@ const Mutation = objectType({
       args: {
         title: stringArg({ nullable: false }),
         number: intArg({ nullable: false }),
-        date: arg({ type: 'Date' }),
+        date: arg({ type: 'DateTime' }),
         published: booleanArg({ nullable: false }),
       },
       resolve: (_, { title, number, published, date }, ctx) => {
@@ -337,6 +338,11 @@ const Mutation = objectType({
       resolve: (_, { id }, ctx) => {
         return ctx.prisma.link.delete({
           where: { id: id },
+          data: {
+            topic: {
+              disconnect: true
+            } 
+          }
         })
       },
     })
@@ -369,6 +375,14 @@ const Mutation = objectType({
       resolve: (_, { id }, ctx) => {
         return ctx.prisma.issue.delete({
           where: { id: id },
+          data: {
+            topics: {
+              disconnect: true,
+            },
+            author: {
+              disconnect: true
+            }
+          },
         })
       },
     })

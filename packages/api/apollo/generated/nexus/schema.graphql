@@ -4,24 +4,24 @@
 
 type Author {
   avatarUrl: String!
-  createdAt: Date!
+  createdAt: DateTime!
   description: String!
   id: String!
   issues: [Issue!]!
   name: String!
-  updatedAt: Date!
+  updatedAt: DateTime!
 }
 
 """
-A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
-scalar Date
+scalar DateTime
 
 type Issue {
   author: Author
   authorId: String
   comment: String
-  date: Date!
+  date: DateTime!
   description: String
   id: String!
   number: Int!
@@ -44,19 +44,19 @@ type Link {
 }
 
 type LinkSubmission {
-  createdAt: Date!
+  createdAt: DateTime!
   description: String!
   email: String!
   id: String!
   name: String!
   title: String!
-  updatedAt: Date!
+  updatedAt: DateTime!
   url: String!
 }
 
 type Mutation {
   addLinksToTopic(linkId: String!, topicId: String!): Topic!
-  createIssue(date: Date, number: Int!, published: Boolean!, title: String!): Issue!
+  createIssue(date: DateTime, number: Int!, published: Boolean!, title: String!): Issue!
   createLink(url: String!): Link!
   createSubmissionLink(description: String!, email: String!, name: String!, title: String!, url: String!): LinkSubmission!
   createSubscriber(email: String!, name: String!): Subscriber!
