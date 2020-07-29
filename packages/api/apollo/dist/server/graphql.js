@@ -13,5 +13,9 @@ const context_1 = require("../context");
 // )
 // prod..
 const server = new apollo_server_lambda_1.ApolloServer({ schema: schema_1.schema, context: context_1.createContext });
-exports.handler = server.createHandler();
-//# sourceMappingURL=index.js.map
+exports.handler = server.createHandler({
+    cors: {
+        origin: '*',
+    },
+});
+//# sourceMappingURL=graphql.js.map

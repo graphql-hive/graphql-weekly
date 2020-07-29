@@ -200,14 +200,21 @@ const Query = objectType({
       },
     })
 
+    t.field('issue', {
+      type: 'Issue',
+      args: {
+        id: stringArg({ nullable: false }),
+      },
+      resolve: (_, args, ctx) => {
+        return ctx.prisma.issue.findOne({ where: { id: args.id } })
+      },
+    })
   },
 })
 
 const Mutation = objectType({
   name: 'Mutation',
   definition(t) {
-  
-
     t.field('createSubscriber', {
       type: 'Subscriber',
       args: {
@@ -218,7 +225,27 @@ const Mutation = objectType({
         return ctx.prisma.subscriber.create({
           data: {
             name,
-            email
+            email,
+          },
+        })
+      },
+    })
+
+    t.field('createTopic', {
+      type: 'Topic',
+      args: {
+        issue_comment: stringArg({ nullable: false }),
+        title: stringArg({ nullable: false }),
+        issueId: stringArg({ nullable: false }),
+      },
+      resolve: (_, { issue_comment, title, issueId }, ctx) => {
+        return ctx.prisma.topic.create({
+          data: {
+            issue: {
+              connect: { id: issueId },
+            },
+            title,
+            issue_comment,
           },
         })
       },
@@ -240,7 +267,7 @@ const Mutation = objectType({
             email,
             description,
             title,
-            url
+            url,
           },
         })
       },
@@ -256,8 +283,8 @@ const Mutation = objectType({
         return ctx.prisma.link.update({
           where: { id: id },
           data: {
-            title: title,
-            id: id
+            title,
+            id,
           },
         })
       },
@@ -276,13 +303,13 @@ export const schema = makeSchema({
     LinkSubmission,
     User,
     GQLDate,
-    Mutation
+    Mutation,
   ],
-plugins: [
-        nexusPrismaPlugin({
-          shouldGenerateArtifacts: false,
-        }),
-      ],
+  plugins: [
+    nexusPrismaPlugin({
+      shouldGenerateArtifacts: false,
+    }),
+  ],
   outputs: {
     schema: __dirname + '/generated/nexus/schema.graphql',
     typegen: __dirname + '/generated/nexus/nexus.ts',

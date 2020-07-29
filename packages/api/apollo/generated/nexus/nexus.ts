@@ -147,6 +147,8 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createSubmissionLink: NexusGenRootTypes['LinkSubmission']; // LinkSubmission!
     createSubscriber: NexusGenRootTypes['Subscriber']; // Subscriber!
+    createTopic: NexusGenRootTypes['Topic']; // Topic!
+    updateLink: NexusGenRootTypes['Link']; // Link!
   }
   Query: { // field return type
     allAuthors: NexusGenRootTypes['Author'][]; // [Author!]!
@@ -155,6 +157,7 @@ export interface NexusGenFieldTypes {
     allLinkSubmissions: NexusGenRootTypes['LinkSubmission'][]; // [LinkSubmission!]!
     allSubscribers: NexusGenRootTypes['Subscriber'][]; // [Subscriber!]!
     allTopics: NexusGenRootTypes['Topic'][]; // [Topic!]!
+    issue: NexusGenRootTypes['Issue']; // Issue!
   }
   Subscriber: { // field return type
     email: string; // String!
@@ -188,6 +191,20 @@ export interface NexusGenArgTypes {
     createSubscriber: { // args
       email: string; // String!
       name: string; // String!
+    }
+    createTopic: { // args
+      issue_comment: string; // String!
+      issueId: string; // String!
+      title: string; // String!
+    }
+    updateLink: { // args
+      id: string; // String!
+      title: string; // String!
+    }
+  }
+  Query: {
+    issue: { // args
+      id: string; // String!
     }
   }
 }

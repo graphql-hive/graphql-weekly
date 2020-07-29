@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.schema = exports.GQLDate = void 0;
 const nexus_prisma_1 = require("nexus-prisma");
-// import { nexusSchemaPrisma } from 'nexus-plugin-prisma/schema'
 const schema_1 = require("@nexus/schema");
 const graphql_iso_date_1 = require("graphql-iso-date");
 exports.GQLDate = schema_1.asNexusMethod(graphql_iso_date_1.GraphQLDate, 'date');
@@ -16,7 +15,6 @@ const Author = schema_1.objectType({
         t.field('issues', { type: 'String' });
         t.field('createdAt', { type: 'Date' });
         t.field('updatedAt', { type: 'Date' });
-        //t.model.issues()
         t.list.field('issues', {
             type: 'Issue',
             resolve: (parent, args, ctx) => ctx.prisma.author
@@ -180,41 +178,20 @@ const Query = schema_1.objectType({
                 return ctx.prisma.linkSubmission.findMany();
             },
         });
-        // t.list.field('authors', {
-        //   type: 'Author',
-        //   resolve: (_, args, ctx) => {
-        //     return ctx.prisma.author.findMany()
-        //   },
-        // })
-        // t.list.field('issues', {
-        //   type: 'Issue',
-        //   resolve: (_, args, ctx) => {
-        //     return ctx.prisma.issue.findMany()
-        //   },
-        // })
-        // t.list.field('filterPosts', {
-        //   type: 'Post',
-        //   args: {
-        //     searchString: stringArg({ nullable: true }),
-        //   },
-        //   resolve: (_, { searchString }, ctx) => {
-        //     return ctx.prisma.post.findMany({
-        //       where: {
-        //         OR: [
-        //           { title: { contains: searchString } },
-        //           { content: { contains: searchString } },
-        //         ],
-        //       },
-        //     })
-        //   },
-        // })
+        t.field('issue', {
+            type: 'Issue',
+            args: {
+                id: schema_1.stringArg({ nullable: false }),
+            },
+            resolve: (_, args, ctx) => {
+                return ctx.prisma.issue.findOne({ where: { id: args.id } });
+            },
+        });
     },
 });
 const Mutation = schema_1.objectType({
     name: 'Mutation',
     definition(t) {
-        // t.crud.createOneUser({ alias: 'signupUser' })
-        // t.crud.deleteOnePost()
         t.field('createSubscriber', {
             type: 'Subscriber',
             args: {
@@ -225,7 +202,26 @@ const Mutation = schema_1.objectType({
                 return ctx.prisma.subscriber.create({
                     data: {
                         name,
-                        email
+                        email,
+                    },
+                });
+            },
+        });
+        t.field('createTopic', {
+            type: 'Topic',
+            args: {
+                issue_comment: schema_1.stringArg({ nullable: false }),
+                title: schema_1.stringArg({ nullable: false }),
+                issueId: schema_1.stringArg({ nullable: false }),
+            },
+            resolve: (_, { issue_comment, title, issueId }, ctx) => {
+                return ctx.prisma.topic.create({
+                    data: {
+                        issue: {
+                            connect: { id: issueId },
+                        },
+                        title,
+                        issue_comment,
                     },
                 });
             },
@@ -246,24 +242,27 @@ const Mutation = schema_1.objectType({
                         email,
                         description,
                         title,
-                        url
+                        url,
                     },
                 });
             },
         });
-        // t.field('publish', {
-        //   type: 'Post',
-        //   nullable: true,
-        //   args: {
-        //     id: intArg(),
-        //   },
-        //   resolve: (_, { id }, ctx) => {
-        //     return ctx.prisma.post.update({
-        //       where: { id: Number(id) },
-        //       data: { published: true },
-        //     })
-        //   },
-        // })
+        t.field('updateLink', {
+            type: 'Link',
+            args: {
+                id: schema_1.stringArg({ nullable: false }),
+                title: schema_1.stringArg({ nullable: false }),
+            },
+            resolve: (_, { id, title }, ctx) => {
+                return ctx.prisma.link.update({
+                    where: { id: id },
+                    data: {
+                        title,
+                        id,
+                    },
+                });
+            },
+        });
     },
 });
 exports.schema = schema_1.makeSchema({
@@ -277,14 +276,8 @@ exports.schema = schema_1.makeSchema({
         LinkSubmission,
         User,
         exports.GQLDate,
-        Mutation
+        Mutation,
     ],
-    // types: [Query, Mutation, Post, User],
-    //   plugins: [
-    //     nexusSchemaPrisma({
-    //       experimentalCRUD: true,
-    //     }),
-    //   ],
     plugins: [
         nexus_prisma_1.nexusPrismaPlugin({
             shouldGenerateArtifacts: false,
@@ -308,229 +301,4 @@ exports.schema = schema_1.makeSchema({
         ],
     },
 });
-// import { nexusPrismaPlugin } from 'nexus-prisma'
-// import { intArg, makeSchema, objectType, stringArg } from '@nexus/schema'
-// const Author = objectType({
-//   name: 'Author',
-//   definition(t) {
-//     t.field('id', { type: 'String' })
-//     t.field('avatarUrl', { type: 'String' })
-//     t.field('name', { type: 'String' })
-//     t.field('description', { type: 'String' })
-//     // t.list.field('issues', {
-//     //   type: Issue,
-//     //   resolve(root, args, ctx) {
-//     //     return ctx.getAuthor(root.id).issues()
-//     //   },
-//     // })
-//     // issues
-//     // createdAt
-//     // updatedAt
-//   },
-// })
-// const Topic = objectType({
-//   name: 'Topic',
-//   definition(t) {
-//     t.field('id', { type: 'String' })
-//   },
-// })
-// const Issue = objectType({
-//   name: 'Issue',
-//   definition(t) {
-//     t.field('authorId', { type: 'String', nullable: true })
-//     t.field('comment', { type: 'String', nullable: true })
-//     t.field('id', { type: 'String' })
-//     t.field('description', { type: 'String', nullable: true })
-//     t.field('number', { type: 'Int' })
-//     t.field('previewImage', { type: 'String', nullable: true })
-//     t.field('published', { type: 'Boolean' })
-//     t.field('specialPerk', { type: 'String', nullable: true })
-//     t.field('title', { type: 'String' })
-//     t.field('versionCount', { type: 'Int' })
-//     // t.list.field('topics', {
-//     //   type: Topic,
-//     //   resolve(root, args, ctx) {
-//     //     return ctx.getUser(root.id).topics()
-//     //   },
-//     // })
-//     // t.list.field('topics', {type: "Topic", nullable: true})
-//     t.list.field('topics', {
-//       type: Topic,
-//       nullable: true,
-//       resolve: (parent, args, ctx) =>
-//         ctx.prisma.issue
-//           .findOne({
-//             where: { id: parent.id },
-//           })
-//           .topics(),
-//     })
-//     //Author
-//   },
-// })
-// // const User = objectType({
-// //   name: 'User',
-// //   definition(t) {
-// //     t.model.id()
-// //     t.model.roles()
-// //   },
-// // })
-// const Subscriber = objectType({
-//   name: 'Subscriber',
-//   definition(t) {
-//     t.field('id', { type: 'String' })
-//     t.field('email', { type: 'String' })
-//     t.field('name', { type: 'String' })
-//   },
-// })
-// // const Post = objectType({
-// //   name: 'Post',
-// //   definition(t) {
-// //     t.model.id()
-// //     t.model.title()
-// //     t.model.content()
-// //     t.model.published()
-// //     t.model.author()
-// //     t.model.authorId()
-// //   },
-// // })
-// const Query = objectType({
-//   name: 'Query',
-//   definition(t) {
-//     // t.list.field('users', {
-//     //   type: 'User',
-//     //   resolve: (_, args, ctx) => {
-//     //     return ctx.prisma.user.findMany()
-//     //   },
-//     // })
-//     t.field('topic', {
-//       type: 'Topic',
-//       args: {
-//         topicId: stringArg({ nullable: false }),
-//       },
-//       resolve: (_, args, ctx) => {
-//         return ctx.prisma.topic.findOne({
-//           where: { id: args.topicId },
-//         })
-//       },
-//     })
-//     t.list.field('subscribers', {
-//       type: 'Subscriber',
-//       resolve: (_, args, ctx) => {
-//         return ctx.prisma.subscriber.findMany()
-//       },
-//     })
-//     t.list.field('issues', {
-//       type: 'Issue',
-//       resolve: (_, args, ctx) => {
-//         return ctx.prisma.issue.findMany()
-//       },
-//     })
-//     t.list.field('authors', {
-//       type: 'Author',
-//       resolve: (_, args, ctx) => {
-//         return ctx.prisma.author.findMany()
-//       },
-//     })
-//     t.list.field('topics', {
-//       type: 'Topic',
-//       resolve: (_, args, ctx) => {
-//         return ctx.prisma.topic.findMany()
-//       },
-//     })
-//     // t.list.field('authors', {
-//     //   type: 'Author',
-//     //   resolve: (_, args, ctx) => {
-//     //     return ctx.prisma.author.findMany()
-//     //   },
-//     // })
-//     // t.list.field('issues', {
-//     //   type: 'Issue',
-//     //   resolve: (_, args, ctx) => {
-//     //     return ctx.prisma.issue.findMany()
-//     //   },
-//     // })
-//     // t.list.field('filterPosts', {
-//     //   type: 'Post',
-//     //   args: {
-//     //     searchString: stringArg({ nullable: true }),
-//     //   },
-//     //   resolve: (_, { searchString }, ctx) => {
-//     //     return ctx.prisma.post.findMany({
-//     //       where: {
-//     //         OR: [
-//     //           { title: { contains: searchString } },
-//     //           { content: { contains: searchString } },
-//     //         ],
-//     //       },
-//     //     })
-//     //   },
-//     // })
-//   },
-// })
-// // const Mutation = objectType({
-// //   name: 'Mutation',
-// //   definition(t) {
-// //     t.crud.createOneUser({ alias: 'signupUser' })
-// //     t.crud.deleteOnePost()
-// //     t.field('createDraft', {
-// //       type: 'Post',
-// //       args: {
-// //         title: stringArg({ nullable: false }),
-// //         content: stringArg(),
-// //         authorEmail: stringArg(),
-// //       },
-// //       resolve: (_, { title, content, authorEmail }, ctx) => {
-// //         return ctx.prisma.post.create({
-// //           data: {
-// //             title,
-// //             content,
-// //             published: false,
-// //             author: {
-// //               connect: { email: authorEmail },
-// //             },
-// //           },
-// //         })
-// //       },
-// //     })
-// //     t.field('publish', {
-// //       type: 'Post',
-// //       nullable: true,
-// //       args: {
-// //         id: intArg(),
-// //       },
-// //       resolve: (_, { id }, ctx) => {
-// //         return ctx.prisma.post.update({
-// //           where: { id: Number(id) },
-// //           data: { published: true },
-// //         })
-// //       },
-// //     })
-// //   },
-// // })
-// export const schema = makeSchema({
-//   types: [Query, Subscriber, Author, Topic, Issue],
-//   // types: [Query, Mutation, Post, User],
-//   plugins: [
-//     nexusPrismaPlugin({
-//       shouldGenerateArtifacts: false,
-//     }),
-//   ],
-//   outputs: {
-//     schema: __dirname + '/generated/nexus/schema.graphql',
-//     typegen: __dirname + '/generated/nexus/nexus.ts',
-//   },
-//   typegenAutoConfig: {
-//     contextType: 'Context.Context',
-//     sources: [
-//       {
-//         source: '@prisma/client',
-//         alias: 'prisma',
-//       },
-//       {
-//         source: require.resolve('./context'),
-//         alias: 'Context',
-//       },
-//     ],
-//   },
-// })
 //# sourceMappingURL=schema.js.map

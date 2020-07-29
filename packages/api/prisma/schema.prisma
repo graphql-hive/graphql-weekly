@@ -37,7 +37,7 @@ model Issue {
 }
 
 model Link {
-  id       String  @id
+  id       String  @id @default(cuid())
   position Int?    @default(0)
   text     String?
   title    String?
@@ -66,7 +66,7 @@ model Subscriber {
 }
 
 model Topic {
-  id            String  @id
+  id            String  @id @default(cuid())
   issueId       String?
   issue_comment String
   position      Int?
