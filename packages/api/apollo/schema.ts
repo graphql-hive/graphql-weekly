@@ -400,13 +400,13 @@ const Mutation = objectType({
     t.field('updateTopicWhenIssueDeleted', {
       type: 'Topic',
       args: {
-        issueId: stringArg({ nullable: false }),
+        id: stringArg({ nullable: false }),
       },
-      resolve: (_, { issueId }, ctx) => {
+      resolve: (_, { id }, ctx) => {
         return ctx.prisma.topic.update({
-          where: { issueId: issueId },
+          where: { id : id },
           data: {
-            issueId: null
+            issue: null
           },
         })
       },

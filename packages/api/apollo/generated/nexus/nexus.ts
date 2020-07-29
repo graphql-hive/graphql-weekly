@@ -241,7 +241,7 @@ export interface NexusGenArgTypes {
       position?: number | null; // Int
     }
     updateTopicWhenIssueDeleted: { // args
-      issueId: string; // String!
+      id: string; // String!
     }
   }
   Query: {
