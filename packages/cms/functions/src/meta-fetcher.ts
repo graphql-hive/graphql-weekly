@@ -17,10 +17,10 @@ export default callbackRuntime(async (event: APIGatewayEvent): Promise<any> => {
 
   const payload = JSON.parse(event.body) as Payload
 
-  const headers = {
-    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzA1Nzc5MzcsImNsaWVudElkIjoiY2lvcTk1b2VjMDJrajAxbzBvbmpvcHBmOSIsInByb2plY3RJZCI6ImNpcGIxMTFwdzVmZ3QwMW8wZTdodngybGYiLCJzeXN0ZW1Ub2tlbklkIjoiY2lya280dXJtMG1udTAxMjRjMGgzZ3M0cyJ9.W_gizkkXVZ56hPqS9MZB6fzA5Ti15UP8q9pADoMEk60'
-  }
-  const client = new GraphQLClient('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf', { headers })
+  // const headers = {
+  //   'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzA1Nzc5MzcsImNsaWVudElkIjoiY2lvcTk1b2VjMDJrajAxbzBvbmpvcHBmOSIsInByb2plY3RJZCI6ImNpcGIxMTFwdzVmZ3QwMW8wZTdodngybGYiLCJzeXN0ZW1Ub2tlbklkIjoiY2lya280dXJtMG1udTAxMjRjMGgzZ3M0cyJ9.W_gizkkXVZ56hPqS9MZB6fzA5Ti15UP8q9pADoMEk60'
+  // }
+  const client = new GraphQLClient('https://graphqlweekly-api.netlify.app/.netlify/functions/graphql')
 
   const url = payload.data.Link.node.url
 

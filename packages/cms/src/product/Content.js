@@ -19,7 +19,7 @@ const Row = styled("div")`
 `;
 
 const updateMutation = gql`
-  mutation update($id: ID!, $title: String!, $text: String!, $url: String!) {
+  mutation update($id: String!, $title: String!, $text: String!, $url: String!) {
     updateLink(id: $id, title: $title, text: $text, url: $url) {
       id
     }
@@ -27,7 +27,7 @@ const updateMutation = gql`
 `;
 
 const deleteMutation = gql`
-  mutation delete($id: ID!) {
+  mutation delete($id: String!) {
     deleteLink(id: $id) {
       id
     }

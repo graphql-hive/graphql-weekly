@@ -12,7 +12,7 @@ const Title = styled("h1")`
 `;
 
 const publishIssue = gql`
-  mutation pub($id: ID!, $published: Boolean) {
+  mutation pub($id: String!, $published: Boolean) {
     updateIssue(id: $id, published: $published) {
       id
     }
@@ -20,7 +20,7 @@ const publishIssue = gql`
 `;
 
 const incrVersion = gql`
-  mutation incrVersion($id: ID!, $versionCount: Int) {
+  mutation incrVersion($id: String!, $versionCount: Int) {
     updateIssue(id: $id, versionCount: $versionCount) {
       id
       versionCount
@@ -29,8 +29,16 @@ const incrVersion = gql`
 `;
 
 const deleteIssue = gql`
-  mutation delete($id: ID!) {
+  mutation delete($id: String!) {
     deleteIssue(id: $id) {
+      id
+    }
+  }
+`;
+
+const updateTopicWhenIssueDeleted = gql`
+  mutation updateTopic($id: String!) {
+    updateTopicWhenIssueDeleted(id: $id) {
       id
     }
   }
@@ -41,8 +49,8 @@ class PageHeader extends React.Component {
     return this.props.publishIssue({
       variables: {
         id: this.props.id,
-        published: true
-      }
+        published: true,
+      },
     });
   };
 
@@ -50,21 +58,56 @@ class PageHeader extends React.Component {
     return this.props.increaseVersion({
       variables: {
         id: this.props.id,
-        versionCount: this.props.versionCount + 1
-      }
+        versionCount: this.props.versionCount + 1,
+      },
     });
   };
 
   deleteIssue = () => {
-    return this.props
-      .deleteIssue({
+    return this.props.topics.map(topic => {
+      return this.props.updateTopicWhenIssueDeleted({
         variables: {
-          id: this.props.id
-        }
+          id: topic.id,
+        },
       })
       .then(() => {
-        this.props.history.push("/");
+        return this.props
+          .deleteIssue({
+            variables: {
+              id: this.props.id,
+            },
+          })
+          .then(() => {
+            this.props.history.push("/");
+          });
       });
+    })
+      // .updateTopicWhenIssueDeleted({
+      //   variables: {
+      //     id: this.props.id,
+      //   },
+      // })
+      // .then(() => {
+      //   return this.props
+      //     .deleteIssue({
+      //       variables: {
+      //         id: this.props.id,
+      //       },
+      //     })
+      //     .then(() => {
+      //       this.props.history.push("/");
+      //     });
+      // });
+
+    // return this.props
+    //   .deleteIssue({
+    //     variables: {
+    //       id: this.props.id
+    //     }
+    //   })
+    //   .then(() => {
+    //     this.props.history.push("/");
+    //   });
   };
 
   render() {
@@ -110,12 +153,15 @@ class PageHeader extends React.Component {
 export default compose(
   withRouter,
   graphql(publishIssue, {
-    name: "publishIssue"
+    name: "publishIssue",
   }),
   graphql(incrVersion, {
-    name: "increaseVersion"
+    name: "increaseVersion",
   }),
   graphql(deleteIssue, {
-    name: "deleteIssue"
+    name: "deleteIssue",
+  }),
+  graphql(updateTopicWhenIssueDeleted, {
+    name: "updateTopicWhenIssueDeleted",
   })
 )(PageHeader);

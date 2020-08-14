@@ -5,7 +5,7 @@ import { graphql } from "react-apollo";
 import InputWithButton from "../components/InputWithButton";
 
 const updateIssue = gql`
-  mutation update($id: ID!, $previewImage: String!) {
+  mutation update($id: String!, $previewImage: String!) {
     updateIssue(id: $id, previewImage: $previewImage) {
       id
       previewImage
