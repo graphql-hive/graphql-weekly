@@ -1,26 +1,29 @@
-import React, { Fragment, Component } from "react";
-import withRouter from "react-router-dom/withRouter";
-import { graphql, compose } from "react-apollo";
-import { gql } from "apollo-boost";
+import React, { Fragment, Component } from 'react';
+import withRouter from 'react-router-dom/withRouter';
+import { graphql, compose } from 'react-apollo';
+import { gql } from 'apollo-boost';
 
-import Loading from "../components/Loading";
-import Card from "../components/Card";
-import Flex from "../components/Flex";
-import FlexItem from "../components/FlexCell";
-import InputWithButton from "../components/InputWithButton";
+import Loading from '../components/Loading';
+import Card from '../components/Card';
+import Flex from '../components/Flex';
+import FlexItem from '../components/FlexCell';
+import InputWithButton from '../components/InputWithButton';
 
-import { colors } from "../style/colors";
-import LinkCreator from "../product/LinkCreator";
-import PreviewImageUpdate from "../product/PreviewImageUpdate";
-import Topic from "../product/Topic";
-import Content from "../product/Content";
-import { Header, HeaderContainer } from "../product/Headers";
-import PageHeader from "../product/PageHeader";
+import { colors } from '../style/colors';
+import LinkCreator from '../product/LinkCreator';
+import PreviewImageUpdate from '../product/PreviewImageUpdate';
+import Topic from '../product/Topic';
+import Content from '../product/Content';
+import {
+  Header,
+  HeaderContainer
+} from '../product/Headers';
+import PageHeader from '../product/PageHeader';
 
 const allLinksQuery = gql`
-  query allLinks { 
+  query allLinks {
     #(orderBy: id_DESC)
-    allLinks{
+    allLinks {
       topic {
         id
         position
@@ -84,7 +87,7 @@ class App extends Component {
 
     this.state = {
       loading: false,
-      newTopic: ""
+      newTopic: ''
     };
   }
   refreshEverything = () => {
@@ -92,7 +95,7 @@ class App extends Component {
     this.props.issues.refetch();
   };
 
-  handleTopicChange = e => {
+  handleTopicChange = (e) => {
     this.setState({
       newTopic: e.target.value
     });
@@ -106,13 +109,13 @@ class App extends Component {
     this.props
       .createTopic({
         variables: {
-          issue_comment: " ",
+          issue_comment: ' ',
           title: this.state.newTopic,
           issueId: this.props.match.params.id
         }
       })
       .then(() => {
-        this.setState({ loading: false, newTopic: "" });
+        this.setState({ loading: false, newTopic: '' });
         this.refreshEverything();
       });
   };
@@ -132,7 +135,9 @@ class App extends Component {
   }
 
   renderUnassignedLinks() {
-    const data = this.props.links.allLinks.filter(link => link.topic === null);
+    const data = this.props.links.allLinks.filter(
+      (link) => link.topic === null
+    );
 
     return (
       <section>
@@ -141,14 +146,16 @@ class App extends Component {
         </HeaderContainer>
         {data.length > 0 ? (
           <Fragment>
-            <section style={{ border: `1px solid ${colors.gray}` }}>
-              {data.map(link => {
+            <section
+              style={{ border: `1px solid ${colors.gray}` }}
+            >
+              {data.map((link) => {
                 return (
                   <Content
                     hasDelete
                     link={link}
                     key={link.id}
-                    topics={this.props.issues.Issue.topics}
+                    topics={this.props.issues.issue.topics}
                     linkId={link.id}
                     refresh={this.refreshEverything}
                   />
@@ -156,7 +163,9 @@ class App extends Component {
               })}
             </section>
             <div style={{ marginTop: 16 }}>
-              <LinkCreator refresh={this.refreshEverything} />
+              <LinkCreator
+                refresh={this.refreshEverything}
+              />
             </div>
           </Fragment>
         ) : (
@@ -176,7 +185,9 @@ class App extends Component {
           <Header>Preview Image</Header>
         </HeaderContainer>
         <PreviewImageUpdate
-          previewImage={this.props.issues.issue.previewImage}
+          previewImage={
+            this.props.issues.issue.previewImage
+          }
           refresh={this.refreshEverything}
           id={this.props.issues.issue.id}
         />
@@ -185,7 +196,10 @@ class App extends Component {
   }
 
   render() {
-    if (this.props.links.loading || this.props.issues.loading) {
+    if (
+      this.props.links.loading ||
+      this.props.issues.loading
+    ) {
       return (
         <Card>
           <Loading />
@@ -203,13 +217,15 @@ class App extends Component {
         </Card>
         <Card>
           <Flex>
-            <FlexItem>{this.renderUnassignedLinks()}</FlexItem>
+            <FlexItem>
+              {this.renderUnassignedLinks()}
+            </FlexItem>
             <FlexItem margin="0 0 0 10px">
               {this.renderTopics()}
 
               <Flex align="center" style={{ padding: 16 }}>
                 <InputWithButton
-                  buttonLabel={"Add Topic"}
+                  buttonLabel={'Add Topic'}
                   buttonDisabled={this.state.loading}
                   onClick={this.submitTopic}
                   value={this.state.newTopic}
@@ -229,23 +245,23 @@ class App extends Component {
 export default compose(
   withRouter,
   graphql(allLinksQuery, {
-    name: "links",
+    name: 'links',
     options: {
-      fetchPolicy: "cache-and-network"
+      fetchPolicy: 'cache-and-network'
     }
   }),
   graphql(issueQuery, {
-    name: "issues",
+    name: 'issues',
     options: ({ match }) => {
       return {
         variables: {
           id: match.params.id
         },
-        fetchPolicy: "cache-and-network"
+        fetchPolicy: 'cache-and-network'
       };
     }
   }),
   graphql(createTopicMutation, {
-    name: "createTopic"
+    name: 'createTopic'
   })
 )(App);

@@ -1,16 +1,21 @@
-import React from "react";
-import { graphql } from "react-apollo";
-import { gql } from "apollo-boost";
-import { Button } from "../components/Button";
-import Radio from "../components/Radio";
-import Flex from "../components/Flex";
+import React from 'react';
+import { graphql } from 'react-apollo';
+import { gql } from 'apollo-boost';
+import { Button } from '../components/Button';
+import Radio from '../components/Radio';
+import Flex from '../components/Flex';
 
 const addLinks = gql`
-  mutation addLinks($topicTopicId: String!, $linksLinkId: String!) {
-    addLinksToTopic(topicId: $topicTopicId, linkId: $linksLinkId) {
-      topicTopic {
-        id
-      }
+  mutation addLinks(
+    $topicTopicId: String!
+    $linksLinkId: String!
+  ) {
+    addLinksToTopic(
+      topicId: $topicTopicId
+      linkId: $linksLinkId
+    ) {
+      id
+      issueId
     }
   }
 `;
@@ -20,7 +25,11 @@ class TopicDialog extends React.Component {
     super(props);
 
     this.state = {
-      topicId: (props.link && props.link.topic && props.link.topic.id) || ''
+      topicId:
+        (props.link &&
+          props.link.topic &&
+          props.link.topic.id) ||
+        ''
     };
   }
 
@@ -38,7 +47,7 @@ class TopicDialog extends React.Component {
       });
   };
 
-  handleChange = topicId => {
+  handleChange = (topicId) => {
     return this.setState({
       topicId
     });
@@ -47,7 +56,9 @@ class TopicDialog extends React.Component {
   render() {
     return (
       <section>
-        <h1 style={{ margin: "0 0 32px" }}>Assign this link to a topic:</h1>
+        <h1 style={{ margin: '0 0 32px' }}>
+          Assign this link to a topic:
+        </h1>
         {this.props.topics.map((topic, index) => {
           return (
             <Radio
