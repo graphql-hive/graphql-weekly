@@ -91,7 +91,7 @@ const subscribeUser = async ({
   email: string
 }) => {
   const query = `
-    mutation CreateSubscriber($name: String!,$email: String! ){
+    mutation createSubscriber($name: String!,$email: String! ){
       createSubscriber(name: $name,email: $email) {
         email
         name
@@ -99,9 +99,9 @@ const subscribeUser = async ({
     }
   `
   const variables = { name, email }
-  const operationName = 'CreateSubscriber'
+  const operationName = 'createSubscriber'
 
-  return fetch('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf', {
+  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/graphql', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, variables, operationName }),

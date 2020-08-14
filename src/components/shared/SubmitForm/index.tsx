@@ -185,14 +185,14 @@ const linkSubmission = async ({
   url: string
 }) => {
   const query = `
-  mutation CreateLinkSubmission(
+  mutation createSubmissionLink(
     $description: String!
     $email: String!
     $name: String!
     $title: String!
     $url: String!
   ) {
-    createLinkSubmission(
+    createSubmissionLink(
       description: $description,
       email: $email,
       name: $name,
@@ -211,10 +211,11 @@ const linkSubmission = async ({
     title,
     url,
   }
-  const operationName = 'CreateLinkSubmission'
+  const operationName = 'createSubmissionLink'
 
-  return fetch('https://api.graph.cool/simple/v1/cipb111pw5fgt01o0e7hvx2lf', {
+  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/graphql', {
     method: 'POST',
+    mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, variables, operationName }),
   }).then(res => res.json())
