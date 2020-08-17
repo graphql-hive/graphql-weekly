@@ -9,6 +9,35 @@ import {
   arg,
 } from '@nexus/schema'
 import { GraphQLDateTime } from 'graphql-iso-date'
+import axios from 'axios'
+
+interface EmailPayload {
+  data: {
+    Issue: {
+      updatedFields: string[]
+      node: Issue
+    }
+  }
+}
+
+interface Issue {
+  id: string
+  title: string
+  published: boolean
+  versionCount: number
+  topics: Topic[]
+}
+
+interface Topic {
+  title: string
+  links: Link[]
+}
+
+interface Link {
+  url: string
+  title: string
+  text: string
+}
 
 export const GQLDate = asNexusMethod(GraphQLDateTime, 'DateTime')
 
@@ -340,9 +369,9 @@ const Mutation = objectType({
           where: { id: id },
           data: {
             topic: {
-              disconnect: true
-            } 
-          }
+              disconnect: true,
+            },
+          },
         })
       },
     })
@@ -367,6 +396,66 @@ const Mutation = objectType({
       },
     })
 
+    t.field('publishEmailDraft', {
+      type: 'Issue',
+      args: {
+        id: stringArg({ nullable: false }),
+        versionCount: intArg(),
+      },
+      resolve: async (_, { id, versionCount }, ctx) => {
+        try {
+          await ctx.prisma.issue.update({
+            where: { id: id },
+            data: {
+              versionCount,
+            },
+          })
+
+          const issue = await ctx.prisma.issue.findOne({
+            where: { id: id },
+            include: {
+              topics: {
+                include: {
+                  links: true,
+                },
+              },
+            },
+          })
+
+          const emailPayload: EmailPayload = {
+            data: {
+              Issue: {
+                updatedFields: ['versionCount'],
+                node: {
+                  id: issue.id,
+                  title: issue.title,
+                  published: issue.published,
+                  versionCount: issue.versionCount,
+                  topics: issue.topics.map((topic: Topic) => ({
+                    title: topic.title,
+                    links: topic.links.map((link: Link) => ({
+                      url: link.url,
+                      title: link.title,
+                      text: link.text,
+                    })),
+                  })),
+                },
+              },
+            },
+          }
+
+          const mailchimpLink =
+            'https://r11tuy1wm6.execute-api.eu-west-1.amazonaws.com/dev/newsletter-sender'
+
+          await axios.post(mailchimpLink, emailPayload)
+
+          return issue
+        } catch (err) {
+          throw new Error(err)
+        }
+      },
+    })
+
     t.field('deleteIssue', {
       type: 'Issue',
       args: {
@@ -374,12 +463,10 @@ const Mutation = objectType({
       },
       resolve: (_, { id }, ctx) => {
         return ctx.prisma.issue.delete({
-          where: { id: id }
+          where: { id: id },
         })
       },
     })
-
-    
 
     t.field('updateTopic', {
       type: 'Topic',
@@ -404,9 +491,9 @@ const Mutation = objectType({
       },
       resolve: (_, { id }, ctx) => {
         return ctx.prisma.topic.update({
-          where: { id : id },
+          where: { id: id },
           data: {
-            issue: {disconnect: true}
+            issue: { disconnect: true },
           },
         })
       },
