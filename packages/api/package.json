@@ -13,6 +13,7 @@
     "@nexus/schema": "0.14.0",
     "@prisma/client": "^2.3.0",
     "apollo-server-lambda": "^2.16.0",
+    "axios": "^0.19.2",
     "graphql-iso-date": "^3.6.1",
     "nexus-prisma": "0.12.0"
   },

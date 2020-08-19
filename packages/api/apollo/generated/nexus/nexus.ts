@@ -153,6 +153,7 @@ export interface NexusGenFieldTypes {
     createTopic: NexusGenRootTypes['Topic']; // Topic!
     deleteIssue: NexusGenRootTypes['Issue']; // Issue!
     deleteLink: NexusGenRootTypes['Link']; // Link!
+    publishEmailDraft: NexusGenRootTypes['Issue']; // Issue!
     updateIssue: NexusGenRootTypes['Issue']; // Issue!
     updateLink: NexusGenRootTypes['Link']; // Link!
     updateTopic: NexusGenRootTypes['Topic']; // Topic!
@@ -222,6 +223,9 @@ export interface NexusGenArgTypes {
       id: string; // String!
     }
     deleteLink: { // args
+      id: string; // String!
+    }
+    publishEmailDraft: { // args
       id: string; // String!
     }
     updateIssue: { // args
