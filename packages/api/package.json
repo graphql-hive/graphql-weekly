@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "yarn generate && yarn lambda:build",
+    "dev": "gatsby develop",
+    "build": "gatsby build && yarn build-func",
+    "build-func": "yarn generate && yarn lambda:build",
     "lambda:build": "tsc -p apollo/tsconfig.json",
     "generate": "yarn generate:prisma && yarn generate:nexus",
     "generate:prisma": "prisma generate",
@@ -14,8 +16,11 @@
     "@prisma/client": "^2.3.0",
     "apollo-server-lambda": "^2.16.0",
     "axios": "^0.19.2",
+    "gatsby": "^2.24.47",
     "graphql-iso-date": "^3.6.1",
-    "nexus-prisma": "0.12.0"
+    "nexus-prisma": "0.12.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
     "@prisma/cli": "^2.3.0",
