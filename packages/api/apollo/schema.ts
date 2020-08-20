@@ -10,6 +10,7 @@ import {
 } from '@nexus/schema'
 import { GraphQLDateTime } from 'graphql-iso-date'
 import axios from 'axios'
+import { Context } from './context'
 
 interface EmailPayload {
   data: {
@@ -227,8 +228,12 @@ const Query = objectType({
     })
     t.list.field('allLinkSubmissions', {
       type: 'LinkSubmission',
-      resolve: (_, args, ctx) => {
-        return ctx.prisma.linkSubmission.findMany()
+      resolve: (_, args, ctx: Context) => {
+        return ctx.prisma.linkSubmission.findMany({
+          orderBy: {
+            createdAt: 'desc',
+          },
+        })
       },
     })
 
