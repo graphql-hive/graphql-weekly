@@ -389,8 +389,12 @@ const Mutation = objectType({
         versionCount: intArg(),
         previewImage: stringArg(),
       },
-      resolve: (_, { id, published, versionCount, previewImage }, ctx) => {
-        return ctx.prisma.issue.update({
+      resolve: async (
+        _,
+        { id, published, versionCount, previewImage },
+        ctx: Context
+      ) => {
+        const issue = await ctx.prisma.issue.update({
           where: { id: id },
           data: {
             versionCount,
@@ -398,6 +402,14 @@ const Mutation = objectType({
             previewImage,
           },
         })
+        // trigger build if published
+        if (published) {
+          await axios.post(
+            'https://api.netlify.com/build_hooks/NETLIFY_BUILD_HOOK_REDACTED'
+          )
+        }
+
+        return issue
       },
     })
 
