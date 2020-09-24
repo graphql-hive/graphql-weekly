@@ -258,7 +258,36 @@ const Mutation = objectType({
         name: stringArg({ nullable: false }),
         email: stringArg({ nullable: false }),
       },
-      resolve: (_, { name, email }, ctx) => {
+      resolve: async (_, { name, email }, ctx: Context) => {
+        const url =
+          'https://us13.api.mailchimp.com/3.0/lists/b07e0b3012/members'
+        const authString = Buffer.from(
+          `anything:MAILCHIMP_API_KEY_REDACTED`
+        ).toString('base64')
+
+        // Add to mailchimp
+        try {
+          await axios.post(
+            url,
+            {
+              status: 'subscribed',
+              email_address: email,
+              merge_fields: {
+                'First Name': name,
+              },
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${authString}`,
+              },
+            }
+          )
+        } catch (error) {
+          console.error('Failed to add user to the mailchimp list')
+          console.error(error?.response?.data)
+        }
+
         return ctx.prisma.subscriber.create({
           data: {
             name,
