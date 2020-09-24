@@ -55,4 +55,4 @@ yarn-error.log*
 .history
 .cache
 public/
-
+apollo/dist/
