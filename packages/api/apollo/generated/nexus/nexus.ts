@@ -227,6 +227,7 @@ export interface NexusGenArgTypes {
     }
     publishEmailDraft: { // args
       id: string; // String!
+      versionCount?: number | null; // Int
     }
     updateIssue: { // args
       id: string; // String!
