@@ -19,6 +19,7 @@ const getAuth = (req: any) => {
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET)
     return { sub: decoded.sub }
   } catch (err) {
+    console.log(err)
     return null
   }
 }
