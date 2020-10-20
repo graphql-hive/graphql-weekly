@@ -217,7 +217,6 @@ const Query = objectType({
     t.list.field('allIssues', {
       type: 'Issue',
       resolve: (_, args, ctx) => {
-        verifyAuth(ctx.user)
         return ctx.prisma.issue.findMany()
       },
     })
@@ -232,7 +231,6 @@ const Query = objectType({
     t.list.field('allTopics', {
       type: 'Topic',
       resolve: (_, args, ctx) => {
-        verifyAuth(ctx.user)
         return ctx.prisma.topic.findMany()
       },
     })
