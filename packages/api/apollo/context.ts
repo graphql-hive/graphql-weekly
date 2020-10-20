@@ -13,6 +13,7 @@ const getAuth = (req: any) => {
   try {
     const token = req.headers.authorization
     if (!token) {
+      console.log('no token')
       return null
     }
 
