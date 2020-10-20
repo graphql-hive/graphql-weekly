@@ -9,9 +9,9 @@ export interface Context {
   user: User | null
 }
 
-const getAuth = (req: any) => {
+const getAuth = (event: any) => {
   try {
-    const token = req.headers.authorization
+    const token = event.headers.authorization
     if (!token) {
       console.log('no token')
       return null

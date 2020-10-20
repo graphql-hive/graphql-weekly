@@ -15,7 +15,7 @@ import { createContext } from '../context'
 // prod..
 const server = new ApolloServer({
   schema,
-  context: ({ req }) => createContext(req),
+  context: ({ event }) => createContext(event),
 })
 exports.handler = server.createHandler({
   cors: {
