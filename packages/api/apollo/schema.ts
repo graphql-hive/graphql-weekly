@@ -11,6 +11,18 @@ import {
 import { GraphQLDateTime } from 'graphql-iso-date'
 import axios from 'axios'
 import { Context } from './context'
+import { ApolloError } from 'apollo-server'
+
+export type User = {
+  sub: string
+}
+
+const verifyAuth = (user: User) => {
+  if (!user) {
+    throw new ApolloError('Not authorized')
+  }
+  return
+}
 
 interface EmailPayload {
   data: {
@@ -197,6 +209,7 @@ const Query = objectType({
     t.list.field('allSubscribers', {
       type: 'Subscriber',
       resolve: (_, args, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.subscriber.findMany()
       },
     })
@@ -211,6 +224,7 @@ const Query = objectType({
     t.list.field('allAuthors', {
       type: 'Author',
       resolve: (_, args, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.author.findMany()
       },
     })
@@ -223,12 +237,14 @@ const Query = objectType({
     t.list.field('allLinks', {
       type: 'Link',
       resolve: (_, args, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.link.findMany()
       },
     })
     t.list.field('allLinkSubmissions', {
       type: 'LinkSubmission',
       resolve: (_, args, ctx: Context) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.linkSubmission.findMany({
           orderBy: {
             createdAt: 'desc',
@@ -243,6 +259,7 @@ const Query = objectType({
         id: stringArg({ nullable: false }),
       },
       resolve: (_, args, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.issue.findOne({ where: { id: args.id } })
       },
     })
@@ -320,6 +337,7 @@ const Mutation = objectType({
         published: booleanArg({ nullable: false }),
       },
       resolve: (_, { title, number, published, date }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.issue.create({
           data: {
             date,
@@ -339,6 +357,7 @@ const Mutation = objectType({
         issueId: stringArg({ nullable: false }),
       },
       resolve: (_, { issue_comment, title, issueId }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.topic.create({
           data: {
             issue: {
@@ -382,6 +401,7 @@ const Mutation = objectType({
         url: stringArg(),
       },
       resolve: (_, { id, title, text, url }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.link.update({
           where: { id: id },
           data: {
@@ -399,6 +419,7 @@ const Mutation = objectType({
         id: stringArg({ nullable: false }),
       },
       resolve: (_, { id }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.link.delete({
           where: { id: id },
           data: {
@@ -423,6 +444,7 @@ const Mutation = objectType({
         { id, published, versionCount, previewImage },
         ctx: Context
       ) => {
+        verifyAuth(ctx.user)
         const issue = await ctx.prisma.issue.update({
           where: { id: id },
           data: {
@@ -450,6 +472,7 @@ const Mutation = objectType({
       },
       resolve: async (_, { id, versionCount }, ctx) => {
         try {
+          verifyAuth(ctx.user)
           await ctx.prisma.issue.update({
             where: { id: id },
             data: {
@@ -508,6 +531,7 @@ const Mutation = objectType({
         id: stringArg({ nullable: false }),
       },
       resolve: (_, { id }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.issue.delete({
           where: { id: id },
         })
@@ -521,6 +545,7 @@ const Mutation = objectType({
         position: intArg(),
       },
       resolve: (_, { id, position }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.topic.update({
           where: { id: id },
           data: {
@@ -536,6 +561,7 @@ const Mutation = objectType({
         id: stringArg({ nullable: false }),
       },
       resolve: (_, { id }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.topic.update({
           where: { id: id },
           data: {
@@ -552,6 +578,7 @@ const Mutation = objectType({
         linkId: stringArg({ nullable: false }),
       },
       resolve: (_, { topicId, linkId }, ctx) => {
+        verifyAuth(ctx.user)
         return ctx.prisma.topic.update({
           where: { id: topicId },
           data: {
