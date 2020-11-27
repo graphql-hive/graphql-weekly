@@ -68,7 +68,7 @@ const Author = objectType({
       type: 'Issue',
       resolve: (parent, args, ctx) =>
         ctx.prisma.author
-          .findUnique({
+          .findOne({
             where: { id: parent.id },
           })
           .issues(),
@@ -89,7 +89,7 @@ const Link = objectType({
       type: 'Topic',
       resolve: (parent, args, ctx) =>
         ctx.prisma.link
-          .findUnique({
+          .findOne({
             where: { id: parent.id },
           })
           .topic(),
@@ -109,7 +109,7 @@ const Topic = objectType({
       type: 'Issue',
       resolve: (parent, args, ctx) =>
         ctx.prisma.topic
-          .findUnique({
+          .findOne({
             where: { id: parent.id },
           })
           .issue(),
@@ -118,7 +118,7 @@ const Topic = objectType({
       type: 'Link',
       resolve: (parent, args, ctx) =>
         ctx.prisma.topic
-          .findUnique({
+          .findOne({
             where: { id: parent.id },
           })
           .links(),
@@ -144,7 +144,7 @@ const Issue = objectType({
       type: 'Topic',
       resolve: (parent, args, ctx) =>
         ctx.prisma.issue
-          .findUnique({
+          .findOne({
             where: { id: parent.id },
           })
           .topics(),
@@ -153,7 +153,7 @@ const Issue = objectType({
       type: 'Author',
       resolve: (parent, args, ctx) =>
         ctx.prisma.issue
-          .findUnique({
+          .findOne({
             where: { id: parent.id },
           })
           .author(),
@@ -192,7 +192,7 @@ const User = objectType({
       type: 'String',
       resolve: (parent, args, ctx) =>
         ctx.prisma.user
-          .findUnique({
+          .findOne({
             where: { id: parent.id },
           })
           .roles(),
@@ -257,7 +257,7 @@ const Query = objectType({
       },
       resolve: (_, args, ctx) => {
         verifyAuth(ctx.user)
-        return ctx.prisma.issue.findUnique({ where: { id: args.id } });
+        return ctx.prisma.issue.findOne({ where: { id: args.id } });
       },
     })
   },
@@ -477,7 +477,7 @@ const Mutation = objectType({
             },
           })
 
-          const issue = await ctx.prisma.issue.findUnique({
+          const issue = await ctx.prisma.issue.findOne({
             where: { id: id },
             include: {
               topics: {
