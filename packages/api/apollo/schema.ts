@@ -80,13 +80,14 @@ const Link = objectType({
   name: 'Link',
   definition(t) {
     t.field('id', { type: 'String' })
-    t.field('position', { type: 'Int' })
-    t.field('text', { type: 'String' })
-    t.field('title', { type: 'String' })
-    t.field('topicId', { type: 'String' })
+    t.field('position', { type: 'Int', nullable: true })
+    t.field('text', { type: 'String', nullable: true })
+    t.field('title', { type: 'String', nullable: true })
+    t.field('topicId', { type: 'String', nullable: true })
     t.field('url', { type: 'String' })
     t.field('topic', {
       type: 'Topic',
+      nullable: true,
       resolve: (parent, args, ctx) =>
         ctx.prisma.link
           .findOne({
@@ -101,12 +102,13 @@ const Topic = objectType({
   name: 'Topic',
   definition(t) {
     t.field('id', { type: 'String' })
-    t.field('issueId', { type: 'String' })
+    t.field('issueId', { type: 'String', nullable: true })
     t.field('issue_comment', { type: 'String' })
-    t.field('position', { type: 'Int' })
+    t.field('position', { type: 'Int', nullable: true })
     t.field('title', { type: 'String' })
     t.field('issue', {
       type: 'Issue',
+      nullable: true,
       resolve: (parent, args, ctx) =>
         ctx.prisma.topic
           .findOne({
@@ -129,14 +131,14 @@ const Topic = objectType({
 const Issue = objectType({
   name: 'Issue',
   definition(t) {
-    t.field('authorId', { type: 'String' })
-    t.field('comment', { type: 'String'})
+    t.field('authorId', { type: 'String', nullable: true })
+    t.field('comment', { type: 'String', nullable: true })
     t.field('id', { type: 'String' })
-    t.field('description', { type: 'String' })
+    t.field('description', { type: 'String', nullable: true })
     t.field('number', { type: 'Int' })
-    t.field('previewImage', { type: 'String' })
+    t.field('previewImage', { type: 'String', nullable: true })
     t.field('published', { type: 'Boolean' })
-    t.field('specialPerk', { type: 'String' })
+    t.field('specialPerk', { type: 'String', nullable: true })
     t.field('title', { type: 'String' })
     t.field('date', { type: 'DateTime' })
     t.field('versionCount', { type: 'Int' })
@@ -151,6 +153,7 @@ const Issue = objectType({
     })
     t.field('author', {
       type: 'Author',
+      nullable: true,
       resolve: (parent, args, ctx) =>
         ctx.prisma.issue
           .findOne({
@@ -253,11 +256,11 @@ const Query = objectType({
     t.field('issue', {
       type: 'Issue',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
       },
       resolve: (_, args, ctx) => {
         verifyAuth(ctx.user)
-        return ctx.prisma.issue.findOne({ where: { id: args.id } });
+        return ctx.prisma.issue.findOne({ where: { id: args.id } })
       },
     })
   },
@@ -269,8 +272,8 @@ const Mutation = objectType({
     t.field('createSubscriber', {
       type: 'Subscriber',
       args: {
-        name: stringArg(),
-        email: stringArg(),
+        name: stringArg({ nullable: false }),
+        email: stringArg({ nullable: false }),
       },
       resolve: async (_, { name, email }, ctx: Context) => {
         const url =
@@ -314,7 +317,7 @@ const Mutation = objectType({
     t.field('createLink', {
       type: 'Link',
       args: {
-        url: stringArg(),
+        url: stringArg({ nullable: false }),
       },
       resolve: (_, { url }, ctx) => {
         return ctx.prisma.link.create({
@@ -328,10 +331,10 @@ const Mutation = objectType({
     t.field('createIssue', {
       type: 'Issue',
       args: {
-        title: stringArg(),
-        number: intArg(),
+        title: stringArg({ nullable: false }),
+        number: intArg({ nullable: false }),
         date: arg({ type: 'DateTime' }),
-        published: booleanArg(),
+        published: booleanArg({ nullable: false }),
       },
       resolve: (_, { title, number, published, date }, ctx) => {
         verifyAuth(ctx.user)
@@ -349,9 +352,9 @@ const Mutation = objectType({
     t.field('createTopic', {
       type: 'Topic',
       args: {
-        issue_comment: stringArg(),
-        title: stringArg(),
-        issueId: stringArg(),
+        issue_comment: stringArg({ nullable: false }),
+        title: stringArg({ nullable: false }),
+        issueId: stringArg({ nullable: false }),
       },
       resolve: (_, { issue_comment, title, issueId }, ctx) => {
         verifyAuth(ctx.user)
@@ -370,11 +373,11 @@ const Mutation = objectType({
     t.field('createSubmissionLink', {
       type: 'LinkSubmission',
       args: {
-        name: stringArg(),
-        email: stringArg(),
-        description: stringArg(),
-        title: stringArg(),
-        url: stringArg(),
+        name: stringArg({ nullable: false }),
+        email: stringArg({ nullable: false }),
+        description: stringArg({ nullable: false }),
+        title: stringArg({ nullable: false }),
+        url: stringArg({ nullable: false }),
       },
       resolve: (_, { name, email, description, title, url }, ctx) => {
         return ctx.prisma.linkSubmission.create({
@@ -392,8 +395,8 @@ const Mutation = objectType({
     t.field('updateLink', {
       type: 'Link',
       args: {
-        id: stringArg(),
-        title: stringArg(),
+        id: stringArg({ nullable: false }),
+        title: stringArg({ nullable: false }),
         text: stringArg(),
         url: stringArg(),
       },
@@ -413,7 +416,7 @@ const Mutation = objectType({
     t.field('deleteLink', {
       type: 'Link',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
       },
       resolve: (_, { id }, ctx) => {
         verifyAuth(ctx.user)
@@ -431,7 +434,7 @@ const Mutation = objectType({
     t.field('updateIssue', {
       type: 'Issue',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
         published: booleanArg(),
         versionCount: intArg(),
         previewImage: stringArg(),
@@ -464,7 +467,7 @@ const Mutation = objectType({
     t.field('publishEmailDraft', {
       type: 'Issue',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
         versionCount: intArg(),
       },
       resolve: async (_, { id, versionCount }, ctx) => {
@@ -526,7 +529,7 @@ const Mutation = objectType({
     t.field('deleteIssue', {
       type: 'Issue',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
       },
       resolve: (_, { id }, ctx) => {
         verifyAuth(ctx.user)
@@ -539,7 +542,7 @@ const Mutation = objectType({
     t.field('updateTopic', {
       type: 'Topic',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
         position: intArg(),
       },
       resolve: (_, { id, position }, ctx) => {
@@ -556,7 +559,7 @@ const Mutation = objectType({
     t.field('updateTopicWhenIssueDeleted', {
       type: 'Topic',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
       },
       resolve: (_, { id }, ctx) => {
         verifyAuth(ctx.user)
@@ -572,8 +575,8 @@ const Mutation = objectType({
     t.field('addLinksToTopic', {
       type: 'Topic',
       args: {
-        topicId: stringArg(),
-        linkId: stringArg(),
+        topicId: stringArg({ nullable: false }),
+        linkId: stringArg({ nullable: false }),
       },
       resolve: (_, { topicId, linkId }, ctx) => {
         verifyAuth(ctx.user)
