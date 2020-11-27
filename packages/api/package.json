@@ -12,25 +12,25 @@
     "generate:nexus": "ts-node --transpile-only apollo/server/graphql"
   },
   "dependencies": {
-    "@nexus/schema": "0.14.0",
-    "@prisma/client": "^2.3.0",
-    "apollo-server-lambda": "^2.16.0",
-    "axios": "^0.19.2",
+    "@nexus/schema": "0.19.1",
+    "@prisma/client": "^2.12.1",
+    "apollo-server-lambda": "^2.19.0",
+    "axios": "^0.21.0",
     "dotenv": "^8.2.0",
-    "gatsby": "^2.24.47",
+    "gatsby": "^2.27.4",
     "graphql-iso-date": "^3.6.1",
     "jsonwebtoken": "^8.5.1",
     "nexus-prisma": "0.12.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "devDependencies": {
-    "@prisma/cli": "^2.3.0",
+    "@prisma/cli": "^2.12.1",
     "@types/graphql-iso-date": "^3.4.0",
     "@types/jsonwebtoken": "^8.5.0",
-    "apollo-server": "^2.18.2",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "apollo-server": "^2.19.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.1.2"
   },
   "prettier": {
     "semi": false,
