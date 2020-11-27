@@ -3,13 +3,13 @@
 
 
 type Author {
-  avatarUrl: String!
-  createdAt: DateTime!
-  description: String!
-  id: String!
-  issues: [Issue!]!
-  name: String!
-  updatedAt: DateTime!
+  avatarUrl: String
+  createdAt: DateTime
+  description: String
+  id: String
+  issues: [Issue]
+  name: String
+  updatedAt: DateTime
 }
 
 """
@@ -23,82 +23,82 @@ type Issue {
   author: Author
   authorId: String
   comment: String
-  date: DateTime!
+  date: DateTime
   description: String
-  id: String!
-  number: Int!
+  id: String
+  number: Int
   previewImage: String
-  published: Boolean!
+  published: Boolean
   specialPerk: String
-  title: String!
-  topics: [Topic!]!
-  versionCount: Int!
+  title: String
+  topics: [Topic]
+  versionCount: Int
 }
 
 type Link {
-  id: String!
+  id: String
   position: Int
   text: String
   title: String
   topic: Topic
   topicId: String
-  url: String!
+  url: String
 }
 
 type LinkSubmission {
-  createdAt: DateTime!
-  description: String!
-  email: String!
-  id: String!
-  name: String!
-  title: String!
-  updatedAt: DateTime!
-  url: String!
+  createdAt: DateTime
+  description: String
+  email: String
+  id: String
+  name: String
+  title: String
+  updatedAt: DateTime
+  url: String
 }
 
 type Mutation {
-  addLinksToTopic(linkId: String!, topicId: String!): Topic!
-  createIssue(date: DateTime, number: Int!, published: Boolean!, title: String!): Issue!
-  createLink(url: String!): Link!
-  createSubmissionLink(description: String!, email: String!, name: String!, title: String!, url: String!): LinkSubmission!
-  createSubscriber(email: String!, name: String!): Subscriber!
-  createTopic(issue_comment: String!, issueId: String!, title: String!): Topic!
-  deleteIssue(id: String!): Issue!
-  deleteLink(id: String!): Link!
-  publishEmailDraft(id: String!, versionCount: Int): Issue!
-  updateIssue(id: String!, previewImage: String, published: Boolean, versionCount: Int): Issue!
-  updateLink(id: String!, text: String, title: String!, url: String): Link!
-  updateTopic(id: String!, position: Int): Topic!
-  updateTopicWhenIssueDeleted(id: String!): Topic!
+  addLinksToTopic(linkId: String!, topicId: String!): Topic
+  createIssue(date: DateTime, number: Int!, published: Boolean!, title: String!): Issue
+  createLink(url: String!): Link
+  createSubmissionLink(description: String!, email: String!, name: String!, title: String!, url: String!): LinkSubmission
+  createSubscriber(email: String!, name: String!): Subscriber
+  createTopic(issue_comment: String!, issueId: String!, title: String!): Topic
+  deleteIssue(id: String!): Issue
+  deleteLink(id: String!): Link
+  publishEmailDraft(id: String!, versionCount: Int): Issue
+  updateIssue(id: String!, previewImage: String, published: Boolean, versionCount: Int): Issue
+  updateLink(id: String!, text: String, title: String!, url: String): Link
+  updateTopic(id: String!, position: Int): Topic
+  updateTopicWhenIssueDeleted(id: String!): Topic
 }
 
 type Query {
-  allAuthors: [Author!]!
-  allIssues: [Issue!]!
-  allLinks: [Link!]!
-  allLinkSubmissions: [LinkSubmission!]!
-  allSubscribers: [Subscriber!]!
-  allTopics: [Topic!]!
-  issue(id: String!): Issue!
+  allAuthors: [Author]
+  allIssues: [Issue]
+  allLinks: [Link]
+  allLinkSubmissions: [LinkSubmission]
+  allSubscribers: [Subscriber]
+  allTopics: [Topic]
+  issue(id: String!): Issue
 }
 
 type Subscriber {
-  email: String!
-  id: String!
-  name: String!
+  email: String
+  id: String
+  name: String
 }
 
 type Topic {
-  id: String!
+  id: String
   issue: Issue
-  issue_comment: String!
+  issue_comment: String
   issueId: String
-  links: [Link!]!
+  links: [Link]
   position: Int
-  title: String!
+  title: String
 }
 
 type User {
-  id: String!
-  roles: [String!]!
+  id: String
+  roles: [String]
 }

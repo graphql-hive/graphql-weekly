@@ -3,22 +3,28 @@
  * Do not make changes to this file directly
  */
 
-import * as Context from "../../context"
+import * as Context from "./../../context"
 import { core } from "@nexus/schema"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
     DateTime<FieldName extends string>(fieldName: FieldName, opts?: core.ScalarInputFieldConfig<core.GetGen3<"inputTypes", TypeName, FieldName>>): void // "DateTime";
   }
 }
 declare global {
   interface NexusGenCustomOutputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
     DateTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
   }
 }
 declare global {
   interface NexusGenCustomOutputProperties<TypeName extends string> {
-    crud: NexusPrisma<TypeName, 'crud'>
     model: NexusPrisma<TypeName, 'model'>
+    crud: any
   }
 }
 
@@ -32,159 +38,257 @@ export interface NexusGenInputs {
 export interface NexusGenEnums {
 }
 
-export interface NexusGenRootTypes {
+export interface NexusGenScalars {
+  String: string
+  Int: number
+  Float: number
+  Boolean: boolean
+  ID: string
+  DateTime: any
+}
+
+export interface NexusGenObjects {
   Author: { // root type
-    avatarUrl: string; // String!
-    createdAt: any; // DateTime!
-    description: string; // String!
-    id: string; // String!
-    name: string; // String!
-    updatedAt: any; // DateTime!
+    avatarUrl?: string | null; // String
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    description?: string | null; // String
+    id?: string | null; // String
+    name?: string | null; // String
+    updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
   }
   Issue: { // root type
     authorId?: string | null; // String
     comment?: string | null; // String
-    date: any; // DateTime!
+    date?: NexusGenScalars['DateTime'] | null; // DateTime
     description?: string | null; // String
-    id: string; // String!
-    number: number; // Int!
+    id?: string | null; // String
+    number?: number | null; // Int
     previewImage?: string | null; // String
-    published: boolean; // Boolean!
+    published?: boolean | null; // Boolean
     specialPerk?: string | null; // String
-    title: string; // String!
-    versionCount: number; // Int!
+    title?: string | null; // String
+    versionCount?: number | null; // Int
   }
   Link: { // root type
-    id: string; // String!
+    id?: string | null; // String
     position?: number | null; // Int
     text?: string | null; // String
     title?: string | null; // String
     topicId?: string | null; // String
-    url: string; // String!
+    url?: string | null; // String
   }
   LinkSubmission: { // root type
-    createdAt: any; // DateTime!
-    description: string; // String!
-    email: string; // String!
-    id: string; // String!
-    name: string; // String!
-    title: string; // String!
-    updatedAt: any; // DateTime!
-    url: string; // String!
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    description?: string | null; // String
+    email?: string | null; // String
+    id?: string | null; // String
+    name?: string | null; // String
+    title?: string | null; // String
+    updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    url?: string | null; // String
   }
   Mutation: {};
   Query: {};
   Subscriber: { // root type
-    email: string; // String!
-    id: string; // String!
-    name: string; // String!
+    email?: string | null; // String
+    id?: string | null; // String
+    name?: string | null; // String
   }
   Topic: { // root type
-    id: string; // String!
-    issue_comment: string; // String!
+    id?: string | null; // String
+    issue_comment?: string | null; // String
     issueId?: string | null; // String
     position?: number | null; // Int
-    title: string; // String!
+    title?: string | null; // String
   }
   User: { // root type
-    id: string; // String!
+    id?: string | null; // String
   }
-  String: string;
-  Int: number;
-  Float: number;
-  Boolean: boolean;
-  ID: string;
-  DateTime: any;
 }
 
-export interface NexusGenAllTypes extends NexusGenRootTypes {
+export interface NexusGenInterfaces {
 }
+
+export interface NexusGenUnions {
+}
+
+export type NexusGenRootTypes = NexusGenObjects
+
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   Author: { // field return type
-    avatarUrl: string; // String!
-    createdAt: any; // DateTime!
-    description: string; // String!
-    id: string; // String!
-    issues: NexusGenRootTypes['Issue'][]; // [Issue!]!
-    name: string; // String!
-    updatedAt: any; // DateTime!
+    avatarUrl: string | null; // String
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
+    description: string | null; // String
+    id: string | null; // String
+    issues: Array<NexusGenRootTypes['Issue'] | null> | null; // [Issue]
+    name: string | null; // String
+    updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
   }
   Issue: { // field return type
     author: NexusGenRootTypes['Author'] | null; // Author
     authorId: string | null; // String
     comment: string | null; // String
-    date: any; // DateTime!
+    date: NexusGenScalars['DateTime'] | null; // DateTime
     description: string | null; // String
-    id: string; // String!
-    number: number; // Int!
+    id: string | null; // String
+    number: number | null; // Int
     previewImage: string | null; // String
-    published: boolean; // Boolean!
+    published: boolean | null; // Boolean
     specialPerk: string | null; // String
-    title: string; // String!
-    topics: NexusGenRootTypes['Topic'][]; // [Topic!]!
-    versionCount: number; // Int!
+    title: string | null; // String
+    topics: Array<NexusGenRootTypes['Topic'] | null> | null; // [Topic]
+    versionCount: number | null; // Int
   }
   Link: { // field return type
-    id: string; // String!
+    id: string | null; // String
     position: number | null; // Int
     text: string | null; // String
     title: string | null; // String
     topic: NexusGenRootTypes['Topic'] | null; // Topic
     topicId: string | null; // String
-    url: string; // String!
+    url: string | null; // String
   }
   LinkSubmission: { // field return type
-    createdAt: any; // DateTime!
-    description: string; // String!
-    email: string; // String!
-    id: string; // String!
-    name: string; // String!
-    title: string; // String!
-    updatedAt: any; // DateTime!
-    url: string; // String!
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
+    description: string | null; // String
+    email: string | null; // String
+    id: string | null; // String
+    name: string | null; // String
+    title: string | null; // String
+    updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
+    url: string | null; // String
   }
   Mutation: { // field return type
-    addLinksToTopic: NexusGenRootTypes['Topic']; // Topic!
-    createIssue: NexusGenRootTypes['Issue']; // Issue!
-    createLink: NexusGenRootTypes['Link']; // Link!
-    createSubmissionLink: NexusGenRootTypes['LinkSubmission']; // LinkSubmission!
-    createSubscriber: NexusGenRootTypes['Subscriber']; // Subscriber!
-    createTopic: NexusGenRootTypes['Topic']; // Topic!
-    deleteIssue: NexusGenRootTypes['Issue']; // Issue!
-    deleteLink: NexusGenRootTypes['Link']; // Link!
-    publishEmailDraft: NexusGenRootTypes['Issue']; // Issue!
-    updateIssue: NexusGenRootTypes['Issue']; // Issue!
-    updateLink: NexusGenRootTypes['Link']; // Link!
-    updateTopic: NexusGenRootTypes['Topic']; // Topic!
-    updateTopicWhenIssueDeleted: NexusGenRootTypes['Topic']; // Topic!
+    addLinksToTopic: NexusGenRootTypes['Topic'] | null; // Topic
+    createIssue: NexusGenRootTypes['Issue'] | null; // Issue
+    createLink: NexusGenRootTypes['Link'] | null; // Link
+    createSubmissionLink: NexusGenRootTypes['LinkSubmission'] | null; // LinkSubmission
+    createSubscriber: NexusGenRootTypes['Subscriber'] | null; // Subscriber
+    createTopic: NexusGenRootTypes['Topic'] | null; // Topic
+    deleteIssue: NexusGenRootTypes['Issue'] | null; // Issue
+    deleteLink: NexusGenRootTypes['Link'] | null; // Link
+    publishEmailDraft: NexusGenRootTypes['Issue'] | null; // Issue
+    updateIssue: NexusGenRootTypes['Issue'] | null; // Issue
+    updateLink: NexusGenRootTypes['Link'] | null; // Link
+    updateTopic: NexusGenRootTypes['Topic'] | null; // Topic
+    updateTopicWhenIssueDeleted: NexusGenRootTypes['Topic'] | null; // Topic
   }
   Query: { // field return type
-    allAuthors: NexusGenRootTypes['Author'][]; // [Author!]!
-    allIssues: NexusGenRootTypes['Issue'][]; // [Issue!]!
-    allLinks: NexusGenRootTypes['Link'][]; // [Link!]!
-    allLinkSubmissions: NexusGenRootTypes['LinkSubmission'][]; // [LinkSubmission!]!
-    allSubscribers: NexusGenRootTypes['Subscriber'][]; // [Subscriber!]!
-    allTopics: NexusGenRootTypes['Topic'][]; // [Topic!]!
-    issue: NexusGenRootTypes['Issue']; // Issue!
+    allAuthors: Array<NexusGenRootTypes['Author'] | null> | null; // [Author]
+    allIssues: Array<NexusGenRootTypes['Issue'] | null> | null; // [Issue]
+    allLinks: Array<NexusGenRootTypes['Link'] | null> | null; // [Link]
+    allLinkSubmissions: Array<NexusGenRootTypes['LinkSubmission'] | null> | null; // [LinkSubmission]
+    allSubscribers: Array<NexusGenRootTypes['Subscriber'] | null> | null; // [Subscriber]
+    allTopics: Array<NexusGenRootTypes['Topic'] | null> | null; // [Topic]
+    issue: NexusGenRootTypes['Issue'] | null; // Issue
   }
   Subscriber: { // field return type
-    email: string; // String!
-    id: string; // String!
-    name: string; // String!
+    email: string | null; // String
+    id: string | null; // String
+    name: string | null; // String
   }
   Topic: { // field return type
-    id: string; // String!
+    id: string | null; // String
     issue: NexusGenRootTypes['Issue'] | null; // Issue
-    issue_comment: string; // String!
+    issue_comment: string | null; // String
     issueId: string | null; // String
-    links: NexusGenRootTypes['Link'][]; // [Link!]!
+    links: Array<NexusGenRootTypes['Link'] | null> | null; // [Link]
     position: number | null; // Int
-    title: string; // String!
+    title: string | null; // String
   }
   User: { // field return type
-    id: string; // String!
-    roles: string[]; // [String!]!
+    id: string | null; // String
+    roles: Array<string | null> | null; // [String]
+  }
+}
+
+export interface NexusGenFieldTypeNames {
+  Author: { // field return type name
+    avatarUrl: 'String'
+    createdAt: 'DateTime'
+    description: 'String'
+    id: 'String'
+    issues: 'Issue'
+    name: 'String'
+    updatedAt: 'DateTime'
+  }
+  Issue: { // field return type name
+    author: 'Author'
+    authorId: 'String'
+    comment: 'String'
+    date: 'DateTime'
+    description: 'String'
+    id: 'String'
+    number: 'Int'
+    previewImage: 'String'
+    published: 'Boolean'
+    specialPerk: 'String'
+    title: 'String'
+    topics: 'Topic'
+    versionCount: 'Int'
+  }
+  Link: { // field return type name
+    id: 'String'
+    position: 'Int'
+    text: 'String'
+    title: 'String'
+    topic: 'Topic'
+    topicId: 'String'
+    url: 'String'
+  }
+  LinkSubmission: { // field return type name
+    createdAt: 'DateTime'
+    description: 'String'
+    email: 'String'
+    id: 'String'
+    name: 'String'
+    title: 'String'
+    updatedAt: 'DateTime'
+    url: 'String'
+  }
+  Mutation: { // field return type name
+    addLinksToTopic: 'Topic'
+    createIssue: 'Issue'
+    createLink: 'Link'
+    createSubmissionLink: 'LinkSubmission'
+    createSubscriber: 'Subscriber'
+    createTopic: 'Topic'
+    deleteIssue: 'Issue'
+    deleteLink: 'Link'
+    publishEmailDraft: 'Issue'
+    updateIssue: 'Issue'
+    updateLink: 'Link'
+    updateTopic: 'Topic'
+    updateTopicWhenIssueDeleted: 'Topic'
+  }
+  Query: { // field return type name
+    allAuthors: 'Author'
+    allIssues: 'Issue'
+    allLinks: 'Link'
+    allLinkSubmissions: 'LinkSubmission'
+    allSubscribers: 'Subscriber'
+    allTopics: 'Topic'
+    issue: 'Issue'
+  }
+  Subscriber: { // field return type name
+    email: 'String'
+    id: 'String'
+    name: 'String'
+  }
+  Topic: { // field return type name
+    id: 'String'
+    issue: 'Issue'
+    issue_comment: 'String'
+    issueId: 'String'
+    links: 'Link'
+    position: 'Int'
+    title: 'String'
+  }
+  User: { // field return type name
+    id: 'String'
+    roles: 'String'
   }
 }
 
@@ -195,7 +299,7 @@ export interface NexusGenArgTypes {
       topicId: string; // String!
     }
     createIssue: { // args
-      date?: any | null; // DateTime
+      date?: NexusGenScalars['DateTime'] | null; // DateTime
       number: number; // Int!
       published: boolean; // Boolean!
       title: string; // String!
@@ -256,12 +360,13 @@ export interface NexusGenArgTypes {
   }
 }
 
-export interface NexusGenAbstractResolveReturnTypes {
+export interface NexusGenAbstractTypeMembers {
 }
 
-export interface NexusGenInheritedFields {}
+export interface NexusGenTypeInterfaces {
+}
 
-export type NexusGenObjectNames = "Author" | "Issue" | "Link" | "LinkSubmission" | "Mutation" | "Query" | "Subscriber" | "Topic" | "User";
+export type NexusGenObjectNames = keyof NexusGenObjects;
 
 export type NexusGenInputNames = never;
 
@@ -269,9 +374,21 @@ export type NexusGenEnumNames = never;
 
 export type NexusGenInterfaceNames = never;
 
-export type NexusGenScalarNames = "Boolean" | "DateTime" | "Float" | "ID" | "Int" | "String";
+export type NexusGenScalarNames = keyof NexusGenScalars;
 
 export type NexusGenUnionNames = never;
+
+export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
+
+export type NexusGenAbstractsUsingStrategyResolveType = never;
+
+export type NexusGenFeaturesConfig = {
+  abstractTypeStrategies: {
+    isTypeOf: false
+    resolveType: true
+    __typename: false
+  }
+}
 
 export interface NexusGenTypes {
   context: Context.Context;
@@ -279,8 +396,9 @@ export interface NexusGenTypes {
   rootTypes: NexusGenRootTypes;
   argTypes: NexusGenArgTypes;
   fieldTypes: NexusGenFieldTypes;
+  fieldTypeNames: NexusGenFieldTypeNames;
   allTypes: NexusGenAllTypes;
-  inheritedFields: NexusGenInheritedFields;
+  typeInterfaces: NexusGenTypeInterfaces;
   objectNames: NexusGenObjectNames;
   inputNames: NexusGenInputNames;
   enumNames: NexusGenEnumNames;
@@ -291,7 +409,10 @@ export interface NexusGenTypes {
   allOutputTypes: NexusGenTypes['objectNames'] | NexusGenTypes['enumNames'] | NexusGenTypes['unionNames'] | NexusGenTypes['interfaceNames'] | NexusGenTypes['scalarNames'];
   allNamedTypes: NexusGenTypes['allInputTypes'] | NexusGenTypes['allOutputTypes']
   abstractTypes: NexusGenTypes['interfaceNames'] | NexusGenTypes['unionNames'];
-  abstractResolveReturn: NexusGenAbstractResolveReturnTypes;
+  abstractTypeMembers: NexusGenAbstractTypeMembers;
+  objectsUsingAbstractStrategyIsTypeOf: NexusGenObjectsUsingAbstractStrategyIsTypeOf;
+  abstractsUsingStrategyResolveType: NexusGenAbstractsUsingStrategyResolveType;
+  features: NexusGenFeaturesConfig;
 }
 
 
@@ -299,7 +420,49 @@ declare global {
   interface NexusGenPluginTypeConfig<TypeName extends string> {
   }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
+    /**
+     * Whether the type can be null
+     * @default (depends on whether nullability is configured in type or schema)
+     * @see declarativeWrappingPlugin
+     */
+    nullable?: boolean
+    /**
+     * Whether the type is list of values, or just a single value.
+     * If list is true, we assume the type is a list. If list is an array,
+     * we'll assume that it's a list with the depth. The boolean indicates whether
+     * the type is required (non-null), where true = nonNull, false = nullable.
+     * @see declarativeWrappingPlugin
+     */
+    list?: true | boolean[]
+    /**
+     * Whether the type should be non null, `required: true` = `nullable: false`
+     * @default (depends on whether nullability is configured in type or schema)
+     * @see declarativeWrappingPlugin
+     */
+    required?: boolean
   }
   interface NexusGenPluginSchemaConfig {
+  }
+  interface NexusGenPluginArgConfig {
+    /**
+     * Whether the type can be null
+     * @default (depends on whether nullability is configured in type or schema)
+     * @see declarativeWrappingPlugin
+     */
+    nullable?: boolean
+    /**
+     * Whether the type is list of values, or just a single value.
+     * If list is true, we assume the type is a list. If list is an array,
+     * we'll assume that it's a list with the depth. The boolean indicates whether
+     * the type is required (non-null), where true = nonNull, false = nullable.
+     * @see declarativeWrappingPlugin
+     */
+    list?: true | boolean[]
+    /**
+     * Whether the type should be non null, `required: true` = `nullable: false`
+     * @default (depends on whether nullability is configured in type or schema)
+     * @see declarativeWrappingPlugin
+     */
+    required?: boolean
   }
 }
