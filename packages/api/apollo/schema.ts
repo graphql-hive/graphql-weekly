@@ -7,7 +7,7 @@ import {
   asNexusMethod,
   booleanArg,
   arg,
-  nonNull
+  nonNull,
 } from '@nexus/schema'
 import { GraphQLDateTime } from 'graphql-iso-date'
 import axios from 'axios'
@@ -83,7 +83,7 @@ const Link = objectType({
     t.field('id', { type: 'String' })
     t.nullable.field('position', { type: 'Int' })
     t.nullable.field('text', { type: 'String' })
-    t.nullable.field('title', { type: 'String'})
+    t.nullable.field('title', { type: 'String' })
     t.nullable.field('topicId', { type: 'String' })
     t.nullable.field('url', { type: 'String' })
     t.nullable.field('topic', {
