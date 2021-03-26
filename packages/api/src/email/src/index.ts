@@ -715,7 +715,7 @@ function formatTemplate(issue: Issue) {
                             >
                               <tr>
                               <td valign="top">
-                                <a href="https://prisma.io" target="_blank">
+                                <a href="https://prisma.io/?utm_source=graphqlweekly&utm_medium=email&utm_campaign=graphqlweekly-prisma" target="_blank">
                                   <img
                                       src="https://i.imgur.com/kd3SWX8.png"
                                       class="ConfImage"
