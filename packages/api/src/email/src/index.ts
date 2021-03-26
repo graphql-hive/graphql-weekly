@@ -714,15 +714,17 @@ function formatTemplate(issue: Issue) {
                               class="ConfBox"
                             >
                               <tr>
-                                <td valign="top">
-                                  <img
-                                      src="https://i.imgur.com/kd3SWX8.png"
-                                      class="ConfImage"
-                                      width="680"
-                                      height="340"
-                                      style="max-width: 100%; height: auto;"
-                                  />
-                                </td>
+                                <a href="https://prisma.io" target="_blank">
+                                  <td valign="top">
+                                    <img
+                                        src="https://i.imgur.com/kd3SWX8.png"
+                                        class="ConfImage"
+                                        width="680"
+                                        height="340"
+                                        style="max-width: 100%; height: auto;"
+                                    />
+                                  </td>
+                                </a>
                               </tr>
                             </table>
   
