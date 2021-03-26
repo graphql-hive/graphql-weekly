@@ -16,6 +16,7 @@ interface Issue {
   published: boolean;
   versionCount: number;
   topics: Topic[];
+  isFoundationEdition: boolean;
 }
 
 interface Topic {
@@ -117,6 +118,7 @@ function renderContent(
     title: string;
   };
   content: string;
+  footer: any;
 } {
   const firstTopic = issue.topics.slice(0, 1)[0];
   const restTopics = issue.topics.slice(1);
@@ -127,7 +129,8 @@ function renderContent(
       color: getColor(firstTopic.title),
       text: renderTopicContent(firstTopic)
     },
-    content: renderTopics(restTopics)
+    content: renderTopics(restTopics),
+    footer: renderFooter(issue.isFoundationEdition)
   };
 }
 
@@ -137,6 +140,30 @@ function renderTopics(topics: Topic[]) {
 
 function getColor(title: string): string {
   return colorMap[title.toLowerCase()] || colorMap.default;
+}
+
+function renderFooter(isFoundation) {
+  if (isFoundation) {
+    return `
+    <td valign="top" style="padding: 10px 30px;">
+      <h3>Get Involved!</h3>
+      <p>Developers can get involved in the community and contribute to the project at <a href="https://github.com/graphql">https://github.com/graphql</a>.</p>
+      <p>Organizations interested in becoming members of the GraphQL Foundation or the GraphQL Specification can learn more on our <a href="https://foundation.graphql.org/join/" target="_blank"></a>member page</a>. If you have questions about membership, please send an email to <a href="mailto:membership@graphql.org">membership@graphql.org</a>.</p>
+    </td>
+    `;
+  } else {
+    return `
+    <td valign="top">
+      <img
+          src="https://i.imgur.com/kd3SWX8.png"
+          class="ConfImage"
+          width="680"
+          height="340"
+          style="max-width: 100%; height: auto;"
+      />
+    </td>
+    `;
+  }
 }
 
 function renderTopic(topic: Topic) {
@@ -185,8 +212,20 @@ function renderLink({ url, title, text }: Link) {
   </p>`;
 }
 
+const foundationEditionHeader = `
+<div style="margin-bottom:10px;">
+  <h2 class="articleTitle" style="color: ${firstTopic.color}">Welcome to GraphQL Weekly: Foundation Edition!</h2>
+  <p>Prisma is a part of the GraphQL Foundation and they have partnered with the <a href="https://foundation.graphql.org/news/graphql-newsletter/" target="_blank" style="text-decoration: underline;">foundation’s new newsletter</a> to bring you the latest Foundation news.</p>
+</div>
+
+
+<div style="padding: 10px 20px; background-color: #eaeaea; border-radius: 10px; margin-bottom: 30px; margin-top:10px;">
+
+<p><em>The <a href="https://foundation.graphql.org/faq/" target="_blank" style="text-decoration: underline;">GraphQL Foundation</a> provides governance for GraphQL as well as vendor-neutral oversight of funding, events, operations resources, and more. It was formed in 2018 by <a href="https://landscape.graphql.org/category=graph-ql-foundation-member&format=logo-mode" target="_blank" style="text-decoration: underline;">various tech companies</a> and hosted under the <a href="https://www.linuxfoundation.org/" target="_blank" style="text-decoration: underline;">Linux Foundation</a>. It's an open, neutral home for the GraphQL community.</em></p>
+<p><em>You can find out more by visiting <a href="https://foundation.graphql.org/" target="_blank" style="text-decoration: underline;">foundation.graphql.org</a></em><p>`;
+
 function formatTemplate(issue: Issue) {
-  const { firstTopic, content } = renderContent(issue);
+  const { firstTopic, content, footer } = renderContent(issue);
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
@@ -630,40 +669,13 @@ function formatTemplate(issue: Issue) {
                                             </tr>
                                           </table>
 
+                                          ${foundationEditionHeader}
+
                                           <h2 class="articleTitle" style="color: ${firstTopic.color}">${firstTopic.title}</h2>
   
                                           ${firstTopic.text}
   
-                                          <!-- Author details -->
-  
-                                          <!-- <table
-                                            border="0"
-                                            cellpadding="0"
-                                            cellspacing="0"
-                                            width="100%"
-                                            class="author"
-                                          >
-                                            <tr>
-                                              <td  width="40"  style="padding-right: 16px;">
-                                                <div class="author__avatar">
-                                                  <img
-                                                    src="https://weeklyletter.netlify.com/assets/NikolasBurk.png"
-                                                    width="40"
-                                                    height="40"
-                                                  />
-                                                </div>
-                                              </td>
-                                              <td>
-                                                <div class="author__name">
-                                                  Nikolas Burk
-                                                </div>
-                                                <div class="author__bio">
-                                                  Full-Stack Developer at
-                                                  Graphcool
-                                                </div>
-                                              </td>
-                                            </tr>
-                                          </table> -->
+                                          
                                         </td>
                                       </tr>
                                     </table>
@@ -714,15 +726,7 @@ function formatTemplate(issue: Issue) {
                               class="ConfBox"
                             >
                               <tr>
-                                <td valign="top">
-                                  <img
-                                      src="https://i.imgur.com/kd3SWX8.png"
-                                      class="ConfImage"
-                                      width="680"
-                                      height="340"
-                                      style="max-width: 100%; height: auto;"
-                                  />
-                                </td>
+                                ${footer}
                               </tr>
                             </table>
   
