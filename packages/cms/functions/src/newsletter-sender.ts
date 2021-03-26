@@ -41,14 +41,12 @@ export default callbackRuntime(
 
     const mc = new mcapi.Mailchimp(mailchimpKey);
 
-    const shouldRun =
-      issue.published &&
-      payload.data.Issue.updatedFields.includes('versionCount');
+    const shouldRun = issue.published && payload.data.Issue.updatedFields.includes('versionCount');
 
     if (!shouldRun) {
       console.log('Nothing to do here...');
       return {
-        statusCode: 204,
+        statusCode: 204
       };
     }
 
@@ -60,23 +58,21 @@ export default callbackRuntime(
           from_email: 'hello@graphqlweekly.com',
           from_name: 'GraphQL Weekly',
           inline_css: true,
-          title: `GraphQL Weekly - ${issue.title} (version ${
-            issue.versionCount
-            })`,
+          title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`
         },
         content: {
-          html: formatTemplate(issue),
+          html: formatTemplate(issue)
         },
-        type: 'regular',
+        type: 'regular'
       };
 
       mc.campaigns.create(params, resolve, reject);
     });
 
     return {
-      statusCode: 204,
+      statusCode: 204
     };
-  },
+  }
 );
 
 const colorMap = {
@@ -87,7 +83,7 @@ const colorMap = {
   videos: '#27AE60',
   'tools & open source': '#F0950C',
   'open source': '#F0950C',
-  conference: '#6560E2',
+  conference: '#6560E2'
 };
 
 /**
@@ -95,7 +91,7 @@ const colorMap = {
  * @param issue
  */
 function renderContent(
-  issue: Issue,
+  issue: Issue
 ): {
   firstTopic: {
     text: string;
@@ -111,9 +107,9 @@ function renderContent(
     firstTopic: {
       title: firstTopic.title,
       color: getColor(firstTopic.title),
-      text: renderTopicContent(firstTopic),
+      text: renderTopicContent(firstTopic)
     },
-    content: renderTopics(restTopics),
+    content: renderTopics(restTopics)
   };
 }
 
@@ -616,9 +612,7 @@ function formatTemplate(issue: Issue) {
                                             </tr>
                                           </table>
 
-                                          <h2 class="articleTitle" style="color: ${
-    firstTopic.color
-    }">${firstTopic.title}</h2>
+                                          <h2 class="articleTitle" style="color: ${firstTopic.color}">${firstTopic.title}</h2>
   
                                           ${firstTopic.text}
   
@@ -704,7 +698,7 @@ function formatTemplate(issue: Issue) {
                               <tr>
                                 <td valign="top">
                                   <img
-                                      src="https://i.imgur.com/9AHra8X.png"
+                                      src="https://i.imgur.com/zlDVneh.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
