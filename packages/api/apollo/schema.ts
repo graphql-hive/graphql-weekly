@@ -40,6 +40,7 @@ interface Issue {
   published: boolean
   versionCount: number
   topics: Topic[]
+  isFoundation: boolean
 }
 
 interface Topic {
@@ -467,8 +468,9 @@ const Mutation = objectType({
       args: {
         id: nonNull(stringArg()),
         versionCount: intArg(),
+        isFoundation: booleanArg(),
       },
-      resolve: async (_, { id, versionCount }, ctx) => {
+      resolve: async (_, { id, versionCount, isFoundation }, ctx) => {
         try {
           verifyAuth(ctx.user)
           await ctx.prisma.issue.update({
@@ -506,6 +508,7 @@ const Mutation = objectType({
                       text: link.text,
                     })),
                   })),
+                  isFoundation,
                 },
               },
             },
