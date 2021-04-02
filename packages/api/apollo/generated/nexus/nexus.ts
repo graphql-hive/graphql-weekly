@@ -331,6 +331,7 @@ export interface NexusGenArgTypes {
     }
     publishEmailDraft: { // args
       id: string; // String!
+      isFoundation?: boolean | null; // Boolean
       versionCount?: number | null; // Int
     }
     updateIssue: { // args

@@ -40,6 +40,7 @@ interface Issue {
   published: boolean
   versionCount: number
   topics: Topic[]
+  isFoundationEdition: boolean
 }
 
 interface Topic {
@@ -467,8 +468,9 @@ const Mutation = objectType({
       args: {
         id: nonNull(stringArg()),
         versionCount: intArg(),
+        isFoundation: booleanArg(),
       },
-      resolve: async (_, { id, versionCount }, ctx) => {
+      resolve: async (_, { id, versionCount, isFoundation }, ctx) => {
         try {
           verifyAuth(ctx.user)
           await ctx.prisma.issue.update({
@@ -506,12 +508,14 @@ const Mutation = objectType({
                       text: link.text,
                     })),
                   })),
+                  isFoundationEdition: isFoundation,
                 },
               },
             },
           }
 
-          const mailchimpLink = 'https://eager-swartz-0dff0b.netlify.app/'
+          // const mailchimpLink = 'https://eager-swartz-0dff0b.netlify.app/'
+          const mailchimpLink = 'http://localhost:55303/'
 
           await axios.post(mailchimpLink, emailPayload)
 

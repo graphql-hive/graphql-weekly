@@ -65,7 +65,7 @@ type Mutation {
   createTopic(issue_comment: String!, issueId: String!, title: String!): Topic
   deleteIssue(id: String!): Issue
   deleteLink(id: String!): Link
-  publishEmailDraft(id: String!, versionCount: Int): Issue
+  publishEmailDraft(id: String!, isFoundation: Boolean, versionCount: Int): Issue
   updateIssue(id: String!, previewImage: String, published: Boolean, versionCount: Int): Issue
   updateLink(id: String!, text: String, title: String!, url: String): Link
   updateTopic(id: String!, position: Int): Topic
