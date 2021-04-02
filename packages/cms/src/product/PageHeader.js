@@ -28,7 +28,7 @@ const incrVersion = gql`
     publishEmailDraft(
       id: $id
       versionCount: $versionCount
-      isFoundation: $isFoudnation
+      isFoundation: $isFoundation
     ) {
       id
       versionCount
@@ -68,6 +68,7 @@ class PageHeader extends React.Component {
   };
 
   increaseVersion = (isFoundation) => {
+    console.log('is foundation', isFoundation);
     return this.props.increaseVersion({
       variables: {
         id: this.props.id,
