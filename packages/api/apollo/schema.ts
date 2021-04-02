@@ -40,7 +40,7 @@ interface Issue {
   published: boolean
   versionCount: number
   topics: Topic[]
-  isFoundation: boolean
+  isFoundationEdition: boolean
 }
 
 interface Topic {
@@ -508,13 +508,14 @@ const Mutation = objectType({
                       text: link.text,
                     })),
                   })),
-                  isFoundation,
+                  isFoundationEdition: isFoundation,
                 },
               },
             },
           }
 
-          const mailchimpLink = 'https://eager-swartz-0dff0b.netlify.app/'
+          // const mailchimpLink = 'https://eager-swartz-0dff0b.netlify.app/'
+          const mailchimpLink = 'http://localhost:55303/'
 
           await axios.post(mailchimpLink, emailPayload)
 
