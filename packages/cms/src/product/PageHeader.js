@@ -12,18 +12,23 @@ const Title = styled('h1')`
 `;
 
 const publishIssue = gql`
-  mutation pub($id: String!, $published: Boolean) {
-    updateIssue(id: $id, published: $published) {
+  mutation pub($id: String!, $published: Boolean, $isFoundation: Boolean) {
+    updateIssue(id: $id, published: $published, isFoundation: $isFoudnation) {
       id
     }
   }
 `;
 
 const incrVersion = gql`
-  mutation incrVersion($id: String!, $versionCount: Int) {
+  mutation incrVersion(
+    $id: String!
+    $versionCount: Int
+    $isFoundation: Boolean
+  ) {
     publishEmailDraft(
       id: $id
       versionCount: $versionCount
+      isFoundation: $isFoundation
     ) {
       id
       versionCount
@@ -48,20 +53,27 @@ const updateTopicWhenIssueDeleted = gql`
 `;
 
 class PageHeader extends React.Component {
-  handlePublish = () => {
+  state = {
+    isFoundation: false
+  };
+
+  handlePublish = (isFoundation) => {
     return this.props.publishIssue({
       variables: {
         id: this.props.id,
-        published: true
+        published: true,
+        isFoundation
       }
     });
   };
 
-  increaseVersion = () => {
+  increaseVersion = (isFoundation) => {
+    console.log('is foundation', isFoundation);
     return this.props.increaseVersion({
       variables: {
         id: this.props.id,
-        versionCount: this.props.versionCount + 1
+        versionCount: this.props.versionCount + 1,
+        isFoundation
       }
     });
   };
@@ -121,26 +133,38 @@ class PageHeader extends React.Component {
       <Flex>
         <FlexCell align="center">
           <Title>
-            Curating: <strong>{this.props.title}</strong>{' '}
-            (version {this.props.versionCount})
+            Curating: <strong>{this.props.title}</strong> (version{' '}
+            {this.props.versionCount})
+          </Title>
+        </FlexCell>
+        <FlexCell align="center">
+          <Title>
+            <input
+              type="checkbox"
+              onClick={(event) => {
+                if (event.target.checked) {
+                  this.setState({ isFoundation: true });
+                } else if (!event.target.checked) {
+                  this.setState({ isFoundation: false });
+                }
+              }}
+            />{' '}
+            Foundation Edition
           </Title>
         </FlexCell>
         <FlexCell align="center">
           <Flex align="flex-end">
             <FlexCell align="center" grow="0" basis="auto">
-              <Button onClick={this.handlePublish}>
+              <Button
+                onClick={() => this.handlePublish(this.state.isFoundation)}
+              >
                 Publish
               </Button>
             </FlexCell>
-            <FlexCell
-              align="center"
-              grow="0"
-              basis="auto"
-              margin="0 0 0 10px"
-            >
+            <FlexCell align="center" grow="0" basis="auto" margin="0 0 0 10px">
               <Button
                 color="grey-bg"
-                onClick={this.increaseVersion}
+                onClick={() => this.increaseVersion(this.state.isFoundation)}
               >
                 Create Email
               </Button>
@@ -152,10 +176,7 @@ class PageHeader extends React.Component {
                 basis="auto"
                 margin="0 0 0 10px"
               >
-                <Button
-                  color="red"
-                  onClick={this.deleteIssue}
-                >
+                <Button color="red" onClick={this.deleteIssue}>
                   Delete Issue
                 </Button>
               </FlexCell>
