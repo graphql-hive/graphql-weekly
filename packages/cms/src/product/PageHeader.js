@@ -12,8 +12,8 @@ const Title = styled('h1')`
 `;
 
 const publishIssue = gql`
-  mutation pub($id: String!, $published: Boolean, $isFoundation: Boolean) {
-    updateIssue(id: $id, published: $published, isFoundation: $isFoudnation) {
+  mutation pub($id: String!, $published: Boolean) {
+    updateIssue(id: $id, published: $published) {
       id
     }
   }
@@ -58,6 +58,7 @@ class PageHeader extends React.Component {
   };
 
   handlePublish = (isFoundation) => {
+    console.log(isFoundation);
     return this.props.publishIssue({
       variables: {
         id: this.props.id,
