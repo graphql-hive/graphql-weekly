@@ -44,7 +44,7 @@ export class Nav extends React.Component<Props, State> {
 
           <NavItems isOpened={this.state.isOpened}>
             <NavItem href="https://graphqlconf.org" target="_blank">
-              <NavText>GraphQL Conf 2019</NavText>
+              <NavText>GraphQL Conf 2021</NavText>
               <Arrow />
             </NavItem>
             <NavItem href="https://www.howtographql.com" target="_blank">
