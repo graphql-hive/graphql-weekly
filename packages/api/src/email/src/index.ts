@@ -728,7 +728,17 @@ function formatTemplate(issue: Issue) {
                               class="ConfBox"
                             >
                               <tr>
-                                ${footer}
+                              <td valign="top">
+                                <a href="https://prisma.io/graphql?utm_source=graphqlweekly&utm_medium=email&utm_campaign=graphqlweekly-prisma" target="_blank">
+                                  <img
+                                      src="https://i.imgur.com/kd3SWX8.png"
+                                      class="ConfImage"
+                                      width="680"
+                                      height="340"
+                                      style="max-width: 100%; height: auto;"
+                                  />
+                                  </a>
+                                </td>
                               </tr>
                             </table>
   
