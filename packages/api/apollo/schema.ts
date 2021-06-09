@@ -514,7 +514,7 @@ const Mutation = objectType({
             },
           }
 
-          const mailchimpLink = 'https://eager-swartz-0dff0b.netlify.app/'
+          const mailchimpLink = 'https://graphql-weekly-email.netlify.app/'
           // const mailchimpLink = 'http://localhost:55303/'
 
           await axios.post(mailchimpLink, emailPayload)
