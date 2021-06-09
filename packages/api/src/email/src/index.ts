@@ -173,7 +173,7 @@ function renderFooter(isFoundation) {
     return `
     <td valign="top">
       <img
-          src="https://i.imgur.com/kd3SWX8.png"
+          src="https://i.imgur.com/euCPR5n.png"
           class="ConfImage"
           width="680"
           height="340"
@@ -735,7 +735,7 @@ function formatTemplate(issue: Issue) {
                               <td valign="top">
                                 <a href="https://prisma.io/graphql?utm_source=graphqlweekly&utm_medium=email&utm_campaign=graphqlweekly-prisma" target="_blank">
                                   <img
-                                      src="https://i.imgur.com/kd3SWX8.png"
+                                      src="https://i.imgur.com/euCPR5n.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
