@@ -173,7 +173,7 @@ function renderFooter(isFoundation) {
     return `
     <td valign="top">
       <img
-          src="https://i.imgur.com/euCPR5n.png"
+          src="https://i.imgur.com/sD6L8Iy.png"
           class="ConfImage"
           width="680"
           height="340"
@@ -735,7 +735,7 @@ function formatTemplate(issue: Issue) {
                               <td valign="top">
                                 <a href="https://prisma.zoom.us/webinar/register/WN_mjWIQ74ZQleZW1e3OC59Ig" target="_blank">
                                   <img
-                                      src="https://i.imgur.com/euCPR5n.png"
+                                      src="https://i.imgur.com/sD6L8Iy.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
