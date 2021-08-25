@@ -173,7 +173,7 @@ function renderFooter(isFoundation) {
     return `
     <td valign="top">
       <img
-          src="https://i.imgur.com/Izvnvgm.png"
+          src="https://i.imgur.com/c23XMEM.png"
           class="ConfImage"
           width="680"
           height="340"
@@ -733,9 +733,9 @@ function formatTemplate(issue: Issue) {
                             >
                               <tr>
                               <td valign="top">
-                                <a href="https://graphqlconf.org/" target="_blank">
+                                <a href="https://www.graphqlweekly.com/" target="_blank">
                                   <img
-                                      src="https://i.imgur.com/Izvnvgm.png"
+                                      src="https://i.imgur.com/c23XMEM.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
