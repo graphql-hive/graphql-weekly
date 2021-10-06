@@ -12,7 +12,7 @@ export const About = () => {
       </Logo>
       <Text>
         Curated by <Link href="https://www.prisma.io/">Prisma</Link>,{' '}
-        <Link href="https://www.novvum.io/">Novvum</Link>, and the awesome
+        and the awesome
         GraphQL community.
       </Text>
     </Wrapper>
