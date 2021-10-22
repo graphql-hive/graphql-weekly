@@ -4,11 +4,17 @@ export const topicColors: { [topic: string]: string } = {
 
   'Community & Events': '#009BE3',
   Conference: '#009BE3',
+  Events: '#009BE3',
+  'Podcasts and Shows': '#009BE3',
 
   Videos: '#27AE60',
   Talks: '#27AE60',
 
   'Tools & Open Source': '#F0950C',
+  'Tools and Open Source': '#F0950C',
+  'Libraries and Tools': '#F0950C',
+  Libraries: '#F0950C',
+  'Frameworks and Libraries': '#F0950C',
   'Open Source': '#F0950C',
 }
 
