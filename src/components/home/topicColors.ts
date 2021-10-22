@@ -9,6 +9,7 @@ export const topicColors: { [topic: string]: string } = {
   Videos: '#27AE60',
   Talks: '#27AE60',
   'Podcasts and Shows': '#27AE60',
+  Slides: '#27AE60',
 
   'Tools & Open Source': '#F0950C',
   'Tools and Open Source': '#F0950C',
