@@ -1,5 +1,5 @@
 const fetchGraphQL = async ({ query }) => {
-  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/graphql', {
+  return fetch('https://graphql-weekly.graphcdn.app', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),
