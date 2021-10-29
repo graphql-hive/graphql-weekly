@@ -2,16 +2,12 @@ import * as React from 'react'
 
 // Local
 import styled from '../../style/styled'
-import LogoSvg from './PrismaLogo'
 
 export const About = () => {
   return (
     <Wrapper>
-      <Logo>
-        <LogoSvg />
-      </Logo>
       <Text>
-        Curated by <Link href="https://www.prisma.io/">Prisma</Link>,{' '}
+        Curated by <Link href="https://graphcdn.io/">GraphCDN</Link>,{' '}
         and the awesome
         GraphQL community.
       </Text>
@@ -41,9 +37,3 @@ const Text = styled.div`
 `
 
 const Link = styled.a``
-
-const Logo = styled.div`
-  color: white;
-  opacity: 0.33;
-  margin-right: 16px;
-`
