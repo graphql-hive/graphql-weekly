@@ -77,13 +77,25 @@ export default callbackRuntime(
 
 const colorMap = {
   default: '#f531b1',
+
   articles: '#f531b1',
-  tutorials: '#6560E2',
-  'community & events': '#009BE3',
-  videos: '#27AE60',
-  'tools & open source': '#F0950C',
-  'open source': '#F0950C',
-  conference: '#6560E2'
+  tutorials: '#6560e2',
+
+  'community & events': '#009be3',
+  conference: '#009be3',
+  events: '#009be3',
+
+  videos: '#27ae60',
+  talks: '#27ae60',
+  'podcasts and shows': '#27ae60',
+  slides: '#27ae60',
+
+  'tools & open source': '#f0950c',
+  'tools and open source': '#f0950c',
+  'libraries and tools': '#f0950c',
+  libraries: '#f0950c',
+  'frameworks and libraries': '#f0950c',
+  'open source': '#f0950c'
 };
 
 /**
@@ -687,28 +699,6 @@ function formatTemplate(issue: Issue) {
                               ${content}
 
                               <!-- BANNERS -->
-                              <!-- 7th Content Box -->
-                              <table
-                              border="0"
-                              cellpadding="0"
-                              cellspacing="0"
-                              width="100%"
-                              class="ConfBox"
-                            >
-                              <tr>
-                                <td valign="top">
-                                  <img
-                                      src="https://i.imgur.com/zlDVneh.png"
-                                      class="ConfImage"
-                                      width="680"
-                                      height="340"
-                                      style="max-width: 100%; height: auto;"
-                                  />
-                                </td>
-                              </tr>
-                            </table>
-  
-                              <div class="hSpace"></div>
                               <table
                                 border="0"
                                 cellpadding="0"
