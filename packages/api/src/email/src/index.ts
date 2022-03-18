@@ -733,9 +733,9 @@ function formatTemplate(issue: Issue) {
                             >
                               <tr>
                               <td valign="top">
-                                <a href="https://prisma.io/" target="_blank">
+                                <a href="https://graphcdn.io/" target="_blank">
                                   <img
-                                      src="https://i.imgur.com/kd3SWX8.png"
+                                      src="https://imgur.com/TEmZ4nU.png"
                                       class="ConfImage"
                                       width="680"
                                       height="340"
