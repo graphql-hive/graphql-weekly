@@ -7,7 +7,7 @@ export const About = () => {
   return (
     <Wrapper>
       <Text>
-        Curated by <Link href="https://graphcdn.io/">GraphCDN</Link>,{' '}
+        Curated by <Link href="https://stellate.co/">Stellate</Link>,{' '}
         and the awesome
         GraphQL community.
       </Text>
