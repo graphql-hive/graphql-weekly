@@ -1,7 +1,8 @@
 require('dotenv').config()
-import { ApolloServer } from 'apollo-server-lambda'
+import { ApolloServer } from '@apollo/server';
+import { startServerAndCreateLambdaHandler } from '@as-integrations/aws-lambda'; 
 import { schema } from '../schema'
-import { createContext } from '../context'
+import { Context, createContext } from '../context'
 
 // dev
 // new ApolloServer({ schema, context: ({ req }) => createContext(req) }).listen(
@@ -13,12 +14,12 @@ import { createContext } from '../context'
 // )
 
 // prod..
-const server = new ApolloServer({
+const server = new ApolloServer<Context>({
   schema,
-  context: ({ event }) => createContext(event),
 })
-exports.handler = server.createHandler({
-  cors: {
-    origin: '*',
-  },
+
+const handler = startServerAndCreateLambdaHandler(server, {
+  context: async ({ event }) => createContext(event),
 })
+
+exports.handler = handler

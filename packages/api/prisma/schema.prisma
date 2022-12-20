@@ -8,6 +8,10 @@ datasource db {
   url      = env("MYSQL_CONN_STRING")
 }
 
+generator nexusPrisma {
+   provider = "nexus-prisma"
+}
+
 model Author {
   avatarUrl   String
   createdAt   DateTime @default(now())

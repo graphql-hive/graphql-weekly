@@ -3,14 +3,15 @@
  * Do not make changes to this file directly
  */
 
-import * as Context from "./../../context"
-import { core } from "@nexus/schema"
+
+import type { Context } from "./../../context"
+import type { core } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
     /**
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
-    DateTime<FieldName extends string>(fieldName: FieldName, opts?: core.ScalarInputFieldConfig<core.GetGen3<"inputTypes", TypeName, FieldName>>): void // "DateTime";
+    DateTime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
   }
 }
 declare global {
@@ -21,12 +22,7 @@ declare global {
     DateTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
   }
 }
-declare global {
-  interface NexusGenCustomOutputProperties<TypeName extends string> {
-    model: NexusPrisma<TypeName, 'model'>
-    crud: any
-  }
-}
+
 
 declare global {
   interface NexusGen extends NexusGenTypes {}
@@ -96,8 +92,8 @@ export interface NexusGenObjects {
   }
   Topic: { // root type
     id?: string | null; // String
-    issue_comment?: string | null; // String
     issueId?: string | null; // String
+    issue_comment?: string | null; // String
     position?: number | null; // Int
     title?: string | null; // String
   }
@@ -178,8 +174,8 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     allAuthors: Array<NexusGenRootTypes['Author'] | null> | null; // [Author]
     allIssues: Array<NexusGenRootTypes['Issue'] | null> | null; // [Issue]
-    allLinks: Array<NexusGenRootTypes['Link'] | null> | null; // [Link]
     allLinkSubmissions: Array<NexusGenRootTypes['LinkSubmission'] | null> | null; // [LinkSubmission]
+    allLinks: Array<NexusGenRootTypes['Link'] | null> | null; // [Link]
     allSubscribers: Array<NexusGenRootTypes['Subscriber'] | null> | null; // [Subscriber]
     allTopics: Array<NexusGenRootTypes['Topic'] | null> | null; // [Topic]
     issue: NexusGenRootTypes['Issue'] | null; // Issue
@@ -192,8 +188,8 @@ export interface NexusGenFieldTypes {
   Topic: { // field return type
     id: string | null; // String
     issue: NexusGenRootTypes['Issue'] | null; // Issue
-    issue_comment: string | null; // String
     issueId: string | null; // String
+    issue_comment: string | null; // String
     links: Array<NexusGenRootTypes['Link'] | null> | null; // [Link]
     position: number | null; // Int
     title: string | null; // String
@@ -266,8 +262,8 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     allAuthors: 'Author'
     allIssues: 'Issue'
-    allLinks: 'Link'
     allLinkSubmissions: 'LinkSubmission'
+    allLinks: 'Link'
     allSubscribers: 'Subscriber'
     allTopics: 'Topic'
     issue: 'Issue'
@@ -280,8 +276,8 @@ export interface NexusGenFieldTypeNames {
   Topic: { // field return type name
     id: 'String'
     issue: 'Issue'
-    issue_comment: 'String'
     issueId: 'String'
+    issue_comment: 'String'
     links: 'Link'
     position: 'Int'
     title: 'String'
@@ -319,8 +315,8 @@ export interface NexusGenArgTypes {
       name: string; // String!
     }
     createTopic: { // args
-      issue_comment: string; // String!
       issueId: string; // String!
+      issue_comment: string; // String!
       title: string; // String!
     }
     deleteIssue: { // args
@@ -392,9 +388,10 @@ export type NexusGenFeaturesConfig = {
 }
 
 export interface NexusGenTypes {
-  context: Context.Context;
+  context: Context;
   inputTypes: NexusGenInputs;
   rootTypes: NexusGenRootTypes;
+  inputTypeShapes: NexusGenInputs & NexusGenEnums & NexusGenScalars;
   argTypes: NexusGenArgTypes;
   fieldTypes: NexusGenFieldTypes;
   fieldTypeNames: NexusGenFieldTypeNames;
@@ -420,50 +417,14 @@ export interface NexusGenTypes {
 declare global {
   interface NexusGenPluginTypeConfig<TypeName extends string> {
   }
+  interface NexusGenPluginInputTypeConfig<TypeName extends string> {
+  }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
-    /**
-     * Whether the type can be null
-     * @default (depends on whether nullability is configured in type or schema)
-     * @see declarativeWrappingPlugin
-     */
-    nullable?: boolean
-    /**
-     * Whether the type is list of values, or just a single value.
-     * If list is true, we assume the type is a list. If list is an array,
-     * we'll assume that it's a list with the depth. The boolean indicates whether
-     * the type is required (non-null), where true = nonNull, false = nullable.
-     * @see declarativeWrappingPlugin
-     */
-    list?: true | boolean[]
-    /**
-     * Whether the type should be non null, `required: true` = `nullable: false`
-     * @default (depends on whether nullability is configured in type or schema)
-     * @see declarativeWrappingPlugin
-     */
-    required?: boolean
+  }
+  interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }
   interface NexusGenPluginSchemaConfig {
   }
   interface NexusGenPluginArgConfig {
-    /**
-     * Whether the type can be null
-     * @default (depends on whether nullability is configured in type or schema)
-     * @see declarativeWrappingPlugin
-     */
-    nullable?: boolean
-    /**
-     * Whether the type is list of values, or just a single value.
-     * If list is true, we assume the type is a list. If list is an array,
-     * we'll assume that it's a list with the depth. The boolean indicates whether
-     * the type is required (non-null), where true = nonNull, false = nullable.
-     * @see declarativeWrappingPlugin
-     */
-    list?: true | boolean[]
-    /**
-     * Whether the type should be non null, `required: true` = `nullable: false`
-     * @default (depends on whether nullability is configured in type or schema)
-     * @see declarativeWrappingPlugin
-     */
-    required?: boolean
   }
 }

@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import { User } from './schema'
+import { IncomingEvent } from '@as-integrations/aws-lambda'; 
 
 const prisma = new PrismaClient()
 
@@ -9,7 +10,7 @@ export interface Context {
   user: User | null
 }
 
-const getAuth = (event: any) => {
+const getAuth = (event: IncomingEvent) => {
   try {
     const token = event.headers.authorization
     if (!token) {
@@ -25,6 +26,6 @@ const getAuth = (event: any) => {
   }
 }
 
-export function createContext(req: any): Context {
-  return { prisma, user: getAuth(req) }
+export function createContext(event: IncomingEvent): Context {
+  return { prisma, user: getAuth(event) }
 }

@@ -13,9 +13,7 @@ type Author {
 }
 
 """
-A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
-`date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
-8601 standard for representation of dates and times using the Gregorian calendar.
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
 
@@ -62,7 +60,7 @@ type Mutation {
   createLink(url: String!): Link
   createSubmissionLink(description: String!, email: String!, name: String!, title: String!, url: String!): LinkSubmission
   createSubscriber(email: String!, name: String!): Subscriber
-  createTopic(issue_comment: String!, issueId: String!, title: String!): Topic
+  createTopic(issueId: String!, issue_comment: String!, title: String!): Topic
   deleteIssue(id: String!): Issue
   deleteLink(id: String!): Link
   publishEmailDraft(id: String!, isFoundation: Boolean, versionCount: Int): Issue
@@ -75,8 +73,8 @@ type Mutation {
 type Query {
   allAuthors: [Author]
   allIssues: [Issue]
-  allLinks: [Link]
   allLinkSubmissions: [LinkSubmission]
+  allLinks: [Link]
   allSubscribers: [Subscriber]
   allTopics: [Topic]
   issue(id: String!): Issue
@@ -91,8 +89,8 @@ type Subscriber {
 type Topic {
   id: String
   issue: Issue
-  issue_comment: String
   issueId: String
+  issue_comment: String
   links: [Link]
   position: Int
   title: String

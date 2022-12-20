@@ -1,4 +1,3 @@
-import { nexusPrisma } from 'nexus-plugin-prisma'
 import {
   intArg,
   makeSchema,
@@ -8,11 +7,12 @@ import {
   booleanArg,
   arg,
   nonNull,
-} from '@nexus/schema'
-import { GraphQLDateTime } from 'graphql-iso-date'
+} from 'nexus'
+import { DateTimeResolver } from 'graphql-scalars';
 import axios from 'axios'
 import { Context } from './context'
-import { ApolloError } from 'apollo-server'
+import { GraphQLError } from 'graphql';
+import {join} from 'path'
 
 export type User = {
   sub: string
@@ -20,7 +20,7 @@ export type User = {
 
 const verifyAuth = (user: User) => {
   if (!user) {
-    throw new ApolloError('Not authorized')
+    throw new GraphQLError('Not authorized')
   }
   return
 }
@@ -54,7 +54,7 @@ interface Link {
   text: string
 }
 
-export const GQLDate = asNexusMethod(GraphQLDateTime, 'DateTime')
+export const GQLDate = asNexusMethod(DateTimeResolver, 'DateTime')
 
 const Author = objectType({
   name: 'Author',
@@ -68,9 +68,9 @@ const Author = objectType({
     t.field('updatedAt', { type: 'DateTime' })
     t.list.field('issues', {
       type: 'Issue',
-      resolve: (parent, args, ctx) =>
+      resolve: (parent, args, ctx: Context) =>
         ctx.prisma.author
-          .findOne({
+          .findFirst({
             where: { id: parent.id },
           })
           .issues(),
@@ -89,9 +89,9 @@ const Link = objectType({
     t.nullable.field('url', { type: 'String' })
     t.nullable.field('topic', {
       type: 'Topic',
-      resolve: (parent, args, ctx) =>
+      resolve: (parent, args, ctx: Context) =>
         ctx.prisma.link
-          .findOne({
+          .findFirst({
             where: { id: parent.id },
           })
           .topic(),
@@ -109,18 +109,18 @@ const Topic = objectType({
     t.field('title', { type: 'String' })
     t.nullable.field('issue', {
       type: 'Issue',
-      resolve: (parent, args, ctx) =>
+      resolve: (parent, args, ctx: Context) =>
         ctx.prisma.topic
-          .findOne({
+          .findFirst({
             where: { id: parent.id },
           })
           .issue(),
     })
     t.list.field('links', {
       type: 'Link',
-      resolve: (parent, args, ctx) =>
+      resolve: (parent, args, ctx: Context) =>
         ctx.prisma.topic
-          .findOne({
+          .findFirst({
             where: { id: parent.id },
           })
           .links(),
@@ -144,21 +144,22 @@ const Issue = objectType({
     t.field('versionCount', { type: 'Int' })
     t.list.field('topics', {
       type: 'Topic',
-      resolve: (parent, args, ctx) =>
+      resolve: (parent, args, ctx: Context) =>
         ctx.prisma.issue
-          .findOne({
+          .findFirst({
             where: { id: parent.id },
           })
           .topics(),
     })
     t.nullable.field('author', {
       type: 'Author',
-      resolve: (parent, args, ctx) =>
-        ctx.prisma.issue
-          .findOne({
+      resolve: async (parent, args, ctx: Context) => {
+        return ctx.prisma.issue
+          .findFirst({
             where: { id: parent.id },
           })
-          .author(),
+          .author()
+      }
     })
   },
 })
@@ -192,12 +193,12 @@ const User = objectType({
     t.field('id', { type: 'String' })
     t.list.field('roles', {
       type: 'String',
-      resolve: (parent, args, ctx) =>
-        ctx.prisma.user
-          .findOne({
-            where: { id: parent.id },
-          })
-          .roles(),
+      resolve: async (parent, args, ctx: Context) => {
+        const user = await ctx.prisma.user.findFirst({
+          where: { id: parent.id },
+        })
+        return user.roles
+      },
     })
   },
 })
@@ -207,7 +208,7 @@ const Query = objectType({
   definition(t) {
     t.list.field('allSubscribers', {
       type: 'Subscriber',
-      resolve: (_, args, ctx) => {
+      resolve: (_, args, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.subscriber.findMany()
       },
@@ -215,27 +216,29 @@ const Query = objectType({
 
     t.list.field('allIssues', {
       type: 'Issue',
-      resolve: (_, args, ctx) => {
-        return ctx.prisma.issue.findMany()
+      resolve: (_, args, ctx: Context) => {
+        return ctx.prisma.issue.findMany({include: {
+          author: true
+        }})
       },
     })
 
     t.list.field('allAuthors', {
       type: 'Author',
-      resolve: (_, args, ctx) => {
+      resolve: (_, args, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.author.findMany()
       },
     })
     t.list.field('allTopics', {
       type: 'Topic',
-      resolve: (_, args, ctx) => {
+      resolve: (_, args, ctx: Context) => {
         return ctx.prisma.topic.findMany()
       },
     })
     t.list.field('allLinks', {
       type: 'Link',
-      resolve: (_, args, ctx) => {
+      resolve: (_, args, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.link.findMany()
       },
@@ -257,9 +260,9 @@ const Query = objectType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: (_, args, ctx) => {
+      resolve: (_, args, ctx: Context) => {
         verifyAuth(ctx.user)
-        return ctx.prisma.issue.findOne({ where: { id: args.id } })
+        return ctx.prisma.issue.findFirst({ where: { id: args.id } })
       },
     })
   },
@@ -318,7 +321,7 @@ const Mutation = objectType({
       args: {
         url: nonNull(stringArg()),
       },
-      resolve: (_, { url }, ctx) => {
+      resolve: (_, { url }, ctx: Context) => {
         return ctx.prisma.link.create({
           data: {
             url,
@@ -335,7 +338,7 @@ const Mutation = objectType({
         date: arg({ type: 'DateTime' }),
         published: nonNull(booleanArg()),
       },
-      resolve: (_, { title, number, published, date }, ctx) => {
+      resolve: (_, { title, number, published, date }, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.issue.create({
           data: {
@@ -355,7 +358,7 @@ const Mutation = objectType({
         title: nonNull(stringArg()),
         issueId: nonNull(stringArg()),
       },
-      resolve: (_, { issue_comment, title, issueId }, ctx) => {
+      resolve: (_, { issue_comment, title, issueId }, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.topic.create({
           data: {
@@ -378,7 +381,7 @@ const Mutation = objectType({
         title: nonNull(stringArg()),
         url: nonNull(stringArg()),
       },
-      resolve: (_, { name, email, description, title, url }, ctx) => {
+      resolve: (_, { name, email, description, title, url }, ctx: Context) => {
         return ctx.prisma.linkSubmission.create({
           data: {
             name,
@@ -399,7 +402,7 @@ const Mutation = objectType({
         text: stringArg(),
         url: stringArg(),
       },
-      resolve: (_, { id, title, text, url }, ctx) => {
+      resolve: (_, { id, title, text, url }, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.link.update({
           where: { id: id },
@@ -417,16 +420,18 @@ const Mutation = objectType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: (_, { id }, ctx) => {
+      resolve: (_, { id }, ctx: Context) => {
         verifyAuth(ctx.user)
-        return ctx.prisma.link.delete({
-          where: { id: id },
-          data: {
-            topic: {
-              disconnect: true,
-            },
-          },
-        })
+        const [, res] = [
+          ctx.prisma.topic.delete({
+            // @ts-ignore
+            where: { issueId: id }
+          }),
+          ctx.prisma.link.delete({
+            where: { id: id },
+          })
+        ]
+        return res
       },
     })
 
@@ -470,7 +475,7 @@ const Mutation = objectType({
         versionCount: intArg(),
         isFoundation: booleanArg(),
       },
-      resolve: async (_, { id, versionCount, isFoundation }, ctx) => {
+      resolve: async (_, { id, versionCount, isFoundation }, ctx: Context) => {
         try {
           verifyAuth(ctx.user)
           await ctx.prisma.issue.update({
@@ -480,7 +485,7 @@ const Mutation = objectType({
             },
           })
 
-          const issue = await ctx.prisma.issue.findOne({
+          const issue = await ctx.prisma.issue.findFirst({
             where: { id: id },
             include: {
               topics: {
@@ -532,7 +537,7 @@ const Mutation = objectType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: (_, { id }, ctx) => {
+      resolve: (_, { id }, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.issue.delete({
           where: { id: id },
@@ -546,7 +551,7 @@ const Mutation = objectType({
         id: nonNull(stringArg()),
         position: intArg(),
       },
-      resolve: (_, { id, position }, ctx) => {
+      resolve: (_, { id, position }, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.topic.update({
           where: { id: id },
@@ -562,7 +567,7 @@ const Mutation = objectType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: (_, { id }, ctx) => {
+      resolve: (_, { id }, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.topic.update({
           where: { id: id },
@@ -579,7 +584,7 @@ const Mutation = objectType({
         topicId: nonNull(stringArg()),
         linkId: nonNull(stringArg()),
       },
-      resolve: (_, { topicId, linkId }, ctx) => {
+      resolve: (_, { topicId, linkId }, ctx: Context) => {
         verifyAuth(ctx.user)
         return ctx.prisma.topic.update({
           where: { id: topicId },
@@ -607,25 +612,19 @@ export const schema = makeSchema({
     GQLDate,
     Mutation,
   ],
-  plugins: [
-    nexusPrisma({
-      shouldGenerateArtifacts: false,
-    }),
-  ],
   outputs: {
     schema: __dirname + '/generated/nexus/schema.graphql',
     typegen: __dirname + '/generated/nexus/nexus.ts',
   },
-  typegenAutoConfig: {
-    contextType: 'Context.Context',
-    sources: [
+  contextType: {
+    module: join(__dirname, './context.ts'),
+    export: 'Context'
+  },
+  sourceTypes: {
+    modules: [
       {
-        source: '@prisma/client',
+        module: '@prisma/client',
         alias: 'prisma',
-      },
-      {
-        source: require.resolve('./context'),
-        alias: 'Context',
       },
     ],
   },

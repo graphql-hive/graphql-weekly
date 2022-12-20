@@ -56,3 +56,6 @@ yarn-error.log*
 .cache
 public/
 apollo/dist/
+
+# Local Netlify folder
+.netlify
