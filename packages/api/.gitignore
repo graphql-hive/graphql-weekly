@@ -51,11 +51,10 @@ yarn-debug.log*
 yarn-error.log*
 
 .vscode
-.nexus
 .history
 .cache
 public/
-apollo/dist/
+api/dist/
 
 # Local Netlify folder
 .netlify

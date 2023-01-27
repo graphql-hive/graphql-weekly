@@ -13,5 +13,5 @@ yarn -s prisma generate
 ```
 
 ```
-npm install && nexus dev
+npm install
 ```

@@ -3,13 +3,13 @@ generator client {
   binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("MYSQL_CONN_STRING")
-}
-
-generator nexusPrisma {
-   provider = "nexus-prisma"
 }
 
 model Author {
