@@ -1,6 +1,9 @@
 import * as React from 'react'
 import styled, { css } from '../../style/styled'
 
+// images
+import graphqlconf from './graphqlconf.png'
+
 // Local
 import { Space } from '../../shared/Space'
 import { SideMenu } from './SideMenu'
@@ -12,6 +15,7 @@ import Archive from '../../vectors/Archive'
 import { mobile } from '../../style/media'
 import { IssueType } from '../../../types'
 import { getTopicUrlFriendly } from '../../../api'
+import { SideBanner } from './SideBanner'
 
 type Props = {
   submitModalClickHandler: Function
@@ -35,6 +39,10 @@ export class Sidebar extends React.Component<Props, State> {
     return (
       <Wrapper>
         <Submit submitModalClickHandler={props.submitModalClickHandler} />
+
+        <SidebarLine />
+
+        <SideBanner />
 
         <SidebarLine />
 
