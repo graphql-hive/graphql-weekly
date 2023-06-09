@@ -1,5 +1,5 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import mailchimp from "@mailchimp/mailchimp_marketing";
+import axios from "axios";
 
 interface Payload {
   data: {
@@ -30,6 +30,14 @@ interface Link {
   text: string;
 }
 
+const mailchimpApi = axios.create({
+  baseURL: `https://${process.env.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/`,
+  auth: {
+    username: 'anystring',
+    password: process.env.MAILCHIMP_API_KEY as string
+  }
+});
+
 export async function handler(event: APIGatewayEvent, context: Context) {
   try {
     if (event.httpMethod !== 'POST') {
@@ -49,11 +57,6 @@ export async function handler(event: APIGatewayEvent, context: Context) {
 
     const mailchimpListId = 'b07e0b3012';
 
-    mailchimp.setConfig({
-      apiKey: process.env.MAILCHIMP_API_KEY,
-      server: process.env.MAILCHIMP_SERVER_PREFIX,
-    });
-
     const shouldRun =
       issue.published &&
       payload.data.Issue.updatedFields.includes('versionCount');
@@ -66,7 +69,7 @@ export async function handler(event: APIGatewayEvent, context: Context) {
       };
     }
 
-    const response = await mailchimp.campaigns.create({
+    const response = await mailchimpApi.post('campaigns', {
       type: "regular",
       recipients: {
         list_id: mailchimpListId,
@@ -78,12 +81,12 @@ export async function handler(event: APIGatewayEvent, context: Context) {
         title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`,
         inline_css: true,
       },
-    });
+    }) as { id: string }
 
     const campaignId = response.id;
 
     // Create campaign content
-    const contentResponse = await mailchimp.campaigns.setContent(campaignId, {
+    const contentResponse = await mailchimpApi.put(`campaigns/${campaignId}/content`, {
       html: formatTemplate(issue),
     });
 
