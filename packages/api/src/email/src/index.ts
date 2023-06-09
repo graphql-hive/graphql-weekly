@@ -81,9 +81,9 @@ export async function handler(event: APIGatewayEvent, context: Context) {
         title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`,
         inline_css: true,
       },
-    }) as { id: string }
+    })
 
-    const campaignId = response.id;
+    const campaignId = response.data.id;
 
     // Create campaign content
     const contentResponse = await mailchimpApi.put(`campaigns/${campaignId}/content`, {
