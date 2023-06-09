@@ -1,5 +1,5 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import mcapi from 'mailchimp-api';
+import mailchimp from "@mailchimp/mailchimp_marketing";
 
 interface Payload {
   data: {
@@ -47,10 +47,12 @@ export async function handler(event: APIGatewayEvent, context: Context) {
 
     console.log('the issue', issue);
 
-    const mailchimpKey = 'MAILCHIMP_API_KEY_REDACTED';
     const mailchimpListId = 'b07e0b3012';
 
-    const mc = new mcapi.Mailchimp(mailchimpKey);
+    mailchimp.setConfig({
+      apiKey: process.env.MAILCHIMP_API_KEY,
+      server: process.env.MAILCHIMP_SERVER_PREFIX,
+    });
 
     const shouldRun =
       issue.published &&
@@ -64,23 +66,25 @@ export async function handler(event: APIGatewayEvent, context: Context) {
       };
     }
 
-    await new Promise((resolve, reject) => {
-      const params = {
-        options: {
-          list_id: mailchimpListId,
-          subject: `GraphQL Weekly - ${issue.title}`,
-          from_email: 'hello@graphqlweekly.com',
-          from_name: 'GraphQL Weekly',
-          inline_css: true,
-          title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`
-        },
-        content: {
-          html: formatTemplate(issue)
-        },
-        type: 'regular'
-      };
+    const response = await mailchimp.campaigns.create({
+      type: "regular",
+      recipients: {
+        list_id: mailchimpListId,
+      },
+      settings: {
+        subject_line: `GraphQL Weekly - ${issue.title}`,
+        reply_to: "hello@graphqlweekly.com",
+        from_name: "GraphQL Weekly",
+        title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`,
+        inline_css: true,
+      },
+    });
 
-      mc.campaigns.create(params, resolve, reject);
+    const campaignId = response.id;
+
+    // Create campaign content
+    const contentResponse = await mailchimp.campaigns.setContent(campaignId, {
+      html: formatTemplate(issue),
     });
 
     return {

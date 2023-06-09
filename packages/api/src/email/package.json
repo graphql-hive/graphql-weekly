@@ -14,11 +14,13 @@
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-typescript": "^7.13.0",
     "@types/aws-lambda": "^8.10.73",
+    "@types/node": "^20.2.5",
     "netlify-lambda": "^2.0.3",
     "prettier": "^2.2.1",
     "typescript": "^4.2.3"
   },
   "dependencies": {
+    "@mailchimp/mailchimp_marketing": "^3.0.80",
     "mailchimp-api": "^2.0.7"
   }
 }
