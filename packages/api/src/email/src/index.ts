@@ -114,7 +114,7 @@ const foundationEditionHeader = `
 
   <p><em>The <a href="https://foundation.graphql.org/faq/" target="_blank" style="text-decoration: underline;">GraphQL Foundation</a> provides governance for GraphQL as well as vendor-neutral oversight of funding, events, operations resources, and more. It was formed in 2018 by <a href="https://landscape.graphql.org/category=graph-ql-foundation-member&format=logo-mode" target="_blank" style="text-decoration: underline;">various tech companies</a> and hosted under the <a href="https://www.linuxfoundation.org/" target="_blank" style="text-decoration: underline;">Linux Foundation</a>. It's an open, neutral home for the GraphQL community.</em></p>
   <p><em>You can find out more by visiting <a href="https://foundation.graphql.org/" target="_blank" style="text-decoration: underline;">foundation.graphql.org</a></em><p>
-  
+
 </div>`;
 
 const colorMap = {
@@ -220,7 +220,7 @@ function renderTopic(topic: Topic) {
     </td>
   </tr>
 </table>
-<div class="hSpace"></div> 
+<div class="hSpace"></div>
 `;
 }
 
@@ -248,7 +248,7 @@ function formatTemplate(issue: Issue) {
       <title>*|MC:SUBJECT|*</title>
       <style type="text/css">
         @import url("http://fonts.googleapis.com/css?family=Rubik:400,500,700");
-  
+
         body {
           margin: 0;
           padding: 0;
@@ -256,7 +256,7 @@ function formatTemplate(issue: Issue) {
           font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
             Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         }
-  
+
         p,
         span,
         h1,
@@ -265,16 +265,16 @@ function formatTemplate(issue: Issue) {
           font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
             Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         }
-  
+
         table {
           border-collapse: collapse;
         }
-  
+
         .wrapper {
           width: 680px;
           max-width: 680px;
         }
-  
+
         .logo {
           float: left;
           margin-left: -7px;
@@ -302,7 +302,7 @@ function formatTemplate(issue: Issue) {
           letter-spacing: -0.02em;
           color: #ffffff;
         }
-  
+
         .viewLink {
           float: right;
           margin-top: 12px;
@@ -318,11 +318,11 @@ function formatTemplate(issue: Issue) {
         .viewLink img {
           margin-left: 10px;
         }
-  
+
         .firstContent > tr > td {
           padding-top: 40px;
         }
-  
+
         .emailTitle {
           margin-top: -48px;
           margin-bottom: 32px;
@@ -333,19 +333,19 @@ function formatTemplate(issue: Issue) {
           height: 32px;
           box-sizing: border-box;
           padding-top: 9px;
-  
+
           background: #6560e2;
           border-radius: 32px;
           text-align: center;
           color: #fff;
-  
+
           /* text */
-  
+
           font-weight: 500;
           line-height: 16px;
           font-size: 16px;
           text-transform: uppercase;
-  
+
           color: #ffffff;
         }
         .emailTitle span {
@@ -357,7 +357,7 @@ function formatTemplate(issue: Issue) {
           box-shadow: 0px 4px 16px rgba(8, 17, 70, 0.05);
           border-radius: 8px;
         }
-  
+
         .ConfBox {
           overflow: hidden;
           background: #f6f6f7;
@@ -367,26 +367,26 @@ function formatTemplate(issue: Issue) {
         .ConfBox {
           display: block;
         }
-  
+
         .articleBox__content {
           padding-top: 48px;
           padding-bottom: 48px;
           padding-right: 48px;
           padding-left: 40px;
         }
-  
+
         .issueBox__content {
           padding-top: 32px;
         }
         .articleBox__content a {
           color: #d60690;
         }
-  
+
         .colorBorder {
           border-top-left-radius: 8px;
           border-bottom-left-radius: 8px;
         }
-  
+
         .articleBox__content h1 {
           margin: 0;
           text-align: left;
@@ -407,12 +407,12 @@ function formatTemplate(issue: Issue) {
         }
         .articleBox__content p {
           margin: 24px 0 0 0;
-  
+
           text-align: left;
           font-weight: 300;
           line-height: 1.75;
           font-size: 16px;
-  
+
           color: #081146;
         }
         .articleBox__content strong {
@@ -445,7 +445,7 @@ function formatTemplate(issue: Issue) {
         }
         .author__bio {
           margin-top: 8px;
-  
+
           font-weight: 300;
           line-height: 16px;
           font-size: 16px;
@@ -456,7 +456,7 @@ function formatTemplate(issue: Issue) {
         .articleTitle {
           padding-top: 0;
           margin-bottom: 32px;
-  
+
           font-weight: 500;
           line-height: 18px;
           font-size: 18px;
@@ -476,7 +476,7 @@ function formatTemplate(issue: Issue) {
           padding-bottom: 8px;
           display: inline-block;
           margin-left: 33px;
-  
+
           font-weight: 500;
           line-height: 18px;
           font-size: 18px;
@@ -496,7 +496,7 @@ function formatTemplate(issue: Issue) {
           margin-right: 16px;
           vertical-align: middle;
         }
-  
+
         .archiveIcon {
           width: 16px;
           height: 14px;
@@ -509,7 +509,7 @@ function formatTemplate(issue: Issue) {
           width: 22px;
           height: 22px;
         }
-  
+
         .halfBannersTable {
           width: 100%;
         }
@@ -530,10 +530,10 @@ function formatTemplate(issue: Issue) {
           line-height: 20px;
           font-size: 14px;
           text-align: center;
-  
+
           color: #698391;
         }
-  
+
         .footerText a {
           color: #698391;
         }
@@ -549,7 +549,7 @@ function formatTemplate(issue: Issue) {
           width: 50px;
           height: auto;
         }
-  
+
         @media only screen and (max-width: 800px) {
           .wrapper {
             width: 100% !important;
@@ -560,12 +560,12 @@ function formatTemplate(issue: Issue) {
           .wrapper > tr > td {
             width: 100% !important;
           }
-  
+
           .footerItems__items {
             float: none !important;
             margin-left: 0 !important;
           }
-  
+
           .articleBox__content {
             /* padding-top: 16px ; */
             padding-bottom: 16px;
@@ -578,15 +578,15 @@ function formatTemplate(issue: Issue) {
           .viewLink img {
             display: none !important;
           }
-  
+
           .articleBox__content h1 {
             font-size: 20px !important;
           }
-  
+
           .articleBox__content p {
             font-size: 14px !important;
           }
-  
+
           .halfBannersTable {
             width: 50%;
           }
@@ -621,7 +621,7 @@ function formatTemplate(issue: Issue) {
                             <td style="padding-bottom: 25px;">
                               <div class="logo">
                                 <img
-                                  src="https://weeklyletter.netlify.com/assets/WeeklyLogo.png"
+                                  src="https://graphqlweekly.com/assets/WeeklyLogo.png"
                                   width="55"
                                   height="55"
                                 />
@@ -632,7 +632,7 @@ function formatTemplate(issue: Issue) {
                               </div>
                               <a class="viewLink" href="*|LIST:URL|*">
                                 <span class="viewLink__span">View in browser</span>
-                                <img src="https://weeklyletter.netlify.com/assets/Arrow.png" />
+                                <img src="https://graphqlweekly.com/assets/Arrow.png" />
                               </a>
                             </td>
                           </tr>
@@ -685,10 +685,10 @@ function formatTemplate(issue: Issue) {
                                           ${header}
 
                                           <h2 class="articleTitle" style="color: ${firstTopic.color}">${firstTopic.title}</h2>
-  
+
                                           ${firstTopic.text}
-  
-                                          
+
+
                                         </td>
                                       </tr>
                                     </table>
@@ -704,12 +704,12 @@ function formatTemplate(issue: Issue) {
                 </td>
                 <td bgcolor="#D60690" class="sideSpace">&nbsp;</td>
               </tr>
-  
+
               <tr>
                 <td class="sideSpace">&nbsp;</td>
                 <td class="sideSpace">&nbsp;</td>
               </tr>
-  
+
               <tr>
                 <td class="sideSpace">&nbsp;</td>
                 <td>
@@ -752,7 +752,7 @@ function formatTemplate(issue: Issue) {
                                 </td>
                               </tr>
                             </table>
-  
+
                               <div class="hSpace"></div>
                               <table
                                 border="0"
@@ -765,26 +765,26 @@ function formatTemplate(issue: Issue) {
                                   <td align="center" valign="center">
                                     <a href="https://www.graphqlweekly.com/" class="footerItems__items">
                                       <img
-                                        src="https://weeklyletter.netlify.com/assets/Archive.png"
+                                        src="https://graphqlweekly.com/assets/Archive.png"
                                         class="archiveIcon"
                                       /><span>View all issues</span>
                                     </a>
                                     <a href="https://twitter.com/graphqlweekly?lang=en" class="footerItems__items">
                                       <img
-                                        src="https://weeklyletter.netlify.com/assets/Twitter.png"
+                                        src="https://graphqlweekly.com/assets/Twitter.png"
                                         class="twitterIcon"
                                       /><span>Follow on Twitter</span>
                                     </a>
                                     <a href="https://slack.prisma.io/" class="footerItems__items">
                                       <img
-                                        src="https://weeklyletter.netlify.com/assets/Slack.png"
+                                        src="https://graphqlweekly.com/assets/Slack.png"
                                         class="slackIcon"
                                       /><span>Join us on Slack</span>
                                     </a>
                                   </td>
                                 </tr>
                               </table>
-  
+
                               <!-- FOOTER 👋 -->
                               <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
@@ -813,7 +813,7 @@ function formatTemplate(issue: Issue) {
                 <td class="sideSpace">&nbsp;</td>
               </tr>
             </table>
-  
+
             <table border="0" cellpadding="0" cellspacing="0" class="wrapper">
               <tr>
                 <td valign="top"></td>
@@ -824,7 +824,7 @@ function formatTemplate(issue: Issue) {
       </table>
     </body>
   </html>
-  
+
 
 `;
 }
