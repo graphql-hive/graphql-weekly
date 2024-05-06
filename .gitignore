@@ -1,5 +1,5 @@
-node_modules
 .cache/
+.DS_Store
+node_modules
 public
 yarn-error.log
-.DS_Store
