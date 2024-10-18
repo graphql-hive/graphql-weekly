@@ -56,7 +56,7 @@ export class Sidebar extends React.Component<Props, State> {
             },
             {
               text: 'Join us on Slack',
-              href: 'https://slack.prisma.io/',
+              href: 'https://discord.graphql.org/',
               icon: <Slack />,
             },
           ]}
