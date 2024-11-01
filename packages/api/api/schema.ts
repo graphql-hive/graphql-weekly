@@ -295,7 +295,7 @@ const Mutation = builder.mutationType({
         const url =
           'https://us13.api.mailchimp.com/3.0/lists/b07e0b3012/members'
         const authString = Buffer.from(
-          `anything:MAILCHIMP_API_KEY_REDACTED`
+          `anystring:MAILCHIMP_API_KEY_REDACTED`
         ).toString('base64')
 
         // Add to mailchimp
