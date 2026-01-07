@@ -2,8 +2,15 @@
   "name": "qlator",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "devDependencies": {
-    "react-scripts": "0.2.1"
+    "@types/lodash.chunk": "^4.2.9",
+    "@types/react": "^16.14.62",
+    "@types/react-dom": "^16.9.24",
+    "@types/react-router-dom": "^4.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
   },
   "dependencies": {
     "apollo-boost": "^0.1.12",
@@ -19,12 +26,11 @@
     "url-regex": "^3.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
-    "deploy": "npm run build && surge build -d qlator.surge.sh"
-  },
-  "eslintConfig": {
-    "extends": "./node_modules/react-scripts/config/eslint.js"
+    "start": "vite",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && surge dist -d qlator.surge.sh",
+    "typecheck": "tsc --noEmit"
   }
 }
