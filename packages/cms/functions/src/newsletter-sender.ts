@@ -1,7 +1,6 @@
 import { callbackRuntime, APIGatewayEvent } from "lambda-helpers";
 import "source-map-support/register";
 import mcapi = require("mailchimp-api");
-import urlParser = require("url");
 
 interface Payload {
   data: {
