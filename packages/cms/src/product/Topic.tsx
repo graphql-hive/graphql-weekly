@@ -62,7 +62,15 @@ class PositionUpdaterBase extends Component<
 
   override render() {
     return (
-      <section style={{ alignSelf: "center" }}>
+      <section
+        style={{
+          alignSelf: "center",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
+        <span style={{ fontSize: 12, color: "#0c344b" }}>order</span>
         <InputWithButton
           style={{ width: 24 }}
           type="number"

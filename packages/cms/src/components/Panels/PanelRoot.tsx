@@ -67,6 +67,7 @@ interface PanelBodyProps {
   isOpen?: boolean;
   hidePanel: () => void;
   Component: ComponentType<{ onPanelClose: () => void }>;
+  componentProps: Record<string, unknown>;
 }
 
 class PanelBody extends Component<PanelBodyProps> {
@@ -77,7 +78,7 @@ class PanelBody extends Component<PanelBodyProps> {
   };
 
   override render() {
-    const { hidePanel, Component: PanelComponent } = this.props;
+    const { hidePanel, Component: PanelComponent, componentProps } = this.props;
     return (
       <Scrim id="panelRoot" onClick={this.closePanel}>
         <Panel onClick={(e: MouseEvent) => e.stopPropagation()}>
@@ -91,7 +92,7 @@ class PanelBody extends Component<PanelBodyProps> {
                 </ClickTarget>
               </PanelHeader>
               <CardBody>
-                <PanelComponent onPanelClose={hidePanel} />
+                <PanelComponent {...componentProps} onPanelClose={hidePanel} />
               </CardBody>
             </section>
           </PanelCard>
@@ -109,7 +110,8 @@ export default function PanelRoot() {
           <PanelBody
             hidePanel={hidePanel}
             Component={PanelComponent}
-            {...props}
+            componentProps={props}
+            isOpen={props.isOpen as boolean}
           />
         ) : null;
       }}

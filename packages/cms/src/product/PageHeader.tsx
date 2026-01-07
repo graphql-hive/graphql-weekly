@@ -182,5 +182,5 @@ export default compose(
   graphql(deleteIssueMutation, { name: "deleteIssue" }),
   graphql(updateTopicWhenIssueDeletedMutation, {
     name: "updateTopicWhenIssueDeleted",
-  }),
+  })
 )(PageHeader);
