@@ -1,4 +1,4 @@
-import styled from "react-emotion"
+import styled from "react-emotion";
 
 export default styled("textarea")`
   padding: 13px 16px;
@@ -18,4 +18,4 @@ export default styled("textarea")`
   &:disabled {
     font-style: italic;
   }
-`
+`;

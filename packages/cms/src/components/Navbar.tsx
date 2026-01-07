@@ -1,8 +1,8 @@
-import styled from "react-emotion"
-import Logo from "./Logo"
+import styled from "react-emotion";
+import Logo from "./Logo";
 
 interface WrapperProps {
-  disabled?: boolean
+  disabled?: boolean;
 }
 
 const Wrapper = styled<WrapperProps>("div")`
@@ -10,7 +10,7 @@ const Wrapper = styled<WrapperProps>("div")`
   align-items: center;
   pointer-events: ${(p) => (p.disabled ? "none" : "all")};
   opacity: ${(p) => (p.disabled ? 0.8 : 1)};
-`
+`;
 
 const StyledTopbar = styled("div")`
   position: relative;
@@ -22,14 +22,14 @@ const StyledTopbar = styled("div")`
   height: 56px;
   flex: 0 0 56px;
   justify-content: space-between;
-`
+`;
 
 const Brand = styled("h1")`
   margin: 0px 10px;
   color: #3d556b;
   font-size: 24px;
   line-height: 32px;
-`
+`;
 
 export default function Navbar() {
   return (
@@ -39,5 +39,5 @@ export default function Navbar() {
         <Brand>qlator</Brand>
       </Wrapper>
     </StyledTopbar>
-  )
+  );
 }

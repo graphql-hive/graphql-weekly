@@ -1,8 +1,8 @@
-import React, { PureComponent, ChangeEvent } from "react"
-import urlRegex from "url-regex"
-import { gql } from "apollo-boost"
-import { graphql, MutationFn } from "react-apollo"
-import InputWithButton from "../components/InputWithButton"
+import React, { PureComponent, ChangeEvent } from "react";
+import urlRegex from "url-regex";
+import { gql } from "apollo-boost";
+import { graphql, MutationFn } from "react-apollo";
+import InputWithButton from "../components/InputWithButton";
 
 const updateIssue = gql`
   mutation update($id: String!, $previewImage: String!) {
@@ -11,29 +11,32 @@ const updateIssue = gql`
       previewImage
     }
   }
-`
+`;
 
 interface PreviewImageUpdateProps {
-  mutate?: MutationFn
-  previewImage?: string
-  id?: string
-  refresh?: () => void
+  mutate?: MutationFn;
+  previewImage?: string;
+  id?: string;
+  refresh?: () => void;
 }
 
 interface PreviewImageUpdateState {
-  link: string
-  loading: boolean
-  linkError: string
+  link: string;
+  loading: boolean;
+  linkError: string;
 }
 
-class PreviewImageUpdate extends PureComponent<PreviewImageUpdateProps, PreviewImageUpdateState> {
+class PreviewImageUpdate extends PureComponent<
+  PreviewImageUpdateProps,
+  PreviewImageUpdateState
+> {
   constructor(props: PreviewImageUpdateProps) {
-    super(props)
+    super(props);
     this.state = {
       link: props.previewImage || "",
       loading: false,
-      linkError: ""
-    }
+      linkError: "",
+    };
   }
 
   handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -42,24 +45,24 @@ class PreviewImageUpdate extends PureComponent<PreviewImageUpdateProps, PreviewI
       link: e.target.value,
       linkError: urlRegex({ exact: true }).test(e.target.value)
         ? ""
-        : "This is not a valid url"
-    })
-  }
+        : "This is not a valid url",
+    });
+  };
 
   submitChange = () => {
-    this.setState({ loading: true })
+    this.setState({ loading: true });
 
     if (!this.state.link) {
       this.setState({
         loading: false,
         link: "",
-        linkError: "Must supply a valid Link"
-      })
-      return
+        linkError: "Must supply a valid Link",
+      });
+      return;
     }
 
-    const previewImage = this.state.link
-    const id = this.props.id ?? ""
+    const previewImage = this.state.link;
+    const id = this.props.id ?? "";
 
     this.props
       .mutate?.({ variables: { previewImage, id } })
@@ -67,21 +70,21 @@ class PreviewImageUpdate extends PureComponent<PreviewImageUpdateProps, PreviewI
         this.setState({
           loading: false,
           link: "",
-          linkError: ""
-        })
-        this.props.refresh?.()
+          linkError: "",
+        });
+        this.props.refresh?.();
       })
       .catch(() => {
         this.setState({
           loading: false,
           link: "",
-          linkError: "Error while submitting"
-        })
-      })
-  }
+          linkError: "Error while submitting",
+        });
+      });
+  };
 
   isAddButtonDisabled() {
-    return this.state.loading || this.state.linkError !== ""
+    return this.state.loading || this.state.linkError !== "";
   }
 
   override render() {
@@ -96,7 +99,7 @@ class PreviewImageUpdate extends PureComponent<PreviewImageUpdateProps, PreviewI
             />
           </div>
         ) : (
-          <p style={{ margin: '0 0 16px' }}>
+          <p style={{ margin: "0 0 16px" }}>
             Enter an imgur url to display a image for social networks
           </p>
         )}
@@ -112,8 +115,14 @@ class PreviewImageUpdate extends PureComponent<PreviewImageUpdateProps, PreviewI
           errorText={this.state.linkError}
         />
       </section>
-    )
+    );
   }
 }
 
-export default graphql(updateIssue)(PreviewImageUpdate as any) as React.ComponentType<{ previewImage?: string; id?: string; refresh?: () => void }>
+export default graphql(updateIssue)(
+  PreviewImageUpdate as any,
+) as React.ComponentType<{
+  previewImage?: string;
+  id?: string;
+  refresh?: () => void;
+}>;

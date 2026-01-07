@@ -1,96 +1,180 @@
-declare module 'url-regex' {
-  function urlRegex(options?: { exact?: boolean; strict?: boolean }): RegExp
-  export default urlRegex
+declare module "url-regex" {
+  function urlRegex(options?: { exact?: boolean; strict?: boolean }): RegExp;
+  export default urlRegex;
 }
 
-declare module 'react-router-dom/withRouter' {
-  import { ComponentType } from 'react'
-  import { RouteComponentProps } from 'react-router-dom'
+declare module "react-router-dom/withRouter" {
+  import { ComponentType } from "react";
+  import { RouteComponentProps } from "react-router-dom";
   function withRouter<P extends RouteComponentProps>(
-    component: ComponentType<P>
-  ): ComponentType<Omit<P, keyof RouteComponentProps>>
-  export default withRouter
+    component: ComponentType<P>,
+  ): ComponentType<Omit<P, keyof RouteComponentProps>>;
+  export default withRouter;
 }
 
-declare module 'react-emotion' {
-  import { ComponentType, HTMLAttributes, ClassAttributes, InputHTMLAttributes, TextareaHTMLAttributes, AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react'
+declare module "react-emotion" {
+  import {
+    ComponentType,
+    HTMLAttributes,
+    ClassAttributes,
+    InputHTMLAttributes,
+    TextareaHTMLAttributes,
+    AnchorHTMLAttributes,
+    ButtonHTMLAttributes,
+  } from "react";
 
-  type Interpolation<P> = 
-    | string 
-    | number 
+  type Interpolation<P> =
+    | string
+    | number
     | ((props: P & { theme?: unknown }) => string | number | undefined)
-    | undefined
+    | undefined;
 
-  type StyledComponent<P, A> = ComponentType<P & A & { className?: string }>
+  type StyledComponent<P, A> = ComponentType<P & A & { className?: string }>;
 
   interface CreateStyled {
-    <P extends object = {}>(tag: 'a'): (
+    <P extends object = {}>(
+      tag: "a",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, AnchorHTMLAttributes<HTMLAnchorElement> & ClassAttributes<HTMLAnchorElement>>
-    <P extends object = {}>(tag: 'button'): (
+    ) => StyledComponent<
+      P,
+      AnchorHTMLAttributes<HTMLAnchorElement> &
+        ClassAttributes<HTMLAnchorElement>
+    >;
+    <P extends object = {}>(
+      tag: "button",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, ButtonHTMLAttributes<HTMLButtonElement> & ClassAttributes<HTMLButtonElement>>
-    <P extends object = {}>(tag: 'div'): (
+    ) => StyledComponent<
+      P,
+      ButtonHTMLAttributes<HTMLButtonElement> &
+        ClassAttributes<HTMLButtonElement>
+    >;
+    <P extends object = {}>(
+      tag: "div",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLDivElement> & ClassAttributes<HTMLDivElement>>
-    <P extends object = {}>(tag: 'form'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLDivElement> & ClassAttributes<HTMLDivElement>
+    >;
+    <P extends object = {}>(
+      tag: "form",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLFormElement> & ClassAttributes<HTMLFormElement>>
-    <P extends object = {}>(tag: 'h1'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLFormElement> & ClassAttributes<HTMLFormElement>
+    >;
+    <P extends object = {}>(
+      tag: "h1",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLHeadingElement> & ClassAttributes<HTMLHeadingElement>>
-    <P extends object = {}>(tag: 'img'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLHeadingElement> & ClassAttributes<HTMLHeadingElement>
+    >;
+    <P extends object = {}>(
+      tag: "img",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLImageElement> & ClassAttributes<HTMLImageElement>>
-    <P extends object = {}>(tag: 'input'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLImageElement> & ClassAttributes<HTMLImageElement>
+    >;
+    <P extends object = {}>(
+      tag: "input",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>>
-    <P extends object = {}>(tag: 'label'): (
+    ) => StyledComponent<
+      P,
+      InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>
+    >;
+    <P extends object = {}>(
+      tag: "label",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLLabelElement> & ClassAttributes<HTMLLabelElement>>
-    <P extends object = {}>(tag: 'nav'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLLabelElement> & ClassAttributes<HTMLLabelElement>
+    >;
+    <P extends object = {}>(
+      tag: "nav",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLElement> & ClassAttributes<HTMLElement>>
-    <P extends object = {}>(tag: 'p'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLElement> & ClassAttributes<HTMLElement>
+    >;
+    <P extends object = {}>(
+      tag: "p",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLParagraphElement> & ClassAttributes<HTMLParagraphElement>>
-    <P extends object = {}>(tag: 'section'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLParagraphElement> &
+        ClassAttributes<HTMLParagraphElement>
+    >;
+    <P extends object = {}>(
+      tag: "section",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLElement> & ClassAttributes<HTMLElement>>
-    <P extends object = {}>(tag: 'span'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLElement> & ClassAttributes<HTMLElement>
+    >;
+    <P extends object = {}>(
+      tag: "span",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLSpanElement> & ClassAttributes<HTMLSpanElement>>
-    <P extends object = {}>(tag: 'textarea'): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLSpanElement> & ClassAttributes<HTMLSpanElement>
+    >;
+    <P extends object = {}>(
+      tag: "textarea",
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, TextareaHTMLAttributes<HTMLTextAreaElement> & ClassAttributes<HTMLTextAreaElement>>
-    <P extends object = {}>(tag: string): (
+    ) => StyledComponent<
+      P,
+      TextareaHTMLAttributes<HTMLTextAreaElement> &
+        ClassAttributes<HTMLTextAreaElement>
+    >;
+    <P extends object = {}>(
+      tag: string,
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => StyledComponent<P, HTMLAttributes<HTMLElement> & ClassAttributes<HTMLElement>>
-    <P extends object = {}, C extends ComponentType<any> = ComponentType<any>>(component: C): (
+    ) => StyledComponent<
+      P,
+      HTMLAttributes<HTMLElement> & ClassAttributes<HTMLElement>
+    >;
+    <P extends object = {}, C extends ComponentType<any> = ComponentType<any>>(
+      component: C,
+    ): (
       strings: TemplateStringsArray,
       ...interpolations: Interpolation<P>[]
-    ) => ComponentType<P & React.ComponentProps<C>>
+    ) => ComponentType<P & React.ComponentProps<C>>;
   }
 
-  const styled: CreateStyled
-  export default styled
+  const styled: CreateStyled;
+  export default styled;
 
   export function keyframes(
     strings: TemplateStringsArray,
     ...interpolations: Interpolation<{}>[]
-  ): string
+  ): string;
 }

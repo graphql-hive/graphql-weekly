@@ -1,16 +1,16 @@
-import { Component, MouseEvent } from 'react'
-import styled from 'react-emotion'
-import withRouter from 'react-router-dom/withRouter'
-import { graphql, compose, MutationFn } from 'react-apollo'
-import { gql } from 'apollo-boost'
-import { RouteComponentProps } from 'react-router-dom'
-import { Button } from '../components/Button'
-import Flex from '../components/Flex'
-import FlexCell from '../components/FlexCell'
+import { Component, MouseEvent } from "react";
+import styled from "react-emotion";
+import withRouter from "react-router-dom/withRouter";
+import { graphql, compose, MutationFn } from "react-apollo";
+import { gql } from "apollo-boost";
+import { RouteComponentProps } from "react-router-dom";
+import { Button } from "../components/Button";
+import Flex from "../components/Flex";
+import FlexCell from "../components/FlexCell";
 
-const Title = styled('h1')`
+const Title = styled("h1")`
   margin: 0;
-`
+`;
 
 const publishIssue = gql`
   mutation pub($id: String!, $published: Boolean) {
@@ -18,7 +18,7 @@ const publishIssue = gql`
       id
     }
   }
-`
+`;
 
 const incrVersion = gql`
   mutation incrVersion(
@@ -35,7 +35,7 @@ const incrVersion = gql`
       versionCount
     }
   }
-`
+`;
 
 const deleteIssueMutation = gql`
   mutation delete($id: String!) {
@@ -43,7 +43,7 @@ const deleteIssueMutation = gql`
       id
     }
   }
-`
+`;
 
 const updateTopicWhenIssueDeletedMutation = gql`
   mutation updateTopic($id: String!) {
@@ -51,79 +51,79 @@ const updateTopicWhenIssueDeletedMutation = gql`
       id
     }
   }
-`
+`;
 
 interface Topic {
-  id: string
+  id: string;
 }
 
 interface PageHeaderProps extends RouteComponentProps {
-  id: string
-  title: string
-  versionCount: number
-  published: boolean
-  topics: Topic[]
-  publishIssue: MutationFn
-  increaseVersion: MutationFn
-  deleteIssue: MutationFn
-  updateTopicWhenIssueDeleted: MutationFn
+  id: string;
+  title: string;
+  versionCount: number;
+  published: boolean;
+  topics: Topic[];
+  publishIssue: MutationFn;
+  increaseVersion: MutationFn;
+  deleteIssue: MutationFn;
+  updateTopicWhenIssueDeleted: MutationFn;
 }
 
 interface PageHeaderState {
-  isFoundation: boolean
+  isFoundation: boolean;
 }
 
 class PageHeader extends Component<PageHeaderProps, PageHeaderState> {
   override state: PageHeaderState = {
-    isFoundation: false
-  }
+    isFoundation: false,
+  };
 
   handlePublish = (isFoundation: boolean) => {
     return this.props.publishIssue({
       variables: {
         id: this.props.id,
         published: true,
-        isFoundation
-      }
-    })
-  }
+        isFoundation,
+      },
+    });
+  };
 
   increaseVersion = (isFoundation: boolean) => {
     return this.props.increaseVersion({
       variables: {
         id: this.props.id,
         versionCount: this.props.versionCount + 1,
-        isFoundation
-      }
-    })
-  }
+        isFoundation,
+      },
+    });
+  };
 
   deleteIssue = () => {
     return this.props.topics.map((topic) => {
       return this.props
         .updateTopicWhenIssueDeleted({
-          variables: { id: topic.id }
+          variables: { id: topic.id },
         })
         .then(() => {
           return this.props
             .deleteIssue({
-              variables: { id: this.props.id }
+              variables: { id: this.props.id },
             })
             .then(() => {
-              this.props.history.push('/')
-            })
-        })
-    })
-  }
+              this.props.history.push("/");
+            });
+        });
+    });
+  };
 
   override render() {
-    const { published } = this.props
+    const { published } = this.props;
 
     return (
       <Flex>
         <FlexCell align="center">
           <Title>
-            Curating: <strong>{this.props.title}</strong> (version{' '}
+            Curating: <strong>{this.props.title}</strong> (version{" "}
             {this.props.versionCount})
           </Title>
         </FlexCell>
@@ -132,17 +132,19 @@ class PageHeader extends Component<PageHeaderProps, PageHeaderState> {
             <input
               type="checkbox"
               onClick={(event: MouseEvent<HTMLInputElement>) => {
-                const target = event.target as HTMLInputElement
-                this.setState({ isFoundation: target.checked })
+                const target = event.target as HTMLInputElement;
+                this.setState({ isFoundation: target.checked });
               }}
-            />{' '}
+            />{" "}
             Foundation Edition
           </Title>
         </FlexCell>
         <FlexCell align="center">
           <Flex align="flex-end">
             <FlexCell align="center" grow="0" basis="auto">
-              <Button onClick={() => this.handlePublish(this.state.isFoundation)}>
+              <Button
+                onClick={() => this.handlePublish(this.state.isFoundation)}
+              >
                 Publish
               </Button>
             </FlexCell>
@@ -155,7 +157,12 @@ class PageHeader extends Component<PageHeaderProps, PageHeaderState> {
               </Button>
             </FlexCell>
             {!published && (
-              <FlexCell align="center" grow="0" basis="auto" margin="0 0 0 10px">
+              <FlexCell
+                align="center"
+                grow="0"
+                basis="auto"
+                margin="0 0 0 10px"
+              >
                 <Button color="red" onClick={this.deleteIssue}>
                   Delete Issue
                 </Button>
@@ -164,14 +171,16 @@ class PageHeader extends Component<PageHeaderProps, PageHeaderState> {
           </Flex>
         </FlexCell>
       </Flex>
-    )
+    );
   }
 }
 
 export default compose(
   withRouter,
-  graphql(publishIssue, { name: 'publishIssue' }),
-  graphql(incrVersion, { name: 'increaseVersion' }),
-  graphql(deleteIssueMutation, { name: 'deleteIssue' }),
-  graphql(updateTopicWhenIssueDeletedMutation, { name: 'updateTopicWhenIssueDeleted' })
-)(PageHeader)
+  graphql(publishIssue, { name: "publishIssue" }),
+  graphql(incrVersion, { name: "increaseVersion" }),
+  graphql(deleteIssueMutation, { name: "deleteIssue" }),
+  graphql(updateTopicWhenIssueDeletedMutation, {
+    name: "updateTopicWhenIssueDeleted",
+  }),
+)(PageHeader);

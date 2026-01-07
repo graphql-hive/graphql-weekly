@@ -1,4 +1,3 @@
-import PanelContext from './PanelContext';
-
+import PanelContext from "./PanelContext";
 
 export default PanelContext.Consumer;

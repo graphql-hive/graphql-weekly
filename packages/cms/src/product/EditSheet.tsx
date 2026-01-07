@@ -1,26 +1,26 @@
-import { ChangeEventHandler, MouseEventHandler } from "react"
-import { Button } from "../components/Button"
-import InputWithButton from "../components/InputWithButton"
-import Label from "../components/Label"
-import Input from "../components/Input"
-import TextArea from "../components/TextArea"
+import { ChangeEventHandler, MouseEventHandler } from "react";
+import { Button } from "../components/Button";
+import InputWithButton from "../components/InputWithButton";
+import Label from "../components/Label";
+import Input from "../components/Input";
+import TextArea from "../components/TextArea";
 
 interface EditSheetHandlers {
-  handleTitleChange: ChangeEventHandler<HTMLInputElement>
-  handleDescChange: ChangeEventHandler<HTMLTextAreaElement>
-  handleLinkChange: ChangeEventHandler<HTMLInputElement>
-  onSave: MouseEventHandler<HTMLButtonElement>
-  onDelete: MouseEventHandler<HTMLButtonElement>
+  handleTitleChange: ChangeEventHandler<HTMLInputElement>;
+  handleDescChange: ChangeEventHandler<HTMLTextAreaElement>;
+  handleLinkChange: ChangeEventHandler<HTMLInputElement>;
+  onSave: MouseEventHandler<HTMLButtonElement>;
+  onDelete: MouseEventHandler<HTMLButtonElement>;
 }
 
 interface EditSheetProps {
-  hasChanged: boolean
-  description: string
-  linkError: string
-  link: string
-  title: string
-  handlers: EditSheetHandlers
-  hasDelete?: boolean | undefined
+  hasChanged: boolean;
+  description: string;
+  linkError: string;
+  link: string;
+  title: string;
+  handlers: EditSheetHandlers;
+  hasDelete?: boolean | undefined;
 }
 
 export default function EditSheet({
@@ -30,7 +30,7 @@ export default function EditSheet({
   link,
   title,
   handlers,
-  hasDelete
+  hasDelete,
 }: EditSheetProps) {
   return (
     <>
@@ -68,11 +68,15 @@ export default function EditSheet({
       )}
       {hasDelete && (
         <section style={{ marginTop: "16px" }}>
-          <Button style={{ width: "100%" }} color="red" onClick={handlers.onDelete}>
+          <Button
+            style={{ width: "100%" }}
+            color="red"
+            onClick={handlers.onDelete}
+          >
             Delete
           </Button>
         </section>
       )}
     </>
-  )
+  );
 }

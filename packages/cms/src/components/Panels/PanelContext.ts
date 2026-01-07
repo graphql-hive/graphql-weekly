@@ -1,10 +1,13 @@
-import { ComponentType, createContext } from 'react'
+import { ComponentType, createContext } from "react";
 
 export interface PanelContextValue {
-  component: ComponentType<{ onPanelClose: () => void }> | null
-  props: Record<string, unknown>
-  showPanel: (component: ComponentType<{ onPanelClose: () => void }>, props?: Record<string, unknown>) => void
-  hidePanel: () => void
+  component: ComponentType<{ onPanelClose: () => void }> | null;
+  props: Record<string, unknown>;
+  showPanel: (
+    component: ComponentType<{ onPanelClose: () => void }>,
+    props?: Record<string, unknown>,
+  ) => void;
+  hidePanel: () => void;
 }
 
 export default createContext<PanelContextValue>({
@@ -12,4 +15,4 @@ export default createContext<PanelContextValue>({
   props: {},
   showPanel: () => {},
   hidePanel: () => {},
-})
+});

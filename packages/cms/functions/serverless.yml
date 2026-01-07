@@ -12,13 +12,12 @@ plugins:
   - serverless-offline
 
 functions:
-
   MetaFetcher:
     handler: src/meta-fetcher.default
     memorySize: 128
     events:
       - http:
-          path: '/meta-fetcher'
+          path: "/meta-fetcher"
           method: post
 
   NewsletterSender:
@@ -26,12 +25,11 @@ functions:
     memorySize: 128
     events:
       - http:
-          path: '/newsletter-sender'
+          path: "/newsletter-sender"
           method: post
 
 resources:
   Resources:
-
     MetaFetcherLogGroup:
       Properties:
         RetentionInDays: 7

@@ -1,5 +1,5 @@
-import styled from "react-emotion"
-import { colors } from "../style/colors"
+import styled from "react-emotion";
+import { colors } from "../style/colors";
 
 export default styled("input")`
   padding: 13px 16px;
@@ -24,4 +24,4 @@ export default styled("input")`
     border-color: transparent;
     box-shadow: inset 0 0 0 2px ${colors.blue};
   }
-`
+`;

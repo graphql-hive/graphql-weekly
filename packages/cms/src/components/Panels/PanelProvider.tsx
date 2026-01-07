@@ -1,43 +1,49 @@
-import { Component, ComponentType, ReactNode } from "react"
-import PanelContext, { PanelContextValue } from "./PanelContext"
+import { Component, ComponentType, ReactNode } from "react";
+import PanelContext, { PanelContextValue } from "./PanelContext";
 
 interface PanelProviderProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
-export default class PanelProvider extends Component<PanelProviderProps, PanelContextValue> {
+export default class PanelProvider extends Component<
+  PanelProviderProps,
+  PanelContextValue
+> {
   constructor(props: PanelProviderProps) {
-    super(props)
+    super(props);
     this.state = {
       component: null,
       props: {},
       showPanel: this.showPanel,
-      hidePanel: this.hidePanel
-    }
+      hidePanel: this.hidePanel,
+    };
   }
 
-  showPanel = (component: ComponentType<{ onPanelClose: () => void }>, props: Record<string, unknown> = {}) => {
+  showPanel = (
+    component: ComponentType<{ onPanelClose: () => void }>,
+    props: Record<string, unknown> = {},
+  ) => {
     this.setState({
       component,
       props: {
         ...props,
-        isOpen: true
-      }
-    })
-  }
+        isOpen: true,
+      },
+    });
+  };
 
   hidePanel = () => {
     this.setState({
       component: null,
-      props: {}
-    })
-  }
+      props: {},
+    });
+  };
 
   override render() {
     return (
       <PanelContext.Provider value={this.state}>
         {this.props.children}
       </PanelContext.Provider>
-    )
+    );
   }
 }

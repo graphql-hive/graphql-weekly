@@ -8,10 +8,10 @@ export const colors = {
   blue: "#0F7AD8",
   red: "#FF4F56",
   orange: "#FF8934",
-  dark: "#0C344B"
+  dark: "#0C344B",
 };
 
 export const shadows = {
   small: "0px 1px 3px rgba(12, 52, 75, 0.05)",
-  normal: "0px 3px 3px rgba(12, 52, 75, 0.05)"
+  normal: "0px 3px 3px rgba(12, 52, 75, 0.05)",
 };

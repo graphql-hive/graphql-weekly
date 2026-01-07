@@ -1,10 +1,10 @@
-import styled from "react-emotion"
-import { ReactNode } from "react"
-import { darken } from "polished"
-import { colors } from "../style/colors"
-import Flex from "./Flex"
-import ClickTarget from "./ClickTarget"
-import FlexCell from "./FlexCell"
+import styled from "react-emotion";
+import { ReactNode } from "react";
+import { darken } from "polished";
+import { colors } from "../style/colors";
+import Flex from "./Flex";
+import ClickTarget from "./ClickTarget";
+import FlexCell from "./FlexCell";
 
 const Radio = styled("div")`
   transition: 0.15s ease-out;
@@ -38,25 +38,25 @@ const Radio = styled("div")`
       }
     }
   }
-`
+`;
 
 const RadioLabel = styled("p")`
   margin: 0;
   font-size: 16px;
-`
+`;
 
 interface RadioInputProps {
-  children: ReactNode
-  onClick: (value: string) => void
-  selectedValue: string
-  value: string
+  children: ReactNode;
+  onClick: (value: string) => void;
+  selectedValue: string;
+  value: string;
 }
 
 export default function RadioInput({
   children,
   onClick,
   selectedValue,
-  value
+  value,
 }: RadioInputProps) {
   return (
     <Flex margin="0 0 16px">
@@ -69,5 +69,5 @@ export default function RadioInput({
         <RadioLabel>{children}</RadioLabel>
       </FlexCell>
     </Flex>
-  )
+  );
 }

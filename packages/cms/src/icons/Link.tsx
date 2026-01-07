@@ -9,5 +9,5 @@ export default function LinkIcon() {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }

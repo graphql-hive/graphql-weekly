@@ -1,8 +1,8 @@
-import React, { PureComponent, ChangeEvent } from "react"
-import urlRegex from "url-regex"
-import { gql } from "apollo-boost"
-import { graphql, MutationFn } from "react-apollo"
-import InputWithButton from "../components/InputWithButton"
+import React, { PureComponent, ChangeEvent } from "react";
+import urlRegex from "url-regex";
+import { gql } from "apollo-boost";
+import { graphql, MutationFn } from "react-apollo";
+import InputWithButton from "../components/InputWithButton";
 
 const createLink = gql`
   mutation create($url: String!) {
@@ -10,25 +10,25 @@ const createLink = gql`
       id
     }
   }
-`
+`;
 
 interface LinkCreatorProps {
-  mutate?: MutationFn
-  refresh?: () => void
+  mutate?: MutationFn;
+  refresh?: () => void;
 }
 
 interface LinkCreatorState {
-  link: string
-  loading: boolean
-  linkError: string
+  link: string;
+  loading: boolean;
+  linkError: string;
 }
 
 class LinkCreator extends PureComponent<LinkCreatorProps, LinkCreatorState> {
   override state: LinkCreatorState = {
     link: "",
     loading: false,
-    linkError: ""
-  }
+    linkError: "",
+  };
 
   handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
@@ -36,23 +36,23 @@ class LinkCreator extends PureComponent<LinkCreatorProps, LinkCreatorState> {
       link: e.target.value,
       linkError: urlRegex({ exact: true }).test(e.target.value)
         ? ""
-        : "This is not a valid url"
-    })
-  }
+        : "This is not a valid url",
+    });
+  };
 
   submitChange = () => {
-    this.setState({ loading: true })
+    this.setState({ loading: true });
 
     if (!this.state.link) {
       this.setState({
         loading: false,
         link: "",
-        linkError: "Must supply a valid Link"
-      })
-      return
+        linkError: "Must supply a valid Link",
+      });
+      return;
     }
 
-    const url = this.state.link
+    const url = this.state.link;
 
     this.props
       .mutate?.({ variables: { url } })
@@ -60,21 +60,21 @@ class LinkCreator extends PureComponent<LinkCreatorProps, LinkCreatorState> {
         this.setState({
           loading: false,
           link: "",
-          linkError: ""
-        })
-        this.props.refresh?.()
+          linkError: "",
+        });
+        this.props.refresh?.();
       })
       .catch(() => {
         this.setState({
           loading: false,
           link: "",
-          linkError: "Error while submitting"
-        })
-      })
-  }
+          linkError: "Error while submitting",
+        });
+      });
+  };
 
   isAddButtonDisabled() {
-    return this.state.loading || this.state.linkError !== ""
+    return this.state.loading || this.state.linkError !== "";
   }
 
   override render() {
@@ -89,8 +89,10 @@ class LinkCreator extends PureComponent<LinkCreatorProps, LinkCreatorState> {
         buttonDisabled={this.isAddButtonDisabled()}
         errorText={this.state.linkError}
       />
-    )
+    );
   }
 }
 
-export default graphql(createLink)(LinkCreator as any) as React.ComponentType<{ refresh?: () => void }>
+export default graphql(createLink)(LinkCreator as any) as React.ComponentType<{
+  refresh?: () => void;
+}>;

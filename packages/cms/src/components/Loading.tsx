@@ -1,6 +1,6 @@
-import Center from "./Center"
-import Spinner from "./Spinner"
-import Padder from "./Padder"
+import Center from "./Center";
+import Spinner from "./Spinner";
+import Padder from "./Padder";
 
 export default function Loading() {
   return (
@@ -9,5 +9,5 @@ export default function Loading() {
         <Spinner />
       </Padder>
     </Center>
-  )
+  );
 }

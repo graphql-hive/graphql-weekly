@@ -1,29 +1,29 @@
-import styled from "react-emotion"
-import { darken } from "polished"
-import { Link } from "react-router-dom"
-import { shadows } from "../style/colors"
+import styled from "react-emotion";
+import { darken } from "polished";
+import { Link } from "react-router-dom";
+import { shadows } from "../style/colors";
 
-type ButtonColor = "red" | "green" | "grey" | "grey-bg"
+type ButtonColor = "red" | "green" | "grey" | "grey-bg";
 
 const colorMap: Record<ButtonColor, string> = {
   red: "white",
   green: "white",
   grey: "#3D556B",
-  "grey-bg": "white"
-}
+  "grey-bg": "white",
+};
 
 const backgroundColorMap: Record<ButtonColor, string> = {
   red: "#ff4f56",
   green: "#15BD76",
   grey: "white",
-  "grey-bg": "#8fa6b2"
-}
+  "grey-bg": "#8fa6b2",
+};
 
 interface ButtonProps {
-  block?: boolean | undefined
-  disabled?: boolean | undefined
-  margin?: string | undefined
-  color?: ButtonColor | undefined
+  block?: boolean | undefined;
+  disabled?: boolean | undefined;
+  margin?: string | undefined;
+  color?: ButtonColor | undefined;
 }
 
 export const Button = styled<ButtonProps>("button")`
@@ -55,7 +55,7 @@ export const Button = styled<ButtonProps>("button")`
   &:focus {
     background: ${(p) => darken(0.07, backgroundColorMap[p.color || "green"])};
   }
-`
+`;
 
 export const ButtonLink = styled<ButtonProps>(Link)`
   padding: 11px 14px;
@@ -88,4 +88,4 @@ export const ButtonLink = styled<ButtonProps>(Link)`
     background: ${(p) => darken(0.07, backgroundColorMap[p.color || "green"])};
     color: ${(p) => colorMap[p.color || "green"]};
   }
-`
+`;

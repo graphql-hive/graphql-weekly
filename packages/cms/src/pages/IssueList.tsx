@@ -1,60 +1,57 @@
-import { Component, ChangeEvent } from 'react'
-import withRouter from 'react-router-dom/withRouter'
-import { graphql, compose, MutationFn } from 'react-apollo'
-import { gql } from 'apollo-boost'
-import { RouteComponentProps } from 'react-router-dom'
+import { Component, ChangeEvent } from "react";
+import withRouter from "react-router-dom/withRouter";
+import { graphql, compose, MutationFn } from "react-apollo";
+import { gql } from "apollo-boost";
+import { RouteComponentProps } from "react-router-dom";
 
-import Loading from '../components/Loading'
-import Card from '../components/Card'
-import Flex from '../components/Flex'
-import FlexItem from '../components/FlexCell'
-import InputWithButton from '../components/InputWithButton'
+import Loading from "../components/Loading";
+import Card from "../components/Card";
+import Flex from "../components/Flex";
+import FlexItem from "../components/FlexCell";
+import InputWithButton from "../components/InputWithButton";
 
-import { colors } from '../style/colors'
-import LinkCreator from '../product/LinkCreator'
-import PreviewImageUpdate from '../product/PreviewImageUpdate'
-import Topic from '../product/Topic'
-import Content from '../product/Content'
-import {
-  Header,
-  HeaderContainer
-} from '../product/Headers'
-import PageHeader from '../product/PageHeader'
+import { colors } from "../style/colors";
+import LinkCreator from "../product/LinkCreator";
+import PreviewImageUpdate from "../product/PreviewImageUpdate";
+import Topic from "../product/Topic";
+import Content from "../product/Content";
+import { Header, HeaderContainer } from "../product/Headers";
+import PageHeader from "../product/PageHeader";
 
 interface LinkData {
-  topic: { id: string; position: number } | null
-  url: string
-  text: string
-  title: string
-  id: string
+  topic: { id: string; position: number } | null;
+  url: string;
+  text: string;
+  title: string;
+  id: string;
 }
 
 interface TopicData {
-  id: string
-  title: string
-  position: number
-  links: LinkData[]
+  id: string;
+  title: string;
+  position: number;
+  links: LinkData[];
 }
 
 interface IssueData {
-  id: string
-  title: string
-  published: boolean
-  versionCount: number
-  previewImage: string
-  topics: TopicData[]
+  id: string;
+  title: string;
+  published: boolean;
+  versionCount: number;
+  previewImage: string;
+  topics: TopicData[];
 }
 
 interface LinksQueryResult {
-  allLinks: LinkData[]
-  loading: boolean
-  refetch: () => void
+  allLinks: LinkData[];
+  loading: boolean;
+  refetch: () => void;
 }
 
 interface IssuesQueryResult {
-  issue: IssueData
-  loading: boolean
-  refetch: () => void
+  issue: IssueData;
+  loading: boolean;
+  refetch: () => void;
 }
 
 const allLinksQuery = gql`
@@ -71,7 +68,7 @@ const allLinksQuery = gql`
       id
     }
   }
-`
+`;
 
 const issueQuery = gql`
   query issue($id: String!) {
@@ -100,7 +97,7 @@ const issueQuery = gql`
       }
     }
   }
-`
+`;
 
 const createTopicMutation = gql`
   mutation createTopic(
@@ -116,53 +113,53 @@ const createTopicMutation = gql`
       id
     }
   }
-`
+`;
 
 interface AppProps extends RouteComponentProps<{ id: string }> {
-  links: LinksQueryResult
-  issues: IssuesQueryResult
-  createTopic: MutationFn
+  links: LinksQueryResult;
+  issues: IssuesQueryResult;
+  createTopic: MutationFn;
 }
 
 interface AppState {
-  loading: boolean
-  newTopic: string
+  loading: boolean;
+  newTopic: string;
 }
 
 class App extends Component<AppProps, AppState> {
   override state: AppState = {
     loading: false,
-    newTopic: ''
-  }
+    newTopic: "",
+  };
 
   refreshEverything = () => {
-    this.props.links.refetch()
-    this.props.issues.refetch()
-  }
+    this.props.links.refetch();
+    this.props.issues.refetch();
+  };
 
   handleTopicChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newTopic: e.target.value })
-  }
+    this.setState({ newTopic: e.target.value });
+  };
 
   submitTopic = () => {
-    this.setState({ loading: true })
+    this.setState({ loading: true });
 
     this.props
       .createTopic({
         variables: {
-          issue_comment: ' ',
+          issue_comment: " ",
           title: this.state.newTopic,
-          issueId: this.props.match.params.id
-        }
+          issueId: this.props.match.params.id,
+        },
       })
       .then(() => {
-        this.setState({ loading: false, newTopic: '' })
-        this.refreshEverything()
-      })
-  }
+        this.setState({ loading: false, newTopic: "" });
+        this.refreshEverything();
+      });
+  };
 
   renderTopics() {
-    const data = this.props.issues.issue.topics
+    const data = this.props.issues.issue.topics;
 
     return data.map((topic, index) => (
       <Topic
@@ -172,13 +169,13 @@ class App extends Component<AppProps, AppState> {
         topics={data}
         refresh={this.refreshEverything}
       />
-    ))
+    ));
   }
 
   renderUnassignedLinks() {
     const data = this.props.links.allLinks.filter(
-      (link) => link.topic === null
-    )
+      (link) => link.topic === null,
+    );
 
     return (
       <section>
@@ -210,7 +207,7 @@ class App extends Component<AppProps, AppState> {
           </section>
         )}
       </section>
-    )
+    );
   }
 
   renderPreviewImage() {
@@ -225,7 +222,7 @@ class App extends Component<AppProps, AppState> {
           id={this.props.issues.issue.id}
         />
       </section>
-    )
+    );
   }
 
   override render() {
@@ -234,7 +231,7 @@ class App extends Component<AppProps, AppState> {
         <Card>
           <Loading />
         </Card>
-      )
+      );
     }
 
     return (
@@ -244,15 +241,13 @@ class App extends Component<AppProps, AppState> {
         </Card>
         <Card>
           <Flex>
-            <FlexItem>
-              {this.renderUnassignedLinks()}
-            </FlexItem>
+            <FlexItem>{this.renderUnassignedLinks()}</FlexItem>
             <FlexItem margin="0 0 0 10px">
               {this.renderTopics()}
 
               <Flex align="center" style={{ padding: 16 }}>
                 <InputWithButton
-                  buttonLabel={'Add Topic'}
+                  buttonLabel={"Add Topic"}
                   buttonDisabled={this.state.loading}
                   onClick={this.submitTopic}
                   value={this.state.newTopic}
@@ -266,26 +261,26 @@ class App extends Component<AppProps, AppState> {
         </Card>
         <Card>{this.renderPreviewImage()}</Card>
       </>
-    )
+    );
   }
 }
 
 export default compose(
   withRouter,
   graphql(allLinksQuery, {
-    name: 'links',
+    name: "links",
     options: {
-      fetchPolicy: 'cache-and-network'
-    }
+      fetchPolicy: "cache-and-network",
+    },
   }),
   graphql(issueQuery, {
-    name: 'issues',
+    name: "issues",
     options: ({ match }: RouteComponentProps<{ id: string }>) => ({
       variables: { id: match.params.id },
-      fetchPolicy: 'cache-and-network'
-    })
+      fetchPolicy: "cache-and-network",
+    }),
   }),
   graphql(createTopicMutation, {
-    name: 'createTopic'
-  })
-)(App)
+    name: "createTopic",
+  }),
+)(App);

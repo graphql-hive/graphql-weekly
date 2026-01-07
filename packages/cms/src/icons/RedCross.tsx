@@ -1,12 +1,12 @@
-import styled from "react-emotion"
-import X from "./X"
+import styled from "react-emotion";
+import X from "./X";
 
 export default function RedCross() {
   return (
     <Wrapper>
       <X />
     </Wrapper>
-  )
+  );
 }
 
 const Wrapper = styled("div")`
@@ -18,4 +18,4 @@ const Wrapper = styled("div")`
   justify-content: center;
   align-items: center;
   flex: 0 0 auto;
-`
+`;

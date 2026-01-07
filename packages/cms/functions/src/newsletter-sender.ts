@@ -1,7 +1,7 @@
-import { callbackRuntime, APIGatewayEvent } from 'lambda-helpers';
-import 'source-map-support/register';
-import mcapi = require('mailchimp-api');
-import urlParser = require('url');
+import { callbackRuntime, APIGatewayEvent } from "lambda-helpers";
+import "source-map-support/register";
+import mcapi = require("mailchimp-api");
+import urlParser = require("url");
 
 interface Payload {
   data: {
@@ -31,80 +31,78 @@ interface Link {
   text: string;
 }
 
-export default callbackRuntime(
-  async (event: APIGatewayEvent): Promise<any> => {
-    const payload = JSON.parse(event.body) as Payload;
-    const issue = payload.data.Issue.node;
+export default callbackRuntime(async (event: APIGatewayEvent): Promise<any> => {
+  const payload = JSON.parse(event.body) as Payload;
+  const issue = payload.data.Issue.node;
 
-    const mailchimpKey = 'MAILCHIMP_API_KEY_REDACTED';
-    const mailchimpListId = 'b07e0b3012';
+  const mailchimpKey = "MAILCHIMP_API_KEY_REDACTED";
+  const mailchimpListId = "b07e0b3012";
 
-    const mc = new mcapi.Mailchimp(mailchimpKey);
+  const mc = new mcapi.Mailchimp(mailchimpKey);
 
-    const shouldRun = issue.published && payload.data.Issue.updatedFields.includes('versionCount');
+  const shouldRun =
+    issue.published &&
+    payload.data.Issue.updatedFields.includes("versionCount");
 
-    if (!shouldRun) {
-      console.log('Nothing to do here...');
-      return {
-        statusCode: 204
-      };
-    }
-
-    await new Promise((resolve, reject) => {
-      const params = {
-        options: {
-          list_id: mailchimpListId,
-          subject: `GraphQL Weekly - ${issue.title}`,
-          from_email: 'hello@graphqlweekly.com',
-          from_name: 'GraphQL Weekly',
-          inline_css: true,
-          title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`
-        },
-        content: {
-          html: formatTemplate(issue)
-        },
-        type: 'regular'
-      };
-
-      mc.campaigns.create(params, resolve, reject);
-    });
-
+  if (!shouldRun) {
+    console.log("Nothing to do here...");
     return {
-      statusCode: 204
+      statusCode: 204,
     };
   }
-);
+
+  await new Promise((resolve, reject) => {
+    const params = {
+      options: {
+        list_id: mailchimpListId,
+        subject: `GraphQL Weekly - ${issue.title}`,
+        from_email: "hello@graphqlweekly.com",
+        from_name: "GraphQL Weekly",
+        inline_css: true,
+        title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`,
+      },
+      content: {
+        html: formatTemplate(issue),
+      },
+      type: "regular",
+    };
+
+    mc.campaigns.create(params, resolve, reject);
+  });
+
+  return {
+    statusCode: 204,
+  };
+});
 
 const colorMap = {
-  default: '#f531b1',
+  default: "#f531b1",
 
-  articles: '#f531b1',
-  tutorials: '#6560e2',
+  articles: "#f531b1",
+  tutorials: "#6560e2",
 
-  'community & events': '#009be3',
-  conference: '#009be3',
-  events: '#009be3',
+  "community & events": "#009be3",
+  conference: "#009be3",
+  events: "#009be3",
 
-  videos: '#27ae60',
-  talks: '#27ae60',
-  'podcasts and shows': '#27ae60',
-  slides: '#27ae60',
+  videos: "#27ae60",
+  talks: "#27ae60",
+  "podcasts and shows": "#27ae60",
+  slides: "#27ae60",
 
-  'tools & open source': '#f0950c',
-  'tools and open source': '#f0950c',
-  'libraries and tools': '#f0950c',
-  libraries: '#f0950c',
-  'frameworks and libraries': '#f0950c',
-  'open source': '#f0950c'
+  "tools & open source": "#f0950c",
+  "tools and open source": "#f0950c",
+  "libraries and tools": "#f0950c",
+  libraries: "#f0950c",
+  "frameworks and libraries": "#f0950c",
+  "open source": "#f0950c",
 };
 
 /**
  * Render the first section and all other Topics of an issue
  * @param issue
  */
-function renderContent(
-  issue: Issue
-): {
+function renderContent(issue: Issue): {
   firstTopic: {
     text: string;
     color: string;
@@ -119,14 +117,14 @@ function renderContent(
     firstTopic: {
       title: firstTopic.title,
       color: getColor(firstTopic.title),
-      text: renderTopicContent(firstTopic)
+      text: renderTopicContent(firstTopic),
     },
-    content: renderTopics(restTopics)
+    content: renderTopics(restTopics),
   };
 }
 
 function renderTopics(topics: Topic[]) {
-  return topics.map(renderTopic).join('\n');
+  return topics.map(renderTopic).join("\n");
 }
 
 function getColor(title: string): string {
@@ -778,9 +776,9 @@ function slugify(text: string) {
   return text
     .toString()
     .toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, ''); // Trim - from end of text
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+    .replace(/\-\-+/g, "-") // Replace multiple - with single -
+    .replace(/^-+/, "") // Trim - from start of text
+    .replace(/-+$/, ""); // Trim - from end of text
 }

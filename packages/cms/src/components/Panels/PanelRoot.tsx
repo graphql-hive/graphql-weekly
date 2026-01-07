@@ -1,10 +1,10 @@
-import { Component, ComponentType, MouseEvent } from "react"
-import styled, { keyframes } from "react-emotion"
-import CardBody from "../CardBody"
-import ClickTarget from "../ClickTarget"
-import X from "../../icons/X"
-import { colors } from "../../style/colors"
-import PanelConsumer from "./PanelConsumer"
+import { Component, ComponentType, MouseEvent } from "react";
+import styled, { keyframes } from "react-emotion";
+import CardBody from "../CardBody";
+import ClickTarget from "../ClickTarget";
+import X from "../../icons/X";
+import { colors } from "../../style/colors";
+import PanelConsumer from "./PanelConsumer";
 
 const FadeRight = keyframes`
   from {
@@ -17,7 +17,7 @@ const FadeRight = keyframes`
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
   }
-`
+`;
 
 const Scrim = styled("div")`
   position: fixed;
@@ -25,7 +25,7 @@ const Scrim = styled("div")`
   z-index: 11;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.56);
-`
+`;
 
 const Panel = styled("div")`
   max-width: 640px;
@@ -38,19 +38,19 @@ const Panel = styled("div")`
   animation-duration: 0.15s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
-`
+`;
 
 const PanelCard = styled("div")`
   background-color: white;
   border-radius: 0px;
   height: 100%;
-`
+`;
 
 const PanelHeader = styled("div")`
   padding: 16px 12px 16px 8px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   text-align: right;
-`
+`;
 
 const PanelClose = styled("p")`
   margin: 0;
@@ -61,23 +61,23 @@ const PanelClose = styled("p")`
   &:hover {
     text-decoration: underline;
   }
-`
+`;
 
 interface PanelBodyProps {
-  isOpen?: boolean
-  hidePanel: () => void
-  Component: ComponentType<{ onPanelClose: () => void }>
+  isOpen?: boolean;
+  hidePanel: () => void;
+  Component: ComponentType<{ onPanelClose: () => void }>;
 }
 
 class PanelBody extends Component<PanelBodyProps> {
   closePanel = () => {
     if (this.props.isOpen) {
-      this.props.hidePanel()
+      this.props.hidePanel();
     }
-  }
+  };
 
   override render() {
-    const { hidePanel, Component: PanelComponent } = this.props
+    const { hidePanel, Component: PanelComponent } = this.props;
     return (
       <Scrim id="panelRoot" onClick={this.closePanel}>
         <Panel onClick={(e: MouseEvent) => e.stopPropagation()}>
@@ -97,7 +97,7 @@ class PanelBody extends Component<PanelBodyProps> {
           </PanelCard>
         </Panel>
       </Scrim>
-    )
+    );
   }
 }
 
@@ -106,9 +106,13 @@ export default function PanelRoot() {
     <PanelConsumer>
       {({ component: PanelComponent, props, hidePanel }) => {
         return PanelComponent ? (
-          <PanelBody hidePanel={hidePanel} Component={PanelComponent} {...props} />
-        ) : null
+          <PanelBody
+            hidePanel={hidePanel}
+            Component={PanelComponent}
+            {...props}
+          />
+        ) : null;
       }}
     </PanelConsumer>
-  )
+  );
 }

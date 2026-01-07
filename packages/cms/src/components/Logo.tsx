@@ -1,5 +1,5 @@
-import styled from "react-emotion"
-import PrismaLogo from "../icons/Prisma"
+import styled from "react-emotion";
+import PrismaLogo from "../icons/Prisma";
 
 const LogoWrapper = styled("a")`
   background: #0c344b;
@@ -8,12 +8,12 @@ const LogoWrapper = styled("a")`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 
 export default function Logo() {
   return (
     <LogoWrapper href="/">
       <PrismaLogo />
     </LogoWrapper>
-  )
+  );
 }

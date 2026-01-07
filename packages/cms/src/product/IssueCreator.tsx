@@ -1,7 +1,7 @@
-import React, { PureComponent, ChangeEvent, MouseEvent } from "react"
-import { gql } from "apollo-boost"
-import { graphql, MutationFn } from "react-apollo"
-import InputWithButton from "../components/InputWithButton"
+import React, { PureComponent, ChangeEvent, MouseEvent } from "react";
+import { gql } from "apollo-boost";
+import { graphql, MutationFn } from "react-apollo";
+import InputWithButton from "../components/InputWithButton";
 
 const createIssue = gql`
   mutation create(
@@ -19,44 +19,44 @@ const createIssue = gql`
       id
     }
   }
-`
+`;
 
 interface IssueCreatorProps {
-  mutate?: MutationFn
-  refresh?: () => void
+  mutate?: MutationFn;
+  refresh?: () => void;
 }
 
 interface IssueCreatorState {
-  number: string
-  loading: boolean
-  numberError: string
+  number: string;
+  loading: boolean;
+  numberError: string;
 }
 
 class IssueCreator extends PureComponent<IssueCreatorProps, IssueCreatorState> {
   override state: IssueCreatorState = {
     number: "",
     loading: false,
-    numberError: ""
-  }
+    numberError: "",
+  };
 
   handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       loading: false,
       numberError: "",
-      number: e.target.value
-    })
-  }
+      number: e.target.value,
+    });
+  };
 
   submitIssueChange = (_e: MouseEvent<HTMLButtonElement>) => {
-    this.setState({ loading: true })
+    this.setState({ loading: true });
 
     if (!this.state.number) {
       this.setState({
         loading: false,
         number: "",
-        numberError: "Must supply a valid Issue Number"
-      })
-      return
+        numberError: "Must supply a valid Issue Number",
+      });
+      return;
     }
 
     this.props
@@ -65,31 +65,31 @@ class IssueCreator extends PureComponent<IssueCreatorProps, IssueCreatorState> {
           title: `Issue ${this.state.number}`,
           date: `${new Date().toISOString()}`,
           number: parseInt(this.state.number, 10),
-          published: false
-        }
+          published: false,
+        },
       })
       .then(() => {
-        this.props.refresh?.()
+        this.props.refresh?.();
         this.setState({
           loading: false,
           number: "",
-          numberError: ""
-        })
+          numberError: "",
+        });
       })
       .catch((e: Error) => {
         this.setState({
           loading: false,
-          numberError: e.message
-        })
-      })
-  }
+          numberError: e.message,
+        });
+      });
+  };
 
   isAddButtonDisabled() {
     return (
       this.state.loading ||
       this.state.number === "" ||
       isNaN(Number(this.state.number))
-    )
+    );
   }
 
   override render() {
@@ -104,8 +104,10 @@ class IssueCreator extends PureComponent<IssueCreatorProps, IssueCreatorState> {
         errorText={this.state.numberError}
         value={this.state.number}
       />
-    )
+    );
   }
 }
 
-export default graphql(createIssue)(IssueCreator as any) as React.ComponentType<{ refresh?: () => void }>
+export default graphql(createIssue)(
+  IssueCreator as any,
+) as React.ComponentType<{ refresh?: () => void }>;

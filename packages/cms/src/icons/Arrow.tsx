@@ -6,7 +6,7 @@ export const ArrowRightIcon = () => (
       fillRule="evenodd"
     />
   </svg>
-)
+);
 
 export const ArrowLeftIcon = () => (
   <svg
@@ -21,7 +21,7 @@ export const ArrowLeftIcon = () => (
       fillRule="evenodd"
     />
   </svg>
-)
+);
 
 export const ArrowDownIcon = () => (
   <svg
@@ -36,7 +36,7 @@ export const ArrowDownIcon = () => (
       fillRule="evenodd"
     />
   </svg>
-)
+);
 
 export const ArrowUpIcon = () => (
   <svg
@@ -51,4 +51,4 @@ export const ArrowUpIcon = () => (
       fillRule="evenodd"
     />
   </svg>
-)
+);

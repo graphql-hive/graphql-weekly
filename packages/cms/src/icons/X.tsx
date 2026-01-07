@@ -1,9 +1,9 @@
 interface XProps {
-  size?: number
-  color?: string
+  size?: number;
+  color?: string;
 }
 
-export default function X({ size = 8, color = '#FFF' }: XProps) {
+export default function X({ size = 8, color = "#FFF" }: XProps) {
   return (
     <svg
       width={size}
@@ -23,5 +23,5 @@ export default function X({ size = 8, color = '#FFF' }: XProps) {
         <path id="Vector_2" d="M0 0L6 6" transform="translate(1 1)" />
       </g>
     </svg>
-  )
+  );
 }

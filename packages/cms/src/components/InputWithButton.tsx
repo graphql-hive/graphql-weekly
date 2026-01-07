@@ -1,20 +1,25 @@
-import { ChangeEventHandler, CSSProperties, MouseEventHandler, ReactNode } from "react"
-import Input from "./Input"
-import Flex from "./Flex"
-import { Button } from "./Button"
-import ErrorText from "./ErrorText"
+import {
+  ChangeEventHandler,
+  CSSProperties,
+  MouseEventHandler,
+  ReactNode,
+} from "react";
+import Input from "./Input";
+import Flex from "./Flex";
+import { Button } from "./Button";
+import ErrorText from "./ErrorText";
 
 interface InputWithButtonProps {
-  buttonLabel: ReactNode
-  buttonDisabled?: boolean
-  disabled?: boolean
-  onChange?: ChangeEventHandler<HTMLInputElement>
-  onClick?: MouseEventHandler<HTMLButtonElement>
-  style?: CSSProperties
-  type?: string
-  placeholder?: string
-  errorText?: ReactNode
-  value?: string
+  buttonLabel: ReactNode;
+  buttonDisabled?: boolean;
+  disabled?: boolean;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  style?: CSSProperties;
+  type?: string;
+  placeholder?: string;
+  errorText?: ReactNode;
+  value?: string;
 }
 
 export default function InputWithButton({
@@ -27,7 +32,7 @@ export default function InputWithButton({
   type,
   placeholder,
   errorText,
-  value
+  value,
 }: InputWithButtonProps) {
   return (
     <>
@@ -46,5 +51,5 @@ export default function InputWithButton({
       </Flex>
       {errorText && <ErrorText>{errorText}</ErrorText>}
     </>
-  )
+  );
 }

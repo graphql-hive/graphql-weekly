@@ -1,53 +1,47 @@
-import { Component } from 'react'
-import { graphql, MutationFn } from 'react-apollo'
-import { gql } from 'apollo-boost'
-import { Button } from '../components/Button'
-import Radio from '../components/Radio'
-import Flex from '../components/Flex'
+import { Component } from "react";
+import { graphql, MutationFn } from "react-apollo";
+import { gql } from "apollo-boost";
+import { Button } from "../components/Button";
+import Radio from "../components/Radio";
+import Flex from "../components/Flex";
 
 const addLinks = gql`
-  mutation addLinks(
-    $topicTopicId: String!
-    $linksLinkId: String!
-  ) {
-    addLinksToTopic(
-      topicId: $topicTopicId
-      linkId: $linksLinkId
-    ) {
+  mutation addLinks($topicTopicId: String!, $linksLinkId: String!) {
+    addLinksToTopic(topicId: $topicTopicId, linkId: $linksLinkId) {
       id
       issueId
     }
   }
-`
+`;
 
 interface Topic {
-  id: string
-  title: string
+  id: string;
+  title: string;
 }
 
 interface Link {
-  topic: { id: string } | null
+  topic: { id: string } | null;
 }
 
 interface TopicDialogProps {
-  mutate?: MutationFn
-  link?: Link
-  linkId?: string
-  topics?: Topic[]
-  refresh?: () => void
-  onPanelClose?: () => void
+  mutate?: MutationFn;
+  link?: Link;
+  linkId?: string;
+  topics?: Topic[];
+  refresh?: () => void;
+  onPanelClose?: () => void;
 }
 
 interface TopicDialogState {
-  topicId: string
+  topicId: string;
 }
 
 class TopicDialog extends Component<TopicDialogProps, TopicDialogState> {
   constructor(props: TopicDialogProps) {
-    super(props)
+    super(props);
     this.state = {
-      topicId: props.link?.topic?.id ?? ''
-    }
+      topicId: props.link?.topic?.id ?? "",
+    };
   }
 
   handleClick = () => {
@@ -55,25 +49,23 @@ class TopicDialog extends Component<TopicDialogProps, TopicDialogState> {
       .mutate?.({
         variables: {
           topicTopicId: this.state.topicId,
-          linksLinkId: this.props.linkId
-        }
+          linksLinkId: this.props.linkId,
+        },
       })
       .then(() => {
-        this.props.refresh?.()
-        this.props.onPanelClose?.()
-      })
-  }
+        this.props.refresh?.();
+        this.props.onPanelClose?.();
+      });
+  };
 
   handleChange = (topicId: string) => {
-    this.setState({ topicId })
-  }
+    this.setState({ topicId });
+  };
 
   override render() {
     return (
       <section>
-        <h1 style={{ margin: '0 0 32px' }}>
-          Assign this link to a topic:
-        </h1>
+        <h1 style={{ margin: "0 0 32px" }}>Assign this link to a topic:</h1>
         {this.props.topics?.map((topic, index) => (
           <Radio
             onClick={this.handleChange}
@@ -88,8 +80,8 @@ class TopicDialog extends Component<TopicDialogProps, TopicDialogState> {
           <Button onClick={this.handleClick}>Submit</Button>
         </Flex>
       </section>
-    )
+    );
   }
 }
 
-export default graphql(addLinks)(TopicDialog)
+export default graphql(addLinks)(TopicDialog);
