@@ -1,5 +1,5 @@
 import type { ComponentProps, CSSProperties } from "react";
-import { Link, type LinkProps } from "react-router-dom";
+import { Link } from "wouter";
 
 type ButtonColor = "red" | "green" | "grey" | "grey-bg";
 
@@ -76,13 +76,15 @@ export function Button({
   );
 }
 
-interface ButtonLinkProps extends Omit<LinkProps, "color"> {
+interface ButtonLinkProps extends Omit<ComponentProps<"a">, "color" | "href"> {
+  to: string;
   block?: boolean;
   disabled?: boolean;
   color?: ButtonColor;
 }
 
 export function ButtonLink({
+  to,
   block,
   disabled,
   color = "green",
@@ -100,10 +102,12 @@ export function ButtonLink({
     pointerEvents: disabled ? "none" : "all",
     "--btn-hover-bg": hoverColorMap[color],
     "--btn-focus-bg": focusColorMap[color],
+    ...style,
   } as CSSProperties;
 
   return (
     <Link
+      href={to}
       {...props}
       className={`${baseClasses} hover:!bg-[var(--btn-hover-bg)] hover:!text-[${colorMap[color]}] focus:!bg-[var(--btn-focus-bg)] focus:!text-[${colorMap[color]}] ${className ?? ""}`}
       style={combinedStyle}

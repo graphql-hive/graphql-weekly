@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 
 import Loading from "../components/Loading";
@@ -11,6 +11,7 @@ import {
   useAllLinksQuery,
   useIssueQuery,
   useCreateTopicMutation,
+  useCreateLinkMutation,
   useUpdateLinkMutation,
   useDeleteLinkMutation,
   type IssueQuery,
@@ -21,11 +22,12 @@ type TopicData = NonNullable<
 >[number];
 type LinkData = NonNullable<TopicData["links"]>[number];
 
-export default function IssueList() {
+export default function IssuePage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
   const [newTopic, setNewTopic] = useState("");
+  const [newLink, setNewLink] = useState("");
   const [editedLinks, setEditedLinks] = useState<
     Map<string, Partial<LinkData>>
   >(new Map());
@@ -36,6 +38,7 @@ export default function IssueList() {
   const { data: issueData, isLoading: issueLoading } = useIssueQuery({ id });
 
   const createTopicMutation = useCreateTopicMutation();
+  const createLinkMutation = useCreateLinkMutation();
   const updateLinkMutation = useUpdateLinkMutation();
   const deleteLinkMutation = useDeleteLinkMutation();
 
@@ -55,6 +58,19 @@ export default function IssueList() {
       }
     );
   }, [createTopicMutation, newTopic, id, invalidateQueries]);
+
+  const submitLink = useCallback(() => {
+    if (!newLink || !/^https?:\/\/.+/.test(newLink)) return;
+    createLinkMutation.mutate(
+      { url: newLink },
+      {
+        onSuccess: () => {
+          setNewLink("");
+          invalidateQueries();
+        },
+      }
+    );
+  }, [createLinkMutation, newLink, invalidateQueries]);
 
   const handleLinkChange = useCallback((link: LinkData) => {
     setEditedLinks((prev) =>
@@ -204,9 +220,15 @@ export default function IssueList() {
             <input
               type="text"
               placeholder="Paste URL to add link..."
+              value={newLink}
+              onChange={(e) => setNewLink(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
             />
-            <button className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+            <button
+              onClick={submitLink}
+              disabled={createLinkMutation.isPending || !newLink}
+              className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Add
             </button>
           </div>

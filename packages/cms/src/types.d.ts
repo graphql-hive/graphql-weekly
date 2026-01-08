@@ -3,15 +3,6 @@ declare module "url-regex" {
   export default urlRegex;
 }
 
-declare module "react-router-dom/withRouter" {
-  import { ComponentType } from "react";
-  import { RouteComponentProps } from "react-router-dom";
-  function withRouter<P extends RouteComponentProps>(
-    component: ComponentType<P>,
-  ): ComponentType<Omit<P, keyof RouteComponentProps>>;
-  export default withRouter;
-}
-
 declare module "react-emotion" {
   import {
     ComponentType,

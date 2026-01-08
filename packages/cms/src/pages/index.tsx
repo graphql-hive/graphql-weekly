@@ -2,14 +2,13 @@ import chunk from "lodash.chunk";
 import Flex from "../components/Flex";
 import FlexCell from "../components/FlexCell";
 import Card from "../components/Card";
-import LinkCreator from "../product/LinkCreator";
 import IssueCreator from "../product/IssueCreator";
 import { ButtonLink } from "../components/Button";
 import Loading from "../components/Loading";
 import { useAllIssuesQuery } from "../generated/graphql";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function IssuesList() {
+export default function IndexPage() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useAllIssuesQuery();
 
@@ -30,16 +29,7 @@ export default function IssuesList() {
   return (
     <>
       <Card>
-        <Flex>
-          <FlexCell grow="0" basis="auto">
-            <LinkCreator />
-          </FlexCell>
-          <FlexCell grow="0" basis="auto">
-            <div style={{ marginLeft: 10 }}>
-              <IssueCreator refresh={refresh} />
-            </div>
-          </FlexCell>
-        </Flex>
+        <IssueCreator refresh={refresh} />
       </Card>
       <Card>
         {allIssues.map((issues, index) => (

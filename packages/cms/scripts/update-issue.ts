@@ -1,0 +1,182 @@
+#!/usr/bin/env bun
+import { GraphQLClient, gql } from "graphql-request";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+const endpoint = "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
+const token = "JWT_TOKEN_REDACTED";
+
+const client = new GraphQLClient(endpoint, {
+  headers: { Authorization: token },
+});
+
+interface Issue {
+  id: string;
+  number: number;
+  title: string;
+  topics?: { id: string; title: string }[];
+}
+
+interface Link {
+  url: string;
+  title: string;
+  description: string;
+  tag: string;
+}
+
+const ALL_ISSUES = gql`
+  query AllIssues {
+    allIssues {
+      id
+      number
+      title
+    }
+  }
+`;
+
+const ISSUE_WITH_TOPICS = gql`
+  query Issue($id: String!) {
+    issue(id: $id) {
+      id
+      title
+      topics {
+        id
+        title
+      }
+    }
+  }
+`;
+
+const CREATE_LINK = gql`
+  mutation CreateLink($url: String!) {
+    createLink(url: $url) {
+      id
+    }
+  }
+`;
+
+const UPDATE_LINK = gql`
+  mutation UpdateLink($id: String!, $title: String!, $text: String!, $url: String!) {
+    updateLink(id: $id, title: $title, text: $text, url: $url) {
+      id
+    }
+  }
+`;
+
+const CREATE_TOPIC = gql`
+  mutation CreateTopic($issueId: String!, $title: String!, $issue_comment: String!) {
+    createTopic(issueId: $issueId, title: $title, issue_comment: $issue_comment) {
+      id
+    }
+  }
+`;
+
+const ADD_LINK_TO_TOPIC = gql`
+  mutation AddLinksToTopic($topicId: String!, $linkId: String!) {
+    addLinksToTopic(topicId: $topicId, linkId: $linkId) {
+      id
+    }
+  }
+`;
+
+function parseTSV(filePath: string): Link[] {
+  const content = readFileSync(filePath, "utf-8");
+  const lines = content.trim().split("\n");
+  const [_header, ...rows] = lines;
+
+  return rows.map(row => {
+    const [url, title, description, tag] = row.split("\t");
+    return { url, title, description, tag };
+  });
+}
+
+async function findIssueByNumber(issueNumber: number): Promise<Issue | null> {
+  const data = await client.request<{ allIssues: Issue[] }>(ALL_ISSUES);
+  return data.allIssues.find(issue => issue.number === issueNumber) ?? null;
+}
+
+async function getIssueWithTopics(issueId: string): Promise<Issue | null> {
+  const data = await client.request<{ issue: Issue }>(ISSUE_WITH_TOPICS, { id: issueId });
+  return data.issue;
+}
+
+async function createLink(url: string): Promise<string> {
+  const data = await client.request<{ createLink: { id: string } }>(CREATE_LINK, { url });
+  return data.createLink.id;
+}
+
+async function updateLink(id: string, title: string, text: string, url: string): Promise<void> {
+  await client.request(UPDATE_LINK, { id, title, text, url });
+}
+
+async function createTopic(issueId: string, title: string): Promise<string> {
+  const data = await client.request<{ createTopic: { id: string } }>(CREATE_TOPIC, {
+    issueId,
+    title,
+    issue_comment: "",
+  });
+  return data.createTopic.id;
+}
+
+async function addLinkToTopic(topicId: string, linkId: string): Promise<void> {
+  await client.request(ADD_LINK_TO_TOPIC, { topicId, linkId });
+}
+
+async function main() {
+  const issueNumber = parseInt(process.argv[2], 10);
+  if (!issueNumber || isNaN(issueNumber)) {
+    console.error("Usage: bun scripts/update-issue.ts <issue-number>");
+    console.error("Example: bun scripts/update-issue.ts 399");
+    process.exit(1);
+  }
+
+  const tsvPath = process.argv[3] || join(new URL("..", import.meta.url).pathname, "links-to-add.tsv");
+
+  console.log(`Looking for issue #${issueNumber}...`);
+  const issue = await findIssueByNumber(issueNumber);
+  if (!issue) {
+    console.error(`Issue #${issueNumber} not found`);
+    process.exit(1);
+  }
+  console.log(`Found issue: ${issue.title} (${issue.id})`);
+
+  const issueWithTopics = await getIssueWithTopics(issue.id);
+  const existingTopics = new Map(
+    issueWithTopics?.topics?.map(t => [t.title.toLowerCase(), t.id]) ?? []
+  );
+  console.log(`Existing topics: ${[...existingTopics.keys()].join(", ") || "(none)"}`);
+
+  const links = parseTSV(tsvPath);
+  console.log(`Found ${links.length} links to add`);
+
+  for (const link of links) {
+    console.log(`\nProcessing: ${link.title}`);
+
+    // Create link
+    const linkId = await createLink(link.url);
+    console.log(`  Created link: ${linkId}`);
+
+    // Update link with title and description
+    await updateLink(linkId, link.title, link.description, link.url);
+    console.log(`  Updated with title/description`);
+
+    // Find or create topic
+    let topicId = existingTopics.get(link.tag.toLowerCase());
+    if (!topicId) {
+      console.log(`  Creating topic: ${link.tag}`);
+      topicId = await createTopic(issue.id, link.tag);
+      existingTopics.set(link.tag.toLowerCase(), topicId);
+    }
+
+    // Add link to topic
+    await addLinkToTopic(topicId, linkId);
+    console.log(`  Added to topic: ${link.tag}`);
+  }
+
+  console.log("\nDone!");
+}
+
+main().catch(err => {
+  console.error("Error:", err);
+  process.exit(1);
+});

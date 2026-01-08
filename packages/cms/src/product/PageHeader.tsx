@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation } from "wouter";
 import { Button } from "../components/Button";
 import Flex from "../components/Flex";
 import FlexCell from "../components/FlexCell";
@@ -30,7 +30,7 @@ export default function PageHeader({
   published,
   topics = [],
 }: PageHeaderProps) {
-  const history = useHistory();
+  const [, navigate] = useLocation();
   const [isFoundation, setIsFoundation] = useState(false);
 
   const publishIssueMutation = usePublishIssueMutation();
@@ -61,7 +61,7 @@ export default function PageHeader({
       }
     }
     await deleteIssueMutation.mutateAsync({ id });
-    history.push("/");
+    navigate("/");
   };
 
   return (

@@ -1,0 +1,17 @@
+link	title	description	tag
+https://www.linkedin.com/posts/eddeee888_typescript-operations-and-client-preset-activity-7404433547521855489-k5Mi	New Codegen Version Preview	Upcoming new version of codegen, looking for community feedback	tools
+https://graphql.org/blog/2025-10-14-announcing-ai-wg/	Announcing the AI Working Group	The GraphQL Foundation announces a new working group focused on AI	community
+https://www.linkedin.com/posts/urigo_i-couldnt-wish-for-a-better-birthday-gift-activity-7369351866301792256-X5cX	Hive Router Announcement	The Guild announces Hive Router	announcements
+https://www.linkedin.com/posts/urigo_i-couldnt-wish-for-a-better-birthday-gift-activity-7370711884787789825-md99	Hive Gateway v2	Hive Gateway v2 release announcement	announcements
+https://www.linkedin.com/posts/eddeee888_removing-graphql-fields-heres-how-to-not-activity-7393645705900285952-5DkH	Breaking Change Management Guide	Video guide on removing GraphQL fields safely by Eddy Nguyen	tutorials
+https://www.linkedin.com/posts/eddeee888_graphql-codemod-migrating-from-legacy-apollo-activity-7360638966124990464-DgPi	Codegen Migration Codemod	Codemod for migrating from hooks to client preset	tools
+https://www.linkedin.com/posts/kadi-kraman_new-expo-example-graphql-server-and-client-ugcPost-7354148965640011776-hoTi	Expo GraphQL Example	New Expo example with GraphQL server and client with automatic type generation	tutorials
+https://the-guild.dev/graphql/hive/product-updates/2025-11-17-hive-gateway-rust-query-planner	Hive Gateway Rust Query Planner	Hive Gateway now uses a Rust-based query planner for improved performance	announcements
+https://the-guild.dev/graphql/hive/product-updates/2025-08-10-public-graphql-api	Hive Console Public GraphQL API	Hive Console now offers a public GraphQL API	announcements
+https://the-guild.dev/graphql/hive/product-updates/2025-09-03-schema-proposals	Hive Schema Proposals Preview	Preview of the Schema Proposals feature in Hive Console	tools
+https://the-guild.dev/graphql/hive/blog/graphql-conf-2025-recap	GraphQL Conf 2025 Recap	The Guild's recap of GraphQL Conf 2025	community
+https://www.apollographql.com/blog/building-apps-for-chatgpt-with-apollo-mcp-server-and-apollo-client	Building Apps for ChatGPT with Apollo MCP	How to build apps for ChatGPT using Apollo MCP Server and Apollo Client	tutorials
+https://www.apollographql.com/events/what-comes-after-apollo-client-preparing-your-graph-for-what-s-next	What Comes After Apollo Client	Webinar on preparing your graph for what's next	community
+https://www.youtube.com/watch?v=MoPYTN4piQc&list=PLpi1lPB6opQz68irPAE7FZct4WmlE_g27	GraphQL Summit 2025 Highlights	Video playlist of GraphQL Summit 2025 highlights by Apollo	community
+https://www.apollographql.com/blog/apollo-mcp-server-1-0-is-generally-available	Apollo MCP Server 1.0 GA	Apollo MCP Server 1.0 is now generally available	announcements
+https://www.apollographql.com/blog/announcing-apollo-ios-2-0	Apollo iOS 2.0	Announcing Apollo iOS 2.0 release	announcements
