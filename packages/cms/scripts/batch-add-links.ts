@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 import { GraphQLClient, gql } from "graphql-request";
 import { readFileSync } from "fs";
-import { join } from "path";
 
 const endpoint = "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
 const token = "JWT_TOKEN_REDACTED";
@@ -124,13 +123,13 @@ async function addLinkToTopic(topicId: string, linkId: string): Promise<void> {
 
 async function main() {
   const issueNumber = parseInt(process.argv[2], 10);
-  if (!issueNumber || isNaN(issueNumber)) {
-    console.error("Usage: bun scripts/update-issue.ts <issue-number>");
-    console.error("Example: bun scripts/update-issue.ts 399");
+  const tsvPath = process.argv[3];
+
+  if (!issueNumber || isNaN(issueNumber) || !tsvPath) {
+    console.error("Usage: bun run batch-add-links <issue-number> <tsv-path>");
+    console.error("Example: bun run batch-add-links 399 links-to-add.tsv");
     process.exit(1);
   }
-
-  const tsvPath = process.argv[3] || join(new URL("..", import.meta.url).pathname, "links-to-add.tsv");
 
   console.log(`Looking for issue #${issueNumber}...`);
   const issue = await findIssueByNumber(issueNumber);

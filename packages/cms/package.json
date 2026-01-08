@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "codegen": "graphql-codegen --config graphql-codegen.ts",
-    "postinstall": "bun run codegen"
+    "postinstall": "bun run codegen",
+    "batch-add-links": "bun scripts/batch-add-links.ts"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.3",
