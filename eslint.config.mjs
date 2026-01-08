@@ -1,1 +1,1 @@
-export default from '@hasparus/eslint-config/the-guild'
+export { theGuild as default } from '@hasparus/eslint-config'
