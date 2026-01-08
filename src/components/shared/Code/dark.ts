@@ -3,41 +3,46 @@ import duotoneDark from 'react-syntax-highlighter/dist/esm/styles/prism/duotone-
 export const dark = {
   ...duotoneDark,
 
-  comment: {
-    color: '#8FA6B2',
-  },
-  string: {
-    color: '#FFE376',
-  },
-  function: {
-    color: '#6FBCFF',
-  },
-  entity: {
-    color: '#6FBCFF',
-  },
-  property: {
-    color: '#89DB94',
-  },
-  object: {
-    color: '#89DB94',
-  },
-  variable: {
-    color: '#89DB94',
-  },
   'attr-value': {
     color: '#89DB94',
+  },
+  'code[class*="language-"]': {
+    background: 'none',
+    color: '#89DB94',
+    direction: 'ltr',
+    fontFamily:
+      'Roboto Mono, Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace',
+    fontSize: '16px',
+    hyphens: 'none',
+    lineHeight: '1.574',
+    MozHyphens: 'none',
+    MozTabSize: '2',
+    msHyphens: 'none',
+    OTabSize: '2',
+    tabSize: '2',
+    textAlign: 'left',
+    WebkitHyphens: 'none',
+    whiteSpace: 'pre',
+    wordBreak: 'normal',
+    wordSpacing: 'normal',
+  },
+  comment: {
+    color: '#8FA6B2',
   },
   constant: {
     color: '#89DB94',
   },
+  entity: {
+    color: '#6FBCFF',
+  },
+  function: {
+    color: '#6FBCFF',
+  },
   keyword: {
     color: '#FF92F0',
   },
-  punctuation: {
-    color: 'rgba(255, 255, 255, 0.3)',
-  },
-  tag: {
-    color: 'rgba(255, 255, 255, 0.3)',
+  object: {
+    color: '#89DB94',
   },
   operator: {
     color: 'rgba(255, 255, 255, 0.3)',
@@ -45,24 +50,19 @@ export const dark = {
   prolog: {
     color: '#fff',
   },
-  'code[class*="language-"]': {
-    fontFamily:
-      'Roboto Mono, Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace',
-    fontSize: '16px',
-    lineHeight: '1.574',
-    direction: 'ltr',
-    textAlign: 'left',
-    whiteSpace: 'pre',
-    wordSpacing: 'normal',
-    wordBreak: 'normal',
-    MozTabSize: '2',
-    OTabSize: '2',
-    tabSize: '2',
-    WebkitHyphens: 'none',
-    MozHyphens: 'none',
-    msHyphens: 'none',
-    hyphens: 'none',
-    background: 'none',
+  property: {
+    color: '#89DB94',
+  },
+  punctuation: {
+    color: 'rgba(255, 255, 255, 0.3)',
+  },
+  string: {
+    color: '#FFE376',
+  },
+  tag: {
+    color: 'rgba(255, 255, 255, 0.3)',
+  },
+  variable: {
     color: '#89DB94',
   },
 

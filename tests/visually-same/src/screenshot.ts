@@ -1,4 +1,5 @@
-import { chromium, type Browser, type Page, type BrowserContext } from 'playwright'
+import { type Browser, type BrowserContext, chromium, type Page } from 'playwright'
+
 import { config } from './config.js'
 
 export async function captureScreenshot(
@@ -6,9 +7,9 @@ export async function captureScreenshot(
   path: string,
 ): Promise<void> {
   await page.screenshot({
-    path,
-    fullPage: true,
     animations: 'disabled',
+    fullPage: true,
+    path,
   })
 }
 
@@ -29,14 +30,14 @@ export async function setupBrowser(): Promise<{
 export async function takeScreenshot(
   url: string,
   outputPath: string,
-  waitMs: number = 2000,
+  waitMs = 2000,
 ): Promise<void> {
   const { browser, context, page } = await setupBrowser()
   
   try {
     await page.goto(url, {
+      timeout: 30_000,
       waitUntil: 'load',
-      timeout: 30000,
     })
     
     // Wait for any dynamic content to settle
@@ -58,7 +59,7 @@ export async function takeAllScreenshots(
   suffix: 'baseline' | 'local' | 'production',
   onProgress?: (current: number, total: number, page: string) => void,
 ): Promise<void> {
-  const { pages, baseUrl, productionUrl, screenshotsDir } = config
+  const { baseUrl, pages, productionUrl, screenshotsDir } = config
   
   // Determine which URL to use
   const useProduction = suffix === 'production'

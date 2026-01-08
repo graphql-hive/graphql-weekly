@@ -1,13 +1,13 @@
 import React from 'react'
 
 const ChevronRight = (props: any) => (
-  <svg width={14} height={14} fill="none" {...props}>
+  <svg fill="none" height={14} width={14} {...props}>
     <path
       d="M5 2l5 5-5 5"
       stroke="currentColor"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
     />
   </svg>
 )

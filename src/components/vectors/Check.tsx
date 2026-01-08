@@ -1,14 +1,14 @@
 import React from 'react'
 
 const Check = (props: any) => (
-  <svg width={16} height={12} fill="none" {...props}>
+  <svg fill="none" height={12} width={16} {...props}>
     <path
-      opacity={0.66}
       d="M15 1L5.375 11 1 6.455"
+      opacity={0.66}
       stroke="#fff"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
     />
   </svg>
 )

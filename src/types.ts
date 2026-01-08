@@ -6,14 +6,14 @@ export type IssueLink = {
 }
 
 export type TopicType = {
+  links: IssueLink[]
   title: string
-  links: Array<IssueLink>
 }
 
 export type TopicLinksType = {
-  issueNumber: number
   issueDate: string
-  links: Array<IssueLink>
+  issueNumber: number
+  links: IssueLink[]
 }
 
 export type Author = {
@@ -25,11 +25,11 @@ export type Author = {
 export type IssueType = {
   author?: Author
   date: string
+  description?: string
   id: string
   number: number
   published: boolean
-  title: string
-  description?: string
   specialPerk?: string
-  topics: Array<TopicType>
+  title: string
+  topics: TopicType[]
 }

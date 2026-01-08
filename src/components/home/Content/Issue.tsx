@@ -1,17 +1,17 @@
-import { TopicBox } from '../../shared/Topics/TopicBox'
-import { TopicArticle } from '../../shared/Topics/TopicArticle'
-import { NavIssue } from './NavIssue'
 import { type IssueType } from '../../../types'
+import { TopicArticle } from '../../shared/Topics/TopicArticle'
+import { TopicBox } from '../../shared/Topics/TopicBox'
 import { getTopicColor } from '../topicColors'
+import { NavIssue } from './NavIssue'
 import { ContentWrapper } from './style'
 
 type Props = {
+  firstIssueNumber: number
   issue: IssueType
   lastIssueNumber: number
-  firstIssueNumber: number
 }
 
-export const Issue = ({ issue, lastIssueNumber, firstIssueNumber }: Props) => {
+export const Issue = ({ firstIssueNumber, issue, lastIssueNumber }: Props) => {
   const date = new Date(issue.date).toLocaleString('en-US', {
     day: 'numeric',
     month: 'short',
@@ -19,8 +19,8 @@ export const Issue = ({ issue, lastIssueNumber, firstIssueNumber }: Props) => {
   })
 
   const blueIssueTagProps = {
-    issueNumber: issue.number,
     issueDate: `• ${date}`,
+    issueNumber: issue.number,
   }
 
   // Don't show the header card if no author or description is provided
@@ -31,41 +31,41 @@ export const Issue = ({ issue, lastIssueNumber, firstIssueNumber }: Props) => {
       {hasIssueHeaderCard && (
         <TopicBox
           {...blueIssueTagProps}
-          isIssueCard={true}
           articles={[
             <TopicArticle
-              title={issue.title}
-              text={issue.description || ''}
-              url={`/issues/${issue.number}`}
               specialPerk={issue.specialPerk}
+              text={issue.description || ''}
+              title={issue.title}
+              url={`/issues/${issue.number}`}
             />,
           ]}
           author={
             issue.author && {
               avatar: issue.author.avatarUrl,
-              name: issue.author.name,
               bio: issue.author.description,
+              name: issue.author.name,
             }
           }
+          isIssueCard={true}
         />
       )}
 
       {issue.topics.map((topic, i) => {
         return (
           <TopicBox
-            key={topic.title}
-            topicTitle={topic.title}
-            topicColor={getTopicColor(topic.title)}
             articles={topic.links
               .sort((a, b) => b.position - a.position)
               .map((link) => (
                 <TopicArticle
-                  title={link.title}
                   text={link.text}
-                  url={link.url}
+                  title={link.title}
                   topicColor={getTopicColor(topic.title)}
+                  url={link.url}
                 />
               ))}
+            key={topic.title}
+            topicColor={getTopicColor(topic.title)}
+            topicTitle={topic.title}
             // Show the blue tag on the first topic card if no header card is there
             {...(i === 0 && !hasIssueHeaderCard ? blueIssueTagProps : {})}
           />
@@ -75,8 +75,8 @@ export const Issue = ({ issue, lastIssueNumber, firstIssueNumber }: Props) => {
       <NavIssue
         firstIssueNumber={firstIssueNumber}
         lastIssueNumber={lastIssueNumber}
-        prevNumber={issue.number - 1}
         nextNumber={issue.number + 1}
+        prevNumber={issue.number - 1}
       />
     </ContentWrapper>
   )

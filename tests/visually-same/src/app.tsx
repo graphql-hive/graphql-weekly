@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react'
-import { Box, Text, render } from 'ink'
+import { Box, render, Text } from 'ink'
 import Spinner from 'ink-spinner'
-import { takeAllScreenshots } from './screenshot.js'
+import React, { useEffect, useState } from 'react'
+
 import { compareAll } from './compare.js'
-import { Progress, CompareResult, Summary } from './ui.js'
+import { takeAllScreenshots } from './screenshot.js'
+import { CompareResult, Progress, Summary } from './ui.js'
 
 interface AppProps {
-  command: 'compare' | 'update-baseline' | 'screenshot-production'
+  command: 'compare' | 'screenshot-production' | 'update-baseline'
 }
 
 export default function App({ command }: AppProps) {
   const [phase, setPhase] = useState<string>('')
   const [current, setCurrent] = useState(0)
   const [total, setTotal] = useState(0)
-  const [results, setResults] = useState<Array<{ page: string; match: boolean; diffPercentage?: number }>>([])
+  const [results, setResults] = useState<{ diffPercentage?: number; match: boolean; page: string; }[]>([])
   const [passed, setPassed] = useState(0)
   const [failed, setFailed] = useState(0)
 
@@ -22,12 +23,23 @@ export default function App({ command }: AppProps) {
   }, [command])
 
   async function runCommand(cmd: string) {
-    if (cmd === 'compare') {
+    switch (cmd) {
+    case 'compare': {
       await runCompare()
-    } else if (cmd === 'update-baseline') {
-      await runUpdateBaseline()
-    } else if (cmd === 'screenshot-production') {
+    
+    break;
+    }
+    case 'screenshot-production': {
       await runScreenshotProduction()
+    
+    break;
+    }
+    case 'update-baseline': {
+      await runUpdateBaseline()
+    
+    break;
+    }
+    // No default
     }
   }
 
@@ -45,7 +57,7 @@ export default function App({ command }: AppProps) {
     const result = await compareAll((curr, tot, page, compareResult) => {
       setCurrent(curr)
       setTotal(tot)
-      setResults(prev => [...prev, { page, match: compareResult.match, diffPercentage: compareResult.diffPercentage }])
+      setResults(prev => [...prev, { diffPercentage: compareResult.diffPercentage, match: compareResult.match, page }])
     })
 
     setPassed(result.passed)
@@ -93,7 +105,7 @@ export default function App({ command }: AppProps) {
       </Box>
       
       {results.length === 0 && phase !== 'Done!' && phase !== 'Baseline updated!' && phase !== 'Production screenshots taken!' && (
-        <Progress current={current} total={total} message={phase} />
+        <Progress current={current} message={phase} total={total} />
       )}
       
       {results.length > 0 && (
@@ -107,13 +119,13 @@ export default function App({ command }: AppProps) {
       {(phase === 'Done!' || phase === 'Baseline updated!' || phase === 'Production screenshots taken!') && (
         <Box marginTop={1}>
           {command === 'compare' && (
-            <Summary passed={passed} failed={failed} total={total} />
+            <Summary failed={failed} passed={passed} total={total} />
           )}
           {command === 'update-baseline' && (
-            <Text color="green" bold>✓ Baseline updated successfully</Text>
+            <Text bold color="green">✓ Baseline updated successfully</Text>
           )}
           {command === 'screenshot-production' && (
-            <Text color="green" bold>✓ Production screenshots saved</Text>
+            <Text bold color="green">✓ Production screenshots saved</Text>
           )}
         </Box>
       )}

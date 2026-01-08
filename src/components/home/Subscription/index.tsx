@@ -1,18 +1,19 @@
 import * as React from 'react'
-import { Input } from '../../shared/Input/Input'
+
 import { PrimaryButton } from '../../shared/Buttons/Index'
-import Subscribe from '../../vectors/Subscribe'
+import { Input } from '../../shared/Input/Input'
 import { Space } from '../../shared/Space'
+import Subscribe from '../../vectors/Subscribe'
 
 type Props = {}
-type State = { name: string; email: string; message: string; loading: boolean }
+type State = { email: string; loading: boolean; message: string; name: string; }
 
 export class Subscription extends React.Component<Props, State> {
   state = {
-    name: '',
     email: '',
-    message: '',
     loading: false,
+    message: '',
+    name: '',
   }
 
   subscribeSubmited = async (e: any) => {
@@ -25,13 +26,13 @@ export class Subscription extends React.Component<Props, State> {
       this.setState({ loading: true })
 
       const res = await subscribeUser({
-        name: this.state.name,
         email: this.state.email,
+        name: this.state.name,
       })
 
       if (res && res.data.createSubscriber.email === this.state.email) {
         this.showMessage('You are successfully added 🎉')
-        this.setState({ name: '', email: '', loading: false })
+        this.setState({ email: '', loading: false, name: '' })
       } else {
         this.setState({ loading: false })
         this.showMessage('Error!')
@@ -54,28 +55,28 @@ export class Subscription extends React.Component<Props, State> {
   render() {
     return (
       <form
-        onSubmit={this.subscribeSubmited}
         className="relative max-w-[783px] min-h-[88px] mx-auto p-6 pl-8 md:pl-8 flex items-stretch md:flex-row flex-col md:items-stretch items-stretch bg-white shadow-[0px_4px_16px_rgba(8,17,70,0.1)] rounded-[8px]"
+        onSubmit={this.subscribeSubmited}
       >
         <Input
           label="NAME"
-          placeholder="Bob Loblaw"
           onChange={(e) => this.setState({ name: e.target.value })}
+          placeholder="Bob Loblaw"
           value={this.state.name}
         />
         <div className="w-auto h-px my-1 md:w-px md:h-10 md:my-0 md:mx-6 bg-[#dadbe3]" />
         <Input
           label="EMAIL"
-          placeholder="bob@example.com"
           onChange={(e) => this.setState({ email: e.target.value })}
+          placeholder="bob@example.com"
           value={this.state.email}
         />
         <Space height={0} heightOnMobile={20} />
         <PrimaryButton
-          type="submit"
-          text="Subscribe"
-          icon={<Subscribe />}
           disabled={this.state.loading}
+          icon={<Subscribe />}
+          text="Subscribe"
+          type="submit"
         />
 
         {this.state.message && (
@@ -89,11 +90,11 @@ export class Subscription extends React.Component<Props, State> {
 }
 
 const subscribeUser = async ({
-  name,
   email,
+  name,
 }: {
-  name: string
   email: string
+  name: string
 }) => {
   const query = `
     mutation createSubscriber($name: String!,$email: String! ){
@@ -103,15 +104,15 @@ const subscribeUser = async ({
       }
     }
   `
-  const variables = { name, email }
+  const variables = { email, name }
   const operationName = 'createSubscriber'
 
   return fetch(
     'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
     {
-      method: 'POST',
+      body: JSON.stringify({ operationName, query, variables }),
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, variables, operationName }),
+      method: 'POST',
     },
   ).then((res) => res.json())
 }

@@ -1,52 +1,55 @@
+import type { Modifiers, Placement } from 'popper.js'
+
 import * as React from 'react'
 import { Popper } from 'react-popper'
-import type { Placement, Modifiers } from 'popper.js'
+
+import type { InputColor } from '../../style/theme'
+
 import { cn } from '../../../lib/cn'
 import { HorizentalCaret, VerticalCaret } from '../../vectors/Caret'
-import type { InputColor } from '../../style/theme'
 
 const caretWidth = 24
 const caretHeight = 10
 
 type Props = {
-  position: 'bottom' | 'top' | 'right' | 'left' | string
-  arrowProps?: { [x: string]: any }
-  children?: React.ReactNode
-  setByPopper?: boolean
-  style?: any
-  bgColor?: InputColor
   arrowColor?: InputColor
   arrowLeftOrTop?: string
+  arrowProps?: Record<string, any>
+  bgColor?: InputColor
+  children?: React.ReactNode
+  hasShadow?: boolean
+  height?: number
   maxHeight?: number
   maxWidth?: number
+  position: 'bottom' | 'left' | 'right' | 'top' | string
   rectangleRef?: React.RefObject<HTMLDivElement>
-  hasShadow?: boolean
+  setByPopper?: boolean
+  style?: any
   width?: number
-  height?: number
 }
 
 const reversePosMap = {
   bottom: 'top',
-  top: 'bottom',
-  right: 'left',
   left: 'right',
+  right: 'left',
+  top: 'bottom',
 }
 
 export const Popover = React.forwardRef((props: Props, ref: any) => {
   const {
-    position: popoverPostion,
-    arrowProps,
-    setByPopper,
-    bgColor,
     arrowColor,
     arrowLeftOrTop,
-    maxHeight,
-    maxWidth,
-    rectangleRef,
+    arrowProps,
+    bgColor,
     children,
     hasShadow,
-    width,
     height,
+    maxHeight,
+    maxWidth,
+    position: popoverPostion,
+    rectangleRef,
+    setByPopper,
+    width,
     ...wrapperProps
   } = props
 
@@ -67,11 +70,11 @@ export const Popover = React.forwardRef((props: Props, ref: any) => {
         'flex items-stretch flex-auto relative z-[999]',
         angle === 'horizental' ? 'flex-col' : 'flex-row',
       )}
-      style={{
-        width: width ? `${width}px` : 'auto',
-        height: height ? `${height}px` : 'auto',
-      }}
       ref={ref}
+      style={{
+        height: height ? `${height}px` : 'auto',
+        width: width ? `${width}px` : 'auto',
+      }}
       {...wrapperProps}
     >
       <div
@@ -85,19 +88,20 @@ export const Popover = React.forwardRef((props: Props, ref: any) => {
           isCaretFirst ? 'order-0' : 'order-1',
           '[&_svg]:fill-white',
         )}
+        ref={arrowInnerRef}
         style={{
-          width: !setByPopper
-            ? angle === 'horizental'
-              ? '100%'
-              : `${caretHeight}px`
-            : `${caretWidth}px`,
-          height: !setByPopper
-            ? angle === 'horizental'
-              ? `${caretHeight}px`
-              : '100%'
-            : undefined,
-          zIndex: 100,
           flexBasis: `${caretHeight}px`,
+          height: setByPopper
+            ? undefined
+            : (angle === 'horizental'
+              ? `${caretHeight}px`
+              : '100%'),
+          width: setByPopper
+            ? `${caretWidth}px`
+            : (angle === 'horizental'
+              ? '100%'
+              : `${caretHeight}px`),
+          zIndex: 100,
           ...(arrowLeftOrTop
             ? {
                 [`padding${angle === 'horizental' ? 'Left' : 'Top'}`]:
@@ -105,7 +109,6 @@ export const Popover = React.forwardRef((props: Props, ref: any) => {
               }
             : {}),
         }}
-        ref={arrowInnerRef}
         {...restOfArrowProps}
       >
         <style>{`
@@ -126,18 +129,18 @@ export const Popover = React.forwardRef((props: Props, ref: any) => {
       </div>
 
       <div
-        ref={rectangleRef}
         className={cn(
           'popover-rectangle flex-grow flex-auto h-full w-full overflow-auto relative rounded-lg bg-white',
           hasShadow &&
             'shadow-[0_3px_12px_rgba(0,0,0,0.04),0_0_2px_rgba(0,0,0,0.03)]',
         )}
+        ref={rectangleRef}
         style={{
-          maxHeight: maxHeight ? `${maxHeight}px` : 'auto',
-          maxWidth: maxWidth ? `${maxWidth}px` : 'auto',
-          background: bgColor || 'white',
           [`margin${caretPosition?.charAt(0).toUpperCase()}${caretPosition?.slice(1)}`]:
             '-1px',
+          background: bgColor || 'white',
+          maxHeight: maxHeight ? `${maxHeight}px` : 'auto',
+          maxWidth: maxWidth ? `${maxWidth}px` : 'auto',
         }}
       >
         {children}
@@ -149,22 +152,22 @@ export const Popover = React.forwardRef((props: Props, ref: any) => {
 export { Manager, Reference } from 'react-popper'
 
 export const PopperPopover = (props: {
-  position: Placement
-  modifiers?: Modifiers
   children?: any
+  modifiers?: Modifiers
+  position: Placement
 }) => {
   return (
     <Popper placement={props.position}>
-      {({ ref, style, placement, arrowProps }) => (
+      {({ arrowProps, placement, ref, style }) => (
         <Popover
-          setByPopper={true}
+          arrowProps={arrowProps}
+          children={props.children}
+          data-placement={placement}
           position={String(placement)}
           ref={ref}
+          setByPopper={true}
+           
           style={style}
-          data-placement={placement}
-          arrowProps={arrowProps}
-          // eslint-disable-next-line
-          children={props.children}
         />
       )}
     </Popper>

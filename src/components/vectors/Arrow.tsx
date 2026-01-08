@@ -1,13 +1,13 @@
 import * as React from 'react'
 
 export const Arrow = (props: any) => (
-  <svg width={10} height={10} fill="none" {...props}>
+  <svg fill="none" height={10} width={10} {...props}>
     <g
       opacity={0.66}
       stroke="#fff"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
     >
       <path d="M1 9l8-8M1 1h8v8" />
     </g>

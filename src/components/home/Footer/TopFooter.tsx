@@ -1,4 +1,5 @@
 import * as React from 'react'
+
 import { ArrowLink } from '../../shared/ArrowLink'
 
 export const TopFooter = () => {
@@ -10,8 +11,8 @@ export const TopFooter = () => {
       <div className="font-normal leading-6 text-lg text-[rgba(255,255,255,0.33)] [&_*]:text-[rgba(255,255,255,0.33)] [&_*]:font-normal [&_a]:underline [&_svg]:opacity-30">
         Powered by the{' '}
         <ArrowLink
-          text="GraphQL Playground"
           href="https://graphql-weekly.graphcdn.app/"
+          text="GraphQL Playground"
         />
       </div>
     </div>

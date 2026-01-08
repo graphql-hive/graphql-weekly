@@ -1,8 +1,8 @@
 const fetchGraphQL = async ({ query }) => {
   return fetch('https://graphql-weekly.graphcdn.app', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
   }).then(res => res.json())
 }
 
@@ -43,38 +43,38 @@ const getAllIssues = async () => {
       .sort((a, b) => Number(b.number) - Number(a.number))
 
     lastIssue = allIssues[0]
-    firstIssueNumber = allIssues[allIssues.length - 1].number
+    firstIssueNumber = allIssues.at(-1).number
 
     // get all topics with links
     // {  [title]: [ { ...link } ] }
     let topicsList = {}
-    allIssues.forEach(issue => {
-      issue.topics.forEach(topic => {
+    for (const issue of allIssues) {
+      for (const topic of issue.topics) {
         if (!topicsList[topic.title]) {
           topicsList[topic.title] = []
         }
 
         // Add it
         topicsList[topic.title].push({
-          issueNumber: issue.number,
           issueDate: issue.date,
+          issueNumber: issue.number,
           links: topic.links,
         })
-      })
-    })
+      }
+    }
 
     // Tidy it up, it was a mess
     topicsList = unifySimilarTopics(topicsList)
 
     return {
-      lastIssue,
-      firstIssueNumber,
       allIssues,
+      firstIssueNumber,
+      lastIssue,
       topicsList,
     }
-  } catch (err) {
-    console.error(err)
-    throw err
+  } catch (error) {
+    console.error(error)
+    throw error
   }
 }
 
@@ -83,52 +83,52 @@ const getAllIssues = async () => {
 // --------
 function unifySimilarTopics(topicsList) {
   const Articles = 'Articles',
-    Tutorials = 'Tutorials',
-    Videos = 'Videos',
     Community_and_Events = 'Community & Events',
-    Tools_and_Open_Source = 'Tools & Open Source'
+    Tools_and_Open_Source = 'Tools & Open Source',
+    Tutorials = 'Tutorials',
+    Videos = 'Videos'
 
   // prettier-ignore
   const conversionMap = {
-    'Articles and Posts': Articles,
+    'Apollo': Tools_and_Open_Source,
     'Article': Articles,
-    'Articles & Videos': Articles,
-    'Tutorials & Articles': Articles,
     'Articles & Announcements': Articles,
+    'Articles & Tutorials': Tutorials,
+    'Articles & Videos': Articles,
     
-    'Talks': Videos,
-    'Video': Videos,
-    'Courses': Videos,
-    'Course': Videos,
-    'Media': Videos,
-    'Videos & Talks': Videos,
-    
-    'Podcasts':Community_and_Events,
-    'Podcast': Community_and_Events,
-    'Conference': Community_and_Events,
-    'GraphQL Foundation': Community_and_Events,
+    'Articles and Posts': Articles,
     'Community': Community_and_Events,
     'Community & News': Community_and_Events,
+    'Community & Open Source': Tools_and_Open_Source,
+    'Conference': Community_and_Events,
+    'Course': Videos,
+    
+    'Courses': Videos,
+    'Educational Content': Tutorials,
+    'GraphQL Foundation': Community_and_Events,
+    'Media': Videos,
+    'Open Source':Tools_and_Open_Source,
+    'Open Source & Tools': Tools_and_Open_Source,
+    'Open Tools & Source':  Tools_and_Open_Source,
+    
+    'Podcast': Community_and_Events,
+    'Podcasts':Community_and_Events,
     'Resources & Community': Community_and_Events,
     
-    'Educational Content': Tutorials,
-    'Tutorial': Tutorials,
-    'Articles & Tutorials': Tutorials,
-    
-    'Open Source':Tools_and_Open_Source,
-    'Apollo': Tools_and_Open_Source,
-    'Open Source & Tools': Tools_and_Open_Source,
-    'Community & Open Source': Tools_and_Open_Source,
-    'Tools & Open-Source': Tools_and_Open_Source,
+    'Talks': Videos,
     'Tools': Tools_and_Open_Source,
-    'Open Tools & Source':  Tools_and_Open_Source,
+    'Tools & Open-Source': Tools_and_Open_Source,
+    'Tutorial': Tutorials,
+    'Tutorials & Articles': Articles,
+    'Video': Videos,
+    'Videos & Talks': Videos,
   }
 
   const unifiedTopics = { ...topicsList }
 
-  Object.keys(topicsList).forEach(currentTitle => {
+  for (const currentTitle of Object.keys(topicsList)) {
     if (!conversionMap[currentTitle]) {
-      return
+      continue
     }
 
     const similarTitle = conversionMap[currentTitle]
@@ -137,7 +137,7 @@ function unifySimilarTopics(topicsList) {
     if (currentTitle !== similarTitle) {
       delete unifiedTopics[currentTitle]
     }
-  })
+  }
 
   return unifiedTopics
 }
@@ -146,7 +146,7 @@ function getTopicUrlFriendly(topicTitle) {
   return topicTitle
     .split(' ')
     .join('-')
-    .replace(/[^a-zA-Z0-9-_]/g, '')
+    .replaceAll(/[^a-zA-Z0-9-_]/g, '')
 }
 
 module.exports = { fetchGraphQL, getAllIssues, getTopicUrlFriendly }

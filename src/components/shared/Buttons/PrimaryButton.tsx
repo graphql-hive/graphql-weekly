@@ -1,15 +1,16 @@
 import type React from 'react'
+
 import { cn } from '../../../lib/cn'
 
 export interface PrimaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  text: React.ReactNode
   icon?: React.ReactNode
+  text: React.ReactNode
 }
 
 export function PrimaryButton({
-  text,
-  icon,
   className,
+  icon,
+  text,
   ...rest
 }: PrimaryButtonProps) {
   return (

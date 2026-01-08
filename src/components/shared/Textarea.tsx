@@ -1,4 +1,5 @@
 import type React from 'react'
+
 import { cn } from '../../lib/cn'
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -7,9 +8,9 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 }
 
 export function Textarea({
+  className,
   label,
   placeholder,
-  className,
   ...rest
 }: TextareaProps) {
   return (
@@ -18,13 +19,13 @@ export function Textarea({
         {label}
       </label>
       <textarea
-        placeholder={placeholder}
         className={cn(
           'w-full h-[100px] p-0 mt-4',
           'font-rubik font-normal leading-none text-lg md:text-base',
           'border-none outline-none text-[#9da0b5] resize-y',
           className,
         )}
+        placeholder={placeholder}
         {...rest}
       />
     </div>

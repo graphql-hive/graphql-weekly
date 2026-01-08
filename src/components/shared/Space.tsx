@@ -1,4 +1,5 @@
 import type React from 'react'
+
 import { cn } from '../../lib/cn'
 
 type SpaceSizes =
@@ -24,42 +25,42 @@ type SpaceSizes =
   | 144
 
 export interface SpaceProps extends React.HTMLAttributes<HTMLDivElement> {
-  width?: SpaceSizes
-  height?: SpaceSizes
-  widthOnMobile?: SpaceSizes
-  heightOnMobile?: SpaceSizes
-  fillRow?: boolean
   fillColumn?: boolean
+  fillRow?: boolean
+  height?: SpaceSizes
+  heightOnMobile?: SpaceSizes
+  width?: SpaceSizes
+  widthOnMobile?: SpaceSizes
 }
 
 export function Space({
   className,
-  width,
-  height,
-  widthOnMobile,
-  heightOnMobile,
-  fillRow,
   fillColumn,
+  fillRow,
+  height,
+  heightOnMobile,
+  width,
+  widthOnMobile,
   ...rest
 }: SpaceProps) {
   const style: Record<string, string | undefined> = {}
 
   // Use CSS custom properties when mobile variants exist
   if (typeof width === 'number') {
-    if (widthOnMobile !== undefined) {
+    if (widthOnMobile === undefined) {
+      style.width = `${width}px`
+    } else {
       style['--width-desktop'] = `${width}px`
       style['--width-mobile'] = `${widthOnMobile}px`
-    } else {
-      style.width = `${width}px`
     }
   }
 
   if (typeof height === 'number') {
-    if (heightOnMobile !== undefined) {
+    if (heightOnMobile === undefined) {
+      style.height = `${height}px`
+    } else {
       style['--height-desktop'] = `${height}px`
       style['--height-mobile'] = `${heightOnMobile}px`
-    } else {
-      style.height = `${height}px`
     }
   }
 

@@ -1,9 +1,10 @@
 import * as React from 'react'
+
 import { Container } from '../../shared/Container'
-import { TopFooter } from './TopFooter'
-import { Playground } from './Playground'
 import { About } from './About'
 import { FooterLine } from './FooterLine'
+import { Playground } from './Playground'
+import { TopFooter } from './TopFooter'
 
 export const Footer = () => {
   return (

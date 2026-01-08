@@ -1,14 +1,14 @@
 import React from 'react'
 
 const Mail = (props: any) => (
-  <svg width='127' height='87' fill='none' xmlns='http://www.w3.org/2000/svg'>
+  <svg fill='none' height='87' width='127' xmlns='http://www.w3.org/2000/svg'>
     <g filter='url(#filter0_d)'>
         <path d='M11 13.259A5.259 5.259 0 0 1 16.259 8h94.654a5.26 5.26 0 0 1 5.259 5.259v55.215a5.26 5.26 0 0 1-5.259 5.258H16.259A5.259 5.259 0 0 1 11 68.474V13.259z'
         fill='#EBEBF4' />
         <path d='M11 13.259A5.259 5.259 0 0 1 16.259 8h94.654a5.26 5.26 0 0 1 5.259 5.259v55.215a5.26 5.26 0 0 1-5.259 5.258H16.259A5.259 5.259 0 0 1 11 68.474V13.259z'
         fill='url(#paint0_linear)' />
     </g>
-    <mask id='a' maskUnits='userSpaceOnUse' x='11' y='8' width='106' height='66'>
+    <mask height='66' id='a' maskUnits='userSpaceOnUse' width='106' x='11' y='8'>
         <path d='M11 13.259A5.259 5.259 0 0 1 16.259 8h94.654a5.26 5.26 0 0 1 5.259 5.259v55.215a5.26 5.26 0 0 1-5.259 5.258H16.259A5.259 5.259 0 0 1 11 68.474V13.259z'
         fill='#E7E7ED' />
     </mask>
@@ -22,16 +22,16 @@ const Mail = (props: any) => (
         <path d='M11.229 11.391C9.952 10.16 10.824 8 12.598 8h101.976c1.774 0 2.646 2.16 1.369 3.391L67.237 58.378a5.259 5.259 0 0 1-7.302 0L11.229 11.391z'
         fill='#fff' filter='url(#filter2_d)' />
     </g>
-    <circle cx='77.326' cy='22.751' r='8.135' transform='rotate(-9.716 77.326 22.751)'
-    stroke='#CCCCD5' strokeWidth='1.315' />
-    <circle cx='77.326' cy='22.751' r='5.65' transform='rotate(-9.716 77.326 22.751)'
-    stroke='#CCCCD5' strokeWidth='0.657' />
+    <circle cx='77.326' cy='22.751' r='8.135' stroke='#CCCCD5'
+    strokeWidth='1.315' transform='rotate(-9.716 77.326 22.751)' />
+    <circle cx='77.326' cy='22.751' r='5.65' stroke='#CCCCD5'
+    strokeWidth='0.657' transform='rotate(-9.716 77.326 22.751)' />
     <path d='M78.587 21.87c.014.085-.005.14-.076.208-.089.086-.24.169-.457.262-.074.031-.164.067-.26.105-.144.058-.3.12-.428.178-.228.104-.478.24-.656.442-.183.206-.207.463-.197.66a3.401 3.401 0 0 0 .087.564c.031.156.043.251.04.31a2.353 2.353 0 0 1-1.789-.436c-.04-.03-.068-.072-.077-.169-.01-.11.007-.255.048-.448l.047-.212c.03-.131.063-.275.086-.403.038-.214.064-.456.024-.69-.069-.402-.305-.715-.462-.924a4.639 4.639 0 0 1-.076-.103c-.084-.118-.114-.182-.121-.225-.003-.02-.01-.056.052-.138.35-.466.87-.803 1.49-.91.053-.008.078-.002.086.001.007.003.02.01.04.032.05.058.099.169.157.362.015.047.03.1.046.157.041.144.089.31.145.456.081.212.202.448.414.618.206.165.469.209.682.223.166.011.35.006.51 0 .05 0 .096-.002.14-.003.21-.004.353.004.444.033.04.013.052.024.053.026l.001.002c.001.002.004.008.007.022zM71.246 17.898a1.755 1.755 0 0 0-2.83.485 1.755 1.755 0 0 1-2.829.484 1.755 1.755 0 0 0-2.83.485 1.755 1.755 0 0 1-2.828.484 1.755 1.755 0 0 0-2.83.485 1.755 1.755 0 0 1-2.829.484 1.755 1.755 0 0 0-2.83.485M71.659 20.311a1.755 1.755 0 0 0-2.83.484A1.755 1.755 0 0 1 66 21.28a1.755 1.755 0 0 0-2.829.484 1.755 1.755 0 0 1-2.83.485 1.755 1.755 0 0 0-2.828.484 1.755 1.755 0 0 1-2.83.485 1.755 1.755 0 0 0-2.829.484M72.072 22.724a1.755 1.755 0 0 0-2.83.484 1.755 1.755 0 0 1-2.829.484 1.755 1.755 0 0 0-2.829.485 1.755 1.755 0 0 1-2.83.484 1.755 1.755 0 0 0-2.828.485 1.755 1.755 0 0 1-2.83.484 1.755 1.755 0 0 0-2.829.485M72.485 25.136a1.755 1.755 0 0 0-2.83.485 1.755 1.755 0 0 1-2.828.484 1.755 1.755 0 0 0-2.83.484 1.755 1.755 0 0 1-2.829.485 1.755 1.755 0 0 0-2.83.484 1.755 1.755 0 0 1-2.828.485 1.755 1.755 0 0 0-2.83.484M72.898 27.549a1.755 1.755 0 0 0-2.83.484 1.755 1.755 0 0 1-2.828.484 1.755 1.755 0 0 0-2.83.485 1.755 1.755 0 0 1-2.829.484 1.755 1.755 0 0 0-2.83.485 1.755 1.755 0 0 1-2.828.484 1.755 1.755 0 0 0-2.83.485'
     stroke='#CCCCD5' strokeWidth='0.657' />
     <g filter='url(#filter3_d)'>
-        <mask id='b' maskUnits='userSpaceOnUse' x='74.236' y='11.246' width='37.062'
-        height='39.059' fill='#000'>
-            <path fill='#fff' d='M74.236 11.246h37.062v39.059H74.236z' />
+        <mask fill='#000' height='39.059' id='b' maskUnits='userSpaceOnUse' width='37.062'
+        x='74.236' y='11.246'>
+            <path d='M74.236 11.246h37.062v39.059H74.236z' fill='#fff' />
             <path d='M83.138 38.686l21.454-6.53.339 1.111-21.454 6.531-.339-1.112z'
             />
             <path d='M104.039 34.553L87.656 19.24l.794-.85 16.383 15.314-.794.85z'
@@ -71,8 +71,8 @@ const Mail = (props: any) => (
         fill='#fff' mask='url(#b)' />
     </g>
     <defs>
-        <filter id='filter0_d' x='0.483' y='0.112' width='126.206' height='86.766'
-        filterUnits='userSpaceOnUse' colorInterpolationFilters='sRGB'>
+        <filter colorInterpolationFilters='sRGB' filterUnits='userSpaceOnUse' height='86.766' id='filter0_d' width='126.206'
+        x='0.483' y='0.112'>
             <feFlood floodOpacity='0' result='BackgroundImageFix' />
             <feColorMatrix in='SourceAlpha' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0'
             />
@@ -82,8 +82,8 @@ const Mail = (props: any) => (
             <feBlend in2='BackgroundImageFix' result='effect1_dropShadow' />
             <feBlend in='SourceGraphic' in2='effect1_dropShadow' result='shape' />
         </filter>
-        <filter id='filter1_d' x='-0.832' y='9.315' width='128.835' height='72.305'
-        filterUnits='userSpaceOnUse' colorInterpolationFilters='sRGB'>
+        <filter colorInterpolationFilters='sRGB' filterUnits='userSpaceOnUse' height='72.305' id='filter1_d' width='128.835'
+        x='-0.832' y='9.315'>
             <feFlood floodOpacity='0' result='BackgroundImageFix' />
             <feColorMatrix in='SourceAlpha' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0'
             />
@@ -93,8 +93,8 @@ const Mail = (props: any) => (
             <feBlend in2='BackgroundImageFix' result='effect1_dropShadow' />
             <feBlend in='SourceGraphic' in2='effect1_dropShadow' result='shape' />
         </filter>
-        <filter id='filter2_d' x='0.105' y='0.112' width='126.962' height='72.887'
-        filterUnits='userSpaceOnUse' colorInterpolationFilters='sRGB'>
+        <filter colorInterpolationFilters='sRGB' filterUnits='userSpaceOnUse' height='72.887' id='filter2_d' width='126.962'
+        x='0.105' y='0.112'>
             <feFlood floodOpacity='0' result='BackgroundImageFix' />
             <feColorMatrix in='SourceAlpha' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0'
             />
@@ -104,8 +104,8 @@ const Mail = (props: any) => (
             <feBlend in2='BackgroundImageFix' result='effect1_dropShadow' />
             <feBlend in='SourceGraphic' in2='effect1_dropShadow' result='shape' />
         </filter>
-        <filter id='filter3_d' x='72.404' y='12.103' width='39.981' height='39.591'
-        filterUnits='userSpaceOnUse' colorInterpolationFilters='sRGB'>
+        <filter colorInterpolationFilters='sRGB' filterUnits='userSpaceOnUse' height='39.591' id='filter3_d' width='39.981'
+        x='72.404' y='12.103'>
             <feFlood floodOpacity='0' result='BackgroundImageFix' />
             <feColorMatrix in='SourceAlpha' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0'
             />
@@ -115,13 +115,13 @@ const Mail = (props: any) => (
             <feBlend in2='BackgroundImageFix' result='effect1_dropShadow' />
             <feBlend in='SourceGraphic' in2='effect1_dropShadow' result='shape' />
         </filter>
-        <linearGradient id='paint0_linear' x1='20.531' y1='8' x2='112.228' y2='73.732'
-        gradientUnits='userSpaceOnUse'>
+        <linearGradient gradientUnits='userSpaceOnUse' id='paint0_linear' x1='20.531' x2='112.228' y1='8'
+        y2='73.732'>
             <stop stopColor='#fff' />
             <stop offset='1' stopColor='#fff' stopOpacity='0' />
         </linearGradient>
-        <linearGradient id='paint1_linear' x1='36.636' y1='51.055' x2='104.327'
-        y2='107.113' gradientUnits='userSpaceOnUse'>
+        <linearGradient gradientUnits='userSpaceOnUse' id='paint1_linear' x1='36.636' x2='104.327'
+        y1='51.055' y2='107.113'>
             <stop stopColor='#fff' />
             <stop offset='1' stopColor='#fff' stopOpacity='0' />
         </linearGradient>

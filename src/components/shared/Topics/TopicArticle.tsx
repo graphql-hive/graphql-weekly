@@ -1,20 +1,21 @@
 import type React from 'react'
+
 import { TitleArrow } from '../../vectors/TitleArrow'
 
 interface TopicArticleProps {
-  title: string
-  text: string
-  url: string
-  topicColor?: string
   specialPerk?: string
+  text: string
+  title: string
+  topicColor?: string
+  url: string
 }
 
 export function TopicArticle({
-  title,
-  text,
-  url,
-  topicColor,
   specialPerk,
+  text,
+  title,
+  topicColor,
+  url,
 }: TopicArticleProps) {
   const isTextSafe = !text.includes('<') || /<(p|strong|i|a) ?.*>/.test(text)
   const arrowColor = topicColor || '#0a1659'
@@ -22,10 +23,10 @@ export function TopicArticle({
   return (
     <div className="group">
       <a
-        href={url}
-        target="_blank"
         className="mt-5 md:m-0 font-medium leading-[1.33] text-lg md:text-2xl no-underline text-[#081146]"
+        href={url}
         rel="noreferrer"
+        target="_blank"
       >
         {title}
         <div

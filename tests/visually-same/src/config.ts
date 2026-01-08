@@ -1,28 +1,28 @@
 export interface PageConfig {
-  path: string
   name: string
+  path: string
 }
 
 export interface CompareConfig {
-  pages: PageConfig[]
   baseUrl: string
+  diffColor: string
+  odiffThreshold: number
+  pages: PageConfig[]
   productionUrl: string
   screenshotsDir: string
-  viewport: { width: number; height: number }
-  odiffThreshold: number
-  diffColor: string
+  viewport: { height: number; width: number; }
 }
 
 export const config: CompareConfig = {
-  pages: [
-    { path: '/issues/396', name: 'issues-396' },
-    { path: '/topic/Events', name: 'topic-Events' },
-    { path: '/topic/Tools--Open-Source', name: 'topic-Tools--Open-Source' },
-  ],
   baseUrl: 'http://localhost:4321',
+  diffColor: '#cd2cc9',
+  odiffThreshold: 0.1,
+  pages: [
+    { name: 'issues-396', path: '/issues/396' },
+    { name: 'topic-Events', path: '/topic/Events' },
+    { name: 'topic-Tools--Open-Source', path: '/topic/Tools--Open-Source' },
+  ],
   productionUrl: 'https://www.graphqlweekly.com',
   screenshotsDir: './screenshots',
-  viewport: { width: 1280, height: 720 },
-  odiffThreshold: 0.1,
-  diffColor: '#cd2cc9',
+  viewport: { height: 720, width: 1280 },
 }

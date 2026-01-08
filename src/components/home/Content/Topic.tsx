@@ -1,7 +1,8 @@
+import type { TopicLinksType } from '../../../types'
+
+import { TopicArticle } from '../../shared/Topics/TopicArticle'
 // Local
 import { TopicBox } from '../../shared/Topics/TopicBox'
-import { TopicArticle } from '../../shared/Topics/TopicArticle'
-import type { TopicLinksType } from '../../../types'
 import { getTopicColor } from '../topicColors'
 import { ContentWrapper } from './style'
 
@@ -16,19 +17,19 @@ export const Topic = ({ title, topicLinks }: Props) => {
       {topicLinks.slice(0, 11).map((topicLinkObject, i) => {
         return (
           <TopicBox
-            key={topicLinkObject.issueNumber}
-            topicTitle={title}
-            topicColor={getTopicColor(title)}
-            issueNumber={topicLinkObject.issueNumber}
-            issueDate={`• ${formatDate(topicLinkObject.issueDate)}`}
             articles={topicLinkObject.links.map((link) => (
               <TopicArticle
-                title={link.title}
                 text={link.text}
-                url={link.url}
+                title={link.title}
                 topicColor={getTopicColor(title)}
+                url={link.url}
               />
             ))}
+            issueDate={`• ${formatDate(topicLinkObject.issueDate)}`}
+            issueNumber={topicLinkObject.issueNumber}
+            key={topicLinkObject.issueNumber}
+            topicColor={getTopicColor(title)}
+            topicTitle={title}
           />
         )
       })}

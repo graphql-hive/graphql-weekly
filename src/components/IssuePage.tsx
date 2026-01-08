@@ -1,22 +1,24 @@
 import { useRef } from 'react'
-import { Header } from './home/Header'
-import { Container } from './shared/Container'
-import { Issue } from './home/Content/Issue'
-import { Sidebar } from './home/Content/Sidebar'
-import { SubmitForm, type SubmitFormHandle } from './shared/SubmitForm'
+
 import type { IssueType } from '../types'
 
+import { Issue } from './home/Content/Issue'
+import { Sidebar } from './home/Content/Sidebar'
+import { Header } from './home/Header'
+import { Container } from './shared/Container'
+import { SubmitForm, type SubmitFormHandle } from './shared/SubmitForm'
+
 interface Props {
-  issue: IssueType
   allIssues: IssueType[]
   firstIssueNumber: number
+  issue: IssueType
   topicsTitles: string[]
 }
 
 export function IssuePage({
-  issue,
   allIssues,
   firstIssueNumber,
+  issue,
   topicsTitles,
 }: Props) {
   const submitFormRef = useRef<SubmitFormHandle>(null)
@@ -29,15 +31,15 @@ export function IssuePage({
       <Container>
         <div className="flex">
           <Issue
+            firstIssueNumber={firstIssueNumber}
             issue={issue}
             lastIssueNumber={allIssues[0].number}
-            firstIssueNumber={firstIssueNumber}
           />
           <Sidebar
-            submitModalClickHandler={openModal}
-            currentIssueNumber={issue.number}
-            topicsTitles={topicsTitles}
             allIssues={allIssues}
+            currentIssueNumber={issue.number}
+            submitModalClickHandler={openModal}
+            topicsTitles={topicsTitles}
           />
         </div>
       </Container>

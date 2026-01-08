@@ -1,22 +1,23 @@
 import * as React from 'react'
 
+import type { IssueType } from '../../../types'
+
+import { getTopicUrlFriendly } from '../../../lib/api'
 // Local
 import { Space } from '../../shared/Space'
+import Archive from '../../vectors/Archive'
+import Slack from '../../vectors/Slack'
+import Twitter from '../../vectors/Twitter'
+import { SideBanner } from './SideBanner'
+import { SidebarLine } from './SidebarLine'
 import { SideMenu } from './SideMenu'
 import { Submit } from './Submit'
-import { SidebarLine } from './SidebarLine'
-import Twitter from '../../vectors/Twitter'
-import Slack from '../../vectors/Slack'
-import Archive from '../../vectors/Archive'
-import type { IssueType } from '../../../types'
-import { getTopicUrlFriendly } from '../../../lib/api'
-import { SideBanner } from './SideBanner'
 
 type Props = {
-  submitModalClickHandler: Function
-  currentIssueNumber?: number
-  topicsTitles: string[]
   allIssues: IssueType[]
+  currentIssueNumber?: number
+  submitModalClickHandler: Function
+  topicsTitles: string[]
 }
 
 type State = {
@@ -45,14 +46,14 @@ export class Sidebar extends React.Component<Props, State> {
           heading="Join the community"
           items={[
             {
-              text: 'Follow on Twitter',
               href: 'https://twitter.com/graphqlweekly',
               icon: <Twitter />,
+              text: 'Follow on Twitter',
             },
             {
-              text: 'Join us on Slack',
               href: 'https://discord.graphql.org/',
               icon: <Slack />,
+              text: 'Join us on Slack',
             },
           ]}
         />
@@ -61,22 +62,21 @@ export class Sidebar extends React.Component<Props, State> {
 
         <SideMenu
           heading="topics"
-          primaryColor="#009BE3"
           items={props.topicsTitles.map((title) => {
             const url = `/topic/${getTopicUrlFriendly(title)}`
 
             return {
-              to: `${url}#content`,
-              text: title,
               selected: isCurrentUrl(url),
+              text: title,
+              to: `${url}#content`,
             }
           })}
+          primaryColor="#009BE3"
         />
 
         <SidebarLine />
         <SideMenu
           heading="Recent issues"
-          primaryColor="#D60690"
           isExpanded={this.state.showAllIssues}
           items={[
             ...props.allIssues
@@ -84,23 +84,24 @@ export class Sidebar extends React.Component<Props, State> {
               .map((issue) => {
                 const url = `/issues/${issue.number}`
                 return {
-                  to: `${url}#content`,
-                  text: `Issue ${issue.number}`,
                   selected:
                     issue.number === props.currentIssueNumber ||
                     isCurrentUrl(url),
+                  text: `Issue ${issue.number}`,
+                  to: `${url}#content`,
                 }
               }),
 
             {
+              extraTop: true,
+              icon: <Archive />,
+              onClick: this.toggledShowAll,
               text: this.state.showAllIssues
                 ? 'Hide old issues'
                 : 'View all issues',
-              icon: <Archive />,
-              extraTop: true,
-              onClick: this.toggledShowAll,
             },
           ]}
+          primaryColor="#D60690"
         />
       </div>
     )
@@ -112,7 +113,7 @@ export class Sidebar extends React.Component<Props, State> {
 }
 
 function isCurrentUrl(urlWithoutTrailingSlash: string) {
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
+  const pathname = globalThis.window === undefined ? '' : globalThis.location.pathname
   return (
     pathname.endsWith(urlWithoutTrailingSlash) ||
     pathname.includes(urlWithoutTrailingSlash + '/')

@@ -1,29 +1,29 @@
+import { Box, Text } from 'ink'
 import React from 'react'
-import { Text, Box } from 'ink'
 
-export function StatusIcon({ status }: { status: 'pending' | 'pass' | 'fail' | 'loading' }) {
+export function StatusIcon({ status }: { status: 'fail' | 'loading' | 'pass' | 'pending' }) {
   const icons = {
-    pending: '○',
-    pass: '✓',
     fail: '✗',
     loading: '…',
+    pass: '✓',
+    pending: '○',
   }
 
   const colors = {
-    pending: 'yellow',
-    pass: 'green',
     fail: 'red',
     loading: 'cyan',
+    pass: 'green',
+    pending: 'yellow',
   }
 
   return (
-    <Text color={colors[status]} bold>
+    <Text bold color={colors[status]}>
       {icons[status]}
     </Text>
   )
 }
 
-export function Progress({ current, total, message }: { current: number; total: number; message: string }) {
+export function Progress({ current, message, total }: { current: number; message: string; total: number; }) {
   const progress = Math.round((current / total) * 100)
   
   return (
@@ -43,7 +43,7 @@ export function Progress({ current, total, message }: { current: number; total: 
   )
 }
 
-export function CompareResult({ pageName, result }: { pageName: string; result: { match: boolean; reason?: string; diffPercentage?: number } }) {
+export function CompareResult({ pageName, result }: { pageName: string; result: { diffPercentage?: number; match: boolean; reason?: string; } }) {
   const status = result.match ? 'pass' : 'fail'
   
   return (
@@ -61,7 +61,7 @@ export function CompareResult({ pageName, result }: { pageName: string; result: 
   )
 }
 
-export function Summary({ passed, failed, total }: { passed: number; failed: number; total: number }) {
+export function Summary({ failed, passed, total }: { failed: number; passed: number; total: number }) {
   const allPassed = failed === 0
   
   return (
@@ -82,14 +82,14 @@ export function Summary({ passed, failed, total }: { passed: number; failed: num
       </Box>
       {allPassed && (
         <Box marginTop={1}>
-          <Text color="green" bold>
+          <Text bold color="green">
             ✓ All images match baseline!
           </Text>
         </Box>
       )}
       {!allPassed && (
         <Box marginTop={1}>
-          <Text color="red" bold>
+          <Text bold color="red">
             ✗ Visual changes detected
           </Text>
         </Box>

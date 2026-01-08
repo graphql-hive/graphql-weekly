@@ -1,4 +1,5 @@
 import type React from 'react'
+
 import { cn } from '../../lib/cn'
 
 export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -7,9 +8,9 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function RowFlex({
-  className,
   alignItems,
   children,
+  className,
   style,
   ...rest
 }: FlexProps) {
@@ -25,9 +26,9 @@ export function RowFlex({
 }
 
 export function ColumnFlex({
-  className,
   alignItems,
   children,
+  className,
   style,
   ...rest
 }: FlexProps) {

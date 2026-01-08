@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
-import React from 'react'
-import meow from 'meow'
 import { render } from 'ink'
+import meow from 'meow'
+import React from 'react'
+
 import App from './app.js'
 
 const cli = meow(
@@ -20,16 +21,16 @@ const cli = meow(
       $ visually-same screenshot-production
   `,
   {
-    importMeta: import.meta,
     flags: {},
+    importMeta: import.meta,
   },
 )
 
-const command = cli.input[0] as 'compare' | 'update-baseline' | 'screenshot-production'
+const command = cli.input[0] as 'compare' | 'screenshot-production' | 'update-baseline'
 
-if (!command || !['compare', 'update-baseline', 'screenshot-production'].includes(command)) {
+if (!command || !['compare', 'screenshot-production', 'update-baseline'].includes(command)) {
   console.error(cli.help)
   process.exit(1)
 }
 
-render(React.createElement(App, { command: command }))
+render(React.createElement(App, { command }))

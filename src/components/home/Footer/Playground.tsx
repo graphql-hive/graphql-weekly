@@ -1,22 +1,21 @@
 import * as React from 'react'
 
+import { fetchGraphQL } from '../../../lib/api'
+import { Code } from '../../shared/Code'
 // Local
 import Run from '../../vectors/Run'
 import Arrow from './Arrow'
-import { Code } from '../../shared/Code'
-import { fetchGraphQL } from '../../../lib/api'
 
 type Props = {}
 type State = {
-  selectedQuery: { title: string; query: string }
-  result?: string
-  loading?: boolean
   isResultStale: boolean
+  loading?: boolean
+  result?: string
+  selectedQuery: { query: string; title: string; }
 }
 
-const queriesList: { title: string; query: string }[] = [
+const queriesList: { query: string; title: string; }[] = [
   {
-    title: 'Query for all the issues',
     query: `
 {
   allIssues {
@@ -33,9 +32,9 @@ const queriesList: { title: string; query: string }[] = [
   }
 }
     `,
+    title: 'Query for all the issues',
   },
   {
-    title: 'Query all the topics and links',
     query: `
 {
   allTopics {
@@ -50,9 +49,9 @@ const queriesList: { title: string; query: string }[] = [
   }
 }
     `,
+    title: 'Query all the topics and links',
   },
   {
-    title: 'Query a specific issue',
     query: `
 {
   issue(number: 1) {
@@ -64,15 +63,16 @@ const queriesList: { title: string; query: string }[] = [
   }
 }
     `,
+    title: 'Query a specific issue',
   },
 ]
 
 export class Playground extends React.Component<Props, State> {
   state: State = {
-    selectedQuery: queriesList[0],
-    loading: false,
     isResultStale: false,
+    loading: false,
     result: undefined,
+    selectedQuery: queriesList[0],
   }
   private containerRef = React.createRef<HTMLDivElement>()
   private observer: IntersectionObserver | null = null
@@ -86,7 +86,7 @@ export class Playground extends React.Component<Props, State> {
           this.runQuery()
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px 500px 0px' },
+      { rootMargin: '0px 0px 500px 0px', threshold: 0.1 },
     )
     if (this.containerRef.current) {
       this.observer.observe(this.containerRef.current)
@@ -100,7 +100,7 @@ export class Playground extends React.Component<Props, State> {
   exampleChanged = (e: any) => {
     const selectedQuery = queriesList.find((q) => q.title === e.target.value)
     if (selectedQuery) {
-      this.setState({ selectedQuery, isResultStale: true })
+      this.setState({ isResultStale: true, selectedQuery })
     }
   }
 
@@ -109,10 +109,10 @@ export class Playground extends React.Component<Props, State> {
     fetchGraphQL({ query: this.state.selectedQuery.query })
       .then((result) => {
         this.setState({ result: result ? JSON.stringify(result, null, 2) : '' })
-        this.setState({ loading: false, isResultStale: false })
+        this.setState({ isResultStale: false, loading: false })
       })
-      .catch((err) => {
-        console.log(err)
+      .catch((error) => {
+        console.log(error)
         this.setState({ loading: false })
       })
   }
@@ -121,8 +121,8 @@ export class Playground extends React.Component<Props, State> {
     const { selectedQuery } = this.state
     return (
       <div
-        ref={this.containerRef}
         className="flex justify-between overflow-hidden max-h-[1084px] relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-10 after:content-[''] after:bg-gradient-to-b after:from-transparent after:to-[#081146]"
+        ref={this.containerRef}
       >
         <div className="flex-[0_0_400px] mr-16">
           <span className="mb-11 inline-block font-medium leading-none text-2xl text-white">
@@ -131,9 +131,9 @@ export class Playground extends React.Component<Props, State> {
 
           <label className="w-[400px] min-h-12 mb-4 p-4 inline-flex items-center bg-[#1b2357] shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded cursor-pointer relative transition-colors duration-[120ms] ease-out hover:bg-[#2c3363] group">
             <select
+              className="absolute top-0 bottom-0 right-0 w-full opacity-0 cursor-pointer"
               onChange={this.exampleChanged}
               value={selectedQuery.title}
-              className="absolute top-0 bottom-0 right-0 w-full opacity-0 cursor-pointer"
             >
               {queriesList.map((q, i) => (
                 <option key={q.title} value={q.title}>
@@ -161,9 +161,9 @@ export class Playground extends React.Component<Props, State> {
             </Code>
 
             <button
-              onClick={this.runQuery}
-              disabled={this.state.loading}
               className="flex items-center justify-center w-full min-h-10 p-3 mt-6 border-none outline-none bg-[#f531b1] shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded cursor-pointer transition-all duration-[140ms] ease-out hover:transform hover:-translate-y-px hover:shadow-[0px_7px_16px_rgba(23,43,58,0.22)] disabled:shadow-none disabled:bg-[#959595]"
+              disabled={this.state.loading}
+              onClick={this.runQuery}
             >
               <div className="mr-2">
                 <Run />
@@ -193,10 +193,10 @@ export class Playground extends React.Component<Props, State> {
 
           <Code
             background={false}
-            language="json"
             customStyle={
               this.state.isResultStale ? { opacity: 0.5 } : undefined
             }
+            language="json"
           >
             {this.state.result || ''}
           </Code>

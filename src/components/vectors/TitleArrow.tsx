@@ -1,12 +1,12 @@
 import * as React from 'react'
 
 export const TitleArrow = (props: any) => (
-  <svg width={12} height={12} fill="none" {...props}>
+  <svg fill="none" height={12} width={12} {...props}>
     <g
       stroke="currentColor"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
     >
       <path d="M1 11L11 1"/>
       <path d="M3 1H11V9"/>

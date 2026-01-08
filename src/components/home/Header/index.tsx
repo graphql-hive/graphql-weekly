@@ -1,10 +1,11 @@
 import * as React from 'react'
+
+import { Container } from '../../shared/Container'
 import { Nav } from '../../shared/Nav'
 import { Space } from '../../shared/Space'
-import { Container } from '../../shared/Container'
-import { Subscription } from '../Subscription'
 import Slack from '../../vectors/Slack'
 import Twitter from '../../vectors/Twitter'
+import { Subscription } from '../Subscription'
 
 type Props = {
   submitModalClickHandler: Function
@@ -41,19 +42,19 @@ export const Header = (props: Props) => {
 
           <div className="w-auto flex justify-center mt-10 px-[50px] md:hidden">
             <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
               className="w-auto h-[22px] flex items-center font-medium leading-none text-lg text-white [&_svg]:mr-4 [&_svg]:opacity-80 [&_path]:stroke-white"
+              href="#"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               <Twitter />
               Twitter
             </a>
             <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
               className="w-auto h-[22px] flex items-center font-medium leading-none text-lg text-white [&_svg]:mr-4 [&_svg]:opacity-80 [&_path]:stroke-white ml-10"
+              href="#"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               <Slack stroke="#ffffff" />
               Slack

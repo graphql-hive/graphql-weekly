@@ -10,17 +10,17 @@ export const graphqlLight = {
     color: blue,
   },
 
-  property: {
-    color: primaryLight1,
+  'code[class*="language-"]': {
+    color: orange,
   },
   function: {
     color: primaryLight1,
   },
-  punctuation: {
+  property: {
     color: primaryLight1,
   },
 
-  'code[class*="language-"]': {
-    color: orange,
+  punctuation: {
+    color: primaryLight1,
   },
 }

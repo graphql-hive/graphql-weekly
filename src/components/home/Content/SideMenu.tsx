@@ -1,21 +1,22 @@
 import * as React from 'react'
-import { Link } from '../../shared/Link'
+
 import { cn } from '../../../lib/cn'
+import { Link } from '../../shared/Link'
 import { getTopicColor } from '../topicColors'
 
 interface Props {
   heading: string
-  primaryColor?: string
   isExpanded?: boolean
-  items: Array<{
-    to?: string
-    href?: string
-    selected?: boolean
-    icon?: React.ReactNode
-    text: string
+  items: {
     extraTop?: boolean
+    href?: string
+    icon?: React.ReactNode
     onClick?: (e?: any) => void
-  }>
+    selected?: boolean
+    text: string
+    to?: string
+  }[]
+  primaryColor?: string
 }
 
 export const SideMenu = ({ heading, isExpanded, items }: Props) => {
@@ -30,15 +31,15 @@ export const SideMenu = ({ heading, isExpanded, items }: Props) => {
             const topicColor = getTopicColor(e.text)
             return (
               <Link
-                to={e.to}
-                href={e.href}
-                key={e.text + e.to}
-                onClick={e.onClick}
                 className={cn(
                   'flex items-center w-full no-underline font-medium leading-[18px] text-lg align-middle text-[#081146]',
                   e.extraTop ? 'mt-6' : 'mt-4',
                 )}
+                href={e.href}
+                key={e.text + e.to}
+                onClick={e.onClick}
                 style={e.selected ? { color: topicColor } : undefined}
+                to={e.to}
               >
                 {e.selected && (
                   <div

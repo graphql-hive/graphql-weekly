@@ -4,16 +4,16 @@ type InputColor = string
 
 export const Pre: React.FC<{
   background?: boolean
-  textColor?: InputColor
-  compact?: boolean
-  className?: string
   children?: React.ReactNode
+  className?: string
+  compact?: boolean
+  textColor?: InputColor
 }> = ({
   background,
-  textColor,
-  compact,
-  className = '',
   children,
+  className = '',
+  compact,
+  textColor,
   ...props
 }) => {
   const baseClasses = 'm-0 flex-grow h-full w-full flex-1'
@@ -29,12 +29,12 @@ export const Pre: React.FC<{
 
   const styles: React.CSSProperties = {
     color: textColor || 'inherit',
+    direction: 'ltr',
     fontFamily: `'Roboto Mono', Consolas, Menlo, Monaco, 'Andale Mono WT', 'Andale Mono', 'Lucida Console', 'Lucida Sans Typewriter', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Liberation Mono', 'Nimbus Mono L', 'Courier New', Courier, monospace`,
     fontSize: '16px',
     lineHeight: compact ? 1.429 : 1.574,
-    direction: 'ltr',
-    wordSpacing: 'normal',
     wordBreak: 'normal',
+    wordSpacing: 'normal',
   }
 
   return (

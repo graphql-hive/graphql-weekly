@@ -1,11 +1,12 @@
 import type React from 'react'
+
 import { cn } from '../../lib/cn'
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode
 }
 
-export function Card({ className, children, ...rest }: CardProps) {
+export function Card({ children, className, ...rest }: CardProps) {
   return (
     <div
       className={cn(

@@ -1,38 +1,39 @@
 import type React from 'react'
+
 import { cn } from '../../../lib/cn'
 import { HLine } from '../Input/HLine'
 import { Link } from '../Link'
 
 interface TopicBoxProps {
-  topicTitle?: string
-  topicColor?: string
-  issueNumber?: number
-  isIssueCard?: boolean
-  issueDate?: string
   articles: React.ReactNode[]
   author?: {
-    name: string
-    bio: string
     avatar: string
+    bio: string
+    name: string
   }
+  isIssueCard?: boolean
+  issueDate?: string
+  issueNumber?: number
+  topicColor?: string
+  topicTitle?: string
 }
 
 export function TopicBox({
-  topicTitle,
-  topicColor,
   articles,
-  isIssueCard,
-  issueNumber,
-  issueDate,
   author,
+  isIssueCard,
+  issueDate,
+  issueNumber,
+  topicColor,
+  topicTitle,
 }: TopicBoxProps) {
   return (
     <>
       {issueNumber && (
         <div className="text-center">
           <Link
-            to={`/issues/${issueNumber}/#content`}
             className="inline-flex relative h-8 mx-auto px-[17px] bg-[#6560e2] shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded-[32px] font-medium leading-8 text-base text-center uppercase text-white"
+            to={`/issues/${issueNumber}/#content`}
           >
             Issue {issueNumber}
             {issueDate && (
@@ -57,8 +58,8 @@ export function TopicBox({
           <h2
             className="mb-6 md:mb-8 font-medium leading-none text-lg uppercase"
             style={{
-              marginTop: issueNumber ? '16px' : '0',
               color: topicColor,
+              marginTop: issueNumber ? '16px' : '0',
             }}
           >
             {topicTitle}

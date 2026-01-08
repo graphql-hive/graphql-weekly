@@ -1,4 +1,5 @@
 import type React from 'react'
+
 import { cn } from '../../../lib/cn'
 
 export interface InputProps extends Omit<
@@ -9,15 +10,13 @@ export interface InputProps extends Omit<
   placeholder: string
 }
 
-export function Input({ label, placeholder, className, ...rest }: InputProps) {
+export function Input({ className, label, placeholder, ...rest }: InputProps) {
   return (
     <div className="h-10 inline-flex items-stretch flex-shrink flex-grow w-auto">
       <label className="w-[69px] flex-shrink-0 font-medium leading-none text-base md:text-lg uppercase self-center text-[#0a1659]">
         {label}
       </label>
       <input
-        type="text"
-        placeholder={placeholder}
         className={cn(
           'flex-grow flex-shrink flex-auto h-10 w-full p-0',
           'font-rubik font-normal leading-none text-base md:text-lg',
@@ -25,6 +24,8 @@ export function Input({ label, placeholder, className, ...rest }: InputProps) {
           'placeholder:text-[#9da0b5]',
           className,
         )}
+        placeholder={placeholder}
+        type="text"
         {...rest}
       />
     </div>

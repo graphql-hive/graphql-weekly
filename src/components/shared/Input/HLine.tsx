@@ -1,4 +1,5 @@
 import type React from 'react'
+
 import { cn } from '../../../lib/cn'
 
 export interface HLineProps extends React.HTMLAttributes<HTMLDivElement> {}

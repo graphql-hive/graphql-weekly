@@ -7,42 +7,42 @@ type Props = {
   /** For local routes/links */
   to?: string
   /** For external links with e.g. https://google.com */
-  href?: string
   children?: any
+  href?: string
 
   // other
-  target?: string
-  rel?: string
   className?: string
-  style?: any
   onClick?: any
-  onMouseOver?: any
   onMouseEnter?: any
   onMouseOut?: any
+  onMouseOver?: any
+  rel?: string
+  style?: any
+  target?: string
 }
 
 export const Link = ({
-  to,
-  href,
   children,
-  target,
-  rel,
   className,
-  style,
+  href,
   onClick,
-  onMouseOver,
   onMouseEnter,
   onMouseOut,
+  onMouseOver,
+  rel,
+  style,
+  target,
+  to,
 }: Props) => {
   const rest = {
-    target,
-    rel,
     className,
-    style,
     onClick,
-    onMouseOver,
     onMouseEnter,
     onMouseOut,
+    onMouseOver,
+    rel,
+    style,
+    target,
   }
 
   // For local routes (to), convert to href

@@ -1,11 +1,12 @@
 import { compare, ODiffServer } from 'odiff-bin'
+
 import { config } from './config.js'
 
 export interface CompareResult {
-  match: boolean
-  reason?: string
   diffCount?: number
   diffPercentage?: number
+  match: boolean
+  reason?: string
 }
 
 export async function compareImages(
@@ -18,24 +19,24 @@ export async function compareImages(
     currentPath,
     diffPath || '',
     {
-      threshold: config.odiffThreshold,
       antialiasing: true,
       diffColor: config.diffColor,
       diffOverlay: true,
+      threshold: config.odiffThreshold,
     },
   )
 
   return {
-    match: result.match,
-    reason: result.match ? undefined : result.reason,
     diffCount: result.diffCount,
     diffPercentage: result.diffPercentage,
+    match: result.match,
+    reason: result.match ? undefined : result.reason,
   }
 }
 
 export async function compareAll(
   onProgress?: (current: number, total: number, page: string, result: CompareResult) => void,
-): Promise<{ passed: number; failed: number }> {
+): Promise<{ failed: number; passed: number; }> {
   const { pages, screenshotsDir } = config
   let passed = 0
   let failed = 0
@@ -59,5 +60,5 @@ export async function compareAll(
     }
   }
 
-  return { passed, failed }
+  return { failed, passed }
 }

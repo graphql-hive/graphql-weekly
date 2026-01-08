@@ -1,24 +1,26 @@
 import { useRef } from 'react'
-import { Header } from './home/Header'
-import { Container } from './shared/Container'
-import { Topic } from './home/Content/Topic'
-import { Sidebar } from './home/Content/Sidebar'
-import { SubmitForm, type SubmitFormHandle } from './shared/SubmitForm'
+
 import type { IssueType, TopicLinksType } from '../types'
 
+import { Sidebar } from './home/Content/Sidebar'
+import { Topic } from './home/Content/Topic'
+import { Header } from './home/Header'
+import { Container } from './shared/Container'
+import { SubmitForm, type SubmitFormHandle } from './shared/SubmitForm'
+
 interface Props {
-  topicTitle: string
-  topicLinks: TopicLinksType[]
   allIssues: IssueType[]
   firstIssueNumber: number
+  topicLinks: TopicLinksType[]
   topicsTitles: string[]
+  topicTitle: string
 }
 
 export function TopicPage({
-  topicTitle,
-  topicLinks,
   allIssues,
+  topicLinks,
   topicsTitles,
+  topicTitle,
 }: Props) {
   const submitFormRef = useRef<SubmitFormHandle>(null)
   const openModal = () => submitFormRef.current?.showModal()
@@ -31,9 +33,9 @@ export function TopicPage({
         <div className="flex">
           <Topic title={topicTitle} topicLinks={topicLinks} />
           <Sidebar
+            allIssues={allIssues}
             submitModalClickHandler={openModal}
             topicsTitles={topicsTitles}
-            allIssues={allIssues}
           />
         </div>
       </Container>
