@@ -1,98 +1,57 @@
-import React, { PureComponent, ChangeEvent } from "react";
-import urlRegex from "url-regex";
-import { gql } from "apollo-boost";
-import { graphql, MutationFn } from "react-apollo";
+import { useState, ChangeEvent } from "react";
 import InputWithButton from "../components/InputWithButton";
-
-const createLink = gql`
-  mutation create($url: String!) {
-    createLink(url: $url) {
-      id
-    }
-  }
-`;
+import { useCreateLinkMutation } from "../generated/graphql";
 
 interface LinkCreatorProps {
-  mutate?: MutationFn;
   refresh?: () => void;
 }
 
-interface LinkCreatorState {
-  link: string;
-  loading: boolean;
-  linkError: string;
-}
+export default function LinkCreator({ refresh }: LinkCreatorProps) {
+  const [link, setLink] = useState("");
+  const [linkError, setLinkError] = useState("");
 
-class LinkCreator extends PureComponent<LinkCreatorProps, LinkCreatorState> {
-  override state: LinkCreatorState = {
-    link: "",
-    loading: false,
-    linkError: "",
+  const createLinkMutation = useCreateLinkMutation();
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setLink(e.target.value);
+    setLinkError(
+      /^https?:\/\/.+/.test(e.target.value) ? "" : "This is not a valid url"
+    );
   };
 
-  handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      loading: false,
-      link: e.target.value,
-      linkError: urlRegex({ exact: true }).test(e.target.value)
-        ? ""
-        : "This is not a valid url",
-    });
-  };
-
-  submitChange = () => {
-    this.setState({ loading: true });
-
-    if (!this.state.link) {
-      this.setState({
-        loading: false,
-        link: "",
-        linkError: "Must supply a valid Link",
-      });
+  const submitChange = () => {
+    if (!link) {
+      setLinkError("Must supply a valid Link");
       return;
     }
 
-    const url = this.state.link;
-
-    this.props
-      .mutate?.({ variables: { url } })
-      .then(() => {
-        this.setState({
-          loading: false,
-          link: "",
-          linkError: "",
-        });
-        this.props.refresh?.();
-      })
-      .catch(() => {
-        this.setState({
-          loading: false,
-          link: "",
-          linkError: "Error while submitting",
-        });
-      });
+    createLinkMutation.mutate(
+      { url: link },
+      {
+        onSuccess: () => {
+          setLink("");
+          setLinkError("");
+          refresh?.();
+        },
+        onError: () => {
+          setLinkError("Error while submitting");
+        },
+      }
+    );
   };
 
-  isAddButtonDisabled() {
-    return this.state.loading || this.state.linkError !== "";
-  }
+  const isAddButtonDisabled = createLinkMutation.isPending || linkError !== "";
 
-  override render() {
-    return (
-      <InputWithButton
-        value={this.state.link}
-        disabled={this.state.loading}
-        placeholder="Link"
-        onClick={this.submitChange}
-        onChange={this.handleChange}
-        buttonLabel="Add Link"
-        buttonDisabled={this.isAddButtonDisabled()}
-        errorText={this.state.linkError}
-      />
-    );
-  }
+  return (
+    <InputWithButton
+      value={link}
+      disabled={createLinkMutation.isPending}
+      placeholder="Link"
+      onClick={submitChange}
+      onChange={handleChange}
+      buttonLabel="Add Link"
+      buttonDisabled={isAddButtonDisabled}
+      errorText={linkError}
+    />
+  );
 }
-
-export default graphql(createLink)(LinkCreator as any) as React.ComponentType<{
-  refresh?: () => void;
-}>;

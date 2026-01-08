@@ -1,128 +1,80 @@
-import React, { PureComponent, ChangeEvent } from "react";
-import urlRegex from "url-regex";
-import { gql } from "apollo-boost";
-import { graphql, MutationFn } from "react-apollo";
+import { useState, ChangeEvent } from "react";
 import InputWithButton from "../components/InputWithButton";
-
-const updateIssue = gql`
-  mutation update($id: String!, $previewImage: String!) {
-    updateIssue(id: $id, previewImage: $previewImage) {
-      id
-      previewImage
-    }
-  }
-`;
+import { useUpdateIssuePreviewImageMutation } from "../generated/graphql";
 
 interface PreviewImageUpdateProps {
-  mutate?: MutationFn;
-  previewImage?: string;
-  id?: string;
+  previewImage?: string | null;
+  id?: string | null;
   refresh?: () => void;
 }
 
-interface PreviewImageUpdateState {
-  link: string;
-  loading: boolean;
-  linkError: string;
-}
+export default function PreviewImageUpdate({
+  previewImage,
+  id,
+  refresh,
+}: PreviewImageUpdateProps) {
+  const [link, setLink] = useState(previewImage ?? "");
+  const [linkError, setLinkError] = useState("");
 
-class PreviewImageUpdate extends PureComponent<
-  PreviewImageUpdateProps,
-  PreviewImageUpdateState
-> {
-  constructor(props: PreviewImageUpdateProps) {
-    super(props);
-    this.state = {
-      link: props.previewImage || "",
-      loading: false,
-      linkError: "",
-    };
-  }
+  const updatePreviewMutation = useUpdateIssuePreviewImageMutation();
 
-  handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      loading: false,
-      link: e.target.value,
-      linkError: urlRegex({ exact: true }).test(e.target.value)
-        ? ""
-        : "This is not a valid url",
-    });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setLink(e.target.value);
+    setLinkError(
+      /^https?:\/\/.+/.test(e.target.value) ? "" : "This is not a valid url"
+    );
   };
 
-  submitChange = () => {
-    this.setState({ loading: true });
-
-    if (!this.state.link) {
-      this.setState({
-        loading: false,
-        link: "",
-        linkError: "Must supply a valid Link",
-      });
+  const submitChange = () => {
+    if (!link || !id) {
+      setLinkError("Must supply a valid Link");
       return;
     }
 
-    const previewImage = this.state.link;
-    const id = this.props.id ?? "";
-
-    this.props
-      .mutate?.({ variables: { previewImage, id } })
-      .then(() => {
-        this.setState({
-          loading: false,
-          link: "",
-          linkError: "",
-        });
-        this.props.refresh?.();
-      })
-      .catch(() => {
-        this.setState({
-          loading: false,
-          link: "",
-          linkError: "Error while submitting",
-        });
-      });
+    updatePreviewMutation.mutate(
+      { id, previewImage: link },
+      {
+        onSuccess: () => {
+          setLink("");
+          setLinkError("");
+          refresh?.();
+        },
+        onError: () => {
+          setLinkError("Error while submitting");
+        },
+      }
+    );
   };
 
-  isAddButtonDisabled() {
-    return this.state.loading || this.state.linkError !== "";
-  }
+  const isAddButtonDisabled =
+    updatePreviewMutation.isPending || linkError !== "";
 
-  override render() {
-    return (
-      <section>
-        {this.props.previewImage ? (
-          <div style={{ maxWidth: 320, height: "auto", marginBottom: 16 }}>
-            <img
-              style={{ maxWidth: "100%", height: "auto" }}
-              src={this.props.previewImage}
-              alt="Preview"
-            />
-          </div>
-        ) : (
-          <p style={{ margin: "0 0 16px" }}>
-            Enter an imgur url to display a image for social networks
-          </p>
-        )}
+  return (
+    <section>
+      {previewImage ? (
+        <div style={{ maxWidth: 320, height: "auto", marginBottom: 16 }}>
+          <img
+            style={{ maxWidth: "100%", height: "auto" }}
+            src={previewImage}
+            alt="Preview"
+          />
+        </div>
+      ) : (
+        <p style={{ margin: "0 0 16px" }}>
+          Enter an imgur url to display an image for social networks
+        </p>
+      )}
 
-        <InputWithButton
-          value={this.state.link}
-          disabled={this.state.loading}
-          placeholder="Preview Image"
-          onClick={this.submitChange}
-          onChange={this.handleChange}
-          buttonLabel="Update Preview Image"
-          buttonDisabled={this.isAddButtonDisabled()}
-          errorText={this.state.linkError}
-        />
-      </section>
-    );
-  }
+      <InputWithButton
+        value={link}
+        disabled={updatePreviewMutation.isPending}
+        placeholder="Preview Image"
+        onClick={submitChange}
+        onChange={handleChange}
+        buttonLabel="Update Preview Image"
+        buttonDisabled={isAddButtonDisabled}
+        errorText={linkError}
+      />
+    </section>
+  );
 }
-
-export default graphql(updateIssue)(
-  PreviewImageUpdate as any,
-) as React.ComponentType<{
-  previewImage?: string;
-  id?: string;
-  refresh?: () => void;
-}>;

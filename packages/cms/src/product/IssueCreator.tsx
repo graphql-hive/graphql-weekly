@@ -1,113 +1,63 @@
-import React, { PureComponent, ChangeEvent, MouseEvent } from "react";
-import { gql } from "apollo-boost";
-import { graphql, MutationFn } from "react-apollo";
+import { useState, ChangeEvent } from "react";
 import InputWithButton from "../components/InputWithButton";
-
-const createIssue = gql`
-  mutation create(
-    $title: String!
-    $number: Int!
-    $date: DateTime!
-    $published: Boolean!
-  ) {
-    createIssue(
-      title: $title
-      number: $number
-      date: $date
-      published: $published
-    ) {
-      id
-    }
-  }
-`;
+import { useCreateIssueMutation } from "../generated/graphql";
 
 interface IssueCreatorProps {
-  mutate?: MutationFn;
   refresh?: () => void;
 }
 
-interface IssueCreatorState {
-  number: string;
-  loading: boolean;
-  numberError: string;
-}
+export default function IssueCreator({ refresh }: IssueCreatorProps) {
+  const [number, setNumber] = useState("");
+  const [numberError, setNumberError] = useState("");
 
-class IssueCreator extends PureComponent<IssueCreatorProps, IssueCreatorState> {
-  override state: IssueCreatorState = {
-    number: "",
-    loading: false,
-    numberError: "",
+  const createIssueMutation = useCreateIssueMutation();
+
+  const handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNumber(e.target.value);
+    setNumberError("");
   };
 
-  handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      loading: false,
-      numberError: "",
-      number: e.target.value,
-    });
-  };
-
-  submitIssueChange = (_e: MouseEvent<HTMLButtonElement>) => {
-    this.setState({ loading: true });
-
-    if (!this.state.number) {
-      this.setState({
-        loading: false,
-        number: "",
-        numberError: "Must supply a valid Issue Number",
-      });
+  const submitIssueChange = () => {
+    if (!number) {
+      setNumberError("Must supply a valid Issue Number");
       return;
     }
 
-    this.props
-      .mutate?.({
-        variables: {
-          title: `Issue ${this.state.number}`,
-          date: `${new Date().toISOString()}`,
-          number: parseInt(this.state.number, 10),
-          published: false,
+    createIssueMutation.mutate(
+      {
+        title: `Issue ${number}`,
+        date: new Date().toISOString(),
+        number: parseInt(number, 10),
+        published: false,
+      },
+      {
+        onSuccess: () => {
+          setNumber("");
+          setNumberError("");
+          refresh?.();
         },
-      })
-      .then(() => {
-        this.props.refresh?.();
-        this.setState({
-          loading: false,
-          number: "",
-          numberError: "",
-        });
-      })
-      .catch((e: Error) => {
-        this.setState({
-          loading: false,
-          numberError: e.message,
-        });
-      });
+        onError: (error) => {
+          setNumberError(
+            error instanceof Error ? error.message : "Error creating issue"
+          );
+        },
+      }
+    );
   };
 
-  isAddButtonDisabled() {
-    return (
-      this.state.loading ||
-      this.state.number === "" ||
-      isNaN(Number(this.state.number))
-    );
-  }
+  const isAddButtonDisabled =
+    createIssueMutation.isPending || number === "" || isNaN(Number(number));
 
-  override render() {
-    return (
-      <InputWithButton
-        disabled={this.state.loading}
-        placeholder="Issue Number"
-        onClick={this.submitIssueChange}
-        onChange={this.handleNumberChange}
-        buttonLabel="Add Issue"
-        buttonDisabled={this.isAddButtonDisabled()}
-        errorText={this.state.numberError}
-        value={this.state.number}
-      />
-    );
-  }
+  return (
+    <InputWithButton
+      disabled={createIssueMutation.isPending}
+      placeholder="Issue Number"
+      onClick={submitIssueChange}
+      onChange={handleNumberChange}
+      buttonLabel="Add Issue"
+      buttonDisabled={isAddButtonDisabled}
+      errorText={numberError}
+      value={number}
+    />
+  );
 }
-
-export default graphql(createIssue)(
-  IssueCreator as any,
-) as React.ComponentType<{ refresh?: () => void }>;

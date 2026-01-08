@@ -1,497 +1,309 @@
-import { Component, ChangeEvent } from "react";
-import withRouter from "react-router-dom/withRouter";
-import { graphql, compose, MutationFn } from "react-apollo";
-import { gql } from "apollo-boost";
-import { RouteComponentProps } from "react-router-dom";
-import styled from "react-emotion";
+import { useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 import Loading from "../components/Loading";
-import Card from "../components/Card";
-import Flex from "../components/Flex";
-import FlexItem from "../components/FlexCell";
-import InputWithButton from "../components/InputWithButton";
-import { Button } from "../components/Button";
-
-import { colors } from "../style/colors";
-import LinkCreator from "../product/LinkCreator";
-import PreviewImageUpdate from "../product/PreviewImageUpdate";
+import SpringList from "../components/SpringList";
 import LinkCard from "../product/LinkCard";
-import { Header, HeaderContainer } from "../product/Headers";
 import PageHeader from "../product/PageHeader";
 
-interface LinkData {
-  topic: { id: string; position: number } | null;
-  url: string;
-  text: string;
-  title: string;
-  id: string;
-}
+import {
+  useAllLinksQuery,
+  useIssueQuery,
+  useCreateTopicMutation,
+  useUpdateLinkMutation,
+  useDeleteLinkMutation,
+  type IssueQuery,
+} from "../generated/graphql";
 
-interface TopicData {
-  id: string;
-  title: string;
-  position: number;
-  links: LinkData[];
-}
+type TopicData = NonNullable<
+  NonNullable<IssueQuery["issue"]>["topics"]
+>[number];
+type LinkData = NonNullable<TopicData["links"]>[number];
 
-interface IssueData {
-  id: string;
-  title: string;
-  published: boolean;
-  versionCount: number;
-  previewImage: string;
-  topics: TopicData[];
-}
+export default function IssueList() {
+  const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
-interface LinksQueryResult {
-  allLinks: LinkData[];
-  loading: boolean;
-  refetch: () => void;
-}
+  const [newTopic, setNewTopic] = useState("");
+  const [editedLinks, setEditedLinks] = useState<
+    Map<string, Partial<LinkData>>
+  >(new Map());
+  const [deletedLinkIds, setDeletedLinkIds] = useState<Set<string>>(new Set());
+  const [linkOrder, setLinkOrder] = useState<Map<string, string[]>>(new Map());
 
-interface IssuesQueryResult {
-  issue: IssueData;
-  loading: boolean;
-  refetch: () => void;
-}
+  const { data: linksData, isLoading: linksLoading } = useAllLinksQuery();
+  const { data: issueData, isLoading: issueLoading } = useIssueQuery({ id });
 
-const allLinksQuery = gql`
-  query allLinks {
-    allLinks {
-      topic {
-        id
-        position
-      }
-      url
-      text
-      title
-      id
-    }
-  }
-`;
+  const createTopicMutation = useCreateTopicMutation();
+  const updateLinkMutation = useUpdateLinkMutation();
+  const deleteLinkMutation = useDeleteLinkMutation();
 
-const issueQuery = gql`
-  query issue($id: String!) {
-    issue(id: $id) {
-      id
-      title
-      published
-      versionCount
-      previewImage
-      topics {
-        id
-        title
-        position
-        links {
-          title
-          text
-          url
-          id
-          topic {
-            id
-            position
-          }
-        }
-      }
-    }
-  }
-`;
+  const invalidateQueries = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["AllLinks"] });
+    queryClient.invalidateQueries({ queryKey: ["Issue", { id }] });
+  }, [queryClient, id]);
 
-const createTopicMutation = gql`
-  mutation createTopic(
-    $issue_comment: String!
-    $title: String!
-    $issueId: String!
-  ) {
-    createTopic(
-      issue_comment: $issue_comment
-      title: $title
-      issueId: $issueId
-    ) {
-      id
-    }
-  }
-`;
-
-const updateLinkMutation = gql`
-  mutation updateLink(
-    $id: String!
-    $title: String
-    $text: String
-    $url: String
-  ) {
-    updateLink(id: $id, title: $title, text: $text, url: $url) {
-      id
-    }
-  }
-`;
-
-const deleteLinkMutation = gql`
-  mutation deleteLink($id: String!) {
-    deleteLink(id: $id) {
-      id
-    }
-  }
-`;
-
-const updateTopicMutation = gql`
-  mutation updateTopic($id: String!, $title: String, $position: Int) {
-    updateTopic(id: $id, title: $title, position: $position) {
-      id
-    }
-  }
-`;
-
-const ActionBar = styled("div")`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-`;
-
-const ChangesIndicator = styled("span")`
-  display: flex;
-  align-items: center;
-  color: ${colors.dark};
-  font-size: 14px;
-  margin-right: auto;
-`;
-
-const TopicSection = styled("section")`
-  margin-bottom: 10px;
-`;
-
-const TopicHeader = styled("div")`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-`;
-
-interface AppProps extends RouteComponentProps<{ id: string }> {
-  links: LinksQueryResult;
-  issues: IssuesQueryResult;
-  createTopic: MutationFn;
-  updateLink: MutationFn;
-  deleteLink: MutationFn;
-  updateTopic: MutationFn;
-}
-
-interface AppState {
-  loading: boolean;
-  newTopic: string;
-  editedLinks: Map<string, Partial<LinkData>>;
-  editedTopics: Map<string, Partial<TopicData>>;
-  deletedLinkIds: Set<string>;
-}
-
-class App extends Component<AppProps, AppState> {
-  override state: AppState = {
-    loading: false,
-    newTopic: "",
-    editedLinks: new Map(),
-    editedTopics: new Map(),
-    deletedLinkIds: new Set(),
-  };
-
-  refreshEverything = () => {
-    this.props.links.refetch();
-    this.props.issues.refetch();
-  };
-
-  handleTopicChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newTopic: e.target.value });
-  };
-
-  submitTopic = () => {
-    this.setState({ loading: true });
-
-    this.props
-      .createTopic({
-        variables: {
-          issue_comment: " ",
-          title: this.state.newTopic,
-          issueId: this.props.match.params.id,
+  const submitTopic = useCallback(() => {
+    createTopicMutation.mutate(
+      { issue_comment: " ", title: newTopic, issueId: id },
+      {
+        onSuccess: () => {
+          setNewTopic("");
+          invalidateQueries();
         },
+      }
+    );
+  }, [createTopicMutation, newTopic, id, invalidateQueries]);
+
+  const handleLinkChange = useCallback((link: LinkData) => {
+    setEditedLinks((prev) =>
+      new Map(prev).set(link.id!, {
+        title: link.title ?? null,
+        text: link.text ?? null,
+        url: link.url ?? null,
       })
-      .then(() => {
-        this.setState({ loading: false, newTopic: "" });
-        this.refreshEverything();
-      });
-  };
-
-  handleLinkChange = (link: LinkData) => {
-    this.setState((prev) => ({
-      editedLinks: new Map(prev.editedLinks).set(link.id, {
-        title: link.title,
-        text: link.text,
-        url: link.url,
-      }),
-    }));
-  };
-
-  handleLinkDelete = (linkId: string) => {
-    this.setState((prev) => ({
-      deletedLinkIds: new Set(prev.deletedLinkIds).add(linkId),
-    }));
-  };
-
-  handleTopicTitleChange = (topicId: string, title: string) => {
-    this.setState((prev) => ({
-      editedTopics: new Map(prev.editedTopics).set(topicId, { title }),
-    }));
-  };
-
-  getMergedLink = (link: LinkData): LinkData => {
-    const edits = this.state.editedLinks.get(link.id);
-    return edits ? { ...link, ...edits } : link;
-  };
-
-  getMergedTopicTitle = (topic: TopicData): string => {
-    const edits = this.state.editedTopics.get(topic.id);
-    return edits?.title ?? topic.title;
-  };
-
-  hasUnsavedChanges = () => {
-    return (
-      this.state.editedLinks.size > 0 ||
-      this.state.editedTopics.size > 0 ||
-      this.state.deletedLinkIds.size > 0
     );
-  };
+  }, []);
 
-  getChangesCount = () => {
-    return (
-      this.state.editedLinks.size +
-      this.state.editedTopics.size +
-      this.state.deletedLinkIds.size
-    );
-  };
+  const handleLinkDelete = useCallback((linkId: string) => {
+    setDeletedLinkIds((prev) => new Set(prev).add(linkId));
+  }, []);
 
-  saveAll = async () => {
-    this.setState({ loading: true });
-
-    const linkPromises = [...this.state.editedLinks.entries()].map(
-      ([id, changes]) =>
-        this.props.updateLink({ variables: { id, ...changes } })
-    );
-
-    const topicPromises = [...this.state.editedTopics.entries()].map(
-      ([id, changes]) =>
-        this.props.updateTopic({ variables: { id, ...changes } })
-    );
-
-    const deletePromises = [...this.state.deletedLinkIds].map((id) =>
-      this.props.deleteLink({ variables: { id } })
-    );
-
-    await Promise.all([...linkPromises, ...topicPromises, ...deletePromises]);
-
-    this.setState({
-      loading: false,
-      editedLinks: new Map(),
-      editedTopics: new Map(),
-      deletedLinkIds: new Set(),
-    });
-
-    this.refreshEverything();
-  };
-
-  discardAll = () => {
-    this.setState({
-      editedLinks: new Map(),
-      editedTopics: new Map(),
-      deletedLinkIds: new Set(),
-    });
-  };
-
-  renderTopic(topic: TopicData, topics: TopicData[]) {
-    const visibleLinks = topic.links.filter(
-      (link) => !this.state.deletedLinkIds.has(link.id)
-    );
-
-    return (
-      <TopicSection key={topic.id}>
-        <HeaderContainer>
-          <TopicHeader>
-            <input
-              value={this.getMergedTopicTitle(topic)}
-              onChange={(e) =>
-                this.handleTopicTitleChange(topic.id, e.target.value)
-              }
-              style={{
-                fontSize: 18,
-                fontWeight: 600,
-                border: "none",
-                background: "transparent",
-                padding: "4px 0",
-                width: "100%",
-              }}
-            />
-          </TopicHeader>
-        </HeaderContainer>
-        <section style={{ border: `1px solid ${colors.gray}` }}>
-          {visibleLinks.map((link) => (
-            <LinkCard
-              key={link.id}
-              link={this.getMergedLink(link)}
-              topics={topics}
-              onChange={this.handleLinkChange}
-              onDelete={() => this.handleLinkDelete(link.id)}
-              refresh={this.refreshEverything}
-            />
-          ))}
-        </section>
-      </TopicSection>
-    );
-  }
-
-  renderTopics() {
-    const topics = this.props.issues.issue.topics;
-    return topics.map((topic) => this.renderTopic(topic, topics));
-  }
-
-  renderUnassignedLinks() {
-    const allLinks = this.props.links.allLinks.filter(
-      (link) => link.topic === null && !this.state.deletedLinkIds.has(link.id)
-    );
-    const topics = this.props.issues.issue.topics;
-
-    return (
-      <section>
-        <HeaderContainer>
-          <Header>Unassigned Links</Header>
-        </HeaderContainer>
-        {allLinks.length > 0 ? (
-          <>
-            <section style={{ border: `1px solid ${colors.gray}` }}>
-              {allLinks.map((link) => (
-                <LinkCard
-                  key={link.id}
-                  link={this.getMergedLink(link)}
-                  topics={topics}
-                  onChange={this.handleLinkChange}
-                  onDelete={() => this.handleLinkDelete(link.id)}
-                  refresh={this.refreshEverything}
-                />
-              ))}
-            </section>
-            <div style={{ marginTop: 16 }}>
-              <LinkCreator refresh={this.refreshEverything} />
-            </div>
-          </>
-        ) : (
-          <section>
-            <p>No Links found! Add some below:</p>
-            <LinkCreator refresh={this.refreshEverything} />
-          </section>
-        )}
-      </section>
-    );
-  }
-
-  renderPreviewImage() {
-    return (
-      <section>
-        <HeaderContainer>
-          <Header>Preview Image</Header>
-        </HeaderContainer>
-        <PreviewImageUpdate
-          previewImage={this.props.issues.issue.previewImage}
-          refresh={this.refreshEverything}
-          id={this.props.issues.issue.id}
-        />
-      </section>
-    );
-  }
-
-  override render() {
-    if (this.props.links.loading || this.props.issues.loading) {
-      return (
-        <Card>
-          <Loading />
-        </Card>
-      );
-    }
-
-    const hasChanges = this.hasUnsavedChanges();
-
-    return (
-      <>
-        <Card>
-          <PageHeader {...this.props.issues.issue} />
-        </Card>
-        <Card>
-          <Flex>
-            <FlexItem>{this.renderUnassignedLinks()}</FlexItem>
-            <FlexItem margin="0 0 0 10px">
-              {this.renderTopics()}
-
-              <Flex align="center" style={{ padding: 16 }}>
-                <InputWithButton
-                  buttonLabel="Add Topic"
-                  buttonDisabled={this.state.loading}
-                  onClick={this.submitTopic}
-                  value={this.state.newTopic}
-                  disabled={this.state.loading}
-                  onChange={this.handleTopicChange}
-                  placeholder="Topic Title"
-                />
-              </Flex>
-            </FlexItem>
-          </Flex>
-        </Card>
-        <Card>{this.renderPreviewImage()}</Card>
-
-        <div style={{ height: 80 }} />
-
-        {hasChanges && (
-          <ActionBar>
-            <ChangesIndicator>
-              {this.getChangesCount()} unsaved change
-              {this.getChangesCount() > 1 ? "s" : ""}
-            </ChangesIndicator>
-            <Button
-              color="grey"
-              onClick={this.discardAll}
-              disabled={this.state.loading}
-            >
-              Discard
-            </Button>
-            <Button onClick={this.saveAll} disabled={this.state.loading}>
-              {this.state.loading ? "Saving..." : "Save All"}
-            </Button>
-          </ActionBar>
-        )}
-      </>
-    );
-  }
-}
-
-export default compose(
-  withRouter,
-  graphql(allLinksQuery, {
-    name: "links",
-    options: {
-      fetchPolicy: "cache-and-network",
+  const handleLinkReorder = useCallback(
+    (bucketId: string, orderedLinks: LinkData[], newOrder: number[]) => {
+      const reorderedIds = newOrder.map((i) => orderedLinks[i]!.id!);
+      setLinkOrder((prev) => new Map(prev).set(bucketId, reorderedIds));
     },
-  }),
-  graphql(issueQuery, {
-    name: "issues",
-    options: ({ match }: RouteComponentProps<{ id: string }>) => ({
-      variables: { id: match.params.id },
-      fetchPolicy: "cache-and-network",
-    }),
-  }),
-  graphql(createTopicMutation, { name: "createTopic" }),
-  graphql(updateLinkMutation, { name: "updateLink" }),
-  graphql(deleteLinkMutation, { name: "deleteLink" }),
-  graphql(updateTopicMutation, { name: "updateTopic" })
-)(App);
+    []
+  );
+
+  const getOrderedLinks = useCallback(
+    (bucketId: string, items: LinkData[]): LinkData[] => {
+      const order = linkOrder.get(bucketId);
+      if (!order) return items;
+      const linkMap = new Map(items.map((link) => [link.id, link]));
+      return order
+        .map((lid) => linkMap.get(lid))
+        .filter((x): x is LinkData => !!x);
+    },
+    [linkOrder]
+  );
+
+  const getMergedLink = useCallback(
+    (link: LinkData): LinkData => {
+      const edits = editedLinks.get(link.id!);
+      return edits ? { ...link, ...edits } : link;
+    },
+    [editedLinks]
+  );
+
+  const hasUnsavedChanges =
+    editedLinks.size > 0 || deletedLinkIds.size > 0 || linkOrder.size > 0;
+  const changesCount = editedLinks.size + deletedLinkIds.size + linkOrder.size;
+
+  const saveAll = useCallback(async () => {
+    const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
+      updateLinkMutation.mutateAsync({
+        id: lid,
+        title: changes.title!,
+        text: changes.text!,
+        url: changes.url!,
+      })
+    );
+
+    const deletePromises = [...deletedLinkIds].map((lid) =>
+      deleteLinkMutation.mutateAsync({ id: lid })
+    );
+
+    await Promise.all([...linkPromises, ...deletePromises]);
+
+    setEditedLinks(new Map());
+    setDeletedLinkIds(new Set());
+    setLinkOrder(new Map());
+    invalidateQueries();
+  }, [
+    editedLinks,
+    deletedLinkIds,
+    updateLinkMutation,
+    deleteLinkMutation,
+    invalidateQueries,
+  ]);
+
+  const discardAll = useCallback(() => {
+    setEditedLinks(new Map());
+    setDeletedLinkIds(new Set());
+    setLinkOrder(new Map());
+  }, []);
+
+  if (linksLoading || issueLoading || !issueData?.issue) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  const issue = issueData.issue;
+  const topics = issue.topics ?? [];
+  const allLinks = linksData?.allLinks ?? [];
+
+  const unassignedLinks = allLinks.filter(
+    (link) => link.topic === null && !deletedLinkIds.has(link.id!)
+  );
+  const orderedUnassigned = getOrderedLinks(
+    "unassigned",
+    unassignedLinks as LinkData[]
+  );
+
+  const isSaving = updateLinkMutation.isPending || deleteLinkMutation.isPending;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <PageHeader {...issue} topics={topics} />
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-4 py-6">
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-medium text-gray-900">Unassigned</h2>
+            <span className="text-sm text-gray-500">
+              {orderedUnassigned.length} links
+            </span>
+          </div>
+
+          {orderedUnassigned.length > 0 ? (
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <SpringList
+                onDragEnd={(newOrder) =>
+                  handleLinkReorder("unassigned", orderedUnassigned, newOrder)
+                }
+              >
+                {orderedUnassigned.map((link) => (
+                  <LinkCard
+                    key={link.id}
+                    link={getMergedLink(link)}
+                    topics={topics}
+                    onChange={handleLinkChange}
+                    onDelete={() => handleLinkDelete(link.id!)}
+                    refresh={invalidateQueries}
+                  />
+                ))}
+              </SpringList>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500 text-sm">
+              No unassigned links
+            </div>
+          )}
+
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              placeholder="Paste URL to add link..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+            />
+            <button className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+              Add
+            </button>
+          </div>
+        </section>
+
+        {topics.map((topic) => {
+          const visibleLinks = (topic.links ?? []).filter(
+            (link) => !deletedLinkIds.has(link.id!)
+          );
+          const orderedLinks = getOrderedLinks(topic.id!, visibleLinks);
+
+          return (
+            <section key={topic.id} className="mb-8">
+              <div className="flex items-center gap-3 mb-3">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {topic.title}
+                </h3>
+                <span className="text-sm text-gray-500">
+                  {orderedLinks.length} links
+                </span>
+              </div>
+
+              {orderedLinks.length > 0 ? (
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                  <SpringList
+                    onDragEnd={(newOrder) =>
+                      handleLinkReorder(topic.id!, orderedLinks, newOrder)
+                    }
+                  >
+                    {orderedLinks.map((link) => (
+                      <LinkCard
+                        key={link.id}
+                        link={getMergedLink(link)}
+                        topics={topics}
+                        onChange={handleLinkChange}
+                        onDelete={() => handleLinkDelete(link.id!)}
+                        refresh={invalidateQueries}
+                      />
+                    ))}
+                  </SpringList>
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg border border-dashed border-gray-300 p-6 text-center text-gray-500 text-sm">
+                  No links in this topic
+                </div>
+              )}
+            </section>
+          );
+        })}
+
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="New topic name..."
+            value={newTopic}
+            onChange={(e) => setNewTopic(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+          />
+          <button
+            onClick={submitTopic}
+            disabled={createTopicMutation.isPending || !newTopic}
+            className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Add Topic
+          </button>
+        </div>
+      </main>
+
+      {hasUnsavedChanges && (
+        <>
+          <div className="h-20" />
+          <div className="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-lg">
+            <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+              <span className="text-sm text-gray-600">
+                {changesCount} unsaved{" "}
+                {changesCount === 1 ? "change" : "changes"}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={discardAll}
+                  disabled={isSaving}
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Discard
+                </button>
+                <button
+                  onClick={saveAll}
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
