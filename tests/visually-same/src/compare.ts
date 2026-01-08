@@ -1,4 +1,4 @@
-import { compare, ODiffServer } from 'odiff-bin'
+import { compare } from 'odiff-bin'
 
 import { config } from './config.js'
 
@@ -14,17 +14,12 @@ export async function compareImages(
   currentPath: string,
   diffPath?: string,
 ): Promise<CompareResult> {
-  const result = await compare(
-    baselinePath,
-    currentPath,
-    diffPath || '',
-    {
-      antialiasing: true,
-      diffColor: config.diffColor,
-      diffOverlay: true,
-      threshold: config.odiffThreshold,
-    },
-  )
+  const result = await compare(baselinePath, currentPath, diffPath || '', {
+    antialiasing: true,
+    diffColor: config.diffColor,
+    diffOverlay: true,
+    threshold: config.odiffThreshold,
+  })
 
   return {
     diffCount: result.diffCount,
@@ -35,8 +30,13 @@ export async function compareImages(
 }
 
 export async function compareAll(
-  onProgress?: (current: number, total: number, page: string, result: CompareResult) => void,
-): Promise<{ failed: number; passed: number; }> {
+  onProgress?: (
+    current: number,
+    total: number,
+    page: string,
+    result: CompareResult,
+  ) => void,
+): Promise<{ failed: number; passed: number }> {
   const { pages, screenshotsDir } = config
   let passed = 0
   let failed = 0

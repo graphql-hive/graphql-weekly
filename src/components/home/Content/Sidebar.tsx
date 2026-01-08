@@ -30,7 +30,7 @@ export class Sidebar extends React.Component<Props, State> {
   }
 
   render() {
-    const props = this.props
+    const {props} = this
 
     return (
       <div className="flex-grow ml-[42px] max-lg:hidden">
@@ -113,7 +113,8 @@ export class Sidebar extends React.Component<Props, State> {
 }
 
 function isCurrentUrl(urlWithoutTrailingSlash: string) {
-  const pathname = globalThis.window === undefined ? '' : globalThis.location.pathname
+  const pathname =
+    globalThis.window === undefined ? '' : globalThis.location.pathname
   return (
     pathname.endsWith(urlWithoutTrailingSlash) ||
     pathname.includes(urlWithoutTrailingSlash + '/')

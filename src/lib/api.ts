@@ -137,7 +137,7 @@ function unifySimilarTopics(
     }
 
     const similarTitle = conversionMap[currentTitle]
-    unifiedTopics[similarTitle] ||= [];
+    unifiedTopics[similarTitle] ||= []
     unifiedTopics[similarTitle].push(...topicsList[currentTitle])
 
     if (currentTitle !== similarTitle) {
@@ -158,7 +158,7 @@ export function getTopicUrlFriendly(topicTitle: string): string {
 export function getTopicFromSlug(
   slug: string,
   topicsList: Record<string, TopicLinksType[]>,
-): { links: TopicLinksType[]; title: string; } | null {
+): { links: TopicLinksType[]; title: string } | null {
   for (const [title, links] of Object.entries(topicsList)) {
     if (getTopicUrlFriendly(title) === slug) {
       return { links, title }

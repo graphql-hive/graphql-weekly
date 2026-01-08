@@ -11,10 +11,10 @@ type State = {
   isResultStale: boolean
   loading?: boolean
   result?: string
-  selectedQuery: { query: string; title: string; }
+  selectedQuery: { query: string; title: string }
 }
 
-const queriesList: { query: string; title: string; }[] = [
+const queriesList: { query: string; title: string }[] = [
   {
     query: `
 {
@@ -112,6 +112,7 @@ export class Playground extends React.Component<Props, State> {
         this.setState({ isResultStale: false, loading: false })
       })
       .catch((error) => {
+        // eslint-disable-next-line no-console
         console.log(error)
         this.setState({ loading: false })
       })

@@ -1,7 +1,10 @@
 import { Box, Text } from 'ink'
-import React from 'react'
 
-export function StatusIcon({ status }: { status: 'fail' | 'loading' | 'pass' | 'pending' }) {
+export function StatusIcon({
+  status,
+}: {
+  status: 'fail' | 'loading' | 'pass' | 'pending'
+}) {
   const icons = {
     fail: '✗',
     loading: '…',
@@ -23,14 +26,25 @@ export function StatusIcon({ status }: { status: 'fail' | 'loading' | 'pass' | '
   )
 }
 
-export function Progress({ current, message, total }: { current: number; message: string; total: number; }) {
+export function Progress({
+  current,
+  message,
+  total,
+}: {
+  current: number
+  message: string
+  total: number
+}) {
   const progress = Math.round((current / total) * 100)
-  
+
   return (
     <Box flexDirection="column" gap={1}>
       <Box>
         <Text color="cyan">
-          <Text color="dim">[{current}/{total}]</Text> {message}
+          <Text color="dim">
+            [{current}/{total}]
+          </Text>{' '}
+          {message}
         </Text>
       </Box>
       <Box>
@@ -43,42 +57,46 @@ export function Progress({ current, message, total }: { current: number; message
   )
 }
 
-export function CompareResult({ pageName, result }: { pageName: string; result: { diffPercentage?: number; match: boolean; reason?: string; } }) {
+export function CompareResult({
+  pageName,
+  result,
+}: {
+  pageName: string
+  result: { diffPercentage?: number; match: boolean; reason?: string }
+}) {
   const status = result.match ? 'pass' : 'fail'
-  
+
   return (
     <Box gap={2}>
       <StatusIcon status={status} />
-      <Text>
-        {pageName}
-      </Text>
+      <Text>{pageName}</Text>
       {!result.match && (
-        <Text color="dim">
-          {' '}(diff: {result.diffPercentage?.toFixed(2)}%)
-        </Text>
+        <Text color="dim"> (diff: {result.diffPercentage?.toFixed(2)}%)</Text>
       )}
     </Box>
   )
 }
 
-export function Summary({ failed, passed, total }: { failed: number; passed: number; total: number }) {
+export function Summary({
+  failed,
+  passed,
+  total,
+}: {
+  failed: number
+  passed: number
+  total: number
+}) {
   const allPassed = failed === 0
-  
+
   return (
     <Box flexDirection="column" gap={1} marginTop={1}>
       <Box>
         <Text bold>Results:</Text>
       </Box>
       <Box gap={4}>
-        <Text color={passed > 0 ? 'green' : 'dim'}>
-          ✓ {passed} passed
-        </Text>
-        <Text color={failed > 0 ? 'red' : 'dim'}>
-          ✗ {failed} failed
-        </Text>
-        <Text color="dim">
-          ({total} total)
-        </Text>
+        <Text color={passed > 0 ? 'green' : 'dim'}>✓ {passed} passed</Text>
+        <Text color={failed > 0 ? 'red' : 'dim'}>✗ {failed} failed</Text>
+        <Text color="dim">({total} total)</Text>
       </Box>
       {allPassed && (
         <Box marginTop={1}>

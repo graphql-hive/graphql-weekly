@@ -33,6 +33,7 @@ export const Issue = ({ firstIssueNumber, issue, lastIssueNumber }: Props) => {
           {...blueIssueTagProps}
           articles={[
             <TopicArticle
+              key={issue.title}
               specialPerk={issue.specialPerk}
               text={issue.description || ''}
               title={issue.title}
@@ -46,7 +47,7 @@ export const Issue = ({ firstIssueNumber, issue, lastIssueNumber }: Props) => {
               name: issue.author.name,
             }
           }
-          isIssueCard={true}
+          isIssueCard
         />
       )}
 
@@ -57,6 +58,7 @@ export const Issue = ({ firstIssueNumber, issue, lastIssueNumber }: Props) => {
               .sort((a, b) => b.position - a.position)
               .map((link) => (
                 <TopicArticle
+                  key={link.title}
                   text={link.text}
                   title={link.title}
                   topicColor={getTopicColor(topic.title)}

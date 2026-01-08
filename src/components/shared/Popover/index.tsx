@@ -165,8 +165,7 @@ export const PopperPopover = (props: {
           data-placement={placement}
           position={String(placement)}
           ref={ref}
-          setByPopper={true}
-           
+          setByPopper
           style={style}
         />
       )}

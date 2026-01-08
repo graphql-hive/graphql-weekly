@@ -8,8 +8,8 @@ export const TitleArrow = (props: any) => (
       strokeLinejoin="round"
       strokeWidth={2}
     >
-      <path d="M1 11L11 1"/>
-      <path d="M3 1H11V9"/>
+      <path d="M1 11L11 1" />
+      <path d="M3 1H11V9" />
     </g>
   </svg>
 )

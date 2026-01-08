@@ -55,7 +55,7 @@ export class Nav extends React.Component<Props, State> {
             <a
               className="cursor-pointer ml-0 py-3 md:ml-10 md:py-0"
               href="https://www.howtographql.com"
-              target="_blank"
+              rel="noreferrer" target="_blank"
             >
               <span className="mr-3 font-medium leading-none text-lg text-white">
                 What is GraphQL?

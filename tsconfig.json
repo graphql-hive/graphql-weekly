@@ -10,6 +10,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "*.ts", "*.mjs"],
+  "include": ["src/**/*", "*.ts", "*.mjs", "*.mts"],
   "exclude": ["node_modules", "dist"]
 }

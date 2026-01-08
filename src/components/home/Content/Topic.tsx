@@ -19,6 +19,7 @@ export const Topic = ({ title, topicLinks }: Props) => {
           <TopicBox
             articles={topicLinkObject.links.map((link) => (
               <TopicArticle
+                key={link.title}
                 text={link.text}
                 title={link.title}
                 topicColor={getTopicColor(title)}

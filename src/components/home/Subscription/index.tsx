@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import * as React from 'react'
 
 import { PrimaryButton } from '../../shared/Buttons/Index'
@@ -6,7 +7,7 @@ import { Space } from '../../shared/Space'
 import Subscribe from '../../vectors/Subscribe'
 
 type Props = {}
-type State = { email: string; loading: boolean; message: string; name: string; }
+type State = { email: string; loading: boolean; message: string; name: string }
 
 export class Subscription extends React.Component<Props, State> {
   state = {
