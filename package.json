@@ -8,18 +8,21 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "wrangler:dev": "wrangler dev",
     "localflare": "bunx localflare",
     "format": "prettier src --write",
     "astro": "astro",
     "compare-against-prod": "./tests/compare-against-production/run.sh",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/react": "^4.2.0",
     "@astrojs/sitemap": "^3.3.0",
     "@hasparus/eslint-config": "^2.0.0",
+    "@types/popper.js": "^1.11.0",
     "astro": "^5.1.0",
     "fast-memoize": "^2.5.2",
     "node-fetch": "3.3.2",

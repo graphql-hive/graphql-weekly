@@ -20,9 +20,7 @@ export function Textarea({
       </label>
       <textarea
         className={cn(
-          'w-full h-[100px] p-0 mt-4',
-          'font-rubik font-normal leading-none text-lg md:text-base',
-          'border-none outline-none text-[#9da0b5] resize-y',
+          'w-full h-[100px] p-0 mt-4 font-rubik font-normal leading-none text-lg md:text-base border-none outline-none text-[#9da0b5] resize-y',
           className,
         )}
         placeholder={placeholder}

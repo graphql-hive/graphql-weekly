@@ -10,7 +10,7 @@ export interface CompareConfig {
   pages: PageConfig[]
   productionUrl: string
   screenshotsDir: string
-  viewport: { height: number; width: number; }
+  viewport: { height: number; width: number }
 }
 
 export const config: CompareConfig = {
@@ -23,6 +23,6 @@ export const config: CompareConfig = {
     { name: 'topic-Tools--Open-Source', path: '/topic/Tools--Open-Source' },
   ],
   productionUrl: 'https://www.graphqlweekly.com',
-  screenshotsDir: './screenshots',
+  screenshotsDir: new URL('screenshots', import.meta.url).pathname,
   viewport: { height: 720, width: 1280 },
 }

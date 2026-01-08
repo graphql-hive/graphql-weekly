@@ -1,6 +1,3 @@
-import * as React from 'react'
-
-import { Space } from '../../shared/Space'
 import ArrowLeft from '../../vectors/ArrowLeft'
 import ArrowRight from '../../vectors/ArrowRight'
 
@@ -26,7 +23,7 @@ export const NavIssue = ({
       </a>
     )}
 
-    <Space fillRow />
+    <div className="flex-grow mx-auto shrink-0" />
 
     {nextNumber && lastIssueNumber !== nextNumber - 1 && (
       <a

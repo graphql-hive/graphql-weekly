@@ -4,7 +4,6 @@ import { Arrow } from '../../vectors/Arrow'
 // Local
 import { Container } from '../Container'
 import { Link } from '../Link'
-import { Space } from '../Space'
 import Button from './Button'
 import Close from './Close'
 import LogoSvg from './Logo'
@@ -25,7 +24,10 @@ export class Nav extends React.Component<Props, State> {
     const { isOpened } = this.state
     return (
       <Container>
-        <Space height={40} heightOnMobile={32} />
+        <div
+          className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
+          style={{ '--height-desktop': '40px', '--height-mobile': '32px' } as React.CSSProperties}
+        />
         <nav className="flex min-h-[52px] justify-between flex-wrap px-6 md:flex-nowrap md:px-0">
           <Link className="inline-flex items-center -ml-1.5 md:ml-0" to="/">
             <LogoSvg />

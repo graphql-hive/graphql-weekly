@@ -3,7 +3,6 @@ import * as React from 'react'
 
 import { PrimaryButton } from '../../shared/Buttons/Index'
 import { Input } from '../../shared/Input/Input'
-import { Space } from '../../shared/Space'
 import Subscribe from '../../vectors/Subscribe'
 
 type Props = {}
@@ -72,7 +71,7 @@ export class Subscription extends React.Component<Props, State> {
           placeholder="bob@example.com"
           value={this.state.email}
         />
-        <Space height={0} heightOnMobile={20} />
+        <div className="shrink-0 h-5 md:h-0" />
         <PrimaryButton
           disabled={this.state.loading}
           icon={<Subscribe />}

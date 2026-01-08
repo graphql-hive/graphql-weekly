@@ -1,6 +1,5 @@
 import { useState, useRef, useImperativeHandle, forwardRef } from 'react'
 import { Input } from '../Input/Input'
-import { Space } from '../Space'
 import { Textarea } from '../Textarea'
 import { PrimaryButton, SecondaryButton } from '../Buttons/Index'
 import Check from '../../vectors/Check'
@@ -81,7 +80,7 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(function SubmitForm(_, re
                   Submit a new link to the <br />
                   GraphQL Weekly newsletter!
                 </h2>
-                <Space height={48} />
+                <div className="h-12 shrink-0" />
 
                 <Input
                   label="Title"

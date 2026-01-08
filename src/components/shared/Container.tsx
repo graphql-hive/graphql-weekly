@@ -10,9 +10,7 @@ export function Container({ children, className, ...rest }: ContainerProps) {
   return (
     <div
       className={cn(
-        'max-w-[600px] px-2 box-content',
-        'md:max-w-[1200px] md:px-0',
-        'mx-auto',
+        'max-w-[600px] px-2 box-content md:max-w-[1200px] md:px-0 mx-auto',
         className,
       )}
       {...rest}

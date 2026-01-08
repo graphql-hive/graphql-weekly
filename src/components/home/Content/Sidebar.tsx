@@ -4,7 +4,6 @@ import type { IssueType } from '../../../types'
 
 import { getTopicUrlFriendly } from '../../../lib/api'
 // Local
-import { Space } from '../../shared/Space'
 import Archive from '../../vectors/Archive'
 import Slack from '../../vectors/Slack'
 import Twitter from '../../vectors/Twitter'

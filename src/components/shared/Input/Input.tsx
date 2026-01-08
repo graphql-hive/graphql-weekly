@@ -18,10 +18,7 @@ export function Input({ className, label, placeholder, ...rest }: InputProps) {
       </label>
       <input
         className={cn(
-          'flex-grow flex-shrink flex-auto h-10 w-full p-0',
-          'font-rubik font-normal leading-none text-base md:text-lg',
-          'border-none outline-none text-[#081146]',
-          'placeholder:text-[#9da0b5]',
+          'flex-grow flex-shrink flex-auto h-10 w-full p-0 font-rubik font-normal leading-none text-base md:text-lg border-none outline-none text-[#081146] placeholder:text-[#9da0b5]',
           className,
         )}
         placeholder={placeholder}

@@ -20,12 +20,12 @@ Build for production:
 
 ```bash
 bun run build
-bun preview
+bun wrangler:dev
 ```
 
 ## Deployment
 
-Static site deployed to **Cloudflare Pages**.
+Site deployed to **Cloudflare**.
 
 Build command: `bun run build`
 Output directory: `dist`

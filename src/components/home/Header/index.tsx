@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import { Container } from '../../shared/Container'
 import { Nav } from '../../shared/Nav'
-import { Space } from '../../shared/Space'
 import Slack from '../../vectors/Slack'
 import Twitter from '../../vectors/Twitter'
 import { Subscription } from '../Subscription'
@@ -27,7 +26,10 @@ export const Header = (props: Props) => {
       <header className="header-bg bg-[#d60690] bg-no-repeat bg-top bg-center min-h-[595px] pb-[100px] md:pb-0">
         <Nav submitModalClickHandler={props.submitModalClickHandler} />
 
-        <Space height={80} heightOnMobile={27} />
+        <div
+          className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
+          style={{ '--height-desktop': '80px', '--height-mobile': '27px' } as React.CSSProperties}
+        />
 
         <Container>
           <h1 className="m-0 mx-auto max-w-[667px] font-normal text-2xl leading-[1.33] md:text-[44px] md:leading-[1.1] text-center text-white px-[17px] md:px-0 [&_strong]:font-medium">
@@ -36,7 +38,10 @@ export const Header = (props: Props) => {
             GraphQL
           </h1>
 
-          <Space height={56} heightOnMobile={32} />
+          <div
+            className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
+            style={{ '--height-desktop': '56px', '--height-mobile': '32px' } as React.CSSProperties}
+          />
 
           <Subscription />
 
