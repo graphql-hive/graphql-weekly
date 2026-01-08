@@ -3,7 +3,6 @@ import { Route, Switch } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PanelProvider, PanelRoot } from "./components/Panels";
-import Navbar from "./components/Navbar";
 import IndexPage from "./pages/index";
 import IssuePage from "./pages/issue";
 import "./index.css";
@@ -24,7 +23,6 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <PanelProvider>
       <PanelRoot />
-      <Navbar />
       <Switch>
         <Route path="/" component={IndexPage} />
         <Route path="/issue/:id" component={IssuePage} />

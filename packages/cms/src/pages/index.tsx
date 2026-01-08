@@ -2,6 +2,7 @@ import chunk from "lodash.chunk";
 import Flex from "../components/Flex";
 import FlexCell from "../components/FlexCell";
 import Card from "../components/Card";
+import Navbar from "../components/Navbar";
 import IssueCreator from "../product/IssueCreator";
 import { ButtonLink } from "../components/Button";
 import Loading from "../components/Loading";
@@ -18,9 +19,12 @@ export default function IndexPage() {
 
   if (isLoading) {
     return (
-      <Card>
-        <Loading />
-      </Card>
+      <>
+        <Navbar />
+        <Card>
+          <Loading />
+        </Card>
+      </>
     );
   }
 
@@ -28,6 +32,7 @@ export default function IndexPage() {
 
   return (
     <>
+      <Navbar />
       <Card>
         <IssueCreator refresh={refresh} />
       </Card>

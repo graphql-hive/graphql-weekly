@@ -1,1 +1,1 @@
-- Use Bun instead of NPM and PNPM.
+- Use Bun instead of NPM and PNPM. Use `bunx` instead of `npx`.

@@ -3,6 +3,7 @@ import { useParams } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 
 import Loading from "../components/Loading";
+import Navbar from "../components/Navbar";
 import SpringList from "../components/SpringList";
 import LinkCard from "../product/LinkCard";
 import PageHeader from "../product/PageHeader";
@@ -14,6 +15,7 @@ import {
   useCreateLinkMutation,
   useUpdateLinkMutation,
   useDeleteLinkMutation,
+  useUpdateTopicWhenIssueDeletedMutation,
   type IssueQuery,
 } from "../generated/graphql";
 
@@ -41,6 +43,7 @@ export default function IssuePage() {
   const createLinkMutation = useCreateLinkMutation();
   const updateLinkMutation = useUpdateLinkMutation();
   const deleteLinkMutation = useDeleteLinkMutation();
+  const removeTopicMutation = useUpdateTopicWhenIssueDeletedMutation();
 
   const invalidateQueries = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["AllLinks"] });
@@ -85,6 +88,17 @@ export default function IssuePage() {
   const handleLinkDelete = useCallback((linkId: string) => {
     setDeletedLinkIds((prev) => new Set(prev).add(linkId));
   }, []);
+
+  const handleTopicRemove = useCallback(
+    (topicId: string, topicTitle: string) => {
+      if (!confirm(`Remove topic "${topicTitle}" from this issue?`)) return;
+      removeTopicMutation.mutate(
+        { id: topicId },
+        { onSuccess: invalidateQueries }
+      );
+    },
+    [removeTopicMutation, invalidateQueries]
+  );
 
   const handleLinkReorder = useCallback(
     (bucketId: string, orderedLinks: LinkData[], newOrder: number[]) => {
@@ -176,11 +190,9 @@ export default function IssuePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <PageHeader {...issue} topics={topics} />
-        </div>
-      </header>
+      <Navbar>
+        <PageHeader {...issue} topics={topics} />
+      </Navbar>
 
       <main className="max-w-3xl mx-auto px-4 py-6">
         <section className="mb-8">
@@ -241,7 +253,7 @@ export default function IssuePage() {
           const orderedLinks = getOrderedLinks(topic.id!, visibleLinks);
 
           return (
-            <section key={topic.id} className="mb-8">
+            <section key={topic.id} className="mb-8 group/topic">
               <div className="flex items-center gap-3 mb-3">
                 <h3 className="text-lg font-medium text-gray-900">
                   {topic.title}
@@ -249,6 +261,26 @@ export default function IssuePage() {
                 <span className="text-sm text-gray-500">
                   {orderedLinks.length} links
                 </span>
+                <button
+                  onClick={() => handleTopicRemove(topic.id!, topic.title!)}
+                  disabled={removeTopicMutation.isPending}
+                  className="ml-auto opacity-0 group-hover/topic:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors hover:duration-0 disabled:opacity-50"
+                  title="Remove topic from issue"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
               </div>
 
               {orderedLinks.length > 0 ? (

@@ -32,7 +32,7 @@ export default function LinkCard({
   refresh,
 }: LinkCardProps) {
   return (
-    <div className="group flex bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
+    <div className="group flex bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors hover:duration-0">
       <div className="w-8 flex items-center justify-center opacity-30 group-hover:opacity-70 cursor-grab active:cursor-grabbing shrink-0 border-r border-gray-100">
         <svg
           className="w-4 h-4 text-gray-400"
@@ -54,14 +54,14 @@ export default function LinkCard({
           placeholder="Title"
           value={link.title ?? ""}
           onChange={(e) => onChange({ ...link, title: e.target.value })}
-          className="w-full text-sm font-medium text-gray-900 bg-transparent border border-transparent rounded px-1 py-0.5 hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
+          className="w-full text-sm font-medium text-gray-900 bg-transparent border border-transparent rounded px-1 py-0.5 hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors hover:duration-0"
         />
         <textarea
           placeholder="Description"
           value={link.text ?? ""}
           onChange={(e) => onChange({ ...link, text: e.target.value })}
           rows={2}
-          className="w-full text-sm text-gray-600 bg-transparent border border-transparent rounded px-1 py-0.5 hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none transition-colors"
+          className="w-full text-sm text-gray-600 bg-transparent border border-transparent rounded px-1 py-0.5 hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none transition-colors hover:duration-0"
         />
         <div className="flex items-center gap-2">
           <input
@@ -69,14 +69,14 @@ export default function LinkCard({
             placeholder="URL"
             value={link.url ?? ""}
             onChange={(e) => onChange({ ...link, url: e.target.value })}
-            className="flex-1 text-xs text-gray-500 bg-transparent border border-transparent rounded px-1 py-0.5 font-mono hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
+            className="flex-1 text-xs text-gray-500 bg-transparent border border-transparent rounded px-1 py-0.5 font-mono hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors hover:duration-0"
           />
           {link.url && (
             <a
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-blue-500 transition-colors"
+              className="text-gray-400 hover:text-blue-500 transition-colors hover:duration-0"
             >
               <svg
                 className="w-4 h-4"
@@ -96,7 +96,7 @@ export default function LinkCard({
         </div>
       </div>
 
-      <div className="flex items-center gap-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity hover:duration-0">
         <OpenPanel>
           {({ showPanel }) => (
             <ClickTarget
@@ -110,7 +110,7 @@ export default function LinkCard({
               }
             >
               <div
-                className="p-1.5 text-gray-400 hover:text-pink-500 hover:bg-pink-50 rounded transition-colors"
+                className="p-1.5 text-gray-400 hover:text-pink-500 hover:bg-pink-50 rounded transition-colors hover:duration-0"
                 title="Assign to topic"
               >
                 <svg
@@ -132,7 +132,7 @@ export default function LinkCard({
         </OpenPanel>
         <button
           onClick={onDelete}
-          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors hover:duration-0"
           title="Delete"
         >
           <svg

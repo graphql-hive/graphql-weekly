@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "../components/Button";
-import Flex from "../components/Flex";
-import FlexCell from "../components/FlexCell";
 
 import {
   usePublishIssueMutation,
@@ -65,41 +63,33 @@ export default function PageHeader({
   };
 
   return (
-    <Flex>
-      <FlexCell align="center">
-        <h1 className="m-0">
-          Curating: <strong>{title}</strong> (version {versionCount})
-        </h1>
-      </FlexCell>
-      <FlexCell align="center">
-        <h1 className="m-0">
-          <input
-            type="checkbox"
-            checked={isFoundation}
-            onChange={(e) => setIsFoundation(e.target.checked)}
-          />{" "}
-          Foundation Edition
-        </h1>
-      </FlexCell>
-      <FlexCell align="center">
-        <Flex align="flex-end">
-          <FlexCell align="center" grow="0" basis="auto">
-            <Button onClick={handlePublish}>Publish</Button>
-          </FlexCell>
-          <FlexCell align="center" grow="0" basis="auto" margin="0 0 0 10px">
-            <Button color="grey-bg" onClick={increaseVersion}>
-              Create Email
-            </Button>
-          </FlexCell>
-          {!published && (
-            <FlexCell align="center" grow="0" basis="auto" margin="0 0 0 10px">
-              <Button color="red" onClick={handleDeleteIssue}>
-                Delete Issue
-              </Button>
-            </FlexCell>
-          )}
-        </Flex>
-      </FlexCell>
-    </Flex>
+    <>
+      <span className="text-sm text-gray-600">
+        Curating: <strong className="text-gray-900">{title}</strong>{" "}
+        <span className="text-gray-400">(v{versionCount})</span>
+      </span>
+
+      <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={isFoundation}
+          onChange={(e) => setIsFoundation(e.target.checked)}
+          className="w-3.5 h-3.5"
+        />
+        Foundation
+      </label>
+
+      <div className="flex items-center gap-2">
+        <Button onClick={handlePublish}>Publish</Button>
+        <Button color="grey-bg" onClick={increaseVersion}>
+          Create Email
+        </Button>
+        {!published && (
+          <Button color="red" onClick={handleDeleteIssue}>
+            Delete
+          </Button>
+        )}
+      </div>
+    </>
   );
 }
