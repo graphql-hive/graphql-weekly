@@ -1,0 +1,27 @@
+{
+  "name": "visually-same",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "visually-same": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "bun build src/cli.tsx --outdir dist --target node --external ink,meow,odiff-bin,playwright,ink-spinner,react",
+    "dev": "bun run src/cli.tsx compare",
+    "compare": "bun run dist/cli.js compare",
+    "update-baseline": "bun run dist/cli.js update-baseline",
+    "screenshot-production": "bun run dist/cli.js screenshot-production"
+  },
+  "dependencies": {
+    "ink": "4.4.1",
+    "meow": "11.0.0",
+    "odiff-bin": "3.0.0",
+    "playwright": "1.57.0",
+    "ink-spinner": "5.0.0",
+    "react": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.1",
+    "@types/bun": "latest"
+  }
+}

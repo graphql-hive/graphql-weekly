@@ -1,11 +1,12 @@
 import type React from 'react'
+
 import { cn } from '../../lib/cn'
 
 export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
-export function Container({ className, children, ...rest }: ContainerProps) {
+export function Container({ children, className, ...rest }: ContainerProps) {
   return (
     <div
       className={cn(
