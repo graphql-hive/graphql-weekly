@@ -6,7 +6,7 @@ import React from 'react'
 import App from './app.js'
 
 const cli = meow(
-  `
+  dedent(`
     Usage
       $ visually-same <command>
 
@@ -19,7 +19,7 @@ const cli = meow(
       $ visually-same compare
       $ visually-same update-baseline
       $ visually-same screenshot-production
-  `,
+  `),
   {
     flags: {},
     importMeta: import.meta,
@@ -35,8 +35,13 @@ if (
   !command ||
   !['compare', 'screenshot-production', 'update-baseline'].includes(command)
 ) {
-  process.stderr.write('\nInvalid command\n\n' + cli.help + '\n')
+  process.stderr.write('Invalid command.')
+  process.stderr.write(cli.help)
   process.exit(1)
 }
 
 render(React.createElement(App, { command }))
+
+function dedent(str: string): string {
+  return str.replace(/^\s+/, '')
+}
