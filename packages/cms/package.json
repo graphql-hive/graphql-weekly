@@ -14,15 +14,19 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
     "@types/lodash.chunk": "^4.2.9",
     "@types/react": "^16.14.62",
     "@types/react-dom": "^16.9.24",
     "@types/react-router-dom": "^4.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5.7.3",
     "vite": "^6.0.7"
   },
   "dependencies": {
+    "@react-spring/web": "^10.0.3",
+    "@use-gesture/react": "^10.3.1",
     "apollo-boost": "^0.1.12",
     "emotion": "^9.2.6",
     "graphql": "^0.13.2",
