@@ -58,7 +58,7 @@ export async function getAllIssues(): Promise<AllIssuesData> {
     .sort((a, b) => Number(b.number) - Number(a.number))
 
   const lastIssue = allIssues[0]
-  const firstIssueNumber = allIssues.at(-1).number
+  const firstIssueNumber = allIssues.at(-1)!.number
 
   // get all topics with links: { [title]: [ { ...link } ] }
   let topicsList: Record<string, TopicLinksType[]> = {}

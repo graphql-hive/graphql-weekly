@@ -17,15 +17,19 @@ export async function compareImages(
   const result = await compare(baselinePath, currentPath, diffPath || '', {
     antialiasing: true,
     diffColor: config.diffColor,
-    diffOverlay: true,
     threshold: config.odiffThreshold,
   })
 
+  if (result.match) {
+    return { match: true }
+  }
+
   return {
-    diffCount: result.diffCount,
-    diffPercentage: result.diffPercentage,
-    match: result.match,
-    reason: result.match ? undefined : result.reason,
+    diffCount: 'diffCount' in result ? result.diffCount : undefined,
+    diffPercentage:
+      'diffPercentage' in result ? result.diffPercentage : undefined,
+    match: false,
+    reason: result.reason,
   }
 }
 

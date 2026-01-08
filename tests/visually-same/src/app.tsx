@@ -1,6 +1,7 @@
+import React, { useEffect, useState } from 'react'
+
 import { Box, Text } from 'ink'
 import Spinner from 'ink-spinner'
-import { useEffect, useState } from 'react'
 
 import { compareAll } from './compare.js'
 import { takeAllScreenshots } from './screenshot.js'

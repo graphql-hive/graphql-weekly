@@ -4,7 +4,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react",
-    "jsxImportSource": false,
     "lib": ["ESNext", "DOM"],
     "types": ["bun-types"],
     "esModuleInterop": true,

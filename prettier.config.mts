@@ -9,7 +9,7 @@ const config: Config = {
       },
     },
   ],
-  plugins: [import.meta.resolve('prettier-plugin-astro')],
+  plugins: ['prettier-plugin-astro'],
 }
 
 export default config
