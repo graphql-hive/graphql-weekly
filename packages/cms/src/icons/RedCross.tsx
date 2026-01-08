@@ -1,21 +1,9 @@
-import styled from "react-emotion";
 import X from "./X";
 
 export default function RedCross() {
   return (
-    <Wrapper>
+    <div className="w-5 h-5 bg-[#ff4f56] rounded-full inline-flex justify-center items-center flex-shrink-0">
       <X />
-    </Wrapper>
+    </div>
   );
 }
-
-const Wrapper = styled("div")`
-  width: 20px;
-  height: 20px;
-  background: #ff4f56;
-  border-radius: 10px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  flex: 0 0 auto;
-`;

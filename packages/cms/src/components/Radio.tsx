@@ -1,49 +1,7 @@
-import styled from "react-emotion";
 import { ReactNode } from "react";
-import { darken } from "polished";
-import { colors } from "../style/colors";
 import Flex from "./Flex";
 import ClickTarget from "./ClickTarget";
 import FlexCell from "./FlexCell";
-
-const Radio = styled("div")`
-  transition: 0.15s ease-out;
-  margin-right: 12px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: ${colors.gray};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:not(.active):hover {
-    background: ${darken(0.1, colors.gray)};
-  }
-
-  svg {
-    transition: 0.15s ease-out;
-    path {
-      transition: 0.15s ease-out;
-      stroke-dasharray: 25;
-      stroke-dashoffset: 25;
-    }
-  }
-
-  &.active {
-    background: ${colors.blue};
-    svg {
-      path {
-        stroke-dashoffset: 7;
-      }
-    }
-  }
-`;
-
-const RadioLabel = styled("p")`
-  margin: 0;
-  font-size: 16px;
-`;
 
 interface RadioInputProps {
   children: ReactNode;
@@ -58,15 +16,30 @@ export default function RadioInput({
   selectedValue,
   value,
 }: RadioInputProps) {
+  const isActive = selectedValue === value;
+
   return (
     <Flex margin="0 0 16px">
       <FlexCell align="center" grow="0" basis="auto">
         <ClickTarget onClick={() => onClick(value)}>
-          <Radio className={selectedValue === value ? "active" : ""} />
+          <div
+            className={`
+              transition-all duration-150 ease-out mr-3 w-6 h-6 rounded-full
+              flex items-center justify-center
+              [&_svg]:transition-all [&_svg]:duration-150 [&_svg]:ease-out
+              [&_svg_path]:transition-all [&_svg_path]:duration-150 [&_svg_path]:ease-out
+              [&_svg_path]:[stroke-dasharray:25] [&_svg_path]:[stroke-dashoffset:25]
+              ${
+                isActive
+                  ? "bg-[#0F7AD8] [&_svg_path]:[stroke-dashoffset:7]"
+                  : "bg-[#CCD9DF] hover:bg-[#a8bcc8]"
+              }
+            `}
+          />
         </ClickTarget>
       </FlexCell>
       <FlexCell>
-        <RadioLabel>{children}</RadioLabel>
+        <p className="m-0 text-base">{children}</p>
       </FlexCell>
     </Flex>
   );

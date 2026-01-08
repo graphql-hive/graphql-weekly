@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import styled from "react-emotion";
 import { Button } from "../components/Button";
 import Flex from "../components/Flex";
 import FlexCell from "../components/FlexCell";
@@ -11,10 +10,6 @@ import {
   useDeleteIssueMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
-
-const Title = styled("h1")`
-  margin: 0;
-`;
 
 interface Topic {
   id?: string | null;
@@ -72,19 +67,19 @@ export default function PageHeader({
   return (
     <Flex>
       <FlexCell align="center">
-        <Title>
+        <h1 className="m-0">
           Curating: <strong>{title}</strong> (version {versionCount})
-        </Title>
+        </h1>
       </FlexCell>
       <FlexCell align="center">
-        <Title>
+        <h1 className="m-0">
           <input
             type="checkbox"
             checked={isFoundation}
             onChange={(e) => setIsFoundation(e.target.checked)}
           />{" "}
           Foundation Edition
-        </Title>
+        </h1>
       </FlexCell>
       <FlexCell align="center">
         <Flex align="flex-end">

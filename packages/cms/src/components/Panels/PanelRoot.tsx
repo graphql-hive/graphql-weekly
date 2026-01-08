@@ -1,67 +1,9 @@
 import { Component, ComponentType, MouseEvent } from "react";
-import styled, { keyframes } from "react-emotion";
 import CardBody from "../CardBody";
 import ClickTarget from "../ClickTarget";
 import X from "../../icons/X";
 import { colors } from "../../style/colors";
 import PanelConsumer from "./PanelConsumer";
-
-const FadeRight = keyframes`
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(100%, 0, 0);
-    transform: translate3d(100%, 0, 0);
-  }
-  to {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-`;
-
-const Scrim = styled("div")`
-  position: fixed;
-  width: 100%;
-  z-index: 11;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.56);
-`;
-
-const Panel = styled("div")`
-  max-width: 640px;
-  height: 100vh;
-  overflow: hidden;
-  margin: 0 0 0 auto;
-  z-index: 11;
-  animation: ${FadeRight};
-  -webkit-animation-duration: 0.15s;
-  animation-duration: 0.15s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-`;
-
-const PanelCard = styled("div")`
-  background-color: white;
-  border-radius: 0px;
-  height: 100%;
-`;
-
-const PanelHeader = styled("div")`
-  padding: 16px 12px 16px 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  text-align: right;
-`;
-
-const PanelClose = styled("p")`
-  margin: 0;
-  color: rgb(91, 134, 229);
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 18px;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
 
 interface PanelBodyProps {
   isOpen?: boolean;
@@ -80,24 +22,31 @@ class PanelBody extends Component<PanelBodyProps> {
   override render() {
     const { hidePanel, Component: PanelComponent, componentProps } = this.props;
     return (
-      <Scrim id="panelRoot" onClick={this.closePanel}>
-        <Panel onClick={(e: MouseEvent) => e.stopPropagation()}>
-          <PanelCard>
+      <div
+        id="panelRoot"
+        onClick={this.closePanel}
+        className="fixed w-full z-[11] h-full bg-black/[0.56]"
+      >
+        <div
+          onClick={(e: MouseEvent) => e.stopPropagation()}
+          className="max-w-[640px] h-screen overflow-hidden ml-auto z-[11] animate-[fade-right_0.15s_both]"
+        >
+          <div className="bg-white rounded-none h-full">
             <section>
-              <PanelHeader>
+              <div className="py-4 px-3 pl-2 border-b border-black/[0.12] text-right">
                 <ClickTarget onClick={hidePanel}>
-                  <PanelClose>
+                  <p className="m-0 text-[rgb(91,134,229)] font-medium text-sm leading-[18px] hover:underline">
                     <X size={14} color={colors.blue} />
-                  </PanelClose>
+                  </p>
                 </ClickTarget>
-              </PanelHeader>
+              </div>
               <CardBody>
                 <PanelComponent {...componentProps} onPanelClose={hidePanel} />
               </CardBody>
             </section>
-          </PanelCard>
-        </Panel>
-      </Scrim>
+          </div>
+        </div>
+      </div>
     );
   }
 }

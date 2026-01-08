@@ -1,14 +1,10 @@
-import styled from "react-emotion";
+import type { CSSProperties } from "react";
 
 type SpinnerColor = "white" | "grey";
 
 interface SpinnerProps {
   color?: SpinnerColor;
   size?: number;
-}
-
-export default function Spinner({ color = "grey", size = 40 }: SpinnerProps) {
-  return <Wrapper className="loader" color={color} size={size} />;
 }
 
 const spinnerColors: Record<SpinnerColor, { bg: string; fg: string }> = {
@@ -22,54 +18,24 @@ const spinnerColors: Record<SpinnerColor, { bg: string; fg: string }> = {
   },
 };
 
-interface WrapperProps {
-  color: SpinnerColor;
-  size: number;
-}
+export default function Spinner({ color = "grey", size = 40 }: SpinnerProps) {
+  const borderWidth = size / 12;
+  const colors = spinnerColors[color];
 
-const Wrapper = styled<WrapperProps>("div")`
-  &,
-  &:after {
-    border-radius: 50%;
-    width: ${(p) => p.size}px;
-    height: ${(p) => p.size}px;
-  }
-  & {
-    font-size: 10px;
-    position: relative;
-    text-indent: -9999em;
-    border-top: ${(p) => p.size / 12}px solid
-      ${(p) => spinnerColors[p.color].bg};
-    border-right: ${(p) => p.size / 12}px solid
-      ${(p) => spinnerColors[p.color].bg};
-    border-bottom: ${(p) => p.size / 12}px solid
-      ${(p) => spinnerColors[p.color].bg};
-    border-left: ${(p) => p.size / 12}px solid
-      ${(p) => spinnerColors[p.color].fg};
-    -webkit-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-animation: loader 0.7s infinite ease-out;
-    animation: loader 0.7s infinite ease-out;
-  }
-  @-webkit-keyframes loader {
-    0% {
-      -webkit-transform: rotate(0deg);
-      transform: rotate(0deg);
-    }
-    100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg);
-    }
-  }
-  @keyframes loader {
-    0% {
-      -webkit-transform: rotate(0deg);
-      transform: rotate(0deg);
-    }
-    100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg);
-    }
-  }
-`;
+  const style: CSSProperties = {
+    width: size,
+    height: size,
+    borderRadius: "50%",
+    fontSize: 10,
+    position: "relative",
+    textIndent: "-9999em",
+    borderTop: `${borderWidth}px solid ${colors.bg}`,
+    borderRight: `${borderWidth}px solid ${colors.bg}`,
+    borderBottom: `${borderWidth}px solid ${colors.bg}`,
+    borderLeft: `${borderWidth}px solid ${colors.fg}`,
+    transform: "translateZ(0)",
+    animation: "loader 0.7s infinite ease-out",
+  };
+
+  return <div className="loader" style={style} />;
+}

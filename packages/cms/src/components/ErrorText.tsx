@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
-import styled from "react-emotion";
 import RedCross from "../icons/RedCross";
-import { colors } from "../style/colors";
 import Flex from "./Flex";
 
 interface ErrorTextProps {
@@ -12,15 +10,9 @@ export default function ErrorText({ children }: ErrorTextProps) {
   return (
     <Flex margin="10px 0 0">
       <RedCross />
-      <Text>{children}</Text>
+      <div className="text-xs leading-[15px] text-[#FF4F56] ml-2.5 self-center">
+        {children}
+      </div>
     </Flex>
   );
 }
-
-const Text = styled("div")`
-  font-size: 12px;
-  line-height: 15px;
-  color: ${colors.red};
-  margin-left: 10px;
-  align-self: center;
-`;
