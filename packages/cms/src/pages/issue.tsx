@@ -254,7 +254,7 @@ export default function IssuePage() {
           </div>
 
           {orderedUnassigned.length > 0 ? (
-            <div className="bg-white dark:bg-neu-900 border border-neu-200 dark:border-neu-700 overflow-hidden">
+            <div className="bg-white dark:bg-neu-900 border border-neu-200 dark:border-neu-700">
               <SpringList
                 onDragEnd={(newOrder) =>
                   handleLinkReorder("unassigned", orderedUnassigned, newOrder)
