@@ -231,7 +231,6 @@ const linkSubmission = async ({
     'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
     {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, variables, operationName }),
     },

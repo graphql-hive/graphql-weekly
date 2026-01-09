@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Header } from './home/Header'
 import { Container } from './shared/Container'
 import { Topic } from './home/Content/Topic'
 import { Sidebar } from './home/Content/Sidebar'
+import { SubmitForm } from './shared/SubmitForm'
 import type { IssueType, TopicLinksType } from '../types'
 
 interface Props {
@@ -18,22 +20,26 @@ export function TopicPage({
   allIssues,
   topicsTitles,
 }: Props) {
-  const noop = () => {}
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
+  const openModal = () => setIsSubmitModalOpen(true)
+  const closeModal = () => setIsSubmitModalOpen(false)
 
   return (
     <>
-      <Header submitModalClickHandler={noop} />
+      <Header submitModalClickHandler={openModal} />
 
       <Container>
         <div className="flex">
           <Topic title={topicTitle} topicLinks={topicLinks} />
           <Sidebar
-            submitModalClickHandler={noop}
+            submitModalClickHandler={openModal}
             topicsTitles={topicsTitles}
             allIssues={allIssues}
           />
         </div>
       </Container>
+
+      {isSubmitModalOpen && <SubmitForm onCancelClicked={closeModal} />}
     </>
   )
 }
