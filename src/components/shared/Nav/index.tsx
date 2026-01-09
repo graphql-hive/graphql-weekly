@@ -1,3 +1,4 @@
+import { cn } from "@/lib/cn";
 import { Component, type CSSProperties } from "react";
 
 import { Arrow } from "../../vectors/Arrow";
@@ -33,10 +34,10 @@ export class Nav extends Component<Props, State> {
             } as CSSProperties
           }
         />
-        <nav className="flex min-h-[52px] justify-between flex-wrap px-6 md:flex-nowrap md:px-0">
+        <nav className="flex min-h-13 justify-between flex-wrap px-6 md:flex-nowrap md:px-0">
           <Link
             aria-label="Go to main page"
-            className="inline-flex items-center -ml-1.5 md:ml-0 h-[52px]"
+            className="inline-flex items-center -ml-1.5 md:ml-0"
             to="/"
           >
             <LogoSvg className="h-full w-auto" />
@@ -51,37 +52,29 @@ export class Nav extends Component<Props, State> {
           </button>
 
           <div
-            className={`
-            flex justify-end items-center h-[52px] overflow-hidden
-            w-full md:w-auto md:h-[52px]
-            flex-col md:flex-row
-            items-center md:items-center
-            ${
+            className={cn(
+              "flex justify-end h-13 overflow-hidden items-center w-full md:w-auto flex-col md:flex-row md:h-13 md:pt-0 md:pb-0 md:border-0 gap-6",
               isOpened
                 ? "h-auto pt-7 pb-5 border-b border-white/50"
                 : "h-0 pt-0"
-            }
-            md:h-[52px]! md:pt-0! md:pb-0! md:border-0!
-          `}
+            )}
           >
             <a
-              className="cursor-pointer ml-0 py-3 md:ml-10 md:py-0"
+              className="cursor-pointer ml-0 p-3 flex items-center hover:bg-white/10 rounded-md"
               href="https://www.howtographql.com"
               rel="noreferrer"
               target="_blank"
             >
-              <span className="mr-3 font-medium leading-none text-lg text-white">
+              <span className="mr-3 font-medium  text-lg text-white">
                 What is GraphQL?
               </span>
-              <Arrow />
+              <Arrow className="mt-px" />
             </a>
             <button
-              className="border-none bg-none outline-hidden cursor-pointer ml-0 py-3 md:ml-10 md:py-0"
+              className="border-none bg-none outline-hidden cursor-pointer ml-0 p-3 hover:bg-white/10 rounded-md text-lg text-white font-medium"
               onClick={() => this.props.submitModalClickHandler()}
             >
-              <span className="mr-3 font-medium leading-none text-lg text-white">
-                Submit a link
-              </span>
+              Submit a link
             </button>
           </div>
         </nav>
