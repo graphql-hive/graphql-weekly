@@ -1,0 +1,26 @@
+name: Publish Issue
+
+on:
+  repository_dispatch:
+    types: [cms-publish]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number'
+        required: true
+        type: number
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create publish commit
+        run: |
+          ISSUE_NUMBER=${{ github.event.client_payload.issue_number || inputs.issue_number }}
+          DATE=$(date +%Y-%m-%d)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "Publish Issue $ISSUE_NUMBER ($DATE)"
+          git push
