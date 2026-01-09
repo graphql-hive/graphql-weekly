@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
     "wrangler:dev": "wrangler dev",
     "localflare": "bunx localflare",
     "format": "prettier src --write",

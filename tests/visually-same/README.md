@@ -10,8 +10,7 @@ cd tests/visually-same
 bun install
 
 # Run compare (requires preview server running)
-bun run preview &
-bun run src/cli.tsx compare
+bun src/cli.ts compare
 ```
 
 ## Features
@@ -29,10 +28,11 @@ bun run src/cli.tsx compare
 Take screenshots of local build and compare against baseline.
 
 ```bash
-bun run src/cli.tsx compare
+bun visually-same compare
 ```
 
 **Workflow:**
+
 1. Captures screenshots from `http://localhost:4321`
 2. Compares each against `*-baseline.png`
 3. Generates `*-diff.png` for differences
@@ -43,10 +43,11 @@ bun run src/cli.tsx compare
 Take screenshots and save as new baseline.
 
 ```bash
-bun run src/cli.tsx update-baseline
+bun run src/cli.ts update-baseline
 ```
 
 **When to use:**
+
 - After intentional design changes
 - After deploying to production
 - When you want to accept current state as reference
@@ -56,10 +57,11 @@ bun run src/cli.tsx update-baseline
 Take screenshots from production site (no branch switching required).
 
 ```bash
-bun run src/cli.tsx screenshot-production
+bun run src/cli.ts screenshot-production
 ```
 
 **When to use:**
+
 - When you need production screenshots for comparison
 - Without switching branches or rebuilding
 - Quick production reference capture
@@ -68,10 +70,10 @@ bun run src/cli.tsx screenshot-production
 
 ### For `compare` and `update-baseline` commands:
 
-The preview server must be running:
+Wrangler dev server must be running:
 
 ```bash
-bun run preview
+bun run wrangler:dev
 ```
 
 The CLI connects to `http://localhost:4321` to capture screenshots.
@@ -98,21 +100,12 @@ Edit `src/config.ts` to customize:
 
 ## Development
 
-Run directly with TypeScript (no build required):
+Run directly with Bun (no build required):
 
 ```bash
-bun run src/cli.tsx compare
-bun run src/cli.tsx update-baseline
-bun run src/cli.tsx screenshot-production
-```
-
-## CI/CD
-
-```yaml
-- name: Start local server
-  run: bun run preview &  
-- name: Run visual comparison
-  run: cd tests/visually-same && bun run src/cli.tsx compare
+bun run src/cli.ts compare
+bun run src/cli.ts update-baseline
+bun run src/cli.ts screenshot-production
 ```
 
 ## Notes
