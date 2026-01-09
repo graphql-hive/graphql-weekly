@@ -1,10 +1,16 @@
-import styled from '../../style/styled'
+import type React from 'react'
+import { cn } from '../../../lib/cn'
 
-export const SidebarLine = styled.div`
-  width: auto;
-  height: 1px;
-  background: #9da0b5;
-  opacity: 0.5;
+export interface SidebarLineProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-  margin: 40px 0 40px 23px;
-`
+export function SidebarLine({ className, ...rest }: SidebarLineProps) {
+  return (
+    <div
+      className={cn(
+        'w-auto h-px bg-[#9da0b5] opacity-50 my-10 ml-[23px] mr-0',
+        className,
+      )}
+      {...rest}
+    />
+  )
+}

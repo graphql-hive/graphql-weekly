@@ -1,0 +1,147 @@
+{
+  "timestamp": "2026-01-06T16:14:39.191Z",
+  "summary": {
+    "total": 6,
+    "matches": 0,
+    "minorDifferences": 5,
+    "errors": 0,
+    "failures": 1
+  },
+  "details": [
+    {
+      "path": "/",
+      "status": "minor_differences",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "production": "GraphQL Weekly",
+          "local": "GraphQL Weekly - Newsletter about GraphQL, Apollo and more"
+        },
+        {
+          "type": "missing_meta_tag",
+          "name": "generator",
+          "production": "Gatsby 2.32.13"
+        },
+        {
+          "type": "significant_content_difference",
+          "ratio": 18.885675306957708,
+          "detail": "Content length differs by more than 10%"
+        }
+      ],
+      "stats": {
+        "productionSize": 77613,
+        "localSize": 1530739,
+        "sizeDifference": 1453126
+      }
+    },
+    {
+      "path": "/issues/397",
+      "status": "failure",
+      "error": "Failed to fetch production"
+    },
+    {
+      "path": "/issues/350",
+      "status": "minor_differences",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "production": "GraphQL Weekly",
+          "local": "GraphQL Weekly - Newsletter about GraphQL, Apollo and more"
+        },
+        {
+          "type": "missing_meta_tag",
+          "name": "generator",
+          "production": "Gatsby 2.32.13"
+        },
+        {
+          "type": "significant_content_difference",
+          "ratio": 18.19958399242717,
+          "detail": "Content length differs by more than 10%"
+        }
+      ],
+      "stats": {
+        "productionSize": 80943,
+        "localSize": 1541723,
+        "sizeDifference": 1460780
+      }
+    },
+    {
+      "path": "/issues/100",
+      "status": "minor_differences",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "production": "GraphQL Weekly",
+          "local": "GraphQL Weekly - Newsletter about GraphQL, Apollo and more"
+        },
+        {
+          "type": "missing_meta_tag",
+          "name": "generator",
+          "production": "Gatsby 2.32.13"
+        },
+        {
+          "type": "significant_content_difference",
+          "ratio": 18.67582087261285,
+          "detail": "Content length differs by more than 10%"
+        }
+      ],
+      "stats": {
+        "productionSize": 78837,
+        "localSize": 1538486,
+        "sizeDifference": 1459649
+      }
+    },
+    {
+      "path": "/topic/Articles",
+      "status": "minor_differences",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "production": "GraphQL Weekly",
+          "local": "Articles - GraphQL Weekly"
+        },
+        {
+          "type": "missing_meta_tag",
+          "name": "generator",
+          "production": "Gatsby 2.32.13"
+        },
+        {
+          "type": "significant_content_difference",
+          "ratio": 20.033004859611232,
+          "detail": "Content length differs by more than 10%"
+        }
+      ],
+      "stats": {
+        "productionSize": 104478,
+        "localSize": 2181766,
+        "sizeDifference": 2077288
+      }
+    },
+    {
+      "path": "/topic/Events",
+      "status": "minor_differences",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "production": "GraphQL Weekly",
+          "local": "Events - GraphQL Weekly"
+        },
+        {
+          "type": "missing_meta_tag",
+          "name": "generator",
+          "production": "Gatsby 2.32.13"
+        },
+        {
+          "type": "significant_content_difference",
+          "ratio": 16.321153373446332,
+          "detail": "Content length differs by more than 10%"
+        }
+      ],
+      "stats": {
+        "productionSize": 94332,
+        "localSize": 1621079,
+        "sizeDifference": 1526747
+      }
+    }
+  ]
+}

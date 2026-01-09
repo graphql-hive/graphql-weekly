@@ -1,21 +1,20 @@
-import styled from '../../style/styled'
+import type React from 'react'
+import { cn } from '../../../lib/cn'
 
-export const SecondaryButton = styled.button`
-  border: none;
-  outline: none;
+export interface SecondaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-  font-weight: 500;
-  line-height: 1;
-  font-size: 18px;
-  text-align: right;
-  background: none;
-
-  color: #9da0b5;
-  cursor: pointer;
-  transition: transform 140ms ease-out, box-shadow 140ms ease-out;
-
-  &:hover {
-    text-decoration: underline;
-    transform: translateY(-1px);
-  }
-`
+export function SecondaryButton({ className, ...rest }: SecondaryButtonProps) {
+  return (
+    <button
+      className={cn(
+        'border-none outline-none',
+        'font-medium leading-none text-lg text-right bg-none',
+        'text-[#9da0b5] cursor-pointer',
+        'transition-[transform,box-shadow] duration-[140ms] ease-out',
+        'hover:underline hover:translate-y-[-1px]',
+        className,
+      )}
+      {...rest}
+    />
+  )
+}

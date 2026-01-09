@@ -1,4 +1,4 @@
-import { duotoneDark } from 'react-syntax-highlighter/styles/prism'
+import duotoneDark from 'react-syntax-highlighter/dist/esm/styles/prism/duotone-dark'
 
 export const dark = {
   ...duotoneDark,
@@ -16,7 +16,10 @@ export const dark = {
     color: '#6FBCFF',
   },
   property: {
-    color: '#6FBCFF',
+    color: '#89DB94',
+  },
+  object: {
+    color: '#89DB94',
   },
   variable: {
     color: '#89DB94',

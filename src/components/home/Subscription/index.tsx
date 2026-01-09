@@ -1,9 +1,7 @@
 import * as React from 'react'
-import styled, { css } from '../../style/styled'
 import { Input } from '../../shared/Input/Input'
 import { PrimaryButton } from '../../shared/Buttons/Index'
 import Subscribe from '../../vectors/Subscribe'
-import { mobile } from '../../style/media'
 import { Space } from '../../shared/Space'
 
 type Props = {}
@@ -30,7 +28,7 @@ export class Subscription extends React.Component<Props, State> {
         name: this.state.name,
         email: this.state.email,
       })
-      //{"data":{"createSubscriber":{"email":"b.rajabifard@gmail.com","name":"behnam"}}}
+
       if (res && res.data.createSubscriber.email === this.state.email) {
         this.showMessage('You are successfully added 🎉')
         this.setState({ name: '', email: '', loading: false })
@@ -55,18 +53,21 @@ export class Subscription extends React.Component<Props, State> {
 
   render() {
     return (
-      <BoxWrapper onSubmit={this.subscribeSubmited}>
+      <form
+        onSubmit={this.subscribeSubmited}
+        className="relative max-w-[783px] min-h-[88px] mx-auto p-6 pl-8 md:pl-8 flex items-stretch md:flex-row flex-col md:items-stretch items-stretch bg-white shadow-[0px_4px_16px_rgba(8,17,70,0.1)] rounded-[8px]"
+      >
         <Input
           label="NAME"
           placeholder="Bob Loblaw"
-          onChange={e => this.setState({ name: e.target.value })}
+          onChange={(e) => this.setState({ name: e.target.value })}
           value={this.state.name}
         />
-        <Line />
+        <div className="w-auto h-px my-1 md:w-px md:h-10 md:my-0 md:mx-6 bg-[#dadbe3]" />
         <Input
           label="EMAIL"
           placeholder="bob@example.com"
-          onChange={e => this.setState({ email: e.target.value })}
+          onChange={(e) => this.setState({ email: e.target.value })}
           value={this.state.email}
         />
         <Space height={0} heightOnMobile={20} />
@@ -77,8 +78,12 @@ export class Subscription extends React.Component<Props, State> {
           disabled={this.state.loading}
         />
 
-        {this.state.message && <Message>{this.state.message}</Message>}
-      </BoxWrapper>
+        {this.state.message && (
+          <div className="absolute px-[10px] py-[5px] right-[25px] bottom-[-15px] bg-[#f1f1f4] rounded text-[#424242] text-sm">
+            {this.state.message}
+          </div>
+        )}
+      </form>
     )
   }
 }
@@ -101,55 +106,12 @@ const subscribeUser = async ({
   const variables = { name, email }
   const operationName = 'createSubscriber'
 
-  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/graphql', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, variables, operationName }),
-  }).then(res => res.json())
+  return fetch(
+    'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables, operationName }),
+    },
+  ).then((res) => res.json())
 }
-
-const BoxWrapper = styled.form`
-  position: relative;
-  max-width: 783px;
-  min-height: 88px;
-  margin: auto;
-  padding: 24px;
-  padding-left: 32px;
-  display: flex;
-  align-items: stretch;
-
-  background: #ffffff;
-  box-shadow: 0px 4px 16px rgba(8, 17, 70, 0.1);
-  border-radius: ${p => p.theme.radiusLarge}px;
-
-  ${mobile(css`
-    flex-direction: column;
-    align-items: unset;
-    padding-left: 24px;
-  `)};
-`
-
-const Line = styled.div`
-  width: 1px;
-  height: 40px;
-  margin: 0 24px;
-  background: #dadbe3;
-
-  ${mobile(css`
-    width: auto;
-    height: 1px;
-    margin: 4px 0;
-  `)};
-`
-
-const Message = styled.div`
-  position: absolute;
-  padding: 5px 10px;
-  right: 25px;
-  bottom: -15px;
-
-  background: #f1f1f4;
-  border-radius: 3px;
-  color: #424242;
-  font-size: 14px;
-`

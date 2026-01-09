@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { Link } from '../../shared/Link'
-
-// Local
-import styled from '../../style/styled'
+import { cn } from '../../../lib/cn'
 import { getTopicColor } from '../topicColors'
+
 interface Props {
   heading: string
   primaryColor?: string
@@ -21,85 +20,40 @@ interface Props {
 
 export const SideMenu = ({ heading, isExpanded, items }: Props) => {
   return (
-    <Wrapper>
-      <Title>{heading}</Title>
-      <ItemsWrapper isExpanded={isExpanded}>
+    <div className="ml-[23px] pb-6">
+      <div className="mb-2 font-medium leading-none text-lg uppercase text-[#9da0b5]">
+        {heading}
+      </div>
+      <div className={cn(isExpanded && 'overflow-y-scroll max-h-[600px]')}>
         {items &&
-          items.map((e, i) => (
-            <Item
-              to={e.to}
-              href={e.href}
-              selected={e.selected}
-              primaryColor={getTopicColor(e.text)}
-              extraTop={e.extraTop}
-              key={e.text + e.to}
-              onClick={e.onClick}
-            >
-              {e.selected && <Bullet primaryColor={getTopicColor(e.text)} />}
-              {e.icon && <IconWrapper>{e.icon}</IconWrapper>}
-              {e.text}
-            </Item>
-          ))}
-      </ItemsWrapper>
-    </Wrapper>
+          items.map((e) => {
+            const topicColor = getTopicColor(e.text)
+            return (
+              <Link
+                to={e.to}
+                href={e.href}
+                key={e.text + e.to}
+                onClick={e.onClick}
+                className={cn(
+                  'flex items-center w-full no-underline font-medium leading-[18px] text-lg align-middle text-[#081146]',
+                  e.extraTop ? 'mt-6' : 'mt-4',
+                )}
+                style={e.selected ? { color: topicColor } : undefined}
+              >
+                {e.selected && (
+                  <div
+                    className="w-2 h-2 rounded-full -ml-[23px] mr-[15px]"
+                    style={{ background: topicColor }}
+                  />
+                )}
+                {e.icon && (
+                  <div className="mr-[15px] mt-px -mb-px">{e.icon}</div>
+                )}
+                {e.text}
+              </Link>
+            )
+          })}
+      </div>
+    </div>
   )
 }
-
-// Styles
-const Wrapper = styled.div`
-  margin-left: 23px;
-`
-
-const Title = styled.div`
-  margin-bottom: 8px;
-
-  font-weight: 500;
-  line-height: 1;
-  font-size: 18px;
-  text-transform: uppercase;
-
-  color: #9da0b5;
-`
-
-const Item = styled(Link)<{
-  selected?: any
-  primaryColor?: string
-  extraTop?: boolean
-}>`
-  margin-top: ${p => (p.extraTop ? 24 : 16)}px;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  text-decoration: none;
-
-  font-weight: 500;
-  line-height: 18px;
-  font-size: 18px;
-  vertical-align: middle;
-
-  color: ${p => (p.selected ? p.primaryColor || '#081146' : '#081146')};
-`
-
-const Bullet = styled.div<{ primaryColor?: string }>`
-  width: 8px;
-  height: 8px;
-  background: ${p => p.primaryColor || '#081146'};
-  border-radius: 50%;
-  margin-left: -23px;
-  margin-right: 15px;
-`
-
-const IconWrapper = styled.div`
-  margin-right: 15px;
-  margin-top: 1px;
-  margin-bottom: -1px;
-`
-
-const ItemsWrapper = styled.div<{ isExpanded?: boolean }>`
-  ${p =>
-    p.isExpanded &&
-    `
-    overflow-y: scroll;
-    max-height: 600px;
-  `};
-`

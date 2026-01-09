@@ -1,24 +1,23 @@
-import * as React from 'react'
-import styled from 'styled-components'
-
-// Locals
-import { css } from '../../style/styled'
+import type React from 'react'
+import { cn } from '../../../lib/cn'
 import { HLine } from '../Input/HLine'
-import { InputColor } from '../../style/theme'
 import { Link } from '../Link'
-import { mobile } from '../../style/media'
 
-type Props = {
+interface TopicBoxProps {
   topicTitle?: string
-  topicColor?: InputColor
+  topicColor?: string
   issueNumber?: number
   isIssueCard?: boolean
   issueDate?: string
-  articles: React.ReactNodeArray
-  author?: any //TODO
+  articles: React.ReactNode[]
+  author?: {
+    name: string
+    bio: string
+    avatar: string
+  }
 }
 
-export const TopicBox = ({
+export function TopicBox({
   topicTitle,
   topicColor,
   articles,
@@ -26,182 +25,77 @@ export const TopicBox = ({
   issueNumber,
   issueDate,
   author,
-}: Props) => {
+}: TopicBoxProps) {
   return (
     <>
-      {/* Blue Issue Tag */}
       {issueNumber && (
-        <IssueTagAligner>
-          <IssueTitle to={`/issues/${issueNumber}/#content`}>
+        <div className="text-center">
+          <Link
+            to={`/issues/${issueNumber}/#content`}
+            className="inline-flex relative h-8 mx-auto px-[17px] bg-[#6560e2] shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded-[32px] font-medium leading-8 text-base text-center uppercase text-white"
+          >
             Issue {issueNumber}
-            {issueDate && <IssueDate>{issueDate}</IssueDate>}
-          </IssueTitle>
-        </IssueTagAligner>
+            {issueDate && (
+              <span className="opacity-66 ml-1 before:content-[' ']">
+                {issueDate}
+              </span>
+            )}
+          </Link>
+        </div>
       )}
 
-      <Wrapper
-        topicColor={topicColor}
-        hasIssueTitle={Boolean(issueNumber)}
-        isIssueCard={isIssueCard}
+      <div
+        className={cn(
+          'min-h-[100px] mb-4 shadow-[0px_4px_16px_rgba(8,17,70,0.05)] rounded-lg p-6 md:p-16',
+          isIssueCard ? 'bg-[#f6f6f7]' : 'bg-white',
+          issueNumber && 'mt-[-15px]',
+          topicColor && 'pl-5 md:pl-14 border-l-8 [&_p_a]:underline',
+        )}
+        style={topicColor ? { borderLeftColor: topicColor } : undefined}
       >
         {topicTitle && (
-          <TopicsTitle marginTop={issueNumber ? 16 : 0} textColor={topicColor}>
+          <h2
+            className="mb-6 md:mb-8 font-medium leading-none text-lg uppercase"
+            style={{
+              marginTop: issueNumber ? '16px' : '0',
+              color: topicColor,
+            }}
+          >
             {topicTitle}
-          </TopicsTitle>
+          </h2>
         )}
         <div>
-          {articles.map((e, i) => {
-            return (
-              <div key={i}>
-                {e}
-                {articles.length === i + 1 || <HLine />}
-              </div>
-            )
-          })}
+          {articles.map((article, i) => (
+            <div key={i}>
+              {article}
+              {i < articles.length - 1 && <HLine />}
+            </div>
+          ))}
         </div>
         {author && (
-          <AuthorWrapper>
-            <Avatar image={author.avatar} />
-            <AuthorDetails>
-              <AuthorName>{author.name}</AuthorName>
-              <AuthorBio>{author.bio}</AuthorBio>
-            </AuthorDetails>
-          </AuthorWrapper>
+          <div className="w-full flex mt-8">
+            <div
+              className="w-10 h-10 rounded-full bg-cover flex-shrink-0"
+              style={{ backgroundImage: `url(${author.avatar})` }}
+            />
+            <div className="flex-grow ml-4">
+              <h3 className="m-0 font-normal font-medium leading-none text-base text-[#081146]">
+                {author.name}
+              </h3>
+              <h2 className="mt-2 mb-0 font-normal leading-none text-base text-[#4d5379]">
+                {author.bio}
+              </h2>
+            </div>
+          </div>
         )}
-      </Wrapper>
+      </div>
+      {topicColor && (
+        <style>{`
+          [style*="border-left-color: ${topicColor}"] p a {
+            color: ${topicColor};
+          }
+        `}</style>
+      )}
     </>
   )
 }
-
-const Wrapper = styled.div<{
-  topicColor?: InputColor
-  hasIssueTitle?: boolean
-  isIssueCard?: boolean
-}>`
-  min-height: 100px;
-  margin-bottom: 16px;
-
-  background: ${p => (p.isIssueCard ? '#f6f6f7' : 'white')};
-  box-shadow: 0px 4px 16px rgba(8, 17, 70, 0.05);
-  border-radius: 8px;
-
-  padding: 64px;
-
-  ${p =>
-    p.hasIssueTitle &&
-    css`
-      margin-top: -15px;
-    `};
-
-  ${p =>
-    p.topicColor &&
-    css`
-      padding-left: 56px;
-      border-left: 8px solid ${p.topicColor};
-
-      a {
-        color: ${p.topicColor};
-        text-decoration: underline;
-      }
-    `};
-
-  ${mobile(css`
-    padding: 24px;
-  `)};
-
-  ${p =>
-    p.topicColor &&
-    mobile(css`
-      padding-left: 20px;
-    `)};
-`
-
-const TopicsTitle = styled.h2<{ textColor?: InputColor; marginTop?: number }>`
-  margin-top: ${p => (p.marginTop ? p.marginTop : 0)}px;
-  margin-bottom: 32px;
-
-  font-weight: 500;
-  line-height: 1;
-  font-size: 18px;
-  text-transform: uppercase;
-
-  color: ${p => p.textColor};
-
-  ${mobile(css`
-    margin-bottom: 24px;
-  `)};
-`
-
-const IssueTagAligner = styled.div`
-  text-align: center;
-`
-
-const IssueTitle = styled(Link)`
-  display: inline-flex;
-  position: relative;
-  height: 32px;
-  margin: 0 auto;
-  padding-left: 17px;
-  padding-right: 17px;
-
-  background: #6560e2;
-  box-shadow: 0px 4px 10px rgba(23, 43, 58, 0.25);
-  border-radius: 32px;
-
-  font-weight: 500;
-  line-height: 32px;
-  font-size: 16px;
-  text-align: center;
-  text-transform: uppercase;
-
-  color: white;
-`
-
-const IssueDate = styled.span`
-  opacity: 0.66;
-  margin-left: 4px;
-  ::before {
-    content: ' ';
-  }
-`
-
-const AuthorWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  margin-top: 32px;
-`
-
-const Avatar = styled.div<{ image: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: url(${p => p.image});
-  background-size: cover;
-  flex-shrink: 0;
-`
-
-const AuthorDetails = styled.div`
-  flex-grow: 1;
-  margin-left: 16px;
-`
-
-const AuthorName = styled.h3`
-  margin: 0;
-  font-style: normal;
-
-  font-weight: 500;
-  line-height: 1;
-  font-size: 16px;
-
-  color: #081146;
-`
-
-const AuthorBio = styled.h2`
-  margin: 8px 0 0 0;
-
-  font-weight: 400;
-  line-height: 1;
-  font-size: 16px;
-
-  color: #4d5379;
-`

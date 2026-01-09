@@ -1,7 +1,0 @@
-/ga.js  https://www.google-analytics.com/analytics.js 200!
-/forum/*  http://forum.graph.cool/forum/:splat 200!
-
-# issue -> issues renaming
-/issue/125/#content /issues/125/#content
-/issue/125 /issues/125
-/issue/125/ /issues/125/

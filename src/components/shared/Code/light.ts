@@ -1,4 +1,4 @@
-import { duotoneLight } from 'react-syntax-highlighter/styles/prism'
+import duotoneLight from 'react-syntax-highlighter/dist/esm/styles/prism/duotone-light'
 export const light = {
   ...duotoneLight,
 
@@ -20,6 +20,6 @@ export const light = {
     msHyphens: 'none',
     hyphens: 'none',
     background: 'none',
-    color: '#24DA8D'
-  }
+    color: '#24DA8D',
+  },
 }

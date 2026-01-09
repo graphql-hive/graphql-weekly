@@ -1,85 +1,32 @@
-import * as React from 'react'
-import styled, { css } from '../../style/styled'
-import { mobile } from '../../style/media'
+import type React from 'react'
+import { cn } from '../../../lib/cn'
 
-interface Props {
+export interface InputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'type'
+> {
   label: string
   placeholder: string
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  value?: string
-  name?: string
 }
 
-export const Input = ({
-  label,
-  placeholder,
-  onChange,
-  value,
-  name,
-  ...props
-}: Props) => (
-  <Wrapper>
-    <Label>{label}</Label>
-    <InputTag
-      type="text"
-      placeholder={placeholder}
-      onChange={onChange}
-      value={value}
-      name={name}
-      {...props}
-    />
-  </Wrapper>
-)
-
-const Wrapper = styled.div`
-  height: 40px;
-  display: inline-flex;
-  align-items: stretch;
-
-  flex-shrink: 1;
-  flex-grow: 1;
-  width: auto;
-`
-
-const Label = styled.label`
-  width: 69px;
-
-  flex-shrink: 0;
-  font-weight: 500;
-  line-height: 1;
-  font-size: 18px;
-  text-transform: uppercase;
-  align-self: center;
-
-  color: ${p => p.theme.dark};
-
-  ${mobile(css`
-    font-size: 16px;
-  `)};
-`
-
-const InputTag = styled.input`
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: auto;
-  height: 40px;
-  width: 100%;
-  padding: 0;
-
-  font-family: 'Rubik';
-  font-weight: 400;
-  line-height: 1;
-  font-size: 18px;
-
-  border: none;
-  outline: none;
-  color: #081146;
-
-  ${mobile(css`
-    font-size: 16px;
-  `)};
-
-  ::placeholder {
-    color: ${p => p.theme.lightDark};
-  }
-`
+export function Input({ label, placeholder, className, ...rest }: InputProps) {
+  return (
+    <div className="h-10 inline-flex items-stretch flex-shrink flex-grow w-auto">
+      <label className="w-[69px] flex-shrink-0 font-medium leading-none text-base md:text-lg uppercase self-center text-[#0a1659]">
+        {label}
+      </label>
+      <input
+        type="text"
+        placeholder={placeholder}
+        className={cn(
+          'flex-grow flex-shrink flex-auto h-10 w-full p-0',
+          'font-rubik font-normal leading-none text-base md:text-lg',
+          'border-none outline-none text-[#081146]',
+          'placeholder:text-[#9da0b5]',
+          className,
+        )}
+        {...rest}
+      />
+    </div>
+  )
+}

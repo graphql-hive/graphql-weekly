@@ -1,109 +1,63 @@
 import * as React from 'react'
-import { withTheme } from '../../style/styled'
-import { Theme, InputColor } from '../../style/theme'
-
-// Local
+import { PrismLight } from 'react-syntax-highlighter'
+import graphql from 'react-syntax-highlighter/dist/esm/languages/prism/graphql'
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json'
+import { dark } from './dark'
 import { Pre } from './Pre'
 
-// Syntax
-import SyntaxHighlighter, {
-  registerLanguage,
-} from 'react-syntax-highlighter/prism-light'
-// import js from 'react-syntax-highlighter/languages/prism/javascript'
-import graphql from 'react-syntax-highlighter/languages/prism/graphql'
-import json from 'react-syntax-highlighter/languages/prism/json'
-import sql from 'react-syntax-highlighter/languages/prism/sql'
-import go from 'react-syntax-highlighter/languages/prism/go'
-import { dark } from './dark'
-import { light } from './light'
-// import typescript from './typescript'
-import { graphqlLight } from './graphqlLight'
+PrismLight.registerLanguage('graphql', graphql)
+PrismLight.registerLanguage('json', json)
 
-// registerLanguage('javascript', js)
-// registerLanguage('typescript', typescript)
-registerLanguage('graphql', graphql)
-registerLanguage('json', json)
-registerLanguage('sql', sql)
-registerLanguage('go', go)
-
-const noHighlightStyle = { 'code[class*="language-"]': { color: '#8FA6B2' } }
+const SyntaxHighlighter = PrismLight as any
 
 type Props = {
   language?: string
   showLineNumbers?: boolean
   background?: boolean
-  theme?: Theme
   customStyle?: Object
-  noHighlight?: boolean
   compact?: boolean
+  children?: string | React.ReactNode
 }
 
-class Code extends React.Component<Props> {
-  static defaultProps = {
-    background: true,
-    customStyle: {},
-  }
-
-  render() {
-    const colorSchema = this.props.theme ? this.props.theme.colorSchema : ''
-    const noHighlight = this.props.noHighlight
-    const customStyle = {
-      ...this.props.customStyle,
-      ...(noHighlight ? noHighlightStyle : {}),
-    }
-    const language = this.props.language
-
-    return (
-      <SyntaxHighlighter
-        style={
-          colorSchema === 'light'
-            ? language === 'graphql'
-              ? { ...graphqlLight, ...customStyle }
-              : { ...light, ...customStyle }
-            : { ...dark, ...customStyle }
-        }
-        customStyle={{ background: '' }}
-        showLineNumbers={this.props.showLineNumbers}
-        lineNumberContainerStyle={{
-          paddingRight: 20,
-          opacity: 0.5,
-          textAlign: 'right',
-          color: '#8FA6B2',
-          float: 'left',
-        }}
-        language={
-          this.props.language === 'flow' ? 'typescript' : this.props.language
-        }
-        PreTag={(props: any) => (
-          <Pre
-            {...props}
-            compact={this.props.compact}
-            background={this.props.background}
-          />
-        )}
-        children={
-          typeof this.props.children === 'string'
-            ? this.props.children.trim()
-            : this.props.children
-        }
-      />
-    )
-  }
-}
-
-export default withTheme(Code)
-
-export const CodeWithoutHighlight = ({
+export function Code({
+  language,
   children,
-  textColor,
-  background,
-  ...props
-}: {
-  children: string
-  textColor?: InputColor
-  background?: boolean
-}) => (
-  <Pre textColor={textColor} background={background} {...props}>
-    <code>{children}</code>
-  </Pre>
-)
+  compact,
+  background = true,
+  customStyle = {},
+  showLineNumbers,
+}: Props) {
+  const code = typeof children === 'string' ? children.trim() : ''
+
+  return (
+    <SyntaxHighlighter
+      language={language}
+      style={dark as any}
+      showLineNumbers={showLineNumbers}
+      lineNumberContainerStyle={{
+        paddingRight: 20,
+        opacity: 0.5,
+        textAlign: 'right',
+        color: '#8FA6B2',
+        float: 'left',
+      }}
+      customStyle={{
+        margin: 0,
+        padding: background ? 16 : 0,
+        background: 'none',
+        flexGrow: 1,
+        height: '100%',
+        width: '100%',
+        flex: 1,
+        ...customStyle,
+      }}
+      PreTag={(props: React.HTMLAttributes<HTMLPreElement>) => (
+        <Pre {...props} compact={compact} background={background} />
+      )}
+    >
+      {code}
+    </SyntaxHighlighter>
+  )
+}
+
+export default Code

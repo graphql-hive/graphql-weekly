@@ -1,14 +1,22 @@
-import styled, { css } from '../style/styled'
-import { mobile } from '../style/media'
+import type React from 'react'
+import { cn } from '../../lib/cn'
 
-export const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode
+}
 
-  ${mobile(css`
-    max-width: 600px;
-    padding-left: 8px;
-    padding-right: 8px;
-    box-sizing: content-box;
-  `)};
-`
+export function Container({ className, children, ...rest }: ContainerProps) {
+  return (
+    <div
+      className={cn(
+        'max-w-[600px] px-2 box-content',
+        'md:max-w-[1200px] md:px-0',
+        'mx-auto',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+}

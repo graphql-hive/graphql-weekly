@@ -1,79 +1,32 @@
-import * as React from 'react'
-import styled, { css } from '../style/styled'
-import { mobile } from '../style/media'
+import type React from 'react'
+import { cn } from '../../lib/cn'
 
-interface Props {
+export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string
   placeholder: string
-  name?: string
-  value?: string
-  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 }
 
-export const Textarea = ({
+export function Textarea({
   label,
   placeholder,
-  name,
-  value,
-  onChange,
-}: Props) => (
-  <Wrapper>
-    <Label>{label}</Label>
-    <TextareaTag
-      placeholder={placeholder}
-      name={name}
-      onChange={onChange}
-      defaultValue={value}
-    />
-  </Wrapper>
-)
-
-const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  flex-shrink: 1;
-  flex-grow: 1;
-  width: auto;
-`
-
-const Label = styled.label`
-  width: 100%;
-  height: 18px;
-
-  flex-shrink: 0;
-  font-weight: 500;
-  line-height: 1;
-  font-size: 18px;
-  text-transform: uppercase;
-
-  color: ${p => p.theme.dark};
-
-  ${mobile(css`
-    font-size: 16px;
-    margin-top: 10px;
-  `)};
-`
-
-const TextareaTag = styled.textarea`
-  width: 100%;
-  height: 100px;
-  padding: 0;
-  margin-top: 16px;
-
-  font-family: 'Rubik';
-  font-weight: 400;
-  line-height: 1;
-  font-size: 18px;
-
-  border: none;
-  outline: none;
-  color: ${p => p.theme.lightDark};
-  resize: vertical;
-
-  ${mobile(css`
-    font-size: 16px;
-  `)};
-`
+  className,
+  ...rest
+}: TextareaProps) {
+  return (
+    <div className="w-full flex flex-col items-center flex-shrink flex-grow">
+      <label className="w-full h-[18px] flex-shrink-0 font-medium leading-none text-lg md:text-base uppercase text-[#0a1659] md:mt-2.5">
+        {label}
+      </label>
+      <textarea
+        placeholder={placeholder}
+        className={cn(
+          'w-full h-[100px] p-0 mt-4',
+          'font-rubik font-normal leading-none text-lg md:text-base',
+          'border-none outline-none text-[#9da0b5] resize-y',
+          className,
+        )}
+        {...rest}
+      />
+    </div>
+  )
+}

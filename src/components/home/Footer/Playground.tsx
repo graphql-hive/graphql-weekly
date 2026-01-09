@@ -1,12 +1,10 @@
 import * as React from 'react'
 
 // Local
-import styled from '../../style/styled'
 import Run from '../../vectors/Run'
 import Arrow from './Arrow'
 import { Code } from '../../shared/Code'
-import { fetchGraphQL } from '../../../api'
-import { CodeWithoutHighlight } from '../../shared/Code/Code'
+import { fetchGraphQL } from '../../../lib/api'
 
 type Props = {}
 type State = {
@@ -53,38 +51,67 @@ const queriesList: { title: string; query: string }[] = [
 }
     `,
   },
+  {
+    title: 'Query a specific issue',
+    query: `
+{
+  issue(number: 1) {
+    id
+    number
+    title
+    date
+    published
+  }
+}
+    `,
+  },
 ]
 
 export class Playground extends React.Component<Props, State> {
-  state = {
+  state: State = {
     selectedQuery: queriesList[0],
-    result: '',
     loading: false,
     isResultStale: false,
+    result: undefined,
   }
+  private containerRef = React.createRef<HTMLDivElement>()
+  private observer: IntersectionObserver | null = null
+  private hasRun = false
 
-  exampleChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    this.setState({ isResultStale: true })
-    const next = queriesList.find(q => q.title === e.target.value)
-    if (next) {
-      this.setState({
-        selectedQuery: next,
-      })
+  componentDidMount() {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !this.hasRun) {
+          this.hasRun = true
+          this.runQuery()
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px 500px 0px' },
+    )
+    if (this.containerRef.current) {
+      this.observer.observe(this.containerRef.current)
     }
   }
 
-  componentDidMount() {
-    this.runQuery()
+  componentWillUnmount() {
+    this.observer?.disconnect()
   }
 
-  runQuery = () => {
+  exampleChanged = (e: any) => {
+    const selectedQuery = queriesList.find((q) => q.title === e.target.value)
+    if (selectedQuery) {
+      this.setState({ selectedQuery, isResultStale: true })
+    }
+  }
+
+  runQuery = async () => {
     this.setState({ loading: true })
     fetchGraphQL({ query: this.state.selectedQuery.query })
-      .then(result => {
+      .then((result) => {
         this.setState({ result: result ? JSON.stringify(result, null, 2) : '' })
         this.setState({ loading: false, isResultStale: false })
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err)
         this.setState({ loading: false })
       })
@@ -93,224 +120,88 @@ export class Playground extends React.Component<Props, State> {
   render() {
     const { selectedQuery } = this.state
     return (
-      <Wrapper>
-        <QueryWrapper>
-          <Title>Enter a query</Title>
+      <div
+        ref={this.containerRef}
+        className="flex justify-between overflow-hidden max-h-[1084px] relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-10 after:content-[''] after:bg-gradient-to-b after:from-transparent after:to-[#081146]"
+      >
+        <div className="flex-[0_0_400px] mr-16">
+          <span className="mb-11 inline-block font-medium leading-none text-2xl text-white">
+            Enter a query
+          </span>
 
-          <ExampleBox>
-            <ExampleSelect
+          <label className="w-[400px] min-h-12 mb-4 p-4 inline-flex items-center bg-[#1b2357] shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded cursor-pointer relative transition-colors duration-[120ms] ease-out hover:bg-[#2c3363] group">
+            <select
               onChange={this.exampleChanged}
               value={selectedQuery.title}
+              className="absolute top-0 bottom-0 right-0 w-full opacity-0 cursor-pointer"
             >
               {queriesList.map((q, i) => (
                 <option key={q.title} value={q.title}>
                   {q.title}
                 </option>
               ))}
-            </ExampleSelect>
-            <ExampleBoxTitle>Example</ExampleBoxTitle>
-            <ExampleValue>{selectedQuery.title}</ExampleValue>
-            <Arrow />
-          </ExampleBox>
+            </select>
+            <span
+              className="mr-4 font-medium leading-none text-base uppercase"
+              style={{ color: 'rgba(255, 255, 255, 0.33)' }}
+            >
+              Example
+            </span>
+            <span className="mr-auto font-normal leading-none text-lg text-white">
+              {selectedQuery.title}
+            </span>
+            <div className="opacity-70 group-hover:opacity-100">
+              <Arrow />
+            </div>
+          </label>
 
-          <QueryBox>
+          <div className="w-[400px] min-h-12 mb-4 p-4 bg-[#1b2357] shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded">
             <Code background={false} language="graphql" showLineNumbers>
               {selectedQuery.query.trim()}
             </Code>
 
-            <RunButton onClick={this.runQuery} disabled={this.state.loading}>
-              <IconWrapper>
-                <Run />
-              </IconWrapper>
-              {this.state.loading ? (
-                <span>Fetching...</span>
-              ) : (
-                <span>Run query</span>
-              )}
-            </RunButton>
-          </QueryBox>
-          <ShortHelp>or press CMD + Enter</ShortHelp>
-        </QueryWrapper>
-        <ResultWrapper>
-          <Title>Result</Title>
-
-          {this.state.isResultStale ? (
-            <CodeWithoutHighlight
-              background={false}
-              language="json"
-              textColor="rgba(255,255,255,0.5)"
+            <button
+              onClick={this.runQuery}
+              disabled={this.state.loading}
+              className="flex items-center justify-center w-full min-h-10 p-3 mt-6 border-none outline-none bg-[#f531b1] shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded cursor-pointer transition-all duration-[140ms] ease-out hover:transform hover:-translate-y-px hover:shadow-[0px_7px_16px_rgba(23,43,58,0.22)] disabled:shadow-none disabled:bg-[#959595]"
             >
-              {this.state.result}
-            </CodeWithoutHighlight>
-          ) : (
-            <Code background={false} language="json" noHighlight={true}>
-              {this.state.result}
-            </Code>
-          )}
-        </ResultWrapper>
-      </Wrapper>
+              <div className="mr-2">
+                <Run />
+              </div>
+              {this.state.loading ? (
+                <span className="font-medium leading-4 text-base uppercase text-white">
+                  Fetching...
+                </span>
+              ) : (
+                <span className="font-medium leading-4 text-base uppercase text-white">
+                  Run query
+                </span>
+              )}
+            </button>
+          </div>
+          <div
+            className="w-full h-4 font-normal leading-none text-base text-center"
+            style={{ color: 'rgba(255, 255, 255, 0.33)' }}
+          >
+            or press CMD + Enter
+          </div>
+        </div>
+        <div className="flex-grow h-auto">
+          <span className="mb-11 inline-block font-medium leading-none text-2xl text-white">
+            Result
+          </span>
+
+          <Code
+            background={false}
+            language="json"
+            customStyle={
+              this.state.isResultStale ? { opacity: 0.5 } : undefined
+            }
+          >
+            {this.state.result || ''}
+          </Code>
+        </div>
+      </div>
     )
   }
 }
-
-// Style
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  overflow: hidden;
-  max-height: 1084px;
-  position: relative;
-
-  ::after {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-    content: '';
-
-    background: linear-gradient(180deg, rgba(8, 17, 70, 0) 0%, #081146 100%);
-  }
-`
-
-const QueryWrapper = styled.div`
-  flex-basis: 400px;
-  margin-right: 64px;
-`
-
-const Title = styled.span`
-  margin-bottom: 44px;
-  display: inline-block;
-  font-weight: 500;
-  line-height: 1;
-  font-size: 24px;
-  color: white;
-`
-
-const ResultWrapper = styled.div`
-  flex-grow: 1;
-  height: auto;
-`
-
-const QueryBox = styled.div`
-  width: 400px;
-  min-height: 48px;
-  margin-bottom: 16px;
-  padding: 16px 20px;
-  background: #1b2357;
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-`
-
-const ExampleBox = styled.label`
-  width: 400px;
-  min-height: 48px;
-  margin-bottom: 16px;
-  padding: 16px 20px;
-  display: inline-flex;
-  align-items: center;
-  background: #1b2357;
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  position: relative;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-
-  svg {
-    opacity: 0.7;
-  }
-
-  &:hover {
-    background: #2c3363;
-
-    svg {
-      opacity: 1;
-    }
-  }
-`
-
-const ExampleSelect = styled.select`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  opacity: 0;
-  cursor: pointer;
-`
-
-const ExampleBoxTitle = styled.span`
-  margin-right: 16px;
-
-  font-weight: 500;
-  line-height: 1;
-  font-size: 16px;
-  text-transform: uppercase;
-
-  color: rgba(255, 255, 255, 0.33);
-`
-
-const ExampleValue = styled.span`
-  margin-right: auto;
-
-  font-weight: 400;
-  line-height: 1;
-  font-size: 18px;
-
-  color: white;
-`
-
-const ShortHelp = styled.div`
-  width: 100%;
-  height: 16px;
-
-  font-weight: 400;
-  line-height: 1;
-  font-size: 16px;
-  text-align: center;
-
-  color: rgba(255, 255, 255, 0.33);
-`
-
-const RunButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 100%;
-  min-height: 40px;
-  padding: 12px;
-  margin-top: 24px;
-
-  border: none;
-  outline: none;
-  background: #f531b1;
-  box-shadow: 0px 4px 10px rgba(23, 43, 58, 0.25);
-  border-radius: 4px;
-  cursor: pointer;
-
-  span {
-    font-weight: 500;
-    line-height: 16px;
-    font-size: 16px;
-    text-transform: uppercase;
-    color: white;
-  }
-
-  transition: transform 140ms ease-out, box-shadow 140ms ease-out,
-    background 140ms ease-out;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0px 7px 16px rgba(23, 43, 58, 0.22);
-  }
-
-  &[disabled] {
-    box-shadow: none;
-    background: #959595;
-  }
-`
-
-const IconWrapper = styled.div`
-  margin-right: 8px;
-`

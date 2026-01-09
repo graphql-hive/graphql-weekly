@@ -1,9 +1,10 @@
-import styled from '../../style/styled'
+import type React from 'react'
+import { cn } from '../../../lib/cn'
 
-export const FooterLine = styled.div`
-  width: auto;
-  height: 1px;
-  margin: 32px 0;
+export interface FooterLineProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-  background: rgba(255, 255, 255, 0.1);
-`
+export function FooterLine({ className, ...rest }: FooterLineProps) {
+  return (
+    <div className={cn('w-auto h-px my-8 bg-white/10', className)} {...rest} />
+  )
+}

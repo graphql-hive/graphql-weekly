@@ -1,5 +1,10 @@
 .cache/
 .DS_Store
 node_modules
-public
 yarn-error.log
+dist
+.astro
+playwright-report
+test-results
+.localflare/
+.wrangler

@@ -1,13 +1,12 @@
 import * as React from 'react'
-import { Link as GatsbyLink } from 'gatsby'
 
 // Local
 import { UnstyledButton } from './general'
 
 type Props = {
-  /** For local gaysby routes/links */
+  /** For local routes/links */
   to?: string
-  /** For external links with e.g. https://google.com outside Gatsby */
+  /** For external links with e.g. https://google.com */
   href?: string
   children?: any
 
@@ -46,9 +45,10 @@ export const Link = ({
     onMouseOut,
   }
 
-  let Wrapper = to ? GatsbyLink : href ? 'a' : UnstyledButton
-  let props = to ? { to, ...rest } : href ? { href, ...rest } : { ...rest }
+  // For local routes (to), convert to href
+  const linkHref = to || href
+  const Wrapper = linkHref ? 'a' : UnstyledButton
+  const props = linkHref ? { href: linkHref, ...rest } : { ...rest }
 
-  // @ts-ignore
   return <Wrapper {...props}>{children}</Wrapper>
 }

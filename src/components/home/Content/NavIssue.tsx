@@ -1,11 +1,7 @@
 import * as React from 'react'
-import { Link } from 'gatsby'
-import styled from '../../style/styled'
 import ArrowLeft from '../../vectors/ArrowLeft'
 import ArrowRight from '../../vectors/ArrowRight'
 import { Space } from '../../shared/Space'
-
-// Local
 
 export const NavIssue = ({
   prevNumber,
@@ -18,47 +14,27 @@ export const NavIssue = ({
   firstIssueNumber?: number
   lastIssueNumber?: number
 }) => (
-  <Wrapper>
-    {prevNumber &&
-      firstIssueNumber !== prevNumber + 1 && (
-        <ViewLink to={`/issues/${prevNumber}/#content`}>
-          <ArrowLeft />
-          <span>View issue {prevNumber}</span>
-        </ViewLink>
-      )}
+  <div className="w-full flex justify-between px-[41px] pt-8 pb-[62px]">
+    {prevNumber && firstIssueNumber !== prevNumber + 1 && (
+      <a
+        href={`/issues/${prevNumber}/#content`}
+        className="flex items-center no-underline font-medium leading-none text-lg text-[#081146]"
+      >
+        <ArrowLeft />
+        <span className="mx-2.5">View issue {prevNumber}</span>
+      </a>
+    )}
 
     <Space fillRow />
 
-    {nextNumber &&
-      lastIssueNumber !== nextNumber - 1 && (
-        <ViewLink to={`/issues/${nextNumber}/#content`}>
-          <span>View issue {nextNumber}</span>
-          <ArrowRight />
-        </ViewLink>
-      )}
-  </Wrapper>
+    {nextNumber && lastIssueNumber !== nextNumber - 1 && (
+      <a
+        href={`/issues/${nextNumber}/#content`}
+        className="flex items-center no-underline font-medium leading-none text-lg text-[#081146]"
+      >
+        <span className="mx-2.5">View issue {nextNumber}</span>
+        <ArrowRight />
+      </a>
+    )}
+  </div>
 )
-
-const Wrapper = styled.div`
-  width: 100%;
-
-  display: flex;
-  justify-content: space-between;
-  padding: 32px 41px 62px 41px;
-`
-
-const ViewLink = styled(Link)`
-  display: flex;
-  align-items: center;
-
-  text-decoration: none;
-  font-weight: 500;
-  line-height: 1;
-  font-size: 18px;
-
-  color: #081146;
-
-  span {
-    margin: 0 10px;
-  }
-`

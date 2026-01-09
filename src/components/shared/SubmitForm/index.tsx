@@ -1,13 +1,9 @@
 import * as React from 'react'
-import styled, { css } from '../../style/styled'
 import { Input } from '../Input/Input'
 import { Space } from '../Space'
-import { desktop, mobile } from '../../style/media'
 import { Textarea } from '../Textarea'
 import { PrimaryButton, SecondaryButton } from '../Buttons/Index'
 import Check from '../../vectors/Check'
-
-// Local
 
 type Props = { onCancelClicked: any }
 type State = {
@@ -86,72 +82,90 @@ export class SubmitForm extends React.Component<Props, State> {
   render = () => {
     const { onCancelClicked } = this.props
     return (
-      <Wrapper onClick={onCancelClicked}>
-        <BoxWrapper onClick={e => e.stopPropagation()}>
-          <FormWrapper onSubmit={this.formSubmitted}>
+      <div
+        className="fixed w-full h-screen left-0 top-0 bottom-0 z-10 flex justify-center items-start md:items-center overflow-auto p-2 md:p-0"
+        style={{
+          background:
+            'radial-gradient(450px at 50% 50%, rgba(8, 17, 70, 0.5) 0%, rgba(8, 17, 70, 0.8) 53.59%, rgba(8, 17, 70, 0.9) 100%)',
+        }}
+        onClick={onCancelClicked}
+      >
+        <div
+          className="min-h-[200px] box-border pb-10 bg-white border-l-8 border-[#dadbe3] shadow-[0px_4px_16px_rgba(8,17,70,0.5)] rounded-lg w-full max-w-[350px] md:max-w-[600px] [@media(max-height:700px)]:h-full"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <form onSubmit={this.formSubmitted} className="flex flex-col h-full">
             {this.state.isDone ? (
-              <Scrollable>
-                <Title>Submitted for review 🎉</Title>
-              </Scrollable>
+              <div className="max-h-full overflow-auto flex-auto flex-shrink pt-10 px-6 md:pt-12 md:px-12">
+                <h2 className="m-0 font-medium leading-[1.33] text-lg md:text-2xl text-center text-[#081146]">
+                  Submitted for review 🎉
+                </h2>
+              </div>
             ) : (
-              <Scrollable>
-                <Title>
+              <div className="max-h-full overflow-auto flex-auto flex-shrink pt-10 px-6 md:pt-12 md:px-12">
+                <h2 className="m-0 font-medium leading-[1.33] text-lg md:text-2xl text-center text-[#081146]">
                   Submit a new link to the <br />
                   GraphQL Weekly newsletter!
-                </Title>
+                </h2>
                 <Space height={48} />
 
                 <Input
                   label="Title"
                   placeholder="The Title of The Link"
                   name="title"
-                  onChange={e => this.setState({ title: e.target.value })}
+                  onChange={(e) => this.setState({ title: e.target.value })}
                   value={this.state.title}
                 />
-                <Line />
+                <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Input
                   label="URL"
                   placeholder="http://your-link-address.com"
                   name="url"
-                  onChange={e => this.setState({ url: e.target.value })}
+                  onChange={(e) => this.setState({ url: e.target.value })}
                   value={this.state.url}
                 />
-                <Line />
+                <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Input
                   label="Name"
                   placeholder="Your Name"
                   name="name"
-                  onChange={e => this.setState({ name: e.target.value })}
+                  onChange={(e) => this.setState({ name: e.target.value })}
                   value={this.state.name}
                 />
-                <Line />
+                <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Input
                   label="Email"
                   placeholder="your@email.com"
                   name="email"
-                  onChange={e => this.setState({ email: e.target.value })}
+                  onChange={(e) => this.setState({ email: e.target.value })}
                   value={this.state.email}
                 />
-                <Line />
+                <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Textarea
                   label="Description"
                   placeholder="Write a small overview of what this link is about..."
                   name="description"
-                  onChange={e => this.setState({ description: e.target.value })}
+                  onChange={(e) =>
+                    this.setState({ description: e.target.value })
+                  }
                   value={this.state.description}
                 />
-              </Scrollable>
+              </div>
             )}
 
-            {this.state.message && <Message>{this.state.message}</Message>}
+            {this.state.message && (
+              <div className="p-[9px_10px] my-[15px] bg-[#f1f1f4] rounded text-[#424242] text-[15px]">
+                {this.state.message}
+              </div>
+            )}
             {this.state.isDone ? (
-              <SingleButtonWrapper>
+              <div className="flex flex-shrink-0 px-12 justify-center mt-10">
                 <SecondaryButton onClick={onCancelClicked}>
                   Cancel
                 </SecondaryButton>
-              </SingleButtonWrapper>
+              </div>
             ) : (
-              <BottomWrapper>
+              <div className="flex flex-shrink-0 px-12 justify-between mt-[10px]">
                 <PrimaryButton
                   text="Submit Link"
                   icon={<Check />}
@@ -162,11 +176,11 @@ export class SubmitForm extends React.Component<Props, State> {
                 <SecondaryButton onClick={onCancelClicked}>
                   Cancel
                 </SecondaryButton>
-              </BottomWrapper>
+              </div>
             )}
-          </FormWrapper>
-        </BoxWrapper>
-      </Wrapper>
+          </form>
+        </div>
+      </div>
     )
   }
 }
@@ -213,136 +227,13 @@ const linkSubmission = async ({
   }
   const operationName = 'createSubmissionLink'
 
-  return fetch('https://graphqlweekly-api.netlify.app/.netlify/functions/graphql', {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, variables, operationName }),
-  }).then(res => res.json())
+  return fetch(
+    'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
+    {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables, operationName }),
+    },
+  ).then((res) => res.json())
 }
-
-const Wrapper = styled.div`
-  position: fixed;
-  width: 100%;
-  height: 100vh;
-  left: 0px;
-  top: 0px;
-  bottom: 0;
-  z-index: 10;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  overflow: auto;
-  background: radial-gradient(
-    450px at 50% 50%,
-    rgba(8, 17, 70, 0.5) 0%,
-    rgba(8, 17, 70, 0.8) 53.59%,
-    rgba(8, 17, 70, 0.9) 100%
-  );
-
-  ${mobile(css`
-    align-items: flex-start;
-    padding: 8px;
-  `)};
-`
-
-const BoxWrapper = styled.div`
-  min-height: 200px;
-  box-sizing: border-box;
-  padding-bottom: 40px;
-
-  background: #ffffff;
-  border-left: 8px solid #dadbe3;
-  box-shadow: 0px 4px 16px rgba(8, 17, 70, 0.5);
-  border-radius: 8px;
-
-  ${desktop(css`
-    width: 100%;
-    max-width: 600px;
-  `)};
-
-  ${mobile(css`
-    width: 100%;
-    max-width: 350px;
-    /* padding: 40px 24px 24px; */
-  `)};
-
-  @media screen and (max-height: 700px) {
-    height: 100%;
-  }
-`
-
-const Title = styled.h2`
-  margin: 0;
-  font-weight: 500;
-  line-height: 1.33;
-  font-size: 24px;
-  text-align: center;
-
-  color: #081146;
-
-  ${mobile(css`
-    font-size: 18px;
-  `)};
-`
-
-const Line = styled.div`
-  width: 100%;
-  height: 1px;
-  margin: 13px 0;
-
-  background: #dadbe3;
-
-  ${mobile(css`
-    margin: 3px 0;
-  `)};
-`
-
-const FormWrapper = styled.form`
-  display: flex;
-  flex-direction: column;
-
-  height: 100%;
-`
-
-const Scrollable = styled.div`
-  max-height: 100%;
-  overflow: auto;
-  flex-basis: auto;
-  flex-shrink: 1;
-
-  padding-top: 48px;
-  padding-left: 48px;
-  padding-right: 48px;
-
-  ${mobile(css`
-    padding: 40px 24px 24px;
-  `)};
-`
-
-const BottomWrapper = styled.div`
-  display: flex;
-  flex-shrink: 0;
-  padding-left: 48px;
-  padding-right: 48px;
-
-  justify-content: space-between;
-  margin-top: 10px;
-`
-
-const SingleButtonWrapper = styled(BottomWrapper)`
-  justify-content: center;
-  margin-top: 40px;
-`
-
-const Message = styled.div`
-  padding: 9px 10px;
-  margin: 15px 0;
-
-  background: #f1f1f4;
-  border-radius: 3px;
-  color: #424242;
-  font-size: 15px;
-`

@@ -1,8 +1,10 @@
-import styled from '../../style/styled'
+import type React from 'react'
+import { cn } from '../../../lib/cn'
 
-export const VLine = styled.div`
-  width: 1px;
-  height: 40px;
-  margin: 0 24px;
-  background: #dadbe3;
-`
+export interface VLineProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function VLine({ className, ...rest }: VLineProps) {
+  return (
+    <div className={cn('w-px h-10 mx-6 bg-[#dadbe3]', className)} {...rest} />
+  )
+}

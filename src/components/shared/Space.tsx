@@ -1,8 +1,29 @@
-import styled, { css } from '../style/styled'
-import { mobile } from '../style/media'
-import { SpaceSizes } from '../style/theme'
+import type React from 'react'
+import { cn } from '../../lib/cn'
 
-type Props = {
+type SpaceSizes =
+  | 0
+  | 4
+  | 8
+  | 12
+  | 16
+  | 20
+  | 24
+  | 27
+  | 32
+  | 40
+  | 48
+  | 56
+  | 64
+  | 72
+  | 80
+  | 96
+  | 100
+  | 116
+  | 132
+  | 144
+
+export interface SpaceProps extends React.HTMLAttributes<HTMLDivElement> {
   width?: SpaceSizes
   height?: SpaceSizes
   widthOnMobile?: SpaceSizes
@@ -11,37 +32,51 @@ type Props = {
   fillColumn?: boolean
 }
 
-export const Space = styled.div<Props>`
-  width: ${p => (typeof p.width === 'number' ? p.width + 'px' : 'auto')};
-  height: ${p => (typeof p.height === 'number' ? p.height + 'px' : 'auto')};
-  flex-shrink: 0;
+export function Space({
+  className,
+  width,
+  height,
+  widthOnMobile,
+  heightOnMobile,
+  fillRow,
+  fillColumn,
+  ...rest
+}: SpaceProps) {
+  const style: Record<string, string | undefined> = {}
 
-  ${p =>
-    mobile(css`
-      ${typeof p.widthOnMobile === 'number' &&
-        css`
-          width: ${p.widthOnMobile}px;
-        `};
+  // Use CSS custom properties when mobile variants exist
+  if (typeof width === 'number') {
+    if (widthOnMobile !== undefined) {
+      style['--width-desktop'] = `${width}px`
+      style['--width-mobile'] = `${widthOnMobile}px`
+    } else {
+      style.width = `${width}px`
+    }
+  }
 
-      ${typeof p.heightOnMobile === 'number' &&
-        css`
-          height: ${p.heightOnMobile}px;
-        `};
-    `)};
+  if (typeof height === 'number') {
+    if (heightOnMobile !== undefined) {
+      style['--height-desktop'] = `${height}px`
+      style['--height-mobile'] = `${heightOnMobile}px`
+    } else {
+      style.height = `${height}px`
+    }
+  }
 
-  ${p =>
-    p.fillRow &&
-    css`
-      flex-grow: 1;
-      margin-right: auto;
-      margin-left: auto;
-    `};
-
-  ${p =>
-    p.fillColumn &&
-    css`
-      flex-grow: 1;
-      margin-top: auto;
-      margin-bottom: auto;
-    `};
-`
+  return (
+    <div
+      className={cn(
+        'shrink-0',
+        widthOnMobile !== undefined &&
+          '[width:var(--width-mobile)] md:[width:var(--width-desktop)]',
+        heightOnMobile !== undefined &&
+          '[height:var(--height-mobile)] md:[height:var(--height-desktop)]',
+        fillRow && 'flex-grow mx-auto',
+        fillColumn && 'flex-grow my-auto',
+        className,
+      )}
+      style={style as React.CSSProperties}
+      {...rest}
+    />
+  )
+}

@@ -1,13 +1,13 @@
-import styled, { css } from '../../style/styled'
-import { mobile } from '../../style/media'
+import type React from 'react'
+import { cn } from '../../../lib/cn'
 
-export const HLine = styled.div`
-  width: auto;
-  height: 1px;
-  margin: 40px 0;
-  background: #dadbe3;
+export interface HLineProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-  ${mobile(css`
-    margin: 24px 0;
-  `)};
-`
+export function HLine({ className, ...rest }: HLineProps) {
+  return (
+    <div
+      className={cn('w-auto h-px my-6 md:my-10 bg-[#dadbe3]', className)}
+      {...rest}
+    />
+  )
+}

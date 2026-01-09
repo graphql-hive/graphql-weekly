@@ -1,50 +1,20 @@
 import * as React from 'react'
-
-// Local
 import { Container } from '../../shared/Container'
-import styled, { css } from '../../style/styled'
 import { TopFooter } from './TopFooter'
 import { Playground } from './Playground'
 import { About } from './About'
 import { FooterLine } from './FooterLine'
-import { mobile } from '../../style/media'
 
 export const Footer = () => {
   return (
-    <FooterWrapper>
+    <footer className="relative min-h-[1048px] py-16 px-0 bg-[#081146] md:block hidden before:absolute before:top-0 before:left-0 before:w-full before:h-10 before:content-[''] before:bg-gradient-to-b before:from-[rgba(4,11,54,0.33)] before:to-[rgba(4,11,54,0)]">
       <Container>
         <TopFooter />
         <FooterLine />
         <Playground />
         <FooterLine />
-        <About/>
+        <About />
       </Container>
-    </FooterWrapper>
+    </footer>
   )
 }
-
-const FooterWrapper = styled.footer`
-  position: relative;
-  min-height: 1048px;
-  padding: 64px 0;
-  background: #081146;
-
-  ::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-    content: '';
-
-    background: linear-gradient(
-      180deg,
-      rgba(4, 11, 54, 0.33) 0%,
-      rgba(4, 11, 54, 0) 100%
-    );
-  }
-
-  ${mobile(css`
-    display: none;
-  `)};
-`

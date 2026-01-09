@@ -1,9 +1,7 @@
-import * as React from 'react'
-
 // Local
 import { TopicBox } from '../../shared/Topics/TopicBox'
 import { TopicArticle } from '../../shared/Topics/TopicArticle'
-import { TopicLinksType } from '../../../types'
+import type { TopicLinksType } from '../../../types'
 import { getTopicColor } from '../topicColors'
 import { ContentWrapper } from './style'
 
@@ -15,7 +13,7 @@ type Props = {
 export const Topic = ({ title, topicLinks }: Props) => {
   return (
     <ContentWrapper>
-      {topicLinks.slice(0, 16).map((topicLinkObject, i) => {
+      {topicLinks.slice(0, 11).map((topicLinkObject, i) => {
         return (
           <TopicBox
             key={topicLinkObject.issueNumber}
@@ -23,7 +21,7 @@ export const Topic = ({ title, topicLinks }: Props) => {
             topicColor={getTopicColor(title)}
             issueNumber={topicLinkObject.issueNumber}
             issueDate={`• ${formatDate(topicLinkObject.issueDate)}`}
-            articles={topicLinkObject.links.map(link => (
+            articles={topicLinkObject.links.map((link) => (
               <TopicArticle
                 title={link.title}
                 text={link.text}

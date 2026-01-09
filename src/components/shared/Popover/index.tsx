@@ -1,11 +1,12 @@
 import * as React from 'react'
 import { Popper } from 'react-popper'
-import { Placement, Modifiers } from 'popper.js'
-
-// Local
-import { PopoverWrapper, CaretWrapper, Rectangle } from './style'
+import type { Placement, Modifiers } from 'popper.js'
+import { cn } from '../../../lib/cn'
 import { HorizentalCaret, VerticalCaret } from '../../vectors/Caret'
-import { InputColor } from '../../style/theme'
+import type { InputColor } from '../../style/theme'
+
+const caretWidth = 24
+const caretHeight = 10
 
 type Props = {
   position: 'bottom' | 'top' | 'right' | 'left' | string
@@ -20,6 +21,8 @@ type Props = {
   maxWidth?: number
   rectangleRef?: React.RefObject<HTMLDivElement>
   hasShadow?: boolean
+  width?: number
+  height?: number
 }
 
 const reversePosMap = {
@@ -42,9 +45,11 @@ export const Popover = React.forwardRef((props: Props, ref: any) => {
     rectangleRef,
     children,
     hasShadow,
+    width,
+    height,
     ...wrapperProps
   } = props
-  // For arrow
+
   const angle =
     popoverPostion === 'top' || popoverPostion === 'bottom'
       ? 'horizental'
@@ -57,32 +62,87 @@ export const Popover = React.forwardRef((props: Props, ref: any) => {
   const { ref: arrowInnerRef = null, ...restOfArrowProps } = arrowProps || {}
 
   return (
-    <PopoverWrapper angle={angle} ref={ref} {...wrapperProps}>
-      <CaretWrapper
-        angle={angle}
-        isCaretFirst={isCaretFirst}
-        isCaretFliped={isCaretFliped}
-        setByPopper={setByPopper}
-        arrowColor={arrowColor}
-        arrowLeftOrTop={arrowLeftOrTop}
+    <div
+      className={cn(
+        'flex items-stretch flex-auto relative z-[999]',
+        angle === 'horizental' ? 'flex-col' : 'flex-row',
+      )}
+      style={{
+        width: width ? `${width}px` : 'auto',
+        height: height ? `${height}px` : 'auto',
+      }}
+      ref={ref}
+      {...wrapperProps}
+    >
+      <div
+        className={cn(
+          'flex justify-center relative flex-grow-0 flex-shrink-0',
+          angle === 'horizental' ? 'flex-row' : 'flex-col',
+          arrowLeftOrTop && 'justify-start',
+          angle === 'horizental' ? 'flex-row' : 'flex-col',
+          isCaretFliped &&
+            (angle === 'horizental' ? 'scale-y-[-1]' : 'scale-x-[-1]'),
+          isCaretFirst ? 'order-0' : 'order-1',
+          '[&_svg]:fill-white',
+        )}
+        style={{
+          width: !setByPopper
+            ? angle === 'horizental'
+              ? '100%'
+              : `${caretHeight}px`
+            : `${caretWidth}px`,
+          height: !setByPopper
+            ? angle === 'horizental'
+              ? `${caretHeight}px`
+              : '100%'
+            : undefined,
+          zIndex: 100,
+          flexBasis: `${caretHeight}px`,
+          ...(arrowLeftOrTop
+            ? {
+                [`padding${angle === 'horizental' ? 'Left' : 'Top'}`]:
+                  arrowLeftOrTop,
+              }
+            : {}),
+        }}
         ref={arrowInnerRef}
         {...restOfArrowProps}
       >
-        {angle === 'horizental' ? <HorizentalCaret /> : <VerticalCaret />}
-      </CaretWrapper>
+        <style>{`
+          .popover-rectangle::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+        {arrowColor && (
+          <style>{`
+            .popover-caret svg {
+              fill: ${arrowColor};
+            }
+          `}</style>
+        )}
+        <div className="popover-caret">
+          {angle === 'horizental' ? <HorizentalCaret /> : <VerticalCaret />}
+        </div>
+      </div>
 
-      <Rectangle
-        // @ts-ignore
+      <div
         ref={rectangleRef}
-        hasShadow={hasShadow}
-        caretPosition={caretPosition}
-        bgColor={bgColor}
-        maxHeight={maxHeight}
-        maxWidth={maxWidth}
+        className={cn(
+          'popover-rectangle flex-grow flex-auto h-full w-full overflow-auto relative rounded-lg bg-white',
+          hasShadow &&
+            'shadow-[0_3px_12px_rgba(0,0,0,0.04),0_0_2px_rgba(0,0,0,0.03)]',
+        )}
+        style={{
+          maxHeight: maxHeight ? `${maxHeight}px` : 'auto',
+          maxWidth: maxWidth ? `${maxWidth}px` : 'auto',
+          background: bgColor || 'white',
+          [`margin${caretPosition?.charAt(0).toUpperCase()}${caretPosition?.slice(1)}`]:
+            '-1px',
+        }}
       >
         {children}
-      </Rectangle>
-    </PopoverWrapper>
+      </div>
+    </div>
   )
 })
 

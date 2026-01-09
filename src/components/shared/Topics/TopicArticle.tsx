@@ -1,10 +1,7 @@
-import * as React from 'react'
-import styled from 'styled-components'
-import { mobile } from '../../style/media'
-import { css } from '../../style/styled'
+import type React from 'react'
 import { TitleArrow } from '../../vectors/TitleArrow'
 
-type Props = {
+interface TopicArticleProps {
   title: string
   text: string
   url: string
@@ -12,75 +9,50 @@ type Props = {
   specialPerk?: string
 }
 
-export const TopicArticle = ({ title, text, url, topicColor, specialPerk }: Props) => {
+export function TopicArticle({
+  title,
+  text,
+  url,
+  topicColor,
+  specialPerk,
+}: TopicArticleProps) {
   const isTextSafe = !text.includes('<') || /<(p|strong|i|a) ?.*>/.test(text)
+  const arrowColor = topicColor || '#0a1659'
+
   return (
-    <Wrapper>
-      <Title href={url} target="_blank">
+    <div className="group">
+      <a
+        href={url}
+        target="_blank"
+        className="mt-5 md:m-0 font-medium leading-[1.33] text-lg md:text-2xl no-underline text-[#081146]"
+        rel="noreferrer"
+      >
         {title}
-        <Arrow color={topicColor || "#0a1659"}><TitleArrow /></Arrow>
-      </Title>
+        <div
+          className="relative top-[-2px] inline-block ml-2.5 opacity-0 group-hover:opacity-100"
+          style={{ color: arrowColor }}
+        >
+          <TitleArrow />
+        </div>
+      </a>
 
       {isTextSafe ? (
-        <Text dangerouslySetInnerHTML={{ __html: text }} />
+        <p
+          className="font-normal leading-[1.75] text-base text-[#081146] [&_strong]:font-medium [&_strong]:after:content-[' '] my-4"
+          dangerouslySetInnerHTML={{ __html: text }}
+        />
       ) : (
-        <Text children={text} />
+        <p className="font-normal leading-[1.75] text-base text-[#081146] [&_strong]:font-medium [&_strong]:after:content-[' '] my-4">
+          {text}
+        </p>
       )}
 
       {specialPerk && (
-        <Text>
+        <p className="font-normal leading-[1.75] text-base text-[#081146] [&_strong]:font-medium [&_strong]:after:content-[' ']">
           <strong>Special perk:</strong>
           {specialPerk}
-        </Text>
+        </p>
       )}
-    </Wrapper>
+    </div>
   )
 }
-
-const Title = styled.a`
-margin: 0;
-font-weight: 500;
-line-height: 1.33;
-font-size: 24px;
-
-&&&& {
-  text-decoration: none;
-  color: #081146;
-}
-
-${mobile(css`
-margin-top: 20px;
-font-size: 18px;
-`)};
-`
-
-const Arrow = styled.div<{color: string}>`
-  position: relative;
-  top: -2px; // Ugh I hate inline positioning
-  display: inline-block;
-  margin-left: 10px;
-  color: ${p => p.color};
-  opacity: 0;
-`
-
-const Text = styled.p`
-  font-weight: 400;
-  line-height: 1.75;
-  font-size: 16px;
-
-  color: #081146;
-
-  strong {
-    font-weight: 500;
-
-    ::after {
-      content: ' ';
-    }
-  }
-`
-
-const Wrapper = styled.div`
-  &:hover {
-    ${Arrow} { opacity: 1; }
-  }
-`

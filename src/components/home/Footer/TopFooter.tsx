@@ -1,60 +1,19 @@
 import * as React from 'react'
-
-// Local
-import styled from '../../style/styled'
 import { ArrowLink } from '../../shared/ArrowLink'
 
 export const TopFooter = () => {
   return (
-    <Wrapper>
-      <Feeling>
+    <div className="flex w-full justify-between">
+      <div className="max-w-[376px] font-normal leading-6 text-lg text-[rgba(255,255,255,0.33)]">
         Feeling nerdy? Query issues of GraphQL Weekly, with GraphQL itself!
-      </Feeling>
-      <Rights>
+      </div>
+      <div className="font-normal leading-6 text-lg text-[rgba(255,255,255,0.33)] [&_*]:text-[rgba(255,255,255,0.33)] [&_*]:font-normal [&_a]:underline [&_svg]:opacity-30">
         Powered by the{' '}
         <ArrowLink
           text="GraphQL Playground"
           href="https://graphql-weekly.graphcdn.app/"
         />
-      </Rights>
-    </Wrapper>
+      </div>
+    </div>
   )
 }
-
-const Wrapper = styled.div`
-  display: flex;
-  width: 100%;
-
-  justify-content: space-between;
-`
-
-const Rights = styled.div`
-  font-weight: 400;
-  line-height: 24px;
-  font-size: 18px;
-
-  color: rgba(255, 255, 255, 0.33);
-
-  * {
-    color: rgba(255, 255, 255, 0.33);
-    font-weight: normal;
-  }
-
-  a {
-    text-decoration: underline;
-  }
-
-  svg {
-    opacity: 0.3;
-  }
-`
-
-const Feeling = styled.div`
-  max-width: 376px;
-
-  font-weight: 400;
-  line-height: 24px;
-  font-size: 18px;
-
-  color: rgba(255, 255, 255, 0.33);
-`

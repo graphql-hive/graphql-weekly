@@ -1,10 +1,7 @@
-import * as React from 'react'
-
-// Local
 import { TopicBox } from '../../shared/Topics/TopicBox'
 import { TopicArticle } from '../../shared/Topics/TopicArticle'
 import { NavIssue } from './NavIssue'
-import { IssueType } from '../../../types'
+import { type IssueType } from '../../../types'
 import { getTopicColor } from '../topicColors'
 import { ContentWrapper } from './style'
 
@@ -61,7 +58,7 @@ export const Issue = ({ issue, lastIssueNumber, firstIssueNumber }: Props) => {
             topicColor={getTopicColor(topic.title)}
             articles={topic.links
               .sort((a, b) => b.position - a.position)
-              .map(link => (
+              .map((link) => (
                 <TopicArticle
                   title={link.title}
                   text={link.text}

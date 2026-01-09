@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { getAllIssues, getTopicUrlFriendly } from '../../lib/api'
+import { TopicPage } from '../../components/TopicPage'
+import Footer from '../../components/home/Footer/Footer.astro'
+import { Playground } from '../../components/home/Footer/Playground'
+
+export async function getStaticPaths() {
+  const { allIssues, firstIssueNumber, topicsList } = await getAllIssues()
+  const topicsTitles = Object.keys(topicsList)
+
+  return topicsTitles
+    .map((topicTitle) => ({
+      params: { slug: getTopicUrlFriendly(topicTitle) },
+      props: {
+        topicTitle,
+        topicLinks: topicsList[topicTitle],
+        allIssues,
+        firstIssueNumber,
+        topicsTitles,
+      },
+    }))
+    .filter(({ params }) => params.slug && params.slug.length > 0)
+}
+
+const { topicTitle, topicLinks, allIssues, firstIssueNumber, topicsTitles } = Astro.props
+---
+
+<Layout title={`${topicTitle} - GraphQL Weekly`}>
+  <TopicPage
+    client:load
+    topicTitle={topicTitle}
+    topicLinks={topicLinks}
+    allIssues={allIssues}
+    firstIssueNumber={firstIssueNumber}
+    topicsTitles={topicsTitles}
+  />
+  <Footer>
+    <Playground client:only="react" />
+  </Footer>
+</Layout>

@@ -1,40 +1,50 @@
-import styled from '../../style/styled'
-import { InputColor } from '../../style/theme'
+import React from 'react'
 
-export const Pre = styled.pre<{
+type InputColor = string
+
+export const Pre: React.FC<{
   background?: boolean
   textColor?: InputColor
   compact?: boolean
-}>`
-  &&&& {
-    padding: ${p => (!p.background ? '0 !important' : '1em !important')};
-    border-radius: ${p => p.theme.radius}px;
-    margin: 0 !important;
-    flex-grow: 1;
-    height: 100%;
-    width: 100%;
-    flex-basis: 100%;
+  className?: string
+  children?: React.ReactNode
+}> = ({
+  background,
+  textColor,
+  compact,
+  className = '',
+  children,
+  ...props
+}) => {
+  const baseClasses = 'm-0 flex-grow h-full w-full flex-1'
+  const paddingClasses = background ? 'p-4' : 'p-0'
+  const borderClasses = 'rounded-md'
+  const scrollClasses = 'scrollbar-hide'
+  const fontClasses = 'font-mono text-base'
+  const lineHeightClasses = compact ? 'leading-tight' : 'leading-relaxed'
+  const textClasses = 'text-left whitespace-pre break-normal'
 
-    color: ${p => p.textColor};
+  const combinedClasses =
+    `${baseClasses} ${paddingClasses} ${borderClasses} ${scrollClasses} ${fontClasses} ${lineHeightClasses} ${textClasses} ${className}`.trim()
 
-    ::-webkit-scrollbar {
-      display: none !important;
-    }
-
-    &,
-    code,
-    * {
-      font-family: 'Roboto Mono', Consolas, Menlo, Monaco, 'Andale Mono WT',
-        'Andale Mono', 'Lucida Console', 'Lucida Sans Typewriter',
-        'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Liberation Mono',
-        'Nimbus Mono L', 'Courier New', Courier, monospace !important;
-      font-size: 16px !important;
-      line-height: ${p => (p.compact ? 1.429 : 1.574)} !important;
-      direction: ltr !important;
-      text-align: left;
-      white-space: pre !important;
-      word-spacing: normal !important;
-      word-break: normal !important;
-    }
+  const styles: React.CSSProperties = {
+    color: textColor || 'inherit',
+    fontFamily: `'Roboto Mono', Consolas, Menlo, Monaco, 'Andale Mono WT', 'Andale Mono', 'Lucida Console', 'Lucida Sans Typewriter', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Liberation Mono', 'Nimbus Mono L', 'Courier New', Courier, monospace`,
+    fontSize: '16px',
+    lineHeight: compact ? 1.429 : 1.574,
+    direction: 'ltr',
+    wordSpacing: 'normal',
+    wordBreak: 'normal',
   }
-`
+
+  return (
+    <pre
+      className={combinedClasses}
+      style={styles}
+      suppressHydrationWarning
+      {...props}
+    >
+      {children}
+    </pre>
+  )
+}

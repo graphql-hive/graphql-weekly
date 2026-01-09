@@ -1,15 +1,43 @@
-import styled from '../style/styled'
+import type React from 'react'
+import { cn } from '../../lib/cn'
 
-type Props = { alignItems?: string }
+export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
+  alignItems?: string
+  children?: React.ReactNode
+}
 
-export const RowFlex = styled.div<Props>`
-  display: flex;
-  flex-direction: row;
-  align-items: ${p => p.alignItems || 'auto'};
-`
+export function RowFlex({
+  className,
+  alignItems,
+  children,
+  style,
+  ...rest
+}: FlexProps) {
+  return (
+    <div
+      className={cn('flex flex-row', className)}
+      style={{ alignItems: alignItems || 'auto', ...style }}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+}
 
-export const ColumnFlex = styled.div<Props>`
-  display: flex;
-  flex-direction: column;
-  align-items: ${p => p.alignItems || 'auto'};
-`
+export function ColumnFlex({
+  className,
+  alignItems,
+  children,
+  style,
+  ...rest
+}: FlexProps) {
+  return (
+    <div
+      className={cn('flex flex-col', className)}
+      style={{ alignItems: alignItems || 'auto', ...style }}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+}
