@@ -1,0 +1,39 @@
+.submit-dialog {
+  opacity: 0;
+  transform: scale(0.9) translateY(16px);
+  transition:
+    opacity 0.35s linear(0 0%,.5007 7.21%,.7803 12.29%,.8883 14.93%,.9724 17.63%,1.0343 20.44%,1.0754 23.44%,1.0898 25.22%,1.0984 27.11%,1.1014 29.15%,1.0989 31.4%,1.0854 35.23%,1.0196 48.86%,1.0043 54.06%,.9956 59.6%,.9925 68.11%,1 100%),
+    transform 0.35s linear(0 0%,.5007 7.21%,.7803 12.29%,.8883 14.93%,.9724 17.63%,1.0343 20.44%,1.0754 23.44%,1.0898 25.22%,1.0984 27.11%,1.1014 29.15%,1.0989 31.4%,1.0854 35.23%,1.0196 48.86%,1.0043 54.06%,.9956 59.6%,.9925 68.11%,1 100%),
+    overlay 0.35s allow-discrete,
+    display 0.35s allow-discrete;
+}
+
+.submit-dialog:open {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+@starting-style {
+  .submit-dialog:open {
+    opacity: 0;
+    transform: scale(0.9) translateY(16px);
+  }
+}
+
+.submit-dialog::backdrop {
+  background-color: transparent;
+  transition:
+    display 0.15s allow-discrete,
+    overlay 0.15s allow-discrete,
+    background-color 0.15s;
+}
+
+.submit-dialog:open::backdrop {
+  background-color: rgba(8, 17, 70, 0.85);
+}
+
+@starting-style {
+  .submit-dialog:open::backdrop {
+    background-color: transparent;
+  }
+}
