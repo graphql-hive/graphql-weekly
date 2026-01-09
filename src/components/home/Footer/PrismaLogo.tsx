@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const PrismaLogoSvg = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={32} viewBox="0 0 27 32" width={27} {...props}>
@@ -9,4 +9,4 @@ export const PrismaLogoSvg = (props: SVGProps<SVGSVGElement>) => (
       fillRule="evenodd"
     />
   </svg>
-)
+);

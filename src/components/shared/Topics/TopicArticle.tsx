@@ -1,11 +1,11 @@
-import { TitleArrow } from '../../vectors/TitleArrow'
+import { TitleArrow } from "../../vectors/TitleArrow";
 
 interface TopicArticleProps {
-  specialPerk?: string
-  text: string
-  title: string
-  topicColor?: string
-  url: string
+  specialPerk?: string;
+  text: string;
+  title: string;
+  topicColor?: string;
+  url: string;
 }
 
 export function TopicArticle({
@@ -15,8 +15,8 @@ export function TopicArticle({
   topicColor,
   url,
 }: TopicArticleProps) {
-  const isTextSafe = !text.includes('<') || /<(p|strong|i|a) ?.*>/.test(text)
-  const arrowColor = topicColor || '#0a1659'
+  const isTextSafe = !text.includes("<") || /<(p|strong|i|a) ?.*>/.test(text);
+  const arrowColor = topicColor || "#0a1659";
 
   return (
     <div className="group">
@@ -53,5 +53,5 @@ export function TopicArticle({
         </p>
       )}
     </div>
-  )
+  );
 }

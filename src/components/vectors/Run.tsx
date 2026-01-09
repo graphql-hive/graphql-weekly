@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const Run = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={14} width={11} {...props}>
@@ -11,4 +11,4 @@ export const Run = (props: SVGProps<SVGSVGElement>) => (
       strokeWidth={2}
     />
   </svg>
-)
+);

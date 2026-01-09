@@ -1,18 +1,18 @@
-import { Component, createRef } from 'react'
+import { Component, createRef } from "react";
 
-import { fetchGraphQL } from '../../../lib/api'
-import { Code } from '../../shared/Code'
+import { fetchGraphQL } from "../../../lib/api";
+import { Code } from "../../shared/Code";
 // Local
-import { Run } from '../../vectors/Run'
-import { Arrow } from './Arrow'
+import { Run } from "../../vectors/Run";
+import { Arrow } from "./Arrow";
 
-type Props = {}
+type Props = {};
 type State = {
-  isResultStale: boolean
-  loading?: boolean
-  result?: string
-  selectedQuery: { query: string; title: string }
-}
+  isResultStale: boolean;
+  loading?: boolean;
+  result?: string;
+  selectedQuery: { query: string; title: string };
+};
 
 const queriesList: { query: string; title: string }[] = [
   {
@@ -32,7 +32,7 @@ const queriesList: { query: string; title: string }[] = [
   }
 }
     `,
-    title: 'Query for all the issues',
+    title: "Query for all the issues",
   },
   {
     query: `
@@ -49,7 +49,7 @@ const queriesList: { query: string; title: string }[] = [
   }
 }
     `,
-    title: 'Query all the topics and links',
+    title: "Query all the topics and links",
   },
   {
     query: `
@@ -63,9 +63,9 @@ const queriesList: { query: string; title: string }[] = [
   }
 }
     `,
-    title: 'Query a specific issue',
+    title: "Query a specific issue",
   },
-]
+];
 
 export class Playground extends Component<Props, State> {
   state: State = {
@@ -73,53 +73,55 @@ export class Playground extends Component<Props, State> {
     loading: false,
     result: undefined,
     selectedQuery: queriesList[0],
-  }
-  private containerRef = createRef<HTMLDivElement>()
-  private observer: IntersectionObserver | null = null
-  private hasRun = false
+  };
+  private containerRef = createRef<HTMLDivElement>();
+  private observer: IntersectionObserver | null = null;
+  private hasRun = false;
 
   componentDidMount() {
     this.observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !this.hasRun) {
-          this.hasRun = true
-          this.runQuery()
+          this.hasRun = true;
+          this.runQuery();
         }
       },
-      { rootMargin: '0px 0px 500px 0px', threshold: 0.1 },
-    )
+      { rootMargin: "0px 0px 500px 0px", threshold: 0.1 },
+    );
     if (this.containerRef.current) {
-      this.observer.observe(this.containerRef.current)
+      this.observer.observe(this.containerRef.current);
     }
   }
 
   componentWillUnmount() {
-    this.observer?.disconnect()
+    this.observer?.disconnect();
   }
 
   exampleChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedQuery = queriesList.find((q) => q.title === e.target.value)
+    const selectedQuery = queriesList.find((q) => q.title === e.target.value);
     if (selectedQuery) {
-      this.setState({ isResultStale: true, selectedQuery })
+      this.setState({ isResultStale: true, selectedQuery });
     }
-  }
+  };
 
   runQuery = async () => {
-    this.setState({ loading: true })
+    this.setState({ loading: true });
     fetchGraphQL({ query: this.state.selectedQuery.query })
       .then((result) => {
-        this.setState({ result: result ? JSON.stringify(result, null, 2) : '' })
-        this.setState({ isResultStale: false, loading: false })
+        this.setState({
+          result: result ? JSON.stringify(result, null, 2) : "",
+        });
+        this.setState({ isResultStale: false, loading: false });
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
-        console.log(error)
-        this.setState({ loading: false })
-      })
-  }
+        console.log(error);
+        this.setState({ loading: false });
+      });
+  };
 
   render() {
-    const { selectedQuery } = this.state
+    const { selectedQuery } = this.state;
     return (
       <div
         className="flex justify-between overflow-hidden max-h-[1084px] relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-10 after:content-[''] after:bg-linear-to-b after:from-transparent after:to-footer-dark"
@@ -144,7 +146,7 @@ export class Playground extends Component<Props, State> {
             </select>
             <span
               className="mr-4 font-medium leading-none text-base uppercase"
-              style={{ color: 'rgba(255, 255, 255, 0.33)' }}
+              style={{ color: "rgba(255, 255, 255, 0.33)" }}
             >
               Example
             </span>
@@ -182,7 +184,7 @@ export class Playground extends Component<Props, State> {
           </div>
           <div
             className="w-full h-4 font-normal leading-none text-base text-center"
-            style={{ color: 'rgba(255, 255, 255, 0.33)' }}
+            style={{ color: "rgba(255, 255, 255, 0.33)" }}
           >
             or press CMD + Enter
           </div>
@@ -199,10 +201,10 @@ export class Playground extends Component<Props, State> {
             }
             language="json"
           >
-            {this.state.result || ''}
+            {this.state.result || ""}
           </Code>
         </div>
       </div>
-    )
+    );
   }
 }

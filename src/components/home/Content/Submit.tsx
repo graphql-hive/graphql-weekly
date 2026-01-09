@@ -1,9 +1,9 @@
-import { PrimaryButton } from '../../shared/Buttons/Index'
-import { Mail } from '../../vectors/Mail'
+import { PrimaryButton } from "../../shared/Buttons/Index";
+import { Mail } from "../../vectors/Mail";
 
 type Props = {
-  submitModalClickHandler: () => void
-}
+  submitModalClickHandler: () => void;
+};
 
 export const Submit = (props: Props) => {
   return (
@@ -22,5 +22,5 @@ export const Submit = (props: Props) => {
         text="Submit Link"
       />
     </div>
-  )
-}
+  );
+};

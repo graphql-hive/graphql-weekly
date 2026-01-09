@@ -1,57 +1,57 @@
-import type { FormEvent } from 'react'
+import type { FormEvent } from "react";
 
-import { Component } from 'react'
+import { Component } from "react";
 
-import { PrimaryButton } from '../../shared/Buttons/Index'
-import { Input } from '../../shared/Input/Input'
-import { Subscribe } from '../../vectors/Subscribe'
+import { PrimaryButton } from "../../shared/Buttons/Index";
+import { Input } from "../../shared/Input/Input";
+import { Subscribe } from "../../vectors/Subscribe";
 
-type Props = {}
-type State = { email: string; loading: boolean; message: string; name: string }
+type Props = {};
+type State = { email: string; loading: boolean; message: string; name: string };
 
 export class Subscription extends Component<Props, State> {
   state = {
-    email: '',
+    email: "",
     loading: false,
-    message: '',
-    name: '',
-  }
+    message: "",
+    name: "",
+  };
 
   subscribeSubmited = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (
-      this.state.name !== '' &&
-      this.state.email !== '' &&
+      this.state.name !== "" &&
+      this.state.email !== "" &&
       this.state.loading === false
     ) {
-      this.setState({ loading: true })
+      this.setState({ loading: true });
 
       const res = await subscribeUser({
         email: this.state.email,
         name: this.state.name,
-      })
+      });
 
       if (res && res.data.createSubscriber.email === this.state.email) {
-        this.showMessage('You are successfully added 🎉')
-        this.setState({ email: '', loading: false, name: '' })
+        this.showMessage("You are successfully added 🎉");
+        this.setState({ email: "", loading: false, name: "" });
       } else {
-        this.setState({ loading: false })
-        this.showMessage('Error!')
+        this.setState({ loading: false });
+        this.showMessage("Error!");
       }
     } else {
-      this.showMessage('Empty values!')
+      this.showMessage("Empty values!");
     }
 
-    return false
-  }
+    return false;
+  };
 
   showMessage = (message: string) => {
-    this.setState({ message })
+    this.setState({ message });
 
     setTimeout(() => {
-      this.setState({ message: '' })
-    }, 5000)
-  }
+      this.setState({ message: "" });
+    }, 5000);
+  };
 
   render() {
     return (
@@ -86,7 +86,7 @@ export class Subscription extends Component<Props, State> {
           </div>
         )}
       </form>
-    )
+    );
   }
 }
 
@@ -94,8 +94,8 @@ const subscribeUser = async ({
   email,
   name,
 }: {
-  email: string
-  name: string
+  email: string;
+  name: string;
 }) => {
   const query = `
     mutation createSubscriber($name: String!,$email: String! ){
@@ -104,16 +104,16 @@ const subscribeUser = async ({
         name
       }
     }
-  `
-  const variables = { email, name }
-  const operationName = 'createSubscriber'
+  `;
+  const variables = { email, name };
+  const operationName = "createSubscriber";
 
   return fetch(
-    'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
+    "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql",
     {
       body: JSON.stringify({ operationName, query, variables }),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
     },
-  ).then((res) => res.json())
-}
+  ).then((res) => res.json());
+};

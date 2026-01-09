@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const Twitter = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={21} width={25} {...props}>
@@ -10,4 +10,4 @@ export const Twitter = (props: SVGProps<SVGSVGElement>) => (
       strokeWidth={2}
     />
   </svg>
-)
+);

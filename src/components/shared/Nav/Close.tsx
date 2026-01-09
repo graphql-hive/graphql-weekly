@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const Close = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={20} width={20} {...props}>
@@ -19,4 +19,4 @@ export const Close = (props: SVGProps<SVGSVGElement>) => (
       width={24}
     />
   </svg>
-)
+);

@@ -6,5 +6,5 @@ export const About = () => {
         GraphQL community.
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,12 +1,12 @@
-import type React from 'react'
+import type React from "react";
 
-import { cn } from '../../lib/cn'
+import { cn } from "../../lib/cn";
 
 export interface UnstyledUlProps
   extends React.HTMLAttributes<HTMLUListElement> {}
 
 export function UnstyledUl({ className, ...rest }: UnstyledUlProps) {
-  return <ul className={cn('p-0 m-0', className)} {...rest} />
+  return <ul className={cn("p-0 m-0", className)} {...rest} />;
 }
 
 export interface UnstyledButtonProps
@@ -16,10 +16,10 @@ export function UnstyledButton({ className, ...rest }: UnstyledButtonProps) {
   return (
     <button
       className={cn(
-        'p-0 bg-none border-none outline-hidden cursor-pointer text-inherit',
+        "p-0 bg-none border-none outline-hidden cursor-pointer text-inherit",
         className,
       )}
       {...rest}
     />
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const Arrow = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={8} viewBox="0 0 12 8" width={12} {...props}>
@@ -8,4 +8,4 @@ export const Arrow = (props: SVGProps<SVGSVGElement>) => (
       opacity={0.66}
     />
   </svg>
-)
+);

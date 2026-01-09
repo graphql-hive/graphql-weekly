@@ -1,5 +1,5 @@
-import { ArrowLeft } from '../../vectors/ArrowLeft'
-import { ArrowRight } from '../../vectors/ArrowRight'
+import { ArrowLeft } from "../../vectors/ArrowLeft";
+import { ArrowRight } from "../../vectors/ArrowRight";
 
 export const NavIssue = ({
   firstIssueNumber,
@@ -7,10 +7,10 @@ export const NavIssue = ({
   nextNumber,
   prevNumber,
 }: {
-  firstIssueNumber?: number
-  lastIssueNumber?: number
-  nextNumber: number
-  prevNumber: number
+  firstIssueNumber?: number;
+  lastIssueNumber?: number;
+  nextNumber: number;
+  prevNumber: number;
 }) => (
   <div className="w-full flex justify-between px-[41px] pt-8 pb-[62px]">
     {prevNumber && firstIssueNumber !== prevNumber + 1 && (
@@ -35,4 +35,4 @@ export const NavIssue = ({
       </a>
     )}
   </div>
-)
+);

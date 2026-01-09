@@ -1,11 +1,11 @@
-import type React from 'react'
+import type React from "react";
 
-import { Arrow } from '../vectors/Arrow'
+import { Arrow } from "../vectors/Arrow";
 
 export interface ArrowLinkProps
   extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  href: string
-  text: string
+  href: string;
+  text: string;
 }
 
 export function ArrowLink({ href, text, ...rest }: ArrowLinkProps) {
@@ -16,5 +16,5 @@ export function ArrowLink({ href, text, ...rest }: ArrowLinkProps) {
       </span>
       <Arrow />
     </a>
-  )
+  );
 }

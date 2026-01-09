@@ -1,12 +1,12 @@
-import { light } from './light'
+import { light } from "./light";
 
-const primaryLight1 = '#8FA6B2'
-const blue = '#006FD1'
-const orange = '#E86E16'
+const primaryLight1 = "#8FA6B2";
+const blue = "#006FD1";
+const orange = "#E86E16";
 export const graphqlLight = {
   ...light,
 
-  'attr-name': {
+  "attr-name": {
     color: blue,
   },
 
@@ -23,4 +23,4 @@ export const graphqlLight = {
   punctuation: {
     color: primaryLight1,
   },
-}
+};

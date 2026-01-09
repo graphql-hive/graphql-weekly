@@ -1,47 +1,47 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
-import { Check } from '../../vectors/Check'
-import { PrimaryButton, SecondaryButton } from '../Buttons/Index'
-import { Input } from '../Input/Input'
-import { Textarea } from '../Textarea'
-import './submit-dialog.css'
+import { Check } from "../../vectors/Check";
+import { PrimaryButton, SecondaryButton } from "../Buttons/Index";
+import { Input } from "../Input/Input";
+import { Textarea } from "../Textarea";
+import "./submit-dialog.css";
 
 export interface SubmitFormHandle {
-  showModal: () => void
+  showModal: () => void;
 }
 
 export const SubmitForm = forwardRef<SubmitFormHandle>(
   function SubmitForm(_, ref) {
-    const dialogRef = useRef<HTMLDialogElement>(null)
-    const [title, setTitle] = useState('')
-    const [url, setUrl] = useState('')
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [description, setDescription] = useState('')
-    const [message, setMessage] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [isDone, setIsDone] = useState(false)
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const [title, setTitle] = useState("");
+    const [url, setUrl] = useState("");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [description, setDescription] = useState("");
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [isDone, setIsDone] = useState(false);
 
     useImperativeHandle(ref, () => ({
       showModal: () => dialogRef.current?.showModal(),
-    }))
+    }));
 
     const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
       if (e.target === dialogRef.current) {
-        dialogRef.current?.close()
+        dialogRef.current?.close();
       }
-    }
+    };
 
     const showMessageTemporarily = (msg: string) => {
-      setMessage(msg)
-      setTimeout(() => setMessage(''), 5500)
-    }
+      setMessage(msg);
+      setTimeout(() => setMessage(""), 5500);
+    };
 
     const formSubmitted = async (e: React.FormEvent) => {
-      e.preventDefault()
+      e.preventDefault();
 
       if (description && name && email && title && url && !loading) {
-        setLoading(true)
+        setLoading(true);
 
         const res = await linkSubmission({
           description,
@@ -49,24 +49,24 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
           name,
           title,
           url,
-        })
+        });
 
         if (res?.data?.createLinkSubmission?.title === title) {
-          setIsDone(true)
-          setTitle('')
-          setUrl('')
-          setName('')
-          setEmail('')
-          setDescription('')
-          setLoading(false)
+          setIsDone(true);
+          setTitle("");
+          setUrl("");
+          setName("");
+          setEmail("");
+          setDescription("");
+          setLoading(false);
         } else {
-          setLoading(false)
-          showMessageTemporarily('Error!')
+          setLoading(false);
+          showMessageTemporarily("Error!");
         }
       } else {
-        showMessageTemporarily('Empty values!')
+        showMessageTemporarily("Empty values!");
       }
-    }
+    };
 
     return (
       // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- Backdrop click to close dialog is standard UX pattern
@@ -161,9 +161,9 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
           </form>
         </div>
       </dialog>
-    )
+    );
   },
-)
+);
 
 const linkSubmission = async ({
   description,
@@ -172,11 +172,11 @@ const linkSubmission = async ({
   title,
   url,
 }: {
-  description: string
-  email: string
-  name: string
-  title: string
-  url: string
+  description: string;
+  email: string;
+  name: string;
+  title: string;
+  url: string;
 }) => {
   const query = `
   mutation createSubmissionLink(
@@ -196,20 +196,20 @@ const linkSubmission = async ({
       title
     }
   }
-  `
+  `;
 
-  const variables = { description, email, name, title, url }
+  const variables = { description, email, name, title, url };
 
   return fetch(
-    'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
+    "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql",
     {
       body: JSON.stringify({
-        operationName: 'createSubmissionLink',
+        operationName: "createSubmissionLink",
         query,
         variables,
       }),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
     },
-  ).then((res) => res.json())
-}
+  ).then((res) => res.json());
+};

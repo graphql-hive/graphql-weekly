@@ -1,15 +1,15 @@
-import type { TopicLinksType } from '../../../types'
+import type { TopicLinksType } from "../../../types";
 
-import { TopicArticle } from '../../shared/Topics/TopicArticle'
+import { TopicArticle } from "../../shared/Topics/TopicArticle";
 // Local
-import { TopicBox } from '../../shared/Topics/TopicBox'
-import { getTopicColor } from '../topicColors'
-import { ContentWrapper } from './style'
+import { TopicBox } from "../../shared/Topics/TopicBox";
+import { getTopicColor } from "../topicColors";
+import { ContentWrapper } from "./style";
 
 type Props = {
-  title: string
-  topicLinks: TopicLinksType[]
-}
+  title: string;
+  topicLinks: TopicLinksType[];
+};
 
 export const Topic = ({ title, topicLinks }: Props) => {
   return (
@@ -32,16 +32,16 @@ export const Topic = ({ title, topicLinks }: Props) => {
             topicColor={getTopicColor(title)}
             topicTitle={title}
           />
-        )
+        );
       })}
     </ContentWrapper>
-  )
-}
+  );
+};
 
 function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleString('en-US', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
+  return new Date(dateString).toLocaleString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }

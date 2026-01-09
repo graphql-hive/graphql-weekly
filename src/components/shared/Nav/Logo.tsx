@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const LogoSvg = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={68} viewBox="0 0 185 68" width={185} {...props}>
@@ -54,4 +54,4 @@ export const LogoSvg = (props: SVGProps<SVGSVGElement>) => (
       </filter>
     </defs>
   </svg>
-)
+);

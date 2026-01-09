@@ -226,4 +226,4 @@ export const Mail = () => (
       </linearGradient>
     </defs>
   </svg>
-)
+);

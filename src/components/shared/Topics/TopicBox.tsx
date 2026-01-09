@@ -1,21 +1,21 @@
-import type React from 'react'
+import type React from "react";
 
-import { cn } from '../../../lib/cn'
-import { HLine } from '../Input/HLine'
-import { Link } from '../Link'
+import { cn } from "../../../lib/cn";
+import { HLine } from "../Input/HLine";
+import { Link } from "../Link";
 
 interface TopicBoxProps {
-  articles: React.ReactNode[]
+  articles: React.ReactNode[];
   author?: {
-    avatar: string
-    bio: string
-    name: string
-  }
-  isIssueCard?: boolean
-  issueDate?: string
-  issueNumber?: number
-  topicColor?: string
-  topicTitle?: string
+    avatar: string;
+    bio: string;
+    name: string;
+  };
+  isIssueCard?: boolean;
+  issueDate?: string;
+  issueNumber?: number;
+  topicColor?: string;
+  topicTitle?: string;
 }
 
 export function TopicBox({
@@ -47,19 +47,27 @@ export function TopicBox({
 
       <div
         className={cn(
-          'min-h-[100px] mb-4 shadow-[0px_4px_16px_rgba(8,17,70,0.05)] rounded-lg p-6 md:p-16',
-          isIssueCard ? 'bg-[#f6f6f7]' : 'bg-white',
-          issueNumber && 'mt-[-15px]',
-          topicColor && 'pl-5 md:pl-14 border-l-8 [&_p_a]:underline',
+          "min-h-[100px] mb-4 shadow-[0px_4px_16px_rgba(8,17,70,0.05)] rounded-lg p-6 md:p-16",
+          isIssueCard ? "bg-[#f6f6f7]" : "bg-white",
+          issueNumber && "mt-[-15px]",
+          topicColor &&
+            "pl-5 md:pl-14 border-l-8 [&_p_a]:underline [&_p_a]:text-(--topic-color)",
         )}
-        style={topicColor ? { borderLeftColor: topicColor } : undefined}
+        style={
+          topicColor
+            ? ({
+                "--topic-color": topicColor,
+                borderLeftColor: topicColor,
+              } as React.CSSProperties)
+            : undefined
+        }
       >
         {topicTitle && (
           <h2
             className="mb-6 md:mb-8 font-medium leading-none text-lg uppercase"
             style={{
               color: topicColor,
-              marginTop: issueNumber ? '16px' : '0',
+              marginTop: issueNumber ? "16px" : "0",
             }}
           >
             {topicTitle}
@@ -80,7 +88,7 @@ export function TopicBox({
               style={{ backgroundImage: `url(${author.avatar})` }}
             />
             <div className="grow ml-4">
-              <h3 className="m-0 font-normal font-medium leading-none text-base text-footer-dark">
+              <h3 className="m-0 font-medium leading-none text-base text-footer-dark">
                 {author.name}
               </h3>
               <h2 className="mt-2 mb-0 font-normal leading-none text-base text-[#4d5379]">
@@ -90,13 +98,6 @@ export function TopicBox({
           </div>
         )}
       </div>
-      {topicColor && (
-        <style>{`
-          [style*="border-left-color: ${topicColor}"] p a {
-            color: ${topicColor};
-          }
-        `}</style>
-      )}
     </>
-  )
+  );
 }

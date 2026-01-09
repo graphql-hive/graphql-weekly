@@ -1,29 +1,31 @@
-import { useRef } from 'react'
+import { useRef } from "react";
 
-import type { IssueType, TopicLinksType } from '../types'
+import type { IssueType, TopicLinksType } from "../types";
 
-import { Sidebar } from './home/Content/Sidebar'
-import { Topic } from './home/Content/Topic'
-import { Header } from './home/Header'
-import { Container } from './shared/Container'
-import { SubmitForm, type SubmitFormHandle } from './shared/SubmitForm'
+import { Sidebar } from "./home/Content/Sidebar";
+import { Topic } from "./home/Content/Topic";
+import { Header } from "./home/Header";
+import { Container } from "./shared/Container";
+import { SubmitForm, type SubmitFormHandle } from "./shared/SubmitForm";
 
 interface Props {
-  allIssues: IssueType[]
-  firstIssueNumber: number
-  topicLinks: TopicLinksType[]
-  topicsTitles: string[]
-  topicTitle: string
+  allIssues: IssueType[];
+  firstIssueNumber: number;
+  pathname: string;
+  topicLinks: TopicLinksType[];
+  topicsTitles: string[];
+  topicTitle: string;
 }
 
 export function TopicPage({
   allIssues,
+  pathname,
   topicLinks,
   topicsTitles,
   topicTitle,
 }: Props) {
-  const submitFormRef = useRef<SubmitFormHandle>(null)
-  const openModal = () => submitFormRef.current?.showModal()
+  const submitFormRef = useRef<SubmitFormHandle>(null);
+  const openModal = () => submitFormRef.current?.showModal();
 
   return (
     <>
@@ -34,6 +36,7 @@ export function TopicPage({
           <Topic title={topicTitle} topicLinks={topicLinks} />
           <Sidebar
             allIssues={allIssues}
+            pathname={pathname}
             submitModalClickHandler={openModal}
             topicsTitles={topicsTitles}
           />
@@ -42,5 +45,5 @@ export function TopicPage({
 
       <SubmitForm ref={submitFormRef} />
     </>
-  )
+  );
 }

@@ -1,35 +1,36 @@
-import { Component } from 'react'
+import { Component } from "react";
 
-import type { IssueType } from '../../../types'
+import type { IssueType } from "../../../types";
 
-import { getTopicUrlFriendly } from '../../../lib/api'
+import { getTopicUrlFriendly } from "../../../lib/api";
 // Local
-import { Archive } from '../../vectors/Archive'
-import { Slack } from '../../vectors/Slack'
-import { Twitter } from '../../vectors/Twitter'
-import { SideBanner } from './SideBanner'
-import { SidebarLine } from './SidebarLine'
-import { SideMenu } from './SideMenu'
-import { Submit } from './Submit'
+import { Archive } from "../../vectors/Archive";
+import { Slack } from "../../vectors/Slack";
+import { Twitter } from "../../vectors/Twitter";
+import { SideBanner } from "./SideBanner";
+import { SidebarLine } from "./SidebarLine";
+import { SideMenu } from "./SideMenu";
+import { Submit } from "./Submit";
 
 type Props = {
-  allIssues: IssueType[]
-  currentIssueNumber?: number
-  submitModalClickHandler: () => void
-  topicsTitles: string[]
-}
+  allIssues: IssueType[];
+  currentIssueNumber?: number;
+  pathname: string;
+  submitModalClickHandler: () => void;
+  topicsTitles: string[];
+};
 
 type State = {
-  showAllIssues: boolean
-}
+  showAllIssues: boolean;
+};
 
 export class Sidebar extends Component<Props, State> {
   state = {
     showAllIssues: false,
-  }
+  };
 
   render() {
-    const { props } = this
+    const { props } = this;
 
     return (
       <div className="grow ml-[42px] max-lg:hidden">
@@ -45,14 +46,14 @@ export class Sidebar extends Component<Props, State> {
           heading="Join the community"
           items={[
             {
-              href: 'https://twitter.com/graphqlweekly',
+              href: "https://twitter.com/graphqlweekly",
               icon: <Twitter />,
-              text: 'Follow on Twitter',
+              text: "Follow on Twitter",
             },
             {
-              href: 'https://discord.graphql.org/',
+              href: "https://discord.graphql.org/",
               icon: <Slack />,
-              text: 'Join us on Slack',
+              text: "Join us on Slack",
             },
           ]}
         />
@@ -62,13 +63,13 @@ export class Sidebar extends Component<Props, State> {
         <SideMenu
           heading="topics"
           items={props.topicsTitles.map((title) => {
-            const url = `/topic/${getTopicUrlFriendly(title)}`
+            const url = `/topic/${getTopicUrlFriendly(title)}`;
 
             return {
-              selected: isCurrentUrl(url),
+              selected: isCurrentUrl(props.pathname, url),
               text: title,
               to: `${url}#content`,
-            }
+            };
           })}
           primaryColor="#009BE3"
         />
@@ -81,14 +82,14 @@ export class Sidebar extends Component<Props, State> {
             ...props.allIssues
               .slice(0, this.state.showAllIssues ? undefined : 11)
               .map((issue) => {
-                const url = `/issues/${issue.number}`
+                const url = `/issues/${issue.number}`;
                 return {
                   selected:
                     issue.number === props.currentIssueNumber ||
-                    isCurrentUrl(url),
+                    isCurrentUrl(props.pathname, url),
                   text: `Issue ${issue.number}`,
                   to: `${url}#content`,
-                }
+                };
               }),
 
             {
@@ -96,26 +97,24 @@ export class Sidebar extends Component<Props, State> {
               icon: <Archive />,
               onClick: this.toggledShowAll,
               text: this.state.showAllIssues
-                ? 'Hide old issues'
-                : 'View all issues',
+                ? "Hide old issues"
+                : "View all issues",
             },
           ]}
           primaryColor="#D60690"
         />
       </div>
-    )
+    );
   }
 
   toggledShowAll = () => {
-    this.setState((prev) => ({ showAllIssues: !prev.showAllIssues }))
-  }
+    this.setState((prev) => ({ showAllIssues: !prev.showAllIssues }));
+  };
 }
 
-function isCurrentUrl(urlWithoutTrailingSlash: string) {
-  const pathname =
-    globalThis.window === undefined ? '' : globalThis.location.pathname
+function isCurrentUrl(pathname: string, urlWithoutTrailingSlash: string) {
   return (
     pathname.endsWith(urlWithoutTrailingSlash) ||
-    pathname.includes(urlWithoutTrailingSlash + '/')
-  )
+    pathname.includes(urlWithoutTrailingSlash + "/")
+  );
 }

@@ -1,14 +1,14 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties } from "react";
 
-import { Container } from '../../shared/Container'
-import { Nav } from '../../shared/Nav'
-import { Slack } from '../../vectors/Slack'
-import { Twitter } from '../../vectors/Twitter'
-import { Subscription } from '../Subscription'
+import { Container } from "../../shared/Container";
+import { Nav } from "../../shared/Nav";
+import { Slack } from "../../vectors/Slack";
+import { Twitter } from "../../vectors/Twitter";
+import { Subscription } from "../Subscription";
 
 type Props = {
-  submitModalClickHandler: () => void
-}
+  submitModalClickHandler: () => void;
+};
 
 export const Header = (props: Props) => {
   return (
@@ -30,15 +30,15 @@ export const Header = (props: Props) => {
           className="shrink-0 h-(--height-mobile) md:h-(--height-desktop)"
           style={
             {
-              '--height-desktop': '80px',
-              '--height-mobile': '27px',
+              "--height-desktop": "80px",
+              "--height-mobile": "27px",
             } as CSSProperties
           }
         />
 
         <Container>
           <h1 className="m-0 mx-auto max-w-[667px] font-normal text-2xl leading-[1.33] md:text-[44px] md:leading-[1.1] text-center text-white px-[17px] md:px-0 [&_strong]:font-medium">
-            A weekly newsletter of the best <strong>news</strong>,{' '}
+            A weekly newsletter of the best <strong>news</strong>,{" "}
             <strong>articles</strong> and <strong>projects</strong> about
             GraphQL
           </h1>
@@ -47,8 +47,8 @@ export const Header = (props: Props) => {
             className="shrink-0 h-(--height-mobile) md:h-(--height-desktop)"
             style={
               {
-                '--height-desktop': '56px',
-                '--height-mobile': '32px',
+                "--height-desktop": "56px",
+                "--height-mobile": "32px",
               } as CSSProperties
             }
           />
@@ -78,5 +78,5 @@ export const Header = (props: Props) => {
         </Container>
       </header>
     </>
-  )
-}
+  );
+};

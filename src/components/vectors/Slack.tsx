@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const Slack = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={22} width={22} {...props}>
@@ -59,4 +59,4 @@ export const Slack = (props: SVGProps<SVGSVGElement>) => (
       strokeWidth="2"
     />
   </svg>
-)
+);

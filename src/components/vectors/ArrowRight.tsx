@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const ArrowRight = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={14} width={14} {...props}>
@@ -10,4 +10,4 @@ export const ArrowRight = (props: SVGProps<SVGSVGElement>) => (
       strokeWidth={2}
     />
   </svg>
-)
+);

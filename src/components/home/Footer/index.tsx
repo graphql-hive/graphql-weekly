@@ -1,8 +1,8 @@
-import { Container } from '../../shared/Container'
-import { About } from './About'
-import { FooterLine } from './FooterLine'
-import { Playground } from './Playground'
-import { TopFooter } from './TopFooter'
+import { Container } from "../../shared/Container";
+import { About } from "./About";
+import { FooterLine } from "./FooterLine";
+import { Playground } from "./Playground";
+import { TopFooter } from "./TopFooter";
 
 export const Footer = () => {
   return (
@@ -15,5 +15,5 @@ export const Footer = () => {
         <About />
       </Container>
     </footer>
-  )
-}
+  );
+};

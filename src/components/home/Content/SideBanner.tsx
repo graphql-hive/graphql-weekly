@@ -1,4 +1,4 @@
-import graphqlconfImg from './graphqlconf.png'
+import graphqlconfImg from "./graphqlconf.png";
 
 export function SideBanner() {
   return (
@@ -11,5 +11,5 @@ export function SideBanner() {
         <img alt="GraphQL Conf" src={graphqlconfImg.src} width="339px" />
       </a>
     </div>
-  )
+  );
 }

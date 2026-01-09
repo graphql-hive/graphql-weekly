@@ -1,13 +1,16 @@
-import cloudflare from "@astrojs/cloudflare";
-import react from "@astrojs/react";
-import sitemap from "@astrojs/sitemap";
-import tailwind from "@astrojs/tailwind";
-import { defineConfig } from "astro/config";
+import cloudflare from '@astrojs/cloudflare'
+import react from '@astrojs/react'
+import sitemap from '@astrojs/sitemap'
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'astro/config'
 
 export default defineConfig({
   adapter: cloudflare({
-    imageService: "compile",
+    imageService: 'compile',
   }),
-  integrations: [react(), tailwind(), sitemap()],
-  site: "https://www.graphqlweekly.com",
-});
+  integrations: [react(), sitemap()],
+  site: 'https://www.graphqlweekly.com',
+  vite: {
+    plugins: [tailwindcss()],
+  },
+})

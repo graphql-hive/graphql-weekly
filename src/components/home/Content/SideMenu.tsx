@@ -1,22 +1,22 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
-import { cn } from '../../../lib/cn'
-import { Link } from '../../shared/Link'
-import { getTopicColor } from '../topicColors'
+import { cn } from "../../../lib/cn";
+import { Link } from "../../shared/Link";
+import { getTopicColor } from "../topicColors";
 
 interface Props {
-  heading: string
-  isExpanded?: boolean
+  heading: string;
+  isExpanded?: boolean;
   items: {
-    extraTop?: boolean
-    href?: string
-    icon?: ReactNode
-    onClick?: () => void
-    selected?: boolean
-    text: string
-    to?: string
-  }[]
-  primaryColor?: string
+    extraTop?: boolean;
+    href?: string;
+    icon?: ReactNode;
+    onClick?: () => void;
+    selected?: boolean;
+    text: string;
+    to?: string;
+  }[];
+  primaryColor?: string;
 }
 
 export const SideMenu = ({ heading, isExpanded, items }: Props) => {
@@ -25,16 +25,16 @@ export const SideMenu = ({ heading, isExpanded, items }: Props) => {
       <div className="mb-2 font-medium leading-none text-lg uppercase text-light-dark">
         {heading}
       </div>
-      <div className={cn(isExpanded && 'overflow-y-scroll max-h-[600px]')}>
+      <div className={cn(isExpanded && "overflow-y-scroll max-h-[600px]")}>
         {items &&
           items.map((e) => {
-            const topicColor = getTopicColor(e.text)
+            const topicColor = getTopicColor(e.text);
             return (
               <Link
                 className={cn(
-                  'flex items-center w-full no-underline font-medium leading-[18px] text-lg align-middle text-footer-dark',
-                  '-ml-2 pl-2 -mr-2 pr-2 py-1 rounded-sm hover:bg-[#8683d40c] transition-colors',
-                  e.extraTop ? 'mt-5' : 'mt-3',
+                  "flex items-center w-full no-underline font-medium leading-[18px] text-lg align-middle text-footer-dark",
+                  "-ml-2 pl-2 -mr-2 pr-2 py-1 rounded-sm hover:bg-[#8683d40c] transition-colors",
+                  e.extraTop ? "mt-5" : "mt-3",
                 )}
                 href={e.href}
                 key={e.text + e.to}
@@ -53,9 +53,9 @@ export const SideMenu = ({ heading, isExpanded, items }: Props) => {
                 )}
                 {e.text}
               </Link>
-            )
+            );
           })}
       </div>
     </div>
-  )
-}
+  );
+};

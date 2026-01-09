@@ -1,10 +1,10 @@
-import type React from 'react'
+import type React from "react";
 
-import { cn } from '../../lib/cn'
+import { cn } from "../../lib/cn";
 
 export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
-  alignItems?: string
-  children?: React.ReactNode
+  alignItems?: string;
+  children?: React.ReactNode;
 }
 
 export function RowFlex({
@@ -16,13 +16,13 @@ export function RowFlex({
 }: FlexProps) {
   return (
     <div
-      className={cn('flex flex-row', className)}
-      style={{ alignItems: alignItems || 'auto', ...style }}
+      className={cn("flex flex-row", className)}
+      style={{ alignItems: alignItems || "auto", ...style }}
       {...rest}
     >
       {children}
     </div>
-  )
+  );
 }
 
 export function ColumnFlex({
@@ -34,11 +34,11 @@ export function ColumnFlex({
 }: FlexProps) {
   return (
     <div
-      className={cn('flex flex-col', className)}
-      style={{ alignItems: alignItems || 'auto', ...style }}
+      className={cn("flex flex-col", className)}
+      style={{ alignItems: alignItems || "auto", ...style }}
       {...rest}
     >
       {children}
     </div>
-  )
+  );
 }

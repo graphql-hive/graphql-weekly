@@ -1,4 +1,4 @@
-import { ArrowLink } from '../../shared/ArrowLink'
+import { ArrowLink } from "../../shared/ArrowLink";
 
 export const TopFooter = () => {
   return (
@@ -7,12 +7,12 @@ export const TopFooter = () => {
         Feeling nerdy? Query issues of GraphQL Weekly, with GraphQL itself!
       </div>
       <div className="font-normal leading-6 text-lg text-[rgba(255,255,255,0.33)] **:text-[rgba(255,255,255,0.33)] **:font-normal [&_a]:underline [&_svg]:opacity-30">
-        Powered by the{' '}
+        Powered by the{" "}
         <ArrowLink
           href="https://graphql-weekly.graphcdn.app/"
           text="GraphQL Playground"
         />
       </div>
     </div>
-  )
-}
+  );
+};

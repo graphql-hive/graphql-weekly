@@ -1,35 +1,35 @@
-import { Component, type CSSProperties } from 'react'
+import { Component, type CSSProperties } from "react";
 
-import { Arrow } from '../../vectors/Arrow'
+import { Arrow } from "../../vectors/Arrow";
 // Local
-import { Container } from '../Container'
-import { Link } from '../Link'
-import { Button } from './Button'
-import { Close } from './Close'
-import { LogoSvg } from './Logo'
+import { Container } from "../Container";
+import { Link } from "../Link";
+import { Button } from "./Button";
+import { Close } from "./Close";
+import { LogoSvg } from "./Logo";
 
-type Props = { submitModalClickHandler: () => void }
-type State = { isOpened: boolean }
+type Props = { submitModalClickHandler: () => void };
+type State = { isOpened: boolean };
 
 export class Nav extends Component<Props, State> {
-  state = { isOpened: false }
+  state = { isOpened: false };
 
   menuClickHandler = () => {
     this.setState({
       isOpened: !this.state.isOpened,
-    })
-  }
+    });
+  };
 
   render() {
-    const { isOpened } = this.state
+    const { isOpened } = this.state;
     return (
       <Container>
         <div
           className="shrink-0 h-(--height-mobile) md:h-(--height-desktop)"
           style={
             {
-              '--height-desktop': '40px',
-              '--height-mobile': '32px',
+              "--height-desktop": "40px",
+              "--height-mobile": "32px",
             } as CSSProperties
           }
         />
@@ -54,8 +54,8 @@ export class Nav extends Component<Props, State> {
             items-center md:items-center
             ${
               isOpened
-                ? 'h-auto pt-7 pb-5 border-b border-white/50'
-                : 'h-0 pt-0'
+                ? "h-auto pt-7 pb-5 border-b border-white/50"
+                : "h-0 pt-0"
             }
             md:h-[52px]! md:pt-0! md:pb-0! md:border-0!
           `}
@@ -82,6 +82,6 @@ export class Nav extends Component<Props, State> {
           </div>
         </nav>
       </Container>
-    )
+    );
   }
 }

@@ -1,10 +1,10 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export const Archive = (props: SVGProps<SVGSVGElement>) => (
   <svg
     fill="none"
     height={16}
-    style={{ display: 'inline-block' }}
+    style={{ display: "inline-block" }}
     viewBox="0 0 18 16"
     width={18}
     {...props}
@@ -17,4 +17,4 @@ export const Archive = (props: SVGProps<SVGSVGElement>) => (
       strokeWidth={2}
     />
   </svg>
-)
+);
