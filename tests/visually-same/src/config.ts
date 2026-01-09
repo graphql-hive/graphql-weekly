@@ -23,6 +23,6 @@ export const config: CompareConfig = {
     { name: 'topic-Tools--Open-Source', path: '/topic/Tools--Open-Source' },
   ],
   productionUrl: 'https://www.graphqlweekly.com',
-  screenshotsDir: new URL('screenshots', import.meta.url).pathname,
+  screenshotsDir: new URL('../screenshots', import.meta.url).pathname,
   viewport: { height: 720, width: 1280 },
 }
