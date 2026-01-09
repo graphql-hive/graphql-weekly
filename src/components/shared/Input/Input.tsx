@@ -12,7 +12,7 @@ export interface InputProps extends Omit<
 
 export function Input({ className, label, placeholder, ...rest }: InputProps) {
   return (
-    <div className="h-10 inline-flex items-stretch flex-shrink flex-grow w-auto">
+    <div className="h-10 inline-flex items-stretch flex-shrink flex-grow w-full">
       <label className="w-[69px] flex-shrink-0 font-medium leading-none text-base md:text-lg uppercase self-center text-[#0a1659]">
         {label}
       </label>
