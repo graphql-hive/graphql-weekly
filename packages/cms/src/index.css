@@ -5,13 +5,13 @@
   src: url("./fonts/CommitMono-VariableFont.woff2") format("woff2");
   font-weight: 200 700;
   font-display: swap;
-  font-feature-settings: 'ss01' on, 'ss02' on, 'ss04' on, 'ss05' on, 'cv08' on;
+  font-feature-settings: "ss01" on, "ss02" on, "ss04" on, "ss05" on, "cv08" on;
 }
 
-@theme {
+@theme inline {
   --font-sans: "CommitMono", ui-monospace, monospace;
   --font-mono: "CommitMono", ui-monospace, monospace;
-  --color-primary: #C2F653;
+  --color-primary: #c2f653;
   --color-neu-50: var(--color-neutral-50);
   --color-neu-100: var(--color-neutral-100);
   --color-neu-200: var(--color-neutral-200);
@@ -30,7 +30,7 @@ body {
   padding: 0;
   background-color: #fafafa;
   font-family: "CommitMono", ui-monospace, monospace;
-  font-feature-settings: 'ss01' on, 'ss02' on, 'ss04' on, 'ss05' on, 'cv08' on;
+  font-feature-settings: "ss01" on, "ss02" on, "ss04" on, "ss05" on, "cv08" on;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -49,7 +49,6 @@ button {
   cursor: pointer;
 }
 
-/* Minimalist scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -60,18 +59,31 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
+  background: var(--color-neu-500);
   border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8d448;
+  background: var(--color-neu-600);
 }
 
-/* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-primary) transparent;
+  scrollbar-color: var(--color-neu-500) transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a8d448;
+  }
+
+  * {
+    scrollbar-color: var(--color-primary) transparent;
+  }
 }
 
 @keyframes loader {

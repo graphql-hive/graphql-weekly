@@ -32,6 +32,10 @@ import Loading from "../components/Loading";
 import Navbar from "../components/Navbar";
 import LinkCard from "../product/LinkCard";
 import PageHeader from "../product/PageHeader";
+import SubmissionsPanel, {
+  SUBMISSION_PREFIX,
+  markSubmissionConsumed,
+} from "../product/SubmissionsPanel";
 
 import {
   useAllLinksQuery,
@@ -153,6 +157,11 @@ export default function IssuePage() {
   // Track moves for saving (linkId -> newContainerId)
   const [linkMoves, setLinkMoves] = useState<Map<string, string>>(new Map());
   const [deletedLinkIds, setDeletedLinkIds] = useState<Set<string>>(new Set());
+  const [activeSubmission, setActiveSubmission] = useState<{
+    title: string;
+    description: string;
+    url: string;
+  } | null>(null);
 
   const { data: linksData, isLoading: linksLoading } = useAllLinksQuery();
   const { data: issueData, isLoading: issueLoading } = useIssueQuery({ id });
@@ -300,6 +309,7 @@ export default function IssuePage() {
     if (clonedItems) setItems(clonedItems);
     setActiveId(null);
     setClonedItems(null);
+    setActiveSubmission(null);
   };
 
   // Other handlers
@@ -480,6 +490,19 @@ export default function IssuePage() {
           onDragStart={({ active }) => {
             setActiveId(active.id);
             setClonedItems(items);
+
+            // Track submission data for overlay
+            const activeIdStr = String(active.id);
+            if (activeIdStr.startsWith(SUBMISSION_PREFIX)) {
+              const data = active.data.current as {
+                title: string;
+                description: string;
+                url: string;
+              } | undefined;
+              setActiveSubmission(data ?? null);
+            } else {
+              setActiveSubmission(null);
+            }
           }}
           onDragOver={({ active, over }) => {
             const overId = over?.id;
@@ -536,10 +559,83 @@ export default function IssuePage() {
             });
           }}
           onDragEnd={({ active, over }) => {
+            const activeIdStr = String(active.id);
+            const isSubmission = activeIdStr.startsWith(SUBMISSION_PREFIX);
+
+            // Handle submission drop
+            if (isSubmission) {
+              const overId = over?.id;
+              if (overId == null || overId === TRASH_ID) {
+                setActiveId(null);
+                setActiveSubmission(null);
+                return;
+              }
+
+              const overContainer = findContainer(overId);
+              if (!overContainer) {
+                setActiveId(null);
+                setActiveSubmission(null);
+                return;
+              }
+
+              // Get submission data from active.data
+              const submissionData = active.data.current as {
+                type: string;
+                id: string;
+                url: string;
+                title: string;
+                description: string;
+              } | undefined;
+
+              if (submissionData?.url) {
+                // Create link from submission
+                createLinkMutation.mutate(
+                  { url: submissionData.url },
+                  {
+                    onSuccess: async (data) => {
+                      const newLinkId = data.createLink?.id;
+                      if (!newLinkId) {
+                        invalidateQueries();
+                        return;
+                      }
+
+                      // Prefill link data from submission
+                      await updateLinkMutation.mutateAsync({
+                        id: newLinkId,
+                        title: submissionData.title || "",
+                        text: submissionData.description || "",
+                        url: submissionData.url,
+                      });
+
+                      // Mark submission as consumed
+                      if (submissionData.id) {
+                        markSubmissionConsumed(submissionData.id);
+                      }
+
+                      if (overContainer !== UNASSIGNED_ID) {
+                        // If dropped on a topic, also assign it
+                        addLinksToTopicMutation.mutate(
+                          { topicId: String(overContainer), linkId: newLinkId },
+                          { onSuccess: invalidateQueries }
+                        );
+                      } else {
+                        invalidateQueries();
+                      }
+                    },
+                  }
+                );
+              }
+
+              setActiveId(null);
+              setActiveSubmission(null);
+              return;
+            }
+
             const activeContainer = findContainer(active.id);
 
             if (!activeContainer) {
               setActiveId(null);
+              setActiveSubmission(null);
               return;
             }
 
@@ -547,6 +643,7 @@ export default function IssuePage() {
 
             if (overId == null) {
               setActiveId(null);
+              setActiveSubmission(null);
               return;
             }
 
@@ -562,6 +659,7 @@ export default function IssuePage() {
               });
               setDeletedLinkIds((prev) => new Set(prev).add(String(active.id)));
               setActiveId(null);
+              setActiveSubmission(null);
               return;
             }
 
@@ -596,6 +694,7 @@ export default function IssuePage() {
             }
 
             setActiveId(null);
+            setActiveSubmission(null);
           }}
           onDragCancel={onDragCancel}
         >
@@ -770,6 +869,20 @@ export default function IssuePage() {
                     isDragOverlay
                   />
                 </div>
+              ) : activeId && activeSubmission ? (
+                <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
+                  <div className="text-sm text-neu-900 dark:text-neu-100 truncate">
+                    {activeSubmission.title || "Untitled"}
+                  </div>
+                  {activeSubmission.description && (
+                    <div className="text-xs text-neu-500 dark:text-neu-400 truncate mt-0.5">
+                      {activeSubmission.description}
+                    </div>
+                  )}
+                  <div className="text-xs text-neu-400 dark:text-neu-500 truncate mt-1 font-mono">
+                    {activeSubmission.url}
+                  </div>
+                </div>
               ) : null}
             </DragOverlay>,
             document.body
@@ -779,6 +892,9 @@ export default function IssuePage() {
           {activeId && !containers.includes(String(activeId)) && (
             <Trash isOver={false} />
           )}
+
+          {/* Submissions panel */}
+          <SubmissionsPanel />
         </DndContext>
 
         <div className="flex gap-2">
