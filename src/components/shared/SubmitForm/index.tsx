@@ -5,7 +5,7 @@ import { Textarea } from '../Textarea'
 import { PrimaryButton, SecondaryButton } from '../Buttons/Index'
 import Check from '../../vectors/Check'
 
-type Props = { onCancelClicked: any }
+type Props = { onCancelClicked: () => void }
 type State = {
   title: string
   url: string
@@ -18,6 +18,8 @@ type State = {
 }
 
 export class SubmitForm extends React.Component<Props, State> {
+  dialogRef = React.createRef<HTMLDialogElement>()
+
   state = {
     title: '',
     url: '',
@@ -29,7 +31,21 @@ export class SubmitForm extends React.Component<Props, State> {
     isDone: false,
   }
 
-  formSubmitted = async (e: any) => {
+  componentDidMount() {
+    this.dialogRef.current?.showModal()
+  }
+
+  handleClose = () => {
+    this.props.onCancelClicked()
+  }
+
+  handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === this.dialogRef.current) {
+      this.dialogRef.current?.close()
+    }
+  }
+
+  formSubmitted = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (
@@ -80,25 +96,56 @@ export class SubmitForm extends React.Component<Props, State> {
   }
 
   render = () => {
-    const { onCancelClicked } = this.props
     return (
-      <div
-        className="fixed w-full h-screen left-0 top-0 bottom-0 z-10 flex justify-center items-start md:items-center overflow-auto p-2 md:p-0"
-        style={{
-          background:
-            'radial-gradient(450px at 50% 50%, rgba(8, 17, 70, 0.5) 0%, rgba(8, 17, 70, 0.8) 53.59%, rgba(8, 17, 70, 0.9) 100%)',
-        }}
-        onClick={onCancelClicked}
-      >
-        <div
-          className="min-h-[200px] box-border pb-10 bg-white border-l-8 border-[#dadbe3] shadow-[0px_4px_16px_rgba(8,17,70,0.5)] rounded-lg w-full max-w-[350px] md:max-w-[600px] [@media(max-height:700px)]:h-full"
-          onClick={(e) => e.stopPropagation()}
+      <>
+        <style>{`
+          .submit-dialog {
+            opacity: 0;
+            transform: scale(0.9) translateY(16px);
+            transition:
+              opacity 0.35s linear(0 0%,.5007 7.21%,.7803 12.29%,.8883 14.93%,.9724 17.63%,1.0343 20.44%,1.0754 23.44%,1.0898 25.22%,1.0984 27.11%,1.1014 29.15%,1.0989 31.4%,1.0854 35.23%,1.0196 48.86%,1.0043 54.06%,.9956 59.6%,.9925 68.11%,1 100%),
+              transform 0.35s linear(0 0%,.5007 7.21%,.7803 12.29%,.8883 14.93%,.9724 17.63%,1.0343 20.44%,1.0754 23.44%,1.0898 25.22%,1.0984 27.11%,1.1014 29.15%,1.0989 31.4%,1.0854 35.23%,1.0196 48.86%,1.0043 54.06%,.9956 59.6%,.9925 68.11%,1 100%),
+              overlay 0.35s allow-discrete,
+              display 0.35s allow-discrete;
+          }
+          .submit-dialog:open {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+          @starting-style {
+            .submit-dialog:open {
+              opacity: 0;
+              transform: scale(0.9) translateY(16px);
+            }
+          }
+          .submit-dialog::backdrop {
+            background-color: transparent;
+            transition:
+              display 0.15s allow-discrete,
+              overlay 0.15s allow-discrete,
+              background-color 0.15s;
+          }
+          .submit-dialog:open::backdrop {
+            background-color: rgba(8, 17, 70, 0.85);
+          }
+          @starting-style {
+            .submit-dialog:open::backdrop {
+              background-color: transparent;
+            }
+          }
+        `}</style>
+        <dialog
+          ref={this.dialogRef}
+          onClose={this.handleClose}
+          onClick={this.handleBackdropClick}
+          className="submit-dialog p-0 bg-transparent max-w-[350px] md:max-w-[600px] w-full"
         >
+        <div className="min-h-[200px] box-border pb-10 bg-white border-l-8 border-[#dadbe3] shadow-[0px_4px_16px_rgba(8,17,70,0.5)] rounded-lg w-full [@media(max-height:700px)]:h-full">
           <form onSubmit={this.formSubmitted} className="flex flex-col h-full">
             {this.state.isDone ? (
               <div className="max-h-full overflow-auto flex-auto flex-shrink pt-10 px-6 md:pt-12 md:px-12">
                 <h2 className="m-0 font-medium leading-[1.33] text-lg md:text-2xl text-center text-[#081146]">
-                  Submitted for review 🎉
+                  Submitted for review
                 </h2>
               </div>
             ) : (
@@ -119,7 +166,7 @@ export class SubmitForm extends React.Component<Props, State> {
                 <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Input
                   label="URL"
-                  placeholder="http://your-link-address.com"
+                  placeholder="http://your-link-address"
                   name="url"
                   onChange={(e) => this.setState({ url: e.target.value })}
                   value={this.state.url}
@@ -154,14 +201,14 @@ export class SubmitForm extends React.Component<Props, State> {
             )}
 
             {this.state.message && (
-              <div className="p-[9px_10px] my-[15px] bg-[#f1f1f4] rounded text-[#424242] text-[15px]">
+              <div className="p-[9px_10px] my-[15px] mx-6 md:mx-12 bg-[#f1f1f4] rounded text-[#424242] text-[15px]">
                 {this.state.message}
               </div>
             )}
             {this.state.isDone ? (
               <div className="flex flex-shrink-0 px-12 justify-center mt-10">
-                <SecondaryButton onClick={onCancelClicked}>
-                  Cancel
+                <SecondaryButton onClick={() => this.dialogRef.current?.close()}>
+                  Close
                 </SecondaryButton>
               </div>
             ) : (
@@ -173,14 +220,15 @@ export class SubmitForm extends React.Component<Props, State> {
                   disabled={this.state.loading}
                 />
 
-                <SecondaryButton onClick={onCancelClicked}>
+                <SecondaryButton onClick={() => this.dialogRef.current?.close()}>
                   Cancel
                 </SecondaryButton>
               </div>
             )}
           </form>
         </div>
-      </div>
+      </dialog>
+      </>
     )
   }
 }
@@ -231,7 +279,6 @@ const linkSubmission = async ({
     'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
     {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, variables, operationName }),
     },
