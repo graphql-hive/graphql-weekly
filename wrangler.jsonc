@@ -1,4 +1,5 @@
 {
+  "$schema": "./node_modules/wrangler/config-schema.json",
   "main": "dist/_worker.js/index.js",
   "name": "graphqlweekly-v2",
   "compatibility_date": "2026-01-08",
@@ -9,5 +10,15 @@
   },
   "observability": {
     "enabled": true,
+  },
+  "env": {
+    "production": {
+      "routes": [
+        {
+          "pattern": "graphqlweekly.com",
+          "custom_domain": true,
+        },
+      ],
+    },
   },
 }
