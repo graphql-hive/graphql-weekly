@@ -153,6 +153,16 @@ function unifySimilarTopics(
   return unifiedTopics
 }
 
+function sortTopicsByArticleCount(
+  topicsList: Record<string, TopicLinksType[]>,
+): Record<string, TopicLinksType[]> {
+  return Object.fromEntries(
+    Object.entries(topicsList)
+      .filter(([, links]) => links.length > 0)
+      .sort((a, b) => b[1].length - a[1].length),
+  )
+}
+
 export function getTopicUrlFriendly(topicTitle: string): string {
   return topicTitle
     .split(' ')
