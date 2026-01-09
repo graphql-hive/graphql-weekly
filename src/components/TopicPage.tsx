@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useRef } from 'react'
 import { Header } from './home/Header'
 import { Container } from './shared/Container'
 import { Topic } from './home/Content/Topic'
 import { Sidebar } from './home/Content/Sidebar'
-import { SubmitForm } from './shared/SubmitForm'
+import { SubmitForm, type SubmitFormHandle } from './shared/SubmitForm'
 import type { IssueType, TopicLinksType } from '../types'
 
 interface Props {
@@ -20,9 +20,8 @@ export function TopicPage({
   allIssues,
   topicsTitles,
 }: Props) {
-  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
-  const openModal = () => setIsSubmitModalOpen(true)
-  const closeModal = () => setIsSubmitModalOpen(false)
+  const submitFormRef = useRef<SubmitFormHandle>(null)
+  const openModal = () => submitFormRef.current?.showModal()
 
   return (
     <>
@@ -39,7 +38,7 @@ export function TopicPage({
         </div>
       </Container>
 
-      {isSubmitModalOpen && <SubmitForm onCancelClicked={closeModal} />}
+      <SubmitForm ref={submitFormRef} />
     </>
   )
 }
