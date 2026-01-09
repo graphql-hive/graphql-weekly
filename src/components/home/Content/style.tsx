@@ -7,10 +7,7 @@ export const ContentWrapper = ({
   [key: string]: unknown
   children: ReactNode
 }) => (
-  <div
-    className="flex-grow flex-shrink max-w-3xl -mt-16 pt-2 w-full"
-    {...props}
-  >
+  <div className="grow shrink max-w-3xl -mt-16 pt-2 w-full" {...props}>
     {children}
   </div>
 )

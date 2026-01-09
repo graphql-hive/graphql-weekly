@@ -16,7 +16,7 @@ export const Pre: React.FC<{
   textColor,
   ...props
 }) => {
-  const baseClasses = 'm-0 flex-grow h-full w-full flex-1'
+  const baseClasses = 'm-0 grow h-full w-full flex-1'
   const paddingClasses = background ? 'p-4' : 'p-0'
   const borderClasses = 'rounded-md'
   const scrollClasses = 'scrollbar-hide'

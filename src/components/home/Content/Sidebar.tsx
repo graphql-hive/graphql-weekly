@@ -32,7 +32,7 @@ export class Sidebar extends Component<Props, State> {
     const { props } = this
 
     return (
-      <div className="flex-grow ml-[42px] max-lg:hidden">
+      <div className="grow ml-[42px] max-lg:hidden">
         <Submit submitModalClickHandler={props.submitModalClickHandler} />
 
         <SidebarLine />

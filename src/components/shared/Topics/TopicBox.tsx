@@ -32,7 +32,7 @@ export function TopicBox({
       {issueNumber && (
         <div className="text-center">
           <Link
-            className="inline-flex relative h-8 mx-auto px-[17px] bg-[#6560e2] shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded-[32px] font-medium leading-8 text-base text-center uppercase text-white"
+            className="inline-flex relative h-8 mx-auto px-[17px] bg-purple shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded-[32px] font-medium leading-8 text-base text-center uppercase text-white"
             to={`/issues/${issueNumber}/#content`}
           >
             Issue {issueNumber}
@@ -76,11 +76,11 @@ export function TopicBox({
         {author && (
           <div className="w-full flex mt-8">
             <div
-              className="w-10 h-10 rounded-full bg-cover flex-shrink-0"
+              className="w-10 h-10 rounded-full bg-cover shrink-0"
               style={{ backgroundImage: `url(${author.avatar})` }}
             />
-            <div className="flex-grow ml-4">
-              <h3 className="m-0 font-normal font-medium leading-none text-base text-[#081146]">
+            <div className="grow ml-4">
+              <h3 className="m-0 font-normal font-medium leading-none text-base text-footer-dark">
                 {author.name}
               </h3>
               <h2 className="mt-2 mb-0 font-normal leading-none text-base text-[#4d5379]">

@@ -11,7 +11,7 @@ export const Submit = (props: Props) => {
       <div className="-ml-[10px] -mt-8">
         <Mail />
       </div>
-      <div className="mt-4 font-medium leading-none text-lg uppercase text-[#9da0b5]">
+      <div className="mt-4 font-medium leading-none text-lg uppercase text-light-dark">
         Share the goods
       </div>
       <div className="my-3 mb-6 font-medium text-lg leading-6 text-dark">

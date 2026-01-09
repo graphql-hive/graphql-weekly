@@ -122,7 +122,7 @@ export class Playground extends Component<Props, State> {
     const { selectedQuery } = this.state
     return (
       <div
-        className="flex justify-between overflow-hidden max-h-[1084px] relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-10 after:content-[''] after:bg-gradient-to-b after:from-transparent after:to-[#081146]"
+        className="flex justify-between overflow-hidden max-h-[1084px] relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-10 after:content-[''] after:bg-linear-to-b after:from-transparent after:to-footer-dark"
         ref={this.containerRef}
       >
         <div className="flex-[0_0_400px] mr-16">
@@ -130,7 +130,7 @@ export class Playground extends Component<Props, State> {
             Enter a query
           </span>
 
-          <label className="w-[400px] min-h-12 mb-4 p-4 inline-flex items-center bg-[#1b2357] shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded cursor-pointer relative transition-colors duration-[120ms] ease-out hover:bg-[#2c3363] group">
+          <label className="w-[400px] min-h-12 mb-4 p-4 inline-flex items-center bg-footer-box shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded-sm cursor-pointer relative transition-colors duration-120 ease-out hover:bg-footer-box-hover group">
             <select
               className="absolute top-0 bottom-0 right-0 w-full opacity-0 cursor-pointer"
               onChange={this.exampleChanged}
@@ -156,13 +156,13 @@ export class Playground extends Component<Props, State> {
             </div>
           </label>
 
-          <div className="w-[400px] min-h-12 mb-4 p-4 bg-[#1b2357] shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded">
+          <div className="w-[400px] min-h-12 mb-4 p-4 bg-footer-box shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded-sm">
             <Code background={false} language="graphql" showLineNumbers>
               {selectedQuery.query.trim()}
             </Code>
 
             <button
-              className="flex items-center justify-center w-full min-h-10 p-3 mt-6 border-none outline-none bg-[#f531b1] shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded cursor-pointer transition-all duration-[140ms] ease-out hover:transform hover:-translate-y-px hover:shadow-[0px_7px_16px_rgba(23,43,58,0.22)] disabled:shadow-none disabled:bg-[#959595]"
+              className="flex items-center justify-center w-full min-h-10 p-3 mt-6 border-none outline-hidden bg-pink shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded-sm cursor-pointer transition-all duration-140 ease-out hover:transform hover:-translate-y-px hover:shadow-[0px_7px_16px_rgba(23,43,58,0.22)] disabled:shadow-none disabled:bg-disabled"
               disabled={this.state.loading}
               onClick={this.runQuery}
             >
@@ -187,7 +187,7 @@ export class Playground extends Component<Props, State> {
             or press CMD + Enter
           </div>
         </div>
-        <div className="flex-grow h-auto">
+        <div className="grow h-auto">
           <span className="mb-11 inline-block font-medium leading-none text-2xl text-white">
             Result
           </span>

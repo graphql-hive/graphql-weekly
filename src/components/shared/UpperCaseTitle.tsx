@@ -2,7 +2,8 @@ import type React from 'react'
 
 import { cn } from '../../lib/cn'
 
-export interface UpperCaseTitleProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface UpperCaseTitleProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UpperCaseTitle({ className, ...rest }: UpperCaseTitleProps) {
   return (

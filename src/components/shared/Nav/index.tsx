@@ -25,7 +25,7 @@ export class Nav extends Component<Props, State> {
     return (
       <Container>
         <div
-          className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
+          className="shrink-0 h-(--height-mobile) md:h-(--height-desktop)"
           style={
             {
               '--height-desktop': '40px',
@@ -57,7 +57,7 @@ export class Nav extends Component<Props, State> {
                 ? 'h-auto pt-7 pb-5 border-b border-white/50'
                 : 'h-0 pt-0'
             }
-            md:!h-[52px] md:!pt-0 md:!pb-0 md:!border-0
+            md:h-[52px]! md:pt-0! md:pb-0! md:border-0!
           `}
           >
             <a
@@ -72,7 +72,7 @@ export class Nav extends Component<Props, State> {
               <Arrow />
             </a>
             <button
-              className="border-none bg-none outline-none cursor-pointer ml-0 py-3 md:ml-10 md:py-0"
+              className="border-none bg-none outline-hidden cursor-pointer ml-0 py-3 md:ml-10 md:py-0"
               onClick={() => this.props.submitModalClickHandler()}
             >
               <span className="mr-3 font-medium leading-none text-lg text-white">

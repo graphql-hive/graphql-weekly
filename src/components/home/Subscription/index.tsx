@@ -56,7 +56,7 @@ export class Subscription extends Component<Props, State> {
   render() {
     return (
       <form
-        className="relative max-w-[783px] min-h-[88px] mx-auto p-6 pl-8 md:pl-8 flex items-stretch md:flex-row flex-col md:items-stretch items-stretch bg-white shadow-[0px_4px_16px_rgba(8,17,70,0.1)] rounded-[8px]"
+        className="relative max-w-[783px] min-h-[88px] mx-auto p-6 pl-8 md:pl-8 flex items-stretch md:flex-row flex-col md:items-stretch items-stretch bg-white shadow-[0px_4px_16px_rgba(8,17,70,0.1)] rounded-large"
         onSubmit={this.subscribeSubmited}
       >
         <Input
@@ -65,7 +65,7 @@ export class Subscription extends Component<Props, State> {
           placeholder="Bob Loblaw"
           value={this.state.name}
         />
-        <div className="w-auto h-px my-1 md:w-px md:h-10 md:my-0 md:mx-6 bg-[#dadbe3]" />
+        <div className="w-auto h-px my-1 md:w-px md:h-10 md:my-0 md:mx-6 bg-gray-border" />
         <Input
           label="EMAIL"
           onChange={(e) => this.setState({ email: e.target.value })}
@@ -81,7 +81,7 @@ export class Subscription extends Component<Props, State> {
         />
 
         {this.state.message && (
-          <div className="absolute px-[10px] py-[5px] right-[25px] bottom-[-15px] bg-[#f1f1f4] rounded text-[#424242] text-sm">
+          <div className="absolute px-[10px] py-[5px] right-[25px] bottom-[-15px] bg-body-bg rounded-sm text-[#424242] text-sm">
             {this.state.message}
           </div>
         )}

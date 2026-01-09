@@ -15,7 +15,7 @@ export const NavIssue = ({
   <div className="w-full flex justify-between px-[41px] pt-8 pb-[62px]">
     {prevNumber && firstIssueNumber !== prevNumber + 1 && (
       <a
-        className="flex items-center no-underline font-medium leading-none text-lg text-[#081146]"
+        className="flex items-center no-underline font-medium leading-none text-lg text-footer-dark"
         href={`/issues/${prevNumber}/#content`}
       >
         <ArrowLeft />
@@ -23,11 +23,11 @@ export const NavIssue = ({
       </a>
     )}
 
-    <div className="flex-grow mx-auto shrink-0" />
+    <div className="grow mx-auto shrink-0" />
 
     {nextNumber && lastIssueNumber !== nextNumber - 1 && (
       <a
-        className="flex items-center no-underline font-medium leading-none text-lg text-[#081146]"
+        className="flex items-center no-underline font-medium leading-none text-lg text-footer-dark"
         href={`/issues/${nextNumber}/#content`}
       >
         <span className="mx-2.5">View issue {nextNumber}</span>

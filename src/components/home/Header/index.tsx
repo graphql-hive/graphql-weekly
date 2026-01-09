@@ -27,7 +27,7 @@ export const Header = (props: Props) => {
         <Nav submitModalClickHandler={props.submitModalClickHandler} />
 
         <div
-          className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
+          className="shrink-0 h-(--height-mobile) md:h-(--height-desktop)"
           style={
             {
               '--height-desktop': '80px',
@@ -44,7 +44,7 @@ export const Header = (props: Props) => {
           </h1>
 
           <div
-            className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
+            className="shrink-0 h-(--height-mobile) md:h-(--height-desktop)"
             style={
               {
                 '--height-desktop': '56px',
