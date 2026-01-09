@@ -69,8 +69,8 @@ export default function EditSheet({
       {hasDelete && (
         <section style={{ marginTop: "16px" }}>
           <Button
-            style={{ width: "100%" }}
-            color="red"
+            block
+            variant="danger"
             onClick={handlers.onDelete}
           >
             Delete

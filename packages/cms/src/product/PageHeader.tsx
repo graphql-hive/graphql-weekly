@@ -64,31 +64,33 @@ export default function PageHeader({
 
   return (
     <>
-      <span className="text-sm text-gray-600">
-        Curating: <strong className="text-gray-900">{title}</strong>{" "}
-        <span className="text-gray-400">(v{versionCount})</span>
+      <span className="text-sm text-neu-600 dark:text-neu-400">
+        Curating: <strong className="text-neu-900 dark:text-neu-100">{title}</strong>{" "}
+        <span className="text-neu-400 dark:text-neu-500">(v{versionCount})</span>
       </span>
 
-      <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={isFoundation}
-          onChange={(e) => setIsFoundation(e.target.checked)}
-          className="w-3.5 h-3.5"
-        />
-        Foundation
-      </label>
+      <div className="flex items-center gap-3">
+        <label className="flex items-center gap-1.5 text-sm text-neu-600 dark:text-neu-400 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={isFoundation}
+            onChange={(e) => setIsFoundation(e.target.checked)}
+            className="w-3.5 h-3.5"
+          />
+          Foundation
+        </label>
 
-      <div className="flex items-center gap-2">
-        <Button onClick={handlePublish}>Publish</Button>
-        <Button color="grey-bg" onClick={increaseVersion}>
-          Create Email
-        </Button>
-        {!published && (
-          <Button color="red" onClick={handleDeleteIssue}>
-            Delete
+        <div className="flex items-center gap-2">
+          <Button variant="primary" onClick={handlePublish}>Publish</Button>
+          <Button variant="secondary" onClick={increaseVersion}>
+            Create Email
           </Button>
-        )}
+          {!published && (
+            <Button variant="danger" onClick={handleDeleteIssue}>
+              Delete
+            </Button>
+          )}
+        </div>
       </div>
     </>
   );

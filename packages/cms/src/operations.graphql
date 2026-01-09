@@ -41,6 +41,7 @@ query AllIssues {
     id
     title
     published
+    date
   }
 }
 

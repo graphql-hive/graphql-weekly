@@ -31,11 +31,11 @@ class PanelBody extends Component<PanelBodyProps> {
           onClick={(e: MouseEvent) => e.stopPropagation()}
           className="max-w-[640px] h-screen overflow-hidden ml-auto z-[11] animate-[fade-right_0.15s_both]"
         >
-          <div className="bg-white rounded-none h-full">
+          <div className="bg-white h-full">
             <section>
               <div className="py-4 px-3 pl-2 border-b border-black/[0.12] text-right">
                 <ClickTarget onClick={hidePanel}>
-                  <p className="m-0 text-[rgb(91,134,229)] font-medium text-sm leading-[18px] hover:underline">
+                  <p className="m-0 text-[rgb(91,134,229)] text-sm leading-[18px] hover:underline">
                     <X size={14} color={colors.blue} />
                   </p>
                 </ClickTarget>

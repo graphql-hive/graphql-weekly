@@ -1,14 +1,23 @@
-import { useState, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, RefObject } from "react";
 import InputWithButton from "../components/InputWithButton";
 import { useCreateIssueMutation } from "../generated/graphql";
 
 interface IssueCreatorProps {
   refresh?: () => void;
+  defaultValue?: string;
+  inputRef?: RefObject<HTMLInputElement | null>;
 }
 
-export default function IssueCreator({ refresh }: IssueCreatorProps) {
-  const [number, setNumber] = useState("");
+export default function IssueCreator({ refresh, defaultValue, inputRef }: IssueCreatorProps) {
+  const [number, setNumber] = useState(defaultValue ?? "");
   const [numberError, setNumberError] = useState("");
+
+  // Update when defaultValue changes
+  useEffect(() => {
+    if (defaultValue && number === "") {
+      setNumber(defaultValue);
+    }
+  }, [defaultValue, number]);
 
   const createIssueMutation = useCreateIssueMutation();
 
@@ -50,8 +59,10 @@ export default function IssueCreator({ refresh }: IssueCreatorProps) {
 
   return (
     <InputWithButton
+      inputRef={inputRef}
       disabled={createIssueMutation.isPending}
-      placeholder="Issue Number"
+      label="issue number"
+      placeholder="Number"
       onClick={submitIssueChange}
       onChange={handleNumberChange}
       buttonLabel="Add Issue"

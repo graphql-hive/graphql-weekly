@@ -32,10 +32,10 @@ export default function LinkCard({
   refresh,
 }: LinkCardProps) {
   return (
-    <div className="group flex bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors hover:duration-0">
-      <div className="w-8 flex items-center justify-center opacity-30 group-hover:opacity-70 cursor-grab active:cursor-grabbing shrink-0 border-r border-gray-100">
+    <div className="group flex bg-white dark:bg-neu-900 border-b border-neu-200 dark:border-neu-700 hover:bg-neu-50 dark:hover:bg-neu-800 transition-colors hover:duration-0">
+      <div className="w-8 flex items-center justify-center opacity-30 group-hover:opacity-70 cursor-grab active:cursor-grabbing shrink-0 border-r border-neu-100 dark:border-neu-800">
         <svg
-          className="w-4 h-4 text-gray-400"
+          className="w-4 h-4 text-neu-400 dark:text-neu-500"
           viewBox="0 0 24 24"
           fill="currentColor"
         >
@@ -54,14 +54,14 @@ export default function LinkCard({
           placeholder="Title"
           value={link.title ?? ""}
           onChange={(e) => onChange({ ...link, title: e.target.value })}
-          className="w-full text-sm font-medium text-gray-900 bg-transparent border border-transparent rounded px-1 py-0.5 hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors hover:duration-0"
+          className="w-full text-sm  text-neu-900 dark:text-neu-100 bg-transparent border border-transparent  px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
         />
         <textarea
           placeholder="Description"
           value={link.text ?? ""}
           onChange={(e) => onChange({ ...link, text: e.target.value })}
           rows={2}
-          className="w-full text-sm text-gray-600 bg-transparent border border-transparent rounded px-1 py-0.5 hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none transition-colors hover:duration-0"
+          className="w-full text-sm text-neu-600 dark:text-neu-300 bg-transparent border border-transparent  px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] resize-none transition-colors hover:duration-0"
         />
         <div className="flex items-center gap-2">
           <input
@@ -69,14 +69,14 @@ export default function LinkCard({
             placeholder="URL"
             value={link.url ?? ""}
             onChange={(e) => onChange({ ...link, url: e.target.value })}
-            className="flex-1 text-xs text-gray-500 bg-transparent border border-transparent rounded px-1 py-0.5 font-mono hover:border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors hover:duration-0"
+            className="flex-1 text-xs text-neu-500 dark:text-neu-400 bg-transparent border border-transparent  px-1 py-0.5 font-mono hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
           />
           {link.url && (
             <a
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-blue-500 transition-colors hover:duration-0"
+              className="text-neu-400 dark:text-neu-500 hover:text-primary transition-colors hover:duration-0"
             >
               <svg
                 className="w-4 h-4"
@@ -110,7 +110,7 @@ export default function LinkCard({
               }
             >
               <div
-                className="p-1.5 text-gray-400 hover:text-pink-500 hover:bg-pink-50 rounded transition-colors hover:duration-0"
+                className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-950  transition-colors hover:duration-0"
                 title="Assign to topic"
               >
                 <svg
@@ -132,7 +132,7 @@ export default function LinkCard({
         </OpenPanel>
         <button
           onClick={onDelete}
-          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors hover:duration-0"
+          className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950  transition-colors hover:duration-0"
           title="Delete"
         >
           <svg
