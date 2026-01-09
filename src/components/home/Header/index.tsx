@@ -28,7 +28,12 @@ export const Header = (props: Props) => {
 
         <div
           className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
-          style={{ '--height-desktop': '80px', '--height-mobile': '27px' } as React.CSSProperties}
+          style={
+            {
+              '--height-desktop': '80px',
+              '--height-mobile': '27px',
+            } as React.CSSProperties
+          }
         />
 
         <Container>
@@ -40,7 +45,12 @@ export const Header = (props: Props) => {
 
           <div
             className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
-            style={{ '--height-desktop': '56px', '--height-mobile': '32px' } as React.CSSProperties}
+            style={
+              {
+                '--height-desktop': '56px',
+                '--height-mobile': '32px',
+              } as React.CSSProperties
+            }
           />
 
           <Subscription />

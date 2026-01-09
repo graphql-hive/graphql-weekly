@@ -1,73 +1,81 @@
-import { useState, useRef, useImperativeHandle, forwardRef } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+
+import Check from '../../vectors/Check'
+import { PrimaryButton, SecondaryButton } from '../Buttons/Index'
 import { Input } from '../Input/Input'
 import { Textarea } from '../Textarea'
-import { PrimaryButton, SecondaryButton } from '../Buttons/Index'
-import Check from '../../vectors/Check'
 import './submit-dialog.css'
 
 export interface SubmitFormHandle {
   showModal: () => void
 }
 
-export const SubmitForm = forwardRef<SubmitFormHandle>(function SubmitForm(_, ref) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [description, setDescription] = useState('')
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [isDone, setIsDone] = useState(false)
+export const SubmitForm = forwardRef<SubmitFormHandle>(
+  function SubmitForm(_, ref) {
+    const dialogRef = useRef<HTMLDialogElement>(null)
+    const [title, setTitle] = useState('')
+    const [url, setUrl] = useState('')
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [description, setDescription] = useState('')
+    const [message, setMessage] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [isDone, setIsDone] = useState(false)
 
-  useImperativeHandle(ref, () => ({
-    showModal: () => dialogRef.current?.showModal(),
-  }))
+    useImperativeHandle(ref, () => ({
+      showModal: () => dialogRef.current?.showModal(),
+    }))
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) {
-      dialogRef.current?.close()
-    }
-  }
-
-  const showMessageTemporarily = (msg: string) => {
-    setMessage(msg)
-    setTimeout(() => setMessage(''), 5500)
-  }
-
-  const formSubmitted = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (description && name && email && title && url && !loading) {
-      setLoading(true)
-
-      const res = await linkSubmission({ description, name, email, title, url })
-
-      if (res?.data?.createLinkSubmission?.title === title) {
-        setIsDone(true)
-        setTitle('')
-        setUrl('')
-        setName('')
-        setEmail('')
-        setDescription('')
-        setLoading(false)
-      } else {
-        setLoading(false)
-        showMessageTemporarily('Error!')
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+      if (e.target === dialogRef.current) {
+        dialogRef.current?.close()
       }
-    } else {
-      showMessageTemporarily('Empty values!')
     }
-  }
 
-  return (
-    <dialog
-      ref={dialogRef}
-      onClick={handleBackdropClick}
-      className="submit-dialog p-0 bg-transparent max-w-[350px] md:max-w-[600px] w-full"
-    >
+    const showMessageTemporarily = (msg: string) => {
+      setMessage(msg)
+      setTimeout(() => setMessage(''), 5500)
+    }
+
+    const formSubmitted = async (e: React.FormEvent) => {
+      e.preventDefault()
+
+      if (description && name && email && title && url && !loading) {
+        setLoading(true)
+
+        const res = await linkSubmission({
+          description,
+          email,
+          name,
+          title,
+          url,
+        })
+
+        if (res?.data?.createLinkSubmission?.title === title) {
+          setIsDone(true)
+          setTitle('')
+          setUrl('')
+          setName('')
+          setEmail('')
+          setDescription('')
+          setLoading(false)
+        } else {
+          setLoading(false)
+          showMessageTemporarily('Error!')
+        }
+      } else {
+        showMessageTemporarily('Empty values!')
+      }
+    }
+
+    return (
+      <dialog
+        className="submit-dialog p-0 bg-transparent max-w-[350px] md:max-w-[600px] w-full"
+        onClick={handleBackdropClick}
+        ref={dialogRef}
+      >
         <div className="min-h-[200px] box-border pb-10 bg-white border-l-8 border-[#dadbe3] shadow-[0px_4px_16px_rgba(8,17,70,0.5)] rounded-lg w-full [@media(max-height:700px)]:h-full">
-          <form onSubmit={formSubmitted} className="flex flex-col h-full">
+          <form className="flex flex-col h-full" onSubmit={formSubmitted}>
             {isDone ? (
               <div className="max-h-full overflow-auto flex-auto flex-shrink pt-10 px-6 md:pt-12 md:px-12">
                 <h2 className="m-0 font-medium leading-[1.33] text-lg md:text-2xl text-center text-[#081146]">
@@ -84,41 +92,41 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(function SubmitForm(_, re
 
                 <Input
                   label="Title"
-                  placeholder="The Title of The Link"
                   name="title"
                   onChange={(e) => setTitle(e.target.value)}
+                  placeholder="The Title of The Link"
                   value={title}
                 />
                 <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Input
                   label="URL"
-                  placeholder="http://your-link-address"
                   name="url"
                   onChange={(e) => setUrl(e.target.value)}
+                  placeholder="http://your-link-address"
                   value={url}
                 />
                 <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Input
                   label="Name"
-                  placeholder="Your Name"
                   name="name"
                   onChange={(e) => setName(e.target.value)}
+                  placeholder="Your Name"
                   value={name}
                 />
                 <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Input
                   label="Email"
-                  placeholder="your@email.com"
                   name="email"
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
                   value={email}
                 />
                 <div className="w-full h-px my-[3px] md:my-[13px] bg-[#dadbe3]" />
                 <Textarea
                   label="Description"
-                  placeholder="Write a small overview of what this link is about..."
                   name="description"
                   onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Write a small overview of what this link is about..."
                   value={description}
                 />
               </div>
@@ -138,10 +146,10 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(function SubmitForm(_, re
             ) : (
               <div className="flex flex-shrink-0 px-12 justify-between mt-[10px]">
                 <PrimaryButton
-                  text="Submit Link"
-                  icon={<Check />}
-                  type="submit"
                   disabled={loading}
+                  icon={<Check />}
+                  text="Submit Link"
+                  type="submit"
                 />
 
                 <SecondaryButton onClick={() => dialogRef.current?.close()}>
@@ -151,9 +159,10 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(function SubmitForm(_, re
             )}
           </form>
         </div>
-    </dialog>
-  )
-})
+      </dialog>
+    )
+  },
+)
 
 const linkSubmission = async ({
   description,
@@ -193,9 +202,13 @@ const linkSubmission = async ({
   return fetch(
     'https://graphqlweekly-api.netlify.app/.netlify/functions/graphql',
     {
-      method: 'POST',
+      body: JSON.stringify({
+        operationName: 'createSubmissionLink',
+        query,
+        variables,
+      }),
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, variables, operationName: 'createSubmissionLink' }),
+      method: 'POST',
     },
   ).then((res) => res.json())
 }

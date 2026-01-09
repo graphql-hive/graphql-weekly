@@ -26,7 +26,12 @@ export class Nav extends React.Component<Props, State> {
       <Container>
         <div
           className="shrink-0 [height:var(--height-mobile)] md:[height:var(--height-desktop)]"
-          style={{ '--height-desktop': '40px', '--height-mobile': '32px' } as React.CSSProperties}
+          style={
+            {
+              '--height-desktop': '40px',
+              '--height-mobile': '32px',
+            } as React.CSSProperties
+          }
         />
         <nav className="flex min-h-[52px] justify-between flex-wrap px-6 md:flex-nowrap md:px-0">
           <Link className="inline-flex items-center -ml-1.5 md:ml-0" to="/">
@@ -57,7 +62,8 @@ export class Nav extends React.Component<Props, State> {
             <a
               className="cursor-pointer ml-0 py-3 md:ml-10 md:py-0"
               href="https://www.howtographql.com"
-              rel="noreferrer" target="_blank"
+              rel="noreferrer"
+              target="_blank"
             >
               <span className="mr-3 font-medium leading-none text-lg text-white">
                 What is GraphQL?

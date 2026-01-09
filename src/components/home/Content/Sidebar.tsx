@@ -29,7 +29,7 @@ export class Sidebar extends React.Component<Props, State> {
   }
 
   render() {
-    const {props} = this
+    const { props } = this
 
     return (
       <div className="flex-grow ml-[42px] max-lg:hidden">

@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import * as React from 'react'
 
 import { PrimaryButton } from '../../shared/Buttons/Index'
