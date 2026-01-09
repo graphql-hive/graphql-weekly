@@ -9,7 +9,11 @@ import { useQueryClient } from "@tanstack/react-query";
 export default function IndexPage() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useAllIssuesQuery();
+
+  // TODO: This shouldn't be in state, because the perf isn't great.
+  // We should just use the focus activeElement and manage it with keyboard events.
   const [selectedIndex, setSelectedIndex] = useState(0);
+
   const [, navigate] = useLocation();
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -25,14 +29,18 @@ export default function IndexPage() {
   });
 
   // Calculate next issue number
-  const highestIssueNum = issues.length > 0
-    ? parseInt(issues[0]?.title?.split(" ")[1] ?? "0", 10)
-    : 0;
+  const highestIssueNum =
+    issues.length > 0
+      ? parseInt(issues[0]?.title?.split(" ")[1] ?? "0", 10)
+      : 0;
   const nextIssueNum = String(highestIssueNum + 1);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
 
@@ -104,7 +112,8 @@ export default function IndexPage() {
     });
   };
 
-  const issueNum = (issue: typeof issues[0]) => issue.title?.split(" ")[1] ?? "0";
+  const issueNum = (issue: (typeof issues)[0]) =>
+    issue.title?.split(" ")[1] ?? "0";
 
   return (
     <div className="min-h-screen xl:h-screen xl:overflow-hidden xl:flex xl:flex-col bg-neu-50 dark:bg-neu-950">
@@ -119,7 +128,9 @@ export default function IndexPage() {
               GraphQL Weekly
             </h1>
             <p className="text-sm text-neu-500 dark:text-neu-400">
-              {issues.length} issues<br />{issues.filter(i => i.published).length} published
+              {issues.length} issues
+              <br />
+              {issues.filter((i) => i.published).length} published
             </p>
           </div>
         </div>
@@ -127,7 +138,7 @@ export default function IndexPage() {
         {/* Main content - scrollable */}
         <main className="flex-1 px-4 pb-16 xl:py-8 xl:overflow-y-auto">
           {/* Add issue form */}
-          <div className="mb-4 p-3 bg-white dark:bg-neu-900  border border-neu-200 dark:border-neu-800 shadow-sm">
+          <div className="mb-4 p-3 bg-white dark:bg-neu-900  border border-neu-200 dark:border-neu-800">
             <IssueCreator
               refresh={refresh}
               defaultValue={nextIssueNum}
@@ -136,7 +147,7 @@ export default function IndexPage() {
           </div>
           <div
             ref={listRef}
-            className="bg-white dark:bg-neu-900  border border-neu-200 dark:border-neu-800 shadow-sm overflow-hidden"
+            className="bg-white dark:bg-neu-900  border border-neu-200 dark:border-neu-800 overflow-hidden"
           >
             {issues.map((issue, index) => {
               const isSelected = index === selectedIndex;
@@ -145,7 +156,7 @@ export default function IndexPage() {
                 <Link
                   key={issue.id}
                   href={`/issue/${issue.id}`}
-                  className={`flex items-center justify-between px-4 py-2.5 border-b border-neu-100 dark:border-neu-800 last:border-b-0 no-underline ${
+                  className={`flex items-center justify-between px-4 py-2.5 border-b border-neu-100 dark:border-neu-800 last:border-b-0 no-underline hover:duration-0 ${
                     isSelected
                       ? "bg-neu-100 dark:bg-neu-800"
                       : "hover:bg-neu-50 dark:hover:bg-neu-800/50"
@@ -153,11 +164,13 @@ export default function IndexPage() {
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
                   {/* Issue number */}
-                  <span className={`font-mono text-sm tabular-nums ${
-                    isSelected
-                      ? "text-neu-900 dark:text-neu-100 "
-                      : "text-neu-600 dark:text-neu-400"
-                  }`}>
+                  <span
+                    className={`font-mono text-sm tabular-nums ${
+                      isSelected
+                        ? "text-neu-900 dark:text-neu-100 "
+                        : "text-neu-600 dark:text-neu-400"
+                    }`}
+                  >
                     #{issueNum(issue)}
                   </span>
 
@@ -189,11 +202,15 @@ export default function IndexPage() {
       <footer className="hidden xl:block fixed bottom-0 left-0 py-3 px-4">
         <div className="flex items-center gap-4 text-[11px] text-neu-400 dark:text-neu-600 font-mono uppercase tracking-wider">
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 bg-neu-200/50 dark:bg-neu-800/50  text-[10px]">↑↓</kbd>
+            <kbd className="px-1 py-0.5 bg-neu-200/50 dark:bg-neu-800/50  text-[10px]">
+              ↑↓
+            </kbd>
             nav
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 bg-neu-200/50 dark:bg-neu-800/50  text-[10px]">↵</kbd>
+            <kbd className="px-1 py-0.5 bg-neu-200/50 dark:bg-neu-800/50  text-[10px]">
+              ↵
+            </kbd>
             open
           </span>
         </div>

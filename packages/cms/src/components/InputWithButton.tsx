@@ -23,6 +23,7 @@ interface InputWithButtonProps {
   label?: string;
 }
 
+// TODO: This component shouldn't exist.
 export default function InputWithButton({
   buttonLabel,
   buttonDisabled,
@@ -65,7 +66,11 @@ export default function InputWithButton({
             className="flex-1 min-w-0 bg-transparent border-none outline-none text-right dark:text-neu-100 placeholder:text-neu-400 dark:placeholder:text-neu-600"
           />
         </label>
-        <Button disabled={buttonDisabled} onClick={onClick} className="shrink-0">
+        <Button
+          disabled={buttonDisabled}
+          onClick={onClick}
+          className="shrink-0"
+        >
           {buttonLabel}
         </Button>
       </div>

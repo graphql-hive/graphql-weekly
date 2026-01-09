@@ -7,8 +7,11 @@ interface NavbarProps {
 
 export default function Navbar({ children }: NavbarProps) {
   return (
-    <div className="relative z-10 bg-white dark:bg-neu-900 shadow-[0px_3px_3px_rgba(12,52,75,0.05)] dark:shadow-none dark:border-b dark:border-neu-800 w-screen flex h-12 flex-shrink-0 items-center justify-center">
-      <Link href="/" className="absolute left-4 text-neu-600 dark:text-neu-200 text-xl  no-underline">
+    <div className="relative z-10 bg-white dark:bg-neu-900 shadow-xs dark:shadow-none dark:border-b dark:border-neu-800 w-screen flex h-12 shrink-0 items-center justify-center">
+      <Link
+        href="/"
+        className="absolute left-4 text-neu-600 dark:text-neu-200 text-xl  no-underline"
+      >
         qlator
       </Link>
       {children && (
