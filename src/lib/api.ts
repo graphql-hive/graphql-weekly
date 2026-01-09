@@ -88,6 +88,10 @@ export async function getAllIssues(): Promise<AllIssuesData> {
   }
 }
 
+function normalizeTopicTitle(title: string): string {
+  return title.toLowerCase().replaceAll(' and ', ' & ')
+}
+
 function unifySimilarTopics(
   topicsList: Record<string, TopicLinksType[]>,
 ): Record<string, TopicLinksType[]> {
@@ -133,24 +137,23 @@ function unifySimilarTopics(
     'Videos & Talks': Videos,
   }
 
-  const unifiedTopics = { ...topicsList }
+  const normalizedToCanonical = new Map<string, string>()
+  const canonicalTopics: Record<string, TopicLinksType[]> = {}
 
-  for (const currentTitle of Object.keys(topicsList)) {
-    if (!conversionMap[currentTitle]) {
-      continue
+  for (const [title, links] of Object.entries(topicsList)) {
+    const mappedTitle = conversionMap[title] || title
+    const normalized = normalizeTopicTitle(mappedTitle)
+
+    if (!normalizedToCanonical.has(normalized)) {
+      normalizedToCanonical.set(normalized, mappedTitle)
+      canonicalTopics[mappedTitle] = []
     }
 
-    const similarTitle = conversionMap[currentTitle]
-    unifiedTopics[similarTitle] ||= []
-    unifiedTopics[similarTitle].push(...topicsList[currentTitle])
-
-    if (currentTitle !== similarTitle) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- Necessary for topic unification
-      delete unifiedTopics[currentTitle]
-    }
+    const canonical = normalizedToCanonical.get(normalized)!
+    canonicalTopics[canonical].push(...links)
   }
 
-  return unifiedTopics
+  return canonicalTopics
 }
 
 function sortTopicsByArticleCount(
