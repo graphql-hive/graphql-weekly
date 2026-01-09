@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const ChevronRight = (props: any) => (
+export const ChevronRight = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={14} width={14} {...props}>
     <path
       d="M5 2l5 5-5 5"
@@ -11,5 +11,3 @@ const ChevronRight = (props: any) => (
     />
   </svg>
 )
-
-export default ChevronRight

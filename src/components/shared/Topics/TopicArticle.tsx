@@ -1,5 +1,3 @@
-import type React from 'react'
-
 import { TitleArrow } from '../../vectors/TitleArrow'
 
 interface TopicArticleProps {

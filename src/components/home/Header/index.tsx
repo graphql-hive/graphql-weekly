@@ -1,13 +1,13 @@
-import * as React from 'react'
+import type { CSSProperties } from 'react'
 
 import { Container } from '../../shared/Container'
 import { Nav } from '../../shared/Nav'
-import Slack from '../../vectors/Slack'
-import Twitter from '../../vectors/Twitter'
+import { Slack } from '../../vectors/Slack'
+import { Twitter } from '../../vectors/Twitter'
 import { Subscription } from '../Subscription'
 
 type Props = {
-  submitModalClickHandler: Function
+  submitModalClickHandler: () => void
 }
 
 export const Header = (props: Props) => {
@@ -32,7 +32,7 @@ export const Header = (props: Props) => {
             {
               '--height-desktop': '80px',
               '--height-mobile': '27px',
-            } as React.CSSProperties
+            } as CSSProperties
           }
         />
 
@@ -49,7 +49,7 @@ export const Header = (props: Props) => {
               {
                 '--height-desktop': '56px',
                 '--height-mobile': '32px',
-              } as React.CSSProperties
+              } as CSSProperties
             }
           />
 
@@ -58,7 +58,7 @@ export const Header = (props: Props) => {
           <div className="w-auto flex justify-center mt-10 px-[50px] md:hidden">
             <a
               className="w-auto h-[22px] flex items-center font-medium leading-none text-lg text-white [&_svg]:mr-4 [&_svg]:opacity-80 [&_path]:stroke-white"
-              href="#"
+              href="https://twitter.com/graphqlweekly"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -67,7 +67,7 @@ export const Header = (props: Props) => {
             </a>
             <a
               className="w-auto h-[22px] flex items-center font-medium leading-none text-lg text-white [&_svg]:mr-4 [&_svg]:opacity-80 [&_path]:stroke-white ml-10"
-              href="#"
+              href="https://discord.graphql.org/"
               rel="noopener noreferrer"
               target="_blank"
             >

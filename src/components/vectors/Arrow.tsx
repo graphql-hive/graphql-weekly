@@ -1,6 +1,6 @@
-import * as React from 'react'
+import type { SVGProps } from 'react'
 
-export const Arrow = (props: any) => (
+export const Arrow = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={10} width={10} {...props}>
     <g
       opacity={0.66}

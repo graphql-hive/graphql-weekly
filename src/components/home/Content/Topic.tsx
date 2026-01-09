@@ -14,7 +14,7 @@ type Props = {
 export const Topic = ({ title, topicLinks }: Props) => {
   return (
     <ContentWrapper>
-      {topicLinks.slice(0, 11).map((topicLinkObject, i) => {
+      {topicLinks.slice(0, 11).map((topicLinkObject) => {
         return (
           <TopicBox
             articles={topicLinkObject.links.map((link) => (

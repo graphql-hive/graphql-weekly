@@ -1,5 +1,5 @@
-import ArrowLeft from '../../vectors/ArrowLeft'
-import ArrowRight from '../../vectors/ArrowRight'
+import { ArrowLeft } from '../../vectors/ArrowLeft'
+import { ArrowRight } from '../../vectors/ArrowRight'
 
 export const NavIssue = ({
   firstIssueNumber,

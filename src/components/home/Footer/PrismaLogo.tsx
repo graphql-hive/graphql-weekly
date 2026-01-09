@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const PrismaLogoSvg = (props: any) => (
+export const PrismaLogoSvg = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={32} viewBox="0 0 27 32" width={27} {...props}>
     <path
       clipRule="evenodd"
@@ -10,5 +10,3 @@ const PrismaLogoSvg = (props: any) => (
     />
   </svg>
 )
-
-export default PrismaLogoSvg

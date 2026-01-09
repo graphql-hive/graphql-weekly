@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type { ReactNode } from 'react'
 
 import { cn } from '../../../lib/cn'
 import { Link } from '../../shared/Link'
@@ -10,8 +10,8 @@ interface Props {
   items: {
     extraTop?: boolean
     href?: string
-    icon?: React.ReactNode
-    onClick?: (e?: any) => void
+    icon?: ReactNode
+    onClick?: () => void
     selected?: boolean
     text: string
     to?: string

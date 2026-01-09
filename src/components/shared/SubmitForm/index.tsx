@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
-import Check from '../../vectors/Check'
+import { Check } from '../../vectors/Check'
 import { PrimaryButton, SecondaryButton } from '../Buttons/Index'
 import { Input } from '../Input/Input'
 import { Textarea } from '../Textarea'
@@ -69,6 +69,7 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
     }
 
     return (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- Backdrop click to close dialog is standard UX pattern
       <dialog
         className="submit-dialog p-0 bg-transparent max-w-[350px] md:max-w-[600px] w-full"
         onClick={handleBackdropClick}

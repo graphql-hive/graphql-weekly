@@ -1,5 +1,3 @@
-import * as React from 'react'
-
 import { Container } from '../../shared/Container'
 import { About } from './About'
 import { FooterLine } from './FooterLine'

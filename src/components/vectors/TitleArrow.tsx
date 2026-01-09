@@ -1,6 +1,6 @@
-import * as React from 'react'
+import type { SVGProps } from 'react'
 
-export const TitleArrow = (props: any) => (
+export const TitleArrow = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={12} width={12} {...props}>
     <g
       stroke="currentColor"

@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const Close = (props: any) => (
+export const Close = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={20} width={20} {...props}>
     <rect
       fill="#fff"
@@ -20,5 +20,3 @@ const Close = (props: any) => (
     />
   </svg>
 )
-
-export default Close

@@ -1,6 +1,4 @@
-import React from 'react'
-
-const Mail = (props: any) => (
+export const Mail = () => (
   <svg fill="none" height="87" width="127" xmlns="http://www.w3.org/2000/svg">
     <g filter="url(#filter0_d)">
       <path
@@ -229,5 +227,3 @@ const Mail = (props: any) => (
     </defs>
   </svg>
 )
-
-export default Mail

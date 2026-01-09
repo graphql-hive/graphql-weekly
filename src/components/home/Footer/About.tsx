@@ -1,5 +1,3 @@
-import * as React from 'react'
-
 export const About = () => {
   return (
     <div className="flex w-full justify-center items-center">

@@ -1,13 +1,15 @@
-import * as React from 'react'
+import type { FormEvent } from 'react'
+
+import { Component } from 'react'
 
 import { PrimaryButton } from '../../shared/Buttons/Index'
 import { Input } from '../../shared/Input/Input'
-import Subscribe from '../../vectors/Subscribe'
+import { Subscribe } from '../../vectors/Subscribe'
 
 type Props = {}
 type State = { email: string; loading: boolean; message: string; name: string }
 
-export class Subscription extends React.Component<Props, State> {
+export class Subscription extends Component<Props, State> {
   state = {
     email: '',
     loading: false,
@@ -15,12 +17,12 @@ export class Subscription extends React.Component<Props, State> {
     name: '',
   }
 
-  subscribeSubmited = async (e: any) => {
+  subscribeSubmited = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (
       this.state.name !== '' &&
       this.state.email !== '' &&
-      this.state.loading == false
+      this.state.loading === false
     ) {
       this.setState({ loading: true })
 

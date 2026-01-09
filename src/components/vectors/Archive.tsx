@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const Archive = (props: any) => (
+export const Archive = (props: SVGProps<SVGSVGElement>) => (
   <svg
     fill="none"
     height={16}
@@ -18,5 +18,3 @@ const Archive = (props: any) => (
     />
   </svg>
 )
-
-export default Archive

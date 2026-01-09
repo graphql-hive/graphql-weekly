@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const Check = (props: any) => (
+export const Check = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={12} width={16} {...props}>
     <path
       d="M15 1L5.375 11 1 6.455"
@@ -12,5 +12,3 @@ const Check = (props: any) => (
     />
   </svg>
 )
-
-export default Check

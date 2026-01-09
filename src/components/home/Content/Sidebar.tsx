@@ -1,12 +1,12 @@
-import * as React from 'react'
+import { Component } from 'react'
 
 import type { IssueType } from '../../../types'
 
 import { getTopicUrlFriendly } from '../../../lib/api'
 // Local
-import Archive from '../../vectors/Archive'
-import Slack from '../../vectors/Slack'
-import Twitter from '../../vectors/Twitter'
+import { Archive } from '../../vectors/Archive'
+import { Slack } from '../../vectors/Slack'
+import { Twitter } from '../../vectors/Twitter'
 import { SideBanner } from './SideBanner'
 import { SidebarLine } from './SidebarLine'
 import { SideMenu } from './SideMenu'
@@ -15,7 +15,7 @@ import { Submit } from './Submit'
 type Props = {
   allIssues: IssueType[]
   currentIssueNumber?: number
-  submitModalClickHandler: Function
+  submitModalClickHandler: () => void
   topicsTitles: string[]
 }
 
@@ -23,7 +23,7 @@ type State = {
   showAllIssues: boolean
 }
 
-export class Sidebar extends React.Component<Props, State> {
+export class Sidebar extends Component<Props, State> {
   state = {
     showAllIssues: false,
   }

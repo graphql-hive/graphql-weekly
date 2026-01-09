@@ -1,4 +1,5 @@
-import * as React from 'react'
+import type { ReactNode } from 'react'
+
 import { PrismLight } from 'react-syntax-highlighter'
 import graphql from 'react-syntax-highlighter/dist/esm/languages/prism/graphql'
 import json from 'react-syntax-highlighter/dist/esm/languages/prism/json'
@@ -9,11 +10,12 @@ import { Pre } from './Pre'
 PrismLight.registerLanguage('graphql', graphql)
 PrismLight.registerLanguage('json', json)
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- PrismLight types are incompatible with our usage
 const SyntaxHighlighter = PrismLight as any
 
 type Props = {
   background?: boolean
-  children?: React.ReactNode | string
+  children?: ReactNode | string
   compact?: boolean
   customStyle?: object
   language?: string
@@ -54,6 +56,7 @@ export function Code({
         <Pre {...props} background={background} compact={compact} />
       )}
       showLineNumbers={showLineNumbers}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dark theme object structure doesn't match CSSProperties
       style={dark as any}
     >
       {code}
@@ -61,4 +64,5 @@ export function Code({
   )
 }
 
+// eslint-disable-next-line import/no-default-export -- re-exported via index.ts
 export default Code

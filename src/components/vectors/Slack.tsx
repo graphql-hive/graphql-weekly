@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const Slack = (props: any) => (
+export const Slack = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={22} width={22} {...props}>
     <path
       d="M13.5 9C12.67 9 12 8.33 12 7.5V2.5C12 1.67 12.67 1 13.5 1C14.33 1 15 1.67 15 2.5V7.5C15 8.33 14.33 9 13.5 9Z"
@@ -60,5 +60,3 @@ const Slack = (props: any) => (
     />
   </svg>
 )
-
-export default Slack

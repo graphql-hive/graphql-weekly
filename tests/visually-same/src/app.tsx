@@ -1,6 +1,6 @@
 import { Box, Text } from 'ink'
 import Spinner from 'ink-spinner'
-import React, { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { compareAll } from './compare.js'
 import { takeAllScreenshots } from './screenshot.js'
@@ -10,6 +10,7 @@ interface AppProps {
   command: 'compare' | 'screenshot-production' | 'update-baseline'
 }
 
+// eslint-disable-next-line import/no-default-export -- CLI entry point
 export default function App({ command }: AppProps) {
   const [phase, setPhase] = useState<string>('')
   const [current, setCurrent] = useState(0)
@@ -20,35 +21,10 @@ export default function App({ command }: AppProps) {
   const [passed, setPassed] = useState(0)
   const [failed, setFailed] = useState(0)
 
-  useEffect(() => {
-    runCommand(command)
-  }, [command])
-
-  async function runCommand(cmd: string) {
-    switch (cmd) {
-      case 'compare': {
-        await runCompare()
-
-        break
-      }
-      case 'screenshot-production': {
-        await runScreenshotProduction()
-
-        break
-      }
-      case 'update-baseline': {
-        await runUpdateBaseline()
-
-        break
-      }
-      // No default
-    }
-  }
-
-  async function runCompare() {
+  const runCompare = useCallback(async () => {
     setPhase('Taking screenshots...')
 
-    await takeAllScreenshots('local', (curr, tot, page) => {
+    await takeAllScreenshots('local', (curr, tot) => {
       setCurrent(curr)
       setTotal(tot)
     })
@@ -74,9 +50,9 @@ export default function App({ command }: AppProps) {
     setPhase('Done!')
     setCurrent(result.passed + result.failed)
     setTotal(result.passed + result.failed)
-  }
+  }, [])
 
-  async function runUpdateBaseline() {
+  const runUpdateBaseline = useCallback(async () => {
     setPhase('Taking screenshots for baseline...')
 
     await takeAllScreenshots('baseline', (curr, tot) => {
@@ -86,9 +62,9 @@ export default function App({ command }: AppProps) {
 
     setPhase('Baseline updated!')
     setCurrent(total)
-  }
+  }, [total])
 
-  async function runScreenshotProduction() {
+  const runScreenshotProduction = useCallback(async () => {
     setPhase('Taking production screenshots...')
 
     await takeAllScreenshots('production', (curr, tot) => {
@@ -98,7 +74,36 @@ export default function App({ command }: AppProps) {
 
     setPhase('Production screenshots taken!')
     setCurrent(total)
-  }
+  }, [total])
+
+  const runCommand = useCallback(
+    async (cmd: string) => {
+      switch (cmd) {
+        case 'compare': {
+          await runCompare()
+
+          break
+        }
+        case 'screenshot-production': {
+          await runScreenshotProduction()
+
+          break
+        }
+        case 'update-baseline': {
+          await runUpdateBaseline()
+
+          break
+        }
+        // No default
+      }
+    },
+    [runCompare, runScreenshotProduction, runUpdateBaseline],
+  )
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- CLI initialization pattern
+    runCommand(command)
+  }, [command, runCommand])
 
   if (phase === '') {
     return (

@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const Subscribe = (props: any) => (
+export const Subscribe = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={18} width={18} {...props}>
     <g
       opacity={0.66}
@@ -13,5 +13,3 @@ const Subscribe = (props: any) => (
     </g>
   </svg>
 )
-
-export default Subscribe

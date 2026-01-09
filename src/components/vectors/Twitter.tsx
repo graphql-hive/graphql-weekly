@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const Twitter = (props: any) => (
+export const Twitter = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={21} width={25} {...props}>
     <path
       d="M23.5 1.537a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1a10.66 10.66 0 0 1-9-4.53s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5 0-.278-.028-.556-.08-.83a7.72 7.72 0 0 0 2.08-3.67v0z"
@@ -11,5 +11,3 @@ const Twitter = (props: any) => (
     />
   </svg>
 )
-
-export default Twitter

@@ -1,10 +1,10 @@
-import * as React from 'react'
+import { Component, createRef } from 'react'
 
 import { fetchGraphQL } from '../../../lib/api'
 import { Code } from '../../shared/Code'
 // Local
-import Run from '../../vectors/Run'
-import Arrow from './Arrow'
+import { Run } from '../../vectors/Run'
+import { Arrow } from './Arrow'
 
 type Props = {}
 type State = {
@@ -67,14 +67,14 @@ const queriesList: { query: string; title: string }[] = [
   },
 ]
 
-export class Playground extends React.Component<Props, State> {
+export class Playground extends Component<Props, State> {
   state: State = {
     isResultStale: false,
     loading: false,
     result: undefined,
     selectedQuery: queriesList[0],
   }
-  private containerRef = React.createRef<HTMLDivElement>()
+  private containerRef = createRef<HTMLDivElement>()
   private observer: IntersectionObserver | null = null
   private hasRun = false
 
@@ -97,7 +97,7 @@ export class Playground extends React.Component<Props, State> {
     this.observer?.disconnect()
   }
 
-  exampleChanged = (e: any) => {
+  exampleChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedQuery = queriesList.find((q) => q.title === e.target.value)
     if (selectedQuery) {
       this.setState({ isResultStale: true, selectedQuery })
@@ -136,7 +136,7 @@ export class Playground extends React.Component<Props, State> {
               onChange={this.exampleChanged}
               value={selectedQuery.title}
             >
-              {queriesList.map((q, i) => (
+              {queriesList.map((q) => (
                 <option key={q.title} value={q.title}>
                   {q.title}
                 </option>

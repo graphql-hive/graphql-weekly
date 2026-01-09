@@ -1,5 +1,4 @@
 import { Box, Text } from 'ink'
-import React from 'react'
 
 export function StatusIcon({
   status,

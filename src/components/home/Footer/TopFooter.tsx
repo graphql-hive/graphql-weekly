@@ -1,5 +1,3 @@
-import * as React from 'react'
-
 import { ArrowLink } from '../../shared/ArrowLink'
 
 export const TopFooter = () => {

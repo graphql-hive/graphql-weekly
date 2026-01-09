@@ -1,6 +1,7 @@
 // Typescript custom
 typescript.displayName = 'typescript'
 typescript.aliases = ['ts']
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prism language registration requires any
 function typescript(Prism: any) {
   Prism.languages.typescript = Prism.languages.extend('javascript', {
     // From JavaScript Prism keyword list and TypeScript language spec: https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#221-reserved-words
@@ -12,4 +13,5 @@ function typescript(Prism: any) {
   Prism.languages.ts = Prism.languages.typescript
 }
 
+// eslint-disable-next-line import/no-default-export -- Prism language registration format
 export default typescript

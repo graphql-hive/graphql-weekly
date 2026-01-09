@@ -64,9 +64,11 @@ export async function getAllIssues(): Promise<AllIssuesData> {
   let topicsList: Record<string, TopicLinksType[]> = {}
   for (const issue of allIssues) {
     for (const topic of issue.topics) {
-      if (!topicsList[topic.title]) {
-        topicsList[topic.title] = []
+      if (!topic.title || topic.title.trim() === '') {
+        continue
       }
+
+      topicsList[topic.title] ||= []
       topicsList[topic.title].push({
         issueDate: issue.date,
         issueNumber: issue.number,
@@ -76,6 +78,7 @@ export async function getAllIssues(): Promise<AllIssuesData> {
   }
 
   topicsList = unifySimilarTopics(topicsList)
+  topicsList = sortTopicsByArticleCount(topicsList)
 
   return {
     allIssues,
@@ -123,6 +126,7 @@ function unifySimilarTopics(
     Talks: Videos,
     Tools: Tools_and_Open_Source,
     'Tools & Open-Source': Tools_and_Open_Source,
+    'Tools and Open Source': Tools_and_Open_Source,
     Tutorial: Tutorials,
     'Tutorials & Articles': Articles,
     Video: Videos,
@@ -141,6 +145,7 @@ function unifySimilarTopics(
     unifiedTopics[similarTitle].push(...topicsList[currentTitle])
 
     if (currentTitle !== similarTitle) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- Necessary for topic unification
       delete unifiedTopics[currentTitle]
     }
   }

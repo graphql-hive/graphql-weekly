@@ -1,10 +1,8 @@
-import * as React from 'react'
-
 import { PrimaryButton } from '../../shared/Buttons/Index'
-import Mail from '../../vectors/Mail'
+import { Mail } from '../../vectors/Mail'
 
 type Props = {
-  submitModalClickHandler: Function
+  submitModalClickHandler: () => void
 }
 
 export const Submit = (props: Props) => {

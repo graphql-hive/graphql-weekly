@@ -1,6 +1,6 @@
-import React from 'react'
+import type { SVGProps } from 'react'
 
-const ArrowLeft = (props: any) => (
+export const ArrowLeft = (props: SVGProps<SVGSVGElement>) => (
   <svg fill="none" height={14} width={14} {...props}>
     <path
       d="M13 7H1M7 13L1 7l6-6"
@@ -11,5 +11,3 @@ const ArrowLeft = (props: any) => (
     />
   </svg>
 )
-
-export default ArrowLeft

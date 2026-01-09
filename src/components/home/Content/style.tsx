@@ -1,6 +1,12 @@
-import * as React from 'react'
+import type { ReactNode } from 'react'
 
-export const ContentWrapper = ({ children, ...props }: any) => (
+export const ContentWrapper = ({
+  children,
+  ...props
+}: {
+  [key: string]: unknown
+  children: ReactNode
+}) => (
   <div
     className="flex-grow flex-shrink max-w-3xl -mt-16 pt-2 w-full"
     {...props}

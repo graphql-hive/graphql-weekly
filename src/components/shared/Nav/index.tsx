@@ -1,17 +1,17 @@
-import * as React from 'react'
+import { Component, type CSSProperties } from 'react'
 
 import { Arrow } from '../../vectors/Arrow'
 // Local
 import { Container } from '../Container'
 import { Link } from '../Link'
-import Button from './Button'
-import Close from './Close'
-import LogoSvg from './Logo'
+import { Button } from './Button'
+import { Close } from './Close'
+import { LogoSvg } from './Logo'
 
-type Props = { submitModalClickHandler: Function }
+type Props = { submitModalClickHandler: () => void }
 type State = { isOpened: boolean }
 
-export class Nav extends React.Component<Props, State> {
+export class Nav extends Component<Props, State> {
   state = { isOpened: false }
 
   menuClickHandler = () => {
@@ -30,7 +30,7 @@ export class Nav extends React.Component<Props, State> {
             {
               '--height-desktop': '40px',
               '--height-mobile': '32px',
-            } as React.CSSProperties
+            } as CSSProperties
           }
         />
         <nav className="flex min-h-[52px] justify-between flex-wrap px-6 md:flex-nowrap md:px-0">
@@ -38,12 +38,13 @@ export class Nav extends React.Component<Props, State> {
             <LogoSvg />
           </Link>
 
-          <span
-            className="w-auto h-5 mt-2.5 mr-1.5 cursor-pointer md:hidden"
+          <button
+            className="w-auto h-5 mt-2.5 mr-1.5 cursor-pointer md:hidden border-none bg-transparent p-0"
             onClick={this.menuClickHandler}
+            type="button"
           >
             {isOpened ? <Close /> : <Button />}
-          </span>
+          </button>
 
           <div
             className={`
