@@ -8,7 +8,7 @@
         "@astrojs/cloudflare": "12.6.12",
         "@astrojs/react": "4.2.0",
         "@astrojs/sitemap": "3.3.0",
-        "@hasparus/eslint-config": "2.0.7",
+        "@hasparus/eslint-config": "2.0.8",
         "@types/popper.js": "1.11.0",
         "astro": "5.1.0",
         "fast-memoize": "2.5.2",
@@ -221,7 +221,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
-    "@hasparus/eslint-config": ["@hasparus/eslint-config@2.0.7", "", { "dependencies": { "@eslint/eslintrc": "3.3.3", "@eslint/js": "9.17.0", "@theguild/eslint-config": "0.13.4", "eslint-plugin-import": "2.32.0", "eslint-plugin-jsonc": "2.21.0", "eslint-plugin-jsx-a11y": "6.10.2", "eslint-plugin-mdx": "3.6.2", "eslint-plugin-n": "17.23.1", "eslint-plugin-perfectionist": "4.6.0", "eslint-plugin-promise": "7.2.1", "eslint-plugin-react": "7.37.5", "eslint-plugin-react-hooks": "7.0.1", "eslint-plugin-sonarjs": "3.0.5", "eslint-plugin-unicorn": "62.0.0", "eslint-plugin-yml": "1.19.1", "globals": "15.14.0", "typescript-eslint": "8.18.2" }, "peerDependencies": { "eslint": "^9.0.0", "typescript": "^5.0.0" } }, "sha512-maP8xJ8Hf+5rtFI0PU/WRS35DH/edYtLhzxVoxCSASlsEf/CA935TLZRkUDZJH1YQRgo4FVDmly5GC7Lnq6Svw=="],
+    "@hasparus/eslint-config": ["@hasparus/eslint-config@2.0.8", "", { "dependencies": { "@eslint/eslintrc": "3.3.3", "@eslint/js": "9.17.0", "@theguild/eslint-config": "0.13.4", "eslint-plugin-import": "2.32.0", "eslint-plugin-jsonc": "2.21.0", "eslint-plugin-jsx-a11y": "6.10.2", "eslint-plugin-mdx": "3.6.2", "eslint-plugin-n": "17.23.1", "eslint-plugin-perfectionist": "4.6.0", "eslint-plugin-promise": "7.2.1", "eslint-plugin-react": "7.37.5", "eslint-plugin-react-hooks": "7.0.1", "eslint-plugin-sonarjs": "3.0.5", "eslint-plugin-unicorn": "62.0.0", "eslint-plugin-yml": "1.19.1", "globals": "15.14.0", "typescript-eslint": "8.18.2" }, "peerDependencies": { "eslint": "^9.0.0", "typescript": "^5.0.0" } }, "sha512-TqNpEMzNLwbgijWeOdqpKiCsU8JvzEHYUESDUGxUofYvzcLoQG/bQ51+DoNcwNa7UZAyihDegwHU5Yd5Dr2ESg=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.1", "", {}, "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA=="],
 
