@@ -10,10 +10,10 @@ export interface InputProps
 
 export function Input({ className, label, placeholder, ...rest }: InputProps) {
   return (
-    <div className="h-10 inline-flex items-stretch shrink grow w-full">
-      <label className="w-[69px] shrink-0 font-medium leading-none text-base md:text-lg uppercase self-center text-dark">
+    <label className="h-10 inline-flex items-stretch shrink grow w-full">
+      <span className="w-[69px] shrink-0 font-medium leading-none text-base md:text-lg uppercase self-center text-dark">
         {label}
-      </label>
+      </span>
       <input
         className={cn(
           "grow shrink flex-auto h-10 w-full p-0 font-rubik font-normal leading-none text-base md:text-lg border-none outline-hidden text-footer-dark placeholder:text-light-dark",
@@ -23,6 +23,6 @@ export function Input({ className, label, placeholder, ...rest }: InputProps) {
         type="text"
         {...rest}
       />
-    </div>
+    </label>
   );
 }

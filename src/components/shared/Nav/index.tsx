@@ -34,8 +34,12 @@ export class Nav extends Component<Props, State> {
           }
         />
         <nav className="flex min-h-[52px] justify-between flex-wrap px-6 md:flex-nowrap md:px-0">
-          <Link className="inline-flex items-center -ml-1.5 md:ml-0" to="/">
-            <LogoSvg />
+          <Link
+            aria-label="Go to main page"
+            className="inline-flex items-center -ml-1.5 md:ml-0 h-[52px]"
+            to="/"
+          >
+            <LogoSvg className="h-full w-auto" />
           </Link>
 
           <button

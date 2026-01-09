@@ -11,6 +11,7 @@ type Props = {
   href?: string;
 
   // other
+  "aria-label"?: string;
   className?: string;
   onClick?: (e: MouseEvent) => void;
   onMouseEnter?: (e: MouseEvent) => void;
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const Link = ({
+  "aria-label": ariaLabel,
   children,
   className,
   href,
@@ -35,6 +37,7 @@ export const Link = ({
   to,
 }: Props) => {
   const rest = {
+    "aria-label": ariaLabel,
     className,
     onClick,
     onMouseEnter,

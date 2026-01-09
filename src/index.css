@@ -19,6 +19,8 @@
   --color-purple: #6560e2;
   --color-white: #ffffff;
 
+  --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: Roboto Mono, Consolas, Menlo, Monaco, monospace;
 
   --text-huge: 48px;
@@ -34,4 +36,29 @@
   --spacing-18: 72px;
 
   --z-index-popover: 100;
+}
+
+html {
+  background: #d60690;
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  html * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+body {
+  background: #f1f1f4;
+}
+
+@layer base {
+  svg {
+    display: inline-block;
+  }
+
+  button {
+    white-space: nowrap;
+  }
 }
