@@ -36,7 +36,8 @@ export const SideMenu = ({ heading, isExpanded, items }: Props) => {
                 onClick={e.onClick}
                 className={cn(
                   'flex items-center w-full no-underline font-medium leading-[18px] text-lg align-middle text-[#081146]',
-                  e.extraTop ? 'mt-6' : 'mt-4',
+                  '-ml-2 pl-2 -mr-2 pr-2 py-1 rounded hover:bg-[#8683d40c] transition-colors',
+                  e.extraTop ? 'mt-5' : 'mt-3',
                 )}
                 style={e.selected ? { color: topicColor } : undefined}
               >
