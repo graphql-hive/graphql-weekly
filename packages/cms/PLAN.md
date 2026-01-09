@@ -60,3 +60,16 @@ Up/down arrow buttons on topic headers. ArrowUp/ArrowDown keyboard support when 
 - Merged PageHeader into Navbar (saves vertical space)
 - `hover:duration-0` pattern for instant hover feedback
 - Logo link to home page
+- Dark mode (system preference via `@media prefers-color-scheme`)
+- Index page revamp with keyboard navigation (↑↓ nav, Enter open, g/G first/last)
+- CommitMono font with stylistic sets
+- Design system overhaul:
+  - Primary color: #C2F653
+  - No bold text
+  - No border radii
+  - Button variants: primary, secondary, danger
+  - Minimalist scrollbar styling
+- Two-column layout on `xl:` breakpoint (index page)
+- Navbar children aligned to `max-w-4xl` with absolute logo
+
+---

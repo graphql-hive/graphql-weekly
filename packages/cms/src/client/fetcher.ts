@@ -1,7 +1,10 @@
 import { GraphQLClient } from "graphql-request";
 
-const endpoint = "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
-const token = "JWT_TOKEN_REDACTED";
+const endpoint =
+  "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
+// TODO: This should be in an env var as it allows admin access to the whole newsletter
+const token =
+  "JWT_TOKEN_REDACTED";
 
 export const graphqlClient = new GraphQLClient(endpoint, {
   headers: {
@@ -16,4 +19,3 @@ export function fetcher<TData, TVariables extends Record<string, unknown>>(
 ): () => Promise<TData> {
   return async () => graphqlClient.request<TData>(query, variables);
 }
-

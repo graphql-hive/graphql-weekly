@@ -1,3 +1,4 @@
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { OpenPanel } from "../components/Panels";
 import ClickTarget from "../components/ClickTarget";
 import TopicDialog from "./TopicDialog";
@@ -22,6 +23,8 @@ interface LinkCardProps {
   onChange: (link: Link) => void;
   onDelete: () => void;
   refresh: () => void;
+  dragListeners?: SyntheticListenerMap;
+  isDragOverlay?: boolean;
 }
 
 export default function LinkCard({
@@ -30,10 +33,15 @@ export default function LinkCard({
   onChange,
   onDelete,
   refresh,
+  dragListeners,
+  isDragOverlay,
 }: LinkCardProps) {
   return (
-    <div className="group flex bg-white dark:bg-neu-900 border-b border-neu-200 dark:border-neu-700 hover:bg-neu-50 dark:hover:bg-neu-800 transition-colors hover:duration-0">
-      <div className="w-8 flex items-center justify-center opacity-30 group-hover:opacity-70 cursor-grab active:cursor-grabbing shrink-0 border-r border-neu-100 dark:border-neu-800">
+    <div className={`group flex bg-white dark:bg-neu-900 border-b border-neu-200 dark:border-neu-700 hover:bg-neu-50 dark:hover:bg-neu-800 transition-colors hover:duration-0 ${isDragOverlay ? "shadow-lg" : ""}`}>
+      <div
+        className="w-8 flex items-center justify-center opacity-30 group-hover:opacity-70 cursor-grab active:cursor-grabbing shrink-0 border-r border-neu-100 dark:border-neu-800 touch-none"
+        {...dragListeners}
+      >
         <svg
           className="w-4 h-4 text-neu-400 dark:text-neu-500"
           viewBox="0 0 24 24"
