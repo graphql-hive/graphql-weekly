@@ -71,7 +71,7 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
     return (
       // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- Backdrop click to close dialog is standard UX pattern
       <dialog
-        className="submit-dialog p-0 bg-transparent max-w-[350px] md:max-w-[600px] w-full"
+        className="submit-dialog p-0 bg-transparent m-auto  md:max-w-[600px] w-full"
         onClick={handleBackdropClick}
         ref={dialogRef}
       >
@@ -145,7 +145,7 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
                 </SecondaryButton>
               </div>
             ) : (
-              <div className="flex shrink-0 px-12 justify-between mt-[10px]">
+              <div className="flex shrink-0 px-6 md:px-12 justify-between mt-[10px]">
                 <PrimaryButton
                   disabled={loading}
                   icon={<Check />}
@@ -162,7 +162,7 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
         </div>
       </dialog>
     );
-  },
+  }
 );
 
 const linkSubmission = async ({
@@ -210,6 +210,6 @@ const linkSubmission = async ({
       }),
       headers: { "Content-Type": "application/json" },
       method: "POST",
-    },
+    }
   ).then((res) => res.json());
 };

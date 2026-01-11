@@ -46,13 +46,14 @@
     display 0.35s allow-discrete;
 }
 
-.submit-dialog:open {
+/* Use [open] attribute for broader browser support (Safari <17.2 doesn't support :open) */
+.submit-dialog[open] {
   opacity: 1;
   transform: scale(1) translateY(0);
 }
 
 @starting-style {
-  .submit-dialog:open {
+  .submit-dialog[open] {
     opacity: 0;
     transform: scale(0.9) translateY(16px);
   }
@@ -66,12 +67,12 @@
     background-color 0.15s;
 }
 
-.submit-dialog:open::backdrop {
+.submit-dialog[open]::backdrop {
   background-color: rgba(8, 17, 70, 0.85);
 }
 
 @starting-style {
-  .submit-dialog:open::backdrop {
+  .submit-dialog[open]::backdrop {
     background-color: transparent;
   }
 }
