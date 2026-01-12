@@ -1,9 +1,20 @@
 {
   "name": "graphqlweekly",
-  "description": "GraphQL Weekly Homepage",
+  "description": "GraphQL Weekly Monorepo",
   "version": "2.0.0",
-  "author": "Mo Rajabifard <mo.rajbi@gmail.com>",
+  "authors": [
+    "Mo Rajabifard <mo.rajbi@gmail.com>",
+    "Piotr Monwid-Olechnowicz <hasparus@gmail.com>"
+  ],
   "type": "module",
+  "packageManager": "bun@1.3.5",
+  "engines": {
+    "node": ">=24.1.0"
+  },
+  "workspaces": [
+    ".",
+    "tests/visually-same"
+  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -47,10 +58,5 @@
     "typescript": "5.7.2",
     "visually-same": "workspace:*",
     "wrangler": "4.58.0"
-  },
-  "packageManager": "bun@1.3.5",
-  "workspaces": [
-    ".",
-    "tests/visually-same"
-  ]
+  }
 }
