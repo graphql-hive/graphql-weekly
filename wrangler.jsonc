@@ -11,4 +11,11 @@
   "observability": {
     "enabled": true,
   },
+  "d1_databases": [
+    {
+      "binding": "graphqlweekly",
+      "database_name": "graphqlweekly",
+      "database_id": "f7a8d65f-a03c-4505-b7bb-5cd48ad7f390",
+    },
+  ],
 }
