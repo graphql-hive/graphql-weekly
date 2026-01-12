@@ -7,7 +7,7 @@ export interface Context {
 
 const getAuth = (event: Request) => {
   try {
-    const token = event.headers.get("authorization")
+    const token = event.headers.get('authorization')
     if (!token) {
       return null
     }
@@ -21,5 +21,5 @@ const getAuth = (event: Request) => {
 }
 
 export function createContext(event: Request): Context {
-  return {  user: getAuth(event) }
+  return { user: getAuth(event) }
 }

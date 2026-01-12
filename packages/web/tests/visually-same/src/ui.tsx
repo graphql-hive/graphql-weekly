@@ -1,29 +1,29 @@
-import { Box, Text } from 'ink'
+import { Box, Text } from "ink";
 
 export function StatusIcon({
   status,
 }: {
-  status: 'fail' | 'loading' | 'pass' | 'pending'
+  status: "fail" | "loading" | "pass" | "pending";
 }) {
   const icons = {
-    fail: '✗',
-    loading: '…',
-    pass: '✓',
-    pending: '○',
-  }
+    fail: "✗",
+    loading: "…",
+    pass: "✓",
+    pending: "○",
+  };
 
   const colors = {
-    fail: 'red',
-    loading: 'cyan',
-    pass: 'green',
-    pending: 'yellow',
-  }
+    fail: "red",
+    loading: "cyan",
+    pass: "green",
+    pending: "yellow",
+  };
 
   return (
     <Text bold color={colors[status]}>
       {icons[status]}
     </Text>
-  )
+  );
 }
 
 export function Progress({
@@ -31,11 +31,11 @@ export function Progress({
   message,
   total,
 }: {
-  current: number
-  message: string
-  total: number
+  current: number;
+  message: string;
+  total: number;
 }) {
-  const progress = Math.round((current / total) * 100)
+  const progress = Math.round((current / total) * 100);
 
   return (
     <Box flexDirection="column" gap={1}>
@@ -43,28 +43,28 @@ export function Progress({
         <Text color="cyan">
           <Text color="dim">
             [{current}/{total}]
-          </Text>{' '}
+          </Text>{" "}
           {message}
         </Text>
       </Box>
       <Box>
         <Text color="dim">
-          {'█'.repeat(Math.floor(progress / 2))}
-          {'░'.repeat(50 - Math.floor(progress / 2))}
+          {"█".repeat(Math.floor(progress / 2))}
+          {"░".repeat(50 - Math.floor(progress / 2))}
         </Text>
       </Box>
     </Box>
-  )
+  );
 }
 
 export function CompareResult({
   pageName,
   result,
 }: {
-  pageName: string
-  result: { diffPercentage?: number; match: boolean; reason?: string }
+  pageName: string;
+  result: { diffPercentage?: number; match: boolean; reason?: string };
 }) {
-  const status = result.match ? 'pass' : 'fail'
+  const status = result.match ? "pass" : "fail";
 
   return (
     <Box gap={2}>
@@ -74,7 +74,7 @@ export function CompareResult({
         <Text color="dim"> (diff: {result.diffPercentage?.toFixed(2)}%)</Text>
       )}
     </Box>
-  )
+  );
 }
 
 export function Summary({
@@ -82,11 +82,11 @@ export function Summary({
   passed,
   total,
 }: {
-  failed: number
-  passed: number
-  total: number
+  failed: number;
+  passed: number;
+  total: number;
 }) {
-  const allPassed = failed === 0
+  const allPassed = failed === 0;
 
   return (
     <Box flexDirection="column" gap={1} marginTop={1}>
@@ -94,8 +94,8 @@ export function Summary({
         <Text bold>Results:</Text>
       </Box>
       <Box gap={4}>
-        <Text color={passed > 0 ? 'green' : 'dim'}>✓ {passed} passed</Text>
-        <Text color={failed > 0 ? 'red' : 'dim'}>✗ {failed} failed</Text>
+        <Text color={passed > 0 ? "green" : "dim"}>✓ {passed} passed</Text>
+        <Text color={failed > 0 ? "red" : "dim"}>✗ {failed} failed</Text>
         <Text color="dim">({total} total)</Text>
       </Box>
       {allPassed && (
@@ -113,5 +113,5 @@ export function Summary({
         </Box>
       )}
     </Box>
-  )
+  );
 }

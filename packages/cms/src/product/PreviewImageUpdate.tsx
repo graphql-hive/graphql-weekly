@@ -21,7 +21,7 @@ export default function PreviewImageUpdate({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setLink(e.target.value);
     setLinkError(
-      /^https?:\/\/.+/.test(e.target.value) ? "" : "This is not a valid url"
+      /^https?:\/\/.+/.test(e.target.value) ? "" : "This is not a valid url",
     );
   };
 
@@ -42,7 +42,7 @@ export default function PreviewImageUpdate({
         onError: () => {
           setLinkError("Error while submitting");
         },
-      }
+      },
     );
   };
 

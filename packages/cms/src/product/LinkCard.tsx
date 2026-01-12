@@ -37,7 +37,9 @@ export default function LinkCard({
   isDragOverlay,
 }: LinkCardProps) {
   return (
-    <div className={`group flex bg-white dark:bg-neu-900 border-b border-neu-200 dark:border-neu-700 hover:bg-neu-50 dark:hover:bg-neu-800 transition-colors hover:duration-0 ${isDragOverlay ? "shadow-lg" : ""}`}>
+    <div
+      className={`group flex bg-white dark:bg-neu-900 border-b border-neu-200 dark:border-neu-700 hover:bg-neu-50 dark:hover:bg-neu-800 transition-colors hover:duration-0 ${isDragOverlay ? "shadow-lg" : ""}`}
+    >
       <div
         className="w-8 flex items-center justify-center opacity-30 group-hover:opacity-70 cursor-grab active:cursor-grabbing shrink-0 border-r border-neu-100 dark:border-neu-800 touch-none"
         {...dragListeners}

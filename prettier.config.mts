@@ -1,15 +1,15 @@
-import type { Config } from 'prettier'
+import type { Config } from "prettier";
 
 const config: Config = {
   overrides: [
     {
-      files: '*.astro',
+      files: "*.astro",
       options: {
-        parser: 'astro',
+        parser: "astro",
       },
     },
   ],
-  plugins: ['prettier-plugin-astro'],
-}
+  plugins: ["prettier-plugin-astro"],
+};
 
-export default config
+export default config;

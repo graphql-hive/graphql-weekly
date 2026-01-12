@@ -4,9 +4,7 @@ export function HeaderContainer({
   className,
   ...props
 }: ComponentProps<"section">) {
-  return (
-    <section {...props} className={`py-4 flex ${className ?? ""}`} />
-  );
+  return <section {...props} className={`py-4 flex ${className ?? ""}`} />;
 }
 
 export function Header({ className, ...props }: ComponentProps<"h1">) {

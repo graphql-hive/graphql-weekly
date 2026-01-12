@@ -5,7 +5,12 @@
   src: url("./fonts/CommitMono-VariableFont.woff2") format("woff2");
   font-weight: 200 700;
   font-display: swap;
-  font-feature-settings: "ss01" on, "ss02" on, "ss04" on, "ss05" on, "cv08" on;
+  font-feature-settings:
+    "ss01" on,
+    "ss02" on,
+    "ss04" on,
+    "ss05" on,
+    "cv08" on;
 }
 
 @theme inline {
@@ -30,7 +35,12 @@ body {
   padding: 0;
   background-color: #fafafa;
   font-family: "CommitMono", ui-monospace, monospace;
-  font-feature-settings: "ss01" on, "ss02" on, "ss04" on, "ss05" on, "cv08" on;
+  font-feature-settings:
+    "ss01" on,
+    "ss02" on,
+    "ss04" on,
+    "ss05" on,
+    "cv08" on;
 }
 
 @media (prefers-color-scheme: dark) {

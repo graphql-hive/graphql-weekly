@@ -2,7 +2,8 @@
 import { GraphQLClient, gql } from "graphql-request";
 import { readFileSync } from "fs";
 
-const endpoint = "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
+const endpoint =
+  "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
 const token = "JWT_TOKEN_REDACTED";
 
 const client = new GraphQLClient(endpoint, {
@@ -55,7 +56,12 @@ const CREATE_LINK = gql`
 `;
 
 const UPDATE_LINK = gql`
-  mutation UpdateLink($id: String!, $title: String!, $text: String!, $url: String!) {
+  mutation UpdateLink(
+    $id: String!
+    $title: String!
+    $text: String!
+    $url: String!
+  ) {
     updateLink(id: $id, title: $title, text: $text, url: $url) {
       id
     }
@@ -63,8 +69,16 @@ const UPDATE_LINK = gql`
 `;
 
 const CREATE_TOPIC = gql`
-  mutation CreateTopic($issueId: String!, $title: String!, $issue_comment: String!) {
-    createTopic(issueId: $issueId, title: $title, issue_comment: $issue_comment) {
+  mutation CreateTopic(
+    $issueId: String!
+    $title: String!
+    $issue_comment: String!
+  ) {
+    createTopic(
+      issueId: $issueId
+      title: $title
+      issue_comment: $issue_comment
+    ) {
       id
     }
   }
@@ -83,7 +97,7 @@ function parseTSV(filePath: string): Link[] {
   const lines = content.trim().split("\n");
   const [_header, ...rows] = lines;
 
-  return rows.map(row => {
+  return rows.map((row) => {
     const [url, title, description, tag] = row.split("\t");
     return { url, title, description, tag };
   });
@@ -91,29 +105,42 @@ function parseTSV(filePath: string): Link[] {
 
 async function findIssueByNumber(issueNumber: number): Promise<Issue | null> {
   const data = await client.request<{ allIssues: Issue[] }>(ALL_ISSUES);
-  return data.allIssues.find(issue => issue.number === issueNumber) ?? null;
+  return data.allIssues.find((issue) => issue.number === issueNumber) ?? null;
 }
 
 async function getIssueWithTopics(issueId: string): Promise<Issue | null> {
-  const data = await client.request<{ issue: Issue }>(ISSUE_WITH_TOPICS, { id: issueId });
+  const data = await client.request<{ issue: Issue }>(ISSUE_WITH_TOPICS, {
+    id: issueId,
+  });
   return data.issue;
 }
 
 async function createLink(url: string): Promise<string> {
-  const data = await client.request<{ createLink: { id: string } }>(CREATE_LINK, { url });
+  const data = await client.request<{ createLink: { id: string } }>(
+    CREATE_LINK,
+    { url },
+  );
   return data.createLink.id;
 }
 
-async function updateLink(id: string, title: string, text: string, url: string): Promise<void> {
+async function updateLink(
+  id: string,
+  title: string,
+  text: string,
+  url: string,
+): Promise<void> {
   await client.request(UPDATE_LINK, { id, title, text, url });
 }
 
 async function createTopic(issueId: string, title: string): Promise<string> {
-  const data = await client.request<{ createTopic: { id: string } }>(CREATE_TOPIC, {
-    issueId,
-    title,
-    issue_comment: "",
-  });
+  const data = await client.request<{ createTopic: { id: string } }>(
+    CREATE_TOPIC,
+    {
+      issueId,
+      title,
+      issue_comment: "",
+    },
+  );
   return data.createTopic.id;
 }
 
@@ -141,9 +168,11 @@ async function main() {
 
   const issueWithTopics = await getIssueWithTopics(issue.id);
   const existingTopics = new Map(
-    issueWithTopics?.topics?.map(t => [t.title.toLowerCase(), t.id]) ?? []
+    issueWithTopics?.topics?.map((t) => [t.title.toLowerCase(), t.id]) ?? [],
   );
-  console.log(`Existing topics: ${[...existingTopics.keys()].join(", ") || "(none)"}`);
+  console.log(
+    `Existing topics: ${[...existingTopics.keys()].join(", ") || "(none)"}`,
+  );
 
   const links = parseTSV(tsvPath);
   console.log(`Found ${links.length} links to add`);
@@ -175,7 +204,7 @@ async function main() {
   console.log("\nDone!");
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("Error:", err);
   process.exit(1);
 });

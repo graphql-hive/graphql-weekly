@@ -162,7 +162,7 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
         </div>
       </dialog>
     );
-  }
+  },
 );
 
 const linkSubmission = async ({
@@ -210,6 +210,6 @@ const linkSubmission = async ({
       }),
       headers: { "Content-Type": "application/json" },
       method: "POST",
-    }
+    },
   ).then((res) => res.json());
 };

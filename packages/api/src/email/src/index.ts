@@ -1,105 +1,108 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
-import axios from "axios";
+import { APIGatewayEvent, Context } from 'aws-lambda'
+import axios from 'axios'
 
 interface Payload {
   data: {
     Issue: {
-      updatedFields: string[];
-      node: Issue;
-    };
-  };
+      updatedFields: string[]
+      node: Issue
+    }
+  }
 }
 
 interface Issue {
-  id: string;
-  title: string;
-  published: boolean;
-  versionCount: number;
-  topics: Topic[];
-  isFoundationEdition: boolean;
+  id: string
+  title: string
+  published: boolean
+  versionCount: number
+  topics: Topic[]
+  isFoundationEdition: boolean
 }
 
 interface Topic {
-  title: string;
-  links: Link[];
+  title: string
+  links: Link[]
 }
 
 interface Link {
-  url: string;
-  title: string;
-  text: string;
+  url: string
+  title: string
+  text: string
 }
 
 const mailchimpApi = axios.create({
   baseURL: `https://${process.env.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/`,
   auth: {
     username: 'anystring',
-    password: process.env.MAILCHIMP_API_KEY as string
-  }
-});
+    password: process.env.MAILCHIMP_API_KEY as string,
+  },
+})
 
 export async function handler(event: APIGatewayEvent, context: Context) {
   try {
     if (event.httpMethod !== 'POST') {
       return {
         statusCode: 405,
-        body: JSON.stringify({ message: 'Method Not Allowed' })
-      };
+        body: JSON.stringify({ message: 'Method Not Allowed' }),
+      }
     }
     if (!event.body) {
-      throw new Error('No payload found');
+      throw new Error('No payload found')
     }
-    console.log('making email');
-    const payload = JSON.parse(event.body) as Payload;
-    const issue = payload.data.Issue.node;
+    console.log('making email')
+    const payload = JSON.parse(event.body) as Payload
+    const issue = payload.data.Issue.node
 
-    console.log('the issue', issue);
+    console.log('the issue', issue)
 
-    const mailchimpListId = 'b07e0b3012';
+    const mailchimpListId = 'b07e0b3012'
 
     const shouldRun =
       issue.published &&
-      payload.data.Issue.updatedFields.includes('versionCount');
+      payload.data.Issue.updatedFields.includes('versionCount')
 
     if (!shouldRun) {
-      console.log('Nothing to do here...');
+      console.log('Nothing to do here...')
       return {
         statusCode: 204,
-        body: JSON.stringify({ message: 'Nothing to do' })
-      };
+        body: JSON.stringify({ message: 'Nothing to do' }),
+      }
     }
 
     const response = await mailchimpApi.post('campaigns', {
-      type: "regular",
+      type: 'regular',
       recipients: {
         list_id: mailchimpListId,
       },
       settings: {
         subject_line: `GraphQL Weekly - ${issue.title}`,
-        reply_to: "hello@graphqlweekly.com",
-        from_name: "GraphQL Weekly",
+        reply_to: 'hello@graphqlweekly.com',
+        from_name: 'GraphQL Weekly',
         title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`,
         inline_css: true,
       },
     })
 
-    const campaignId = response.data.id;
+    const campaignId = response.data.id
 
     // Create campaign content
-    const contentResponse = await mailchimpApi.put(`campaigns/${campaignId}/content`, {
-      html: formatTemplate(issue),
-    });
+    const contentResponse = await mailchimpApi.put(
+      `campaigns/${campaignId}/content`,
+      {
+        html: formatTemplate(issue),
+      },
+    )
 
     return {
       statusCode: 204,
-      body: JSON.stringify({ message: 'Email created' })
-    };
+      body: JSON.stringify({ message: 'Email created' }),
+    }
   } catch (err) {
-    console.log(err);
+    console.log(err)
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: `${err.message}` })
-    };
+      body: JSON.stringify({ message: `${err.message}` }),
+    }
   }
 }
 
@@ -115,7 +118,7 @@ const foundationEditionHeader = `
   <p><em>The <a href="https://foundation.graphql.org/faq/" target="_blank" style="text-decoration: underline;">GraphQL Foundation</a> provides governance for GraphQL as well as vendor-neutral oversight of funding, events, operations resources, and more. It was formed in 2018 by <a href="https://landscape.graphql.org/category=graph-ql-foundation-member&format=logo-mode" target="_blank" style="text-decoration: underline;">various tech companies</a> and hosted under the <a href="https://www.linuxfoundation.org/" target="_blank" style="text-decoration: underline;">Linux Foundation</a>. It's an open, neutral home for the GraphQL community.</em></p>
   <p><em>You can find out more by visiting <a href="https://foundation.graphql.org/" target="_blank" style="text-decoration: underline;">foundation.graphql.org</a></em><p>
 
-</div>`;
+</div>`
 
 const colorMap = {
   default: '#f531b1',
@@ -125,46 +128,44 @@ const colorMap = {
   videos: '#27AE60',
   'tools & open source': '#F0950C',
   'open source': '#F0950C',
-  conference: '#6560E2'
-};
+  conference: '#6560E2',
+}
 
 /**
  * Render the first section and all other Topics of an issue
  * @param issue
  */
-function renderContent(
-  issue: Issue
-): {
+function renderContent(issue: Issue): {
   firstTopic: {
-    text: string;
-    color: string;
-    title: string;
-  };
-  content: string;
-  header: any;
-  footer: any;
+    text: string
+    color: string
+    title: string
+  }
+  content: string
+  header: any
+  footer: any
 } {
-  const firstTopic = issue.topics.slice(0, 1)[0];
-  const restTopics = issue.topics.slice(1);
+  const firstTopic = issue.topics.slice(0, 1)[0]
+  const restTopics = issue.topics.slice(1)
 
   return {
     firstTopic: {
       title: firstTopic.title,
       color: getColor(firstTopic.title),
-      text: renderTopicContent(firstTopic)
+      text: renderTopicContent(firstTopic),
     },
     header: issue.isFoundationEdition ? foundationEditionHeader : '',
     content: renderTopics(restTopics),
-    footer: renderFooter(issue.isFoundationEdition)
-  };
+    footer: renderFooter(issue.isFoundationEdition),
+  }
 }
 
 function renderTopics(topics: Topic[]) {
-  return topics.map(renderTopic).join('\n');
+  return topics.map(renderTopic).join('\n')
 }
 
 function getColor(title: string): string {
-  return colorMap[title.toLowerCase()] || colorMap.default;
+  return colorMap[title.toLowerCase()] || colorMap.default
 }
 
 function renderFooter(isFoundation) {
@@ -175,7 +176,7 @@ function renderFooter(isFoundation) {
       <p>Developers can get involved in the community and contribute to the project at <a href="https://github.com/graphql">https://github.com/graphql</a>.</p>
       <p>Organizations interested in becoming members of the GraphQL Foundation or the GraphQL Specification can learn more on our <a href="https://foundation.graphql.org/join/" target="_blank"></a>member page</a>. If you have questions about membership, please send an email to <a href="mailto:membership@graphql.org">membership@graphql.org</a>.</p>
     </td>
-    `;
+    `
   } else {
     return `
     <td valign="top">
@@ -187,15 +188,15 @@ function renderFooter(isFoundation) {
           style="max-width: 100%; height: auto;"
       />
     </td>
-    `;
+    `
   }
 }
 
 function renderTopic(topic: Topic) {
-  const color = getColor(topic.title);
+  const color = getColor(topic.title)
 
-  const slug = slugify(topic.title);
-  const className = `article-box-${slug}`;
+  const slug = slugify(topic.title)
+  const className = `article-box-${slug}`
 
   return `<table
   border="0"
@@ -221,11 +222,11 @@ function renderTopic(topic: Topic) {
   </tr>
 </table>
 <div class="hSpace"></div>
-`;
+`
 }
 
 function renderTopicContent(topic: Topic) {
-  return topic.links.map(renderLink).join('\n<div class="hr"></div>\n');
+  return topic.links.map(renderLink).join('\n<div class="hr"></div>\n')
 }
 
 function renderLink({ url, title, text }: Link) {
@@ -234,11 +235,11 @@ function renderLink({ url, title, text }: Link) {
   </a>
   <p mc:edit="article_content">
     ${text}
-  </p>`;
+  </p>`
 }
 
 function formatTemplate(issue: Issue) {
-  const { firstTopic, content, footer, header } = renderContent(issue);
+  const { firstTopic, content, footer, header } = renderContent(issue)
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
@@ -826,7 +827,7 @@ function formatTemplate(issue: Issue) {
   </html>
 
 
-`;
+`
 }
 
 function slugify(text: string) {
@@ -837,5 +838,5 @@ function slugify(text: string) {
     .replace(/[^\w\-]+/g, '') // Remove all non-word chars
     .replace(/\-\-+/g, '-') // Replace multiple - with single -
     .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, ''); // Trim - from end of text
+    .replace(/-+$/, '') // Trim - from end of text
 }

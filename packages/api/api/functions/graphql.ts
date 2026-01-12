@@ -2,7 +2,11 @@ require('dotenv').config()
 import { schema } from '../schema'
 import { createContext } from '../context'
 import { createYoga } from 'graphql-yoga'
-import type { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
+import type {
+  APIGatewayEvent,
+  APIGatewayProxyResult,
+  Context,
+} from 'aws-lambda'
 
 export const yoga = createYoga({
   graphqlEndpoint: '/.netlify/functions/graphql',
@@ -14,13 +18,13 @@ export const yoga = createYoga({
 
 async function handler(
   event: APIGatewayEvent,
-  lambdaContext: Context
+  lambdaContext: Context,
 ): Promise<APIGatewayProxyResult> {
   const response = await yoga.fetch(
     event.path +
       '?' +
       new URLSearchParams(
-        (event.queryStringParameters as Record<string, string>) || {}
+        (event.queryStringParameters as Record<string, string>) || {},
       ).toString(),
     {
       method: event.httpMethod,
@@ -32,7 +36,7 @@ async function handler(
     {
       event,
       lambdaContext,
-    }
+    },
   )
 
   const responseHeaders: Record<string, string> = {}

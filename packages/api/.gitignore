@@ -58,3 +58,4 @@ api/dist/
 
 # Local Netlify folder
 .netlify
+data-dump/

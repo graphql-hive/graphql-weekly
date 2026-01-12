@@ -65,8 +65,11 @@ export default function PageHeader({
   return (
     <>
       <span className="text-sm text-neu-600 dark:text-neu-400">
-        Curating: <strong className="text-neu-900 dark:text-neu-100">{title}</strong>{" "}
-        <span className="text-neu-400 dark:text-neu-500">(v{versionCount})</span>
+        Curating:{" "}
+        <strong className="text-neu-900 dark:text-neu-100">{title}</strong>{" "}
+        <span className="text-neu-400 dark:text-neu-500">
+          (v{versionCount})
+        </span>
       </span>
 
       <div className="flex items-center gap-3">
@@ -81,7 +84,9 @@ export default function PageHeader({
         </label>
 
         <div className="flex items-center gap-2">
-          <Button variant="primary" onClick={handlePublish}>Publish</Button>
+          <Button variant="primary" onClick={handlePublish}>
+            Publish
+          </Button>
           <Button variant="secondary" onClick={increaseVersion}>
             Create Email
           </Button>

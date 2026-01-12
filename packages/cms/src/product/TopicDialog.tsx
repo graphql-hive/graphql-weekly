@@ -40,7 +40,7 @@ export default function TopicDialog({
           refresh?.();
           onPanelClose?.();
         },
-      }
+      },
     );
   };
 
@@ -58,7 +58,10 @@ export default function TopicDialog({
         </Radio>
       ))}
       <Flex align="flex-end">
-        <Button onClick={handleClick} disabled={addLinksToTopicMutation.isPending}>
+        <Button
+          onClick={handleClick}
+          disabled={addLinksToTopicMutation.isPending}
+        >
           {addLinksToTopicMutation.isPending ? "Saving..." : "Submit"}
         </Button>
       </Flex>

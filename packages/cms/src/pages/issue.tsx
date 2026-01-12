@@ -206,7 +206,8 @@ export default function IssuePage() {
     // Unassigned links
     const unassigned = allLinks
       .filter(
-        (link) => link.topic === null && link.id && !deletedLinkIds.has(link.id)
+        (link) =>
+          link.topic === null && link.id && !deletedLinkIds.has(link.id),
       )
       .map((link) => link.id!);
     newItems[UNASSIGNED_ID] = unassigned;
@@ -228,7 +229,7 @@ export default function IssuePage() {
   // Containers list (for iteration)
   const containers = useMemo(
     () => [UNASSIGNED_ID, ...topics.map((t) => t.id!).filter(Boolean)],
-    [topics]
+    [topics],
   );
 
   const sensors = useSensors(
@@ -236,7 +237,7 @@ export default function IssuePage() {
     useSensor(TouchSensor, {
       activationConstraint: { delay: 200, tolerance: 5 },
     }),
-    useSensor(KeyboardSensor)
+    useSensor(KeyboardSensor),
   );
 
   // Plain function, not memoized - always uses current items
@@ -252,7 +253,7 @@ export default function IssuePage() {
         return closestCenter({
           ...args,
           droppableContainers: args.droppableContainers.filter(
-            (container) => container.id in items
+            (container) => container.id in items,
           ),
         });
       }
@@ -277,7 +278,7 @@ export default function IssuePage() {
               droppableContainers: args.droppableContainers.filter(
                 (container) =>
                   container.id !== overId &&
-                  containerItems.includes(container.id)
+                  containerItems.includes(container.id),
               ),
             })[0];
             if (closest?.id) {
@@ -296,7 +297,7 @@ export default function IssuePage() {
 
       return lastOverId.current ? [{ id: lastOverId.current }] : [];
     },
-    [activeId, items]
+    [activeId, items],
   );
 
   useEffect(() => {
@@ -321,7 +322,7 @@ export default function IssuePage() {
           setNewTopic("");
           invalidateQueries();
         },
-      }
+      },
     );
   }, [createTopicMutation, newTopic, id, invalidateQueries]);
 
@@ -334,7 +335,7 @@ export default function IssuePage() {
           setNewLink("");
           invalidateQueries();
         },
-      }
+      },
     );
   }, [createLinkMutation, newLink, invalidateQueries]);
 
@@ -344,7 +345,7 @@ export default function IssuePage() {
         title: link.title ?? null,
         text: link.text ?? null,
         url: link.url ?? null,
-      })
+      }),
     );
   }, []);
 
@@ -357,10 +358,10 @@ export default function IssuePage() {
       if (!confirm(`Remove topic "${topicTitle}" from this issue?`)) return;
       removeTopicMutation.mutate(
         { id: topicId },
-        { onSuccess: invalidateQueries }
+        { onSuccess: invalidateQueries },
       );
     },
-    [removeTopicMutation, invalidateQueries]
+    [removeTopicMutation, invalidateQueries],
   );
 
   const handleTopicMove = useCallback(
@@ -385,7 +386,7 @@ export default function IssuePage() {
       ]);
       invalidateQueries();
     },
-    [topics, updateTopicMutation, invalidateQueries]
+    [topics, updateTopicMutation, invalidateQueries],
   );
 
   const getMergedLink = useCallback(
@@ -393,7 +394,7 @@ export default function IssuePage() {
       const edits = editedLinks.get(link.id!);
       return edits ? { ...link, ...edits } : link;
     },
-    [editedLinks]
+    [editedLinks],
   );
 
   const hasUnsavedChanges =
@@ -407,11 +408,11 @@ export default function IssuePage() {
         title: changes.title!,
         text: changes.text!,
         url: changes.url!,
-      })
+      }),
     );
 
     const deletePromises = [...deletedLinkIds].map((lid) =>
-      deleteLinkMutation.mutateAsync({ id: lid })
+      deleteLinkMutation.mutateAsync({ id: lid }),
     );
 
     const movePromises = [...linkMoves.entries()].map(([linkId, topicId]) => {
@@ -494,11 +495,13 @@ export default function IssuePage() {
             // Track submission data for overlay
             const activeIdStr = String(active.id);
             if (activeIdStr.startsWith(SUBMISSION_PREFIX)) {
-              const data = active.data.current as {
-                title: string;
-                description: string;
-                url: string;
-              } | undefined;
+              const data = active.data.current as
+                | {
+                    title: string;
+                    description: string;
+                    url: string;
+                  }
+                | undefined;
               setActiveSubmission(data ?? null);
             } else {
               setActiveSubmission(null);
@@ -548,7 +551,7 @@ export default function IssuePage() {
               return {
                 ...items,
                 [activeContainer]: activeItems.filter(
-                  (item) => item !== active.id
+                  (item) => item !== active.id,
                 ),
                 [overContainer]: [
                   ...overItems.slice(0, newIndex),
@@ -579,13 +582,15 @@ export default function IssuePage() {
               }
 
               // Get submission data from active.data
-              const submissionData = active.data.current as {
-                type: string;
-                id: string;
-                url: string;
-                title: string;
-                description: string;
-              } | undefined;
+              const submissionData = active.data.current as
+                | {
+                    type: string;
+                    id: string;
+                    url: string;
+                    title: string;
+                    description: string;
+                  }
+                | undefined;
 
               if (submissionData?.url) {
                 // Create link from submission
@@ -616,13 +621,13 @@ export default function IssuePage() {
                         // If dropped on a topic, also assign it
                         addLinksToTopicMutation.mutate(
                           { topicId: String(overContainer), linkId: newLinkId },
-                          { onSuccess: invalidateQueries }
+                          { onSuccess: invalidateQueries },
                         );
                       } else {
                         invalidateQueries();
                       }
                     },
-                  }
+                  },
                 );
               }
 
@@ -679,7 +684,7 @@ export default function IssuePage() {
                     [overContainer]: arrayMove(
                       container,
                       container.indexOf(active.id),
-                      overIndex < 0 ? container.length : overIndex
+                      overIndex < 0 ? container.length : overIndex,
                     ),
                   };
                 });
@@ -688,7 +693,7 @@ export default function IssuePage() {
               // Track move if container changed
               if (activeContainer !== overContainer) {
                 setLinkMoves((prev) =>
-                  new Map(prev).set(String(active.id), String(overContainer))
+                  new Map(prev).set(String(active.id), String(overContainer)),
                 );
               }
             }
@@ -885,7 +890,7 @@ export default function IssuePage() {
                 </div>
               ) : null}
             </DragOverlay>,
-            document.body
+            document.body,
           )}
 
           {/* Trash zone - shown when dragging */}

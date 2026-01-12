@@ -8,7 +8,11 @@ interface IssueCreatorProps {
   inputRef?: RefObject<HTMLInputElement | null>;
 }
 
-export default function IssueCreator({ refresh, defaultValue, inputRef }: IssueCreatorProps) {
+export default function IssueCreator({
+  refresh,
+  defaultValue,
+  inputRef,
+}: IssueCreatorProps) {
   const [number, setNumber] = useState(defaultValue ?? "");
   const [numberError, setNumberError] = useState("");
 
@@ -47,10 +51,10 @@ export default function IssueCreator({ refresh, defaultValue, inputRef }: IssueC
         },
         onError: (error) => {
           setNumberError(
-            error instanceof Error ? error.message : "Error creating issue"
+            error instanceof Error ? error.message : "Error creating issue",
           );
         },
-      }
+      },
     );
   };
 

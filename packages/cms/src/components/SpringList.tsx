@@ -138,7 +138,7 @@ export default function SpringList({ onDragEnd, children }: SpringListProps) {
         }));
         onDragEnd?.(order.current);
       }
-    }
+    },
   );
 
   return (
@@ -159,7 +159,7 @@ export default function SpringList({ onDragEnd, children }: SpringListProps) {
             transform: y.to((yVal) => `translate3d(0, ${yVal}px, 0)`),
             scale,
             boxShadow: shadow.to(
-              (s) => `0 ${s}px ${s * 2.5}px rgba(0,0,0,0.12)`
+              (s) => `0 ${s}px ${s * 2.5}px rgba(0,0,0,0.12)`,
             ),
             touchAction: "none",
           }}

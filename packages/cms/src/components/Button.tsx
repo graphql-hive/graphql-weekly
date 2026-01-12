@@ -59,7 +59,7 @@ export function Button(props: ButtonProps) {
     variantClasses[props.variant ?? "primary"],
     props.block ? "block w-full" : "inline-block",
     props.disabled && "opacity-30 pointer-events-none",
-    props.className
+    props.className,
   );
 
   if ("href" in props && typeof props.href === "string") {
@@ -94,5 +94,5 @@ export function Button(props: ButtonProps) {
 }
 
 export const ButtonLink = Button as (
-  props: ButtonProps.LinkProps
+  props: ButtonProps.LinkProps,
 ) => React.JSX.Element;

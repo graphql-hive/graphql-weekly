@@ -1,10 +1,10 @@
-import { DateTimeResolver } from 'graphql-scalars';
+import { DateTimeResolver } from 'graphql-scalars'
 import axios from 'axios'
 import { builder } from './builder'
 import { Context } from './context'
-import { GraphQLError } from 'graphql';
-import {join} from 'path'
-import {db} from './db'
+import { GraphQLError } from 'graphql'
+import { join } from 'path'
+import { db } from './db'
 
 export type User = {
   sub: string
@@ -47,7 +47,7 @@ interface Link {
 }
 
 builder.prismaObject('Author', {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeString('id', {
       nullable: true,
     }),
@@ -63,7 +63,7 @@ builder.prismaObject('Author', {
     createdAt: t.expose('createdAt', {
       type: 'DateTime',
       nullable: true,
-    }),    
+    }),
     updatedAt: t.expose('updatedAt', {
       type: 'DateTime',
       nullable: true,
@@ -71,40 +71,40 @@ builder.prismaObject('Author', {
     issues: t.relation('issues', {
       nullable: true,
     }),
-  })
+  }),
 })
 
 const Link = builder.prismaObject('Link', {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeString('id', { nullable: true }),
     position: t.exposeInt('position', {
-      nullable: true
+      nullable: true,
     }),
     text: t.exposeString('text', {
-      nullable: true
+      nullable: true,
     }),
     title: t.exposeString('title', {
-      nullable: true
+      nullable: true,
     }),
     topicId: t.exposeString('topicId', {
-      nullable: true
+      nullable: true,
     }),
     url: t.exposeString('url', {
-      nullable: true
+      nullable: true,
     }),
-    topic: t.relation('topic', { nullable: true })
-  })
+    topic: t.relation('topic', { nullable: true }),
+  }),
 })
 
 const Topic = builder.prismaObject('Topic', {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeString('id', { nullable: true }),
     issueId: t.exposeString('issueId', {
-      nullable: true
+      nullable: true,
     }),
     issue_comment: t.exposeString('issue_comment', { nullable: true }),
     position: t.exposeInt('position', {
-      nullable: true
+      nullable: true,
     }),
 
     title: t.exposeString('title', { nullable: true }),
@@ -112,28 +112,28 @@ const Topic = builder.prismaObject('Topic', {
     issue: t.relation('issue', {
       nullable: true,
     }),
-    links: t.relation('links', { nullable: true })
-  })
+    links: t.relation('links', { nullable: true }),
+  }),
 })
 
 const Issue = builder.prismaObject('Issue', {
-  fields: t => ({
+  fields: (t) => ({
     authorId: t.exposeString('authorId', {
-      nullable: true
+      nullable: true,
     }),
     comment: t.exposeString('comment', {
-      nullable: true
+      nullable: true,
     }),
 
     id: t.exposeString('id', { nullable: true }),
     description: t.exposeString('description', {
-      nullable: true
+      nullable: true,
     }),
 
     number: t.exposeInt('number', { nullable: true }),
 
     previewImage: t.exposeString('previewImage', {
-      nullable: true
+      nullable: true,
     }),
 
     published: t.expose('published', {
@@ -142,7 +142,7 @@ const Issue = builder.prismaObject('Issue', {
     }),
 
     specialPerk: t.exposeString('specialPerk', {
-      nullable: true
+      nullable: true,
     }),
 
     title: t.exposeString('title', { nullable: true }),
@@ -157,59 +157,59 @@ const Issue = builder.prismaObject('Issue', {
       nullable: true,
     }),
     topics: t.relation('topics', {
-      nullable: true
+      nullable: true,
     }),
-    author: t.relation('author', { nullable: true })
-  })
+    author: t.relation('author', { nullable: true }),
+  }),
 })
 
 const LinkSubmission = builder.prismaObject('LinkSubmission', {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeString('id', { nullable: true }),
     email: t.exposeString('email', { nullable: true }),
     name: t.exposeString('name', { nullable: true }),
     createdAt: t.expose('createdAt', {
       type: 'DateTime',
-      nullable: true
+      nullable: true,
     }),
     updatedAt: t.expose('updatedAt', {
       type: 'DateTime',
-      nullable: true
+      nullable: true,
     }),
     url: t.exposeString('url', { nullable: true }),
     description: t.exposeString('description', { nullable: true }),
-    title: t.exposeString('title', { nullable: true })
-  })
+    title: t.exposeString('title', { nullable: true }),
+  }),
 })
 
 const Subscriber = builder.prismaObject('Subscriber', {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeString('id', { nullable: true }),
     email: t.exposeString('email', { nullable: true }),
-    name: t.exposeString('name', { nullable: true })
-  })
+    name: t.exposeString('name', { nullable: true }),
+  }),
 })
 
 const User = builder.prismaObject('User', {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeString('id', { nullable: true }),
     roles: t.exposeString('roles', {
-      nullable: true
+      nullable: true,
     }),
-  })
+  }),
 })
 
 const Query = builder.queryType({
-  fields: t => ({
+  fields: (t) => ({
     allSubscribers: t.prismaField({
       nullable: true,
       type: ['Subscriber'],
       authScopes: { loggedIn: true },
       resolve: (query) => {
         return db.subscriber.findMany({
-          ...query
+          ...query,
         })
-      }
+      },
     }),
 
     allIssues: t.prismaField({
@@ -220,18 +220,18 @@ const Query = builder.queryType({
         return db.issue.findMany({
           ...query,
         })
-      }
+      },
     }),
 
     allAuthors: t.prismaField({
       nullable: true,
       type: ['Author'],
       authScopes: { loggedIn: true },
-      resolve: (query, ) => {
+      resolve: (query) => {
         return db.author.findMany({
           ...query,
         })
-      }
+      },
     }),
 
     allTopics: t.prismaField({
@@ -242,7 +242,7 @@ const Query = builder.queryType({
         return db.topic.findMany({
           ...query,
         })
-      }
+      },
     }),
 
     allLinks: t.prismaField({
@@ -250,8 +250,8 @@ const Query = builder.queryType({
       type: ['Link'],
       authScopes: { loggedIn: true },
       resolve: (query) => {
-        return db.link.findMany({...query})
-      }
+        return db.link.findMany({ ...query })
+      },
     }),
 
     allLinkSubmissions: t.prismaField({
@@ -265,7 +265,7 @@ const Query = builder.queryType({
             createdAt: 'desc',
           },
         })
-      }
+      },
     }),
 
     issue: t.prismaField({
@@ -273,29 +273,29 @@ const Query = builder.queryType({
       nullable: true,
       authScopes: { loggedIn: true },
       args: {
-        id: t.arg.string({ required: true })
+        id: t.arg.string({ required: true }),
       },
       resolve: (query, _, args) => {
         return db.issue.findFirst({ ...query, where: { id: args.id } })
-      }
-    })
-  })
+      },
+    }),
+  }),
 })
 
 const Mutation = builder.mutationType({
-  fields: t => ({
+  fields: (t) => ({
     createSubscriber: t.prismaField({
       nullable: true,
       type: 'Subscriber',
       args: {
         name: t.arg.string({ required: true }),
-        email: t.arg.string({ required: true })
+        email: t.arg.string({ required: true }),
       },
       resolve: async (query, _, { name, email }) => {
         const url =
           'https://us13.api.mailchimp.com/3.0/lists/b07e0b3012/members'
         const authString = Buffer.from(
-          `anystring:MAILCHIMP_API_KEY_REDACTED`
+          `anystring:MAILCHIMP_API_KEY_REDACTED`,
         ).toString('base64')
 
         // Add to mailchimp
@@ -314,11 +314,13 @@ const Mutation = builder.mutationType({
                 'Content-Type': 'application/json',
                 Authorization: `Basic ${authString}`,
               },
-            }
+            },
           )
         } catch (error) {
           console.error('Failed to add user to the mailchimp list')
-          console.error((error as { response?: { data?: unknown }})?.response?.data)
+          console.error(
+            (error as { response?: { data?: unknown } })?.response?.data,
+          )
         }
 
         return db.subscriber.create({
@@ -328,14 +330,14 @@ const Mutation = builder.mutationType({
             email,
           },
         })
-      }
+      },
     }),
 
     createLink: t.prismaField({
       type: 'Link',
       nullable: true,
       args: {
-        url: t.arg.string({ required: true })
+        url: t.arg.string({ required: true }),
       },
       resolve: (query, _, { url }) => {
         return db.link.create({
@@ -344,7 +346,7 @@ const Mutation = builder.mutationType({
             url,
           },
         })
-      }
+      },
     }),
 
     createIssue: t.prismaField({
@@ -354,7 +356,7 @@ const Mutation = builder.mutationType({
         title: t.arg.string({ required: true }),
         number: t.arg.int({ required: true }),
         published: t.arg.boolean({ required: true }),
-        date: t.arg({ type: 'DateTime' })
+        date: t.arg({ type: 'DateTime' }),
       },
       authScopes: { loggedIn: true },
       resolve: (query, _, { title, number, published, date }) => {
@@ -366,7 +368,7 @@ const Mutation = builder.mutationType({
             number,
           },
         })
-      }
+      },
     }),
 
     createTopic: t.prismaField({
@@ -375,7 +377,7 @@ const Mutation = builder.mutationType({
       args: {
         title: t.arg.string({ required: true }),
         issue_comment: t.arg.string({ required: true }),
-        issueId: t.arg.string({ required: true })
+        issueId: t.arg.string({ required: true }),
       },
       authScopes: { loggedIn: true },
       resolve: (query, _, { issue_comment, title, issueId }) => {
@@ -389,7 +391,7 @@ const Mutation = builder.mutationType({
             issue_comment,
           },
         })
-      }
+      },
     }),
 
     createSubmissionLink: t.prismaField({
@@ -400,7 +402,7 @@ const Mutation = builder.mutationType({
         email: t.arg.string({ required: true }),
         description: t.arg.string({ required: true }),
         title: t.arg.string({ required: true }),
-        url: t.arg.string({ required: true })
+        url: t.arg.string({ required: true }),
       },
       resolve: (query, _, { name, email, description, title, url }) => {
         return db.linkSubmission.create({
@@ -413,7 +415,7 @@ const Mutation = builder.mutationType({
             url,
           },
         })
-      }
+      },
     }),
 
     updateLink: t.prismaField({
@@ -423,7 +425,7 @@ const Mutation = builder.mutationType({
         id: t.arg.string({ required: true }),
         title: t.arg.string({ required: true }),
         text: t.arg.string(),
-        url: t.arg.string()
+        url: t.arg.string(),
       },
       authScopes: { loggedIn: true },
       resolve: (query, _, { id, title, text, url }) => {
@@ -436,29 +438,29 @@ const Mutation = builder.mutationType({
             url: url ?? undefined,
           },
         })
-      }
+      },
     }),
 
     deleteLink: t.prismaField({
       type: 'Link',
       nullable: true,
       args: {
-        id: t.arg.string({ required: true })
+        id: t.arg.string({ required: true }),
       },
       authScopes: { loggedIn: true },
       resolve: (query, _, { id }) => {
         const [, res] = [
           db.topic.delete({
             // @ts-ignore
-            where: { issueId: id }
+            where: { issueId: id },
           }),
           db.link.delete({
             ...query,
             where: { id: id },
-          })
+          }),
         ]
         return res
-      }
+      },
     }),
 
     updateIssue: t.prismaField({
@@ -475,9 +477,8 @@ const Mutation = builder.mutationType({
         query,
         _,
         { id, published, versionCount, previewImage },
-        ctx: Context
+        ctx: Context,
       ) => {
-        
         const issue = await db.issue.update({
           ...query,
           where: { id: id },
@@ -490,12 +491,12 @@ const Mutation = builder.mutationType({
         // trigger build if published
         if (published) {
           await axios.post(
-            'https://api.netlify.com/build_hooks/NETLIFY_BUILD_HOOK_REDACTED'
+            'https://api.netlify.com/build_hooks/NETLIFY_BUILD_HOOK_REDACTED',
           )
         }
 
         return issue
-      }
+      },
     }),
 
     publishEmailDraft: t.prismaField({
@@ -510,11 +511,11 @@ const Mutation = builder.mutationType({
       resolve: async (query, _, { id, versionCount, isFoundation }) => {
         try {
           const issue = await db.issue.update({
-            include: {          
+            include: {
               topics: {
                 include: {
                   links: true,
-                }
+                },
               },
             },
             where: { id: id },
@@ -523,7 +524,6 @@ const Mutation = builder.mutationType({
             },
           })
 
-        
           const emailPayload: EmailPayload = {
             data: {
               Issue: {
@@ -556,28 +556,28 @@ const Mutation = builder.mutationType({
         } catch (err) {
           console.log('err', err)
 
-          if (typeof err === 'string'){
+          if (typeof err === 'string') {
             throw new Error(err)
           }
 
           throw err
         }
-      }
+      },
     }),
 
     deleteIssue: t.prismaField({
       type: 'Issue',
       nullable: true,
       args: {
-        id: t.arg.string({ required: true })
+        id: t.arg.string({ required: true }),
       },
       authScopes: { loggedIn: true },
-      resolve: (query,  _, { id }) => {
+      resolve: (query, _, { id }) => {
         return db.issue.delete({
           ...query,
           where: { id: id },
         })
-      }
+      },
     }),
 
     updateTopic: t.prismaField({
@@ -596,7 +596,7 @@ const Mutation = builder.mutationType({
             position,
           },
         })
-      }
+      },
     }),
 
     updateTopicWhenIssueDeleted: t.prismaField({
@@ -614,7 +614,7 @@ const Mutation = builder.mutationType({
             issue: { disconnect: true },
           },
         })
-      }
+      },
     }),
 
     addLinksToTopic: t.prismaField({
@@ -635,9 +635,9 @@ const Mutation = builder.mutationType({
             },
           },
         })
-      }
-    })
-  })
+      },
+    }),
+  }),
 })
 
 export const schema = builder.toSchema({})

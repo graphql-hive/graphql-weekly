@@ -1,6 +1,9 @@
 import type { ComponentProps } from "react";
 
-export default function ClickTarget({ className, ...props }: ComponentProps<"button">) {
+export default function ClickTarget({
+  className,
+  ...props
+}: ComponentProps<"button">) {
   return (
     <button
       {...props}

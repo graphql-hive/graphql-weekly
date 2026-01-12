@@ -29,5 +29,5 @@ root.render(
       </Switch>
     </PanelProvider>
     <ReactQueryDevtools initialIsOpen={false} />
-  </QueryClientProvider>
+  </QueryClientProvider>,
 );

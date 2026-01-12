@@ -112,7 +112,7 @@ export default function SubmissionsPanel() {
   const allSubmissions = (data?.allLinkSubmissions ?? []).slice(0, 100);
   const submissions = useMemo(
     () => allSubmissions.filter((s) => s.id && !consumed.includes(s.id)),
-    [allSubmissions, consumed]
+    [allSubmissions, consumed],
   );
 
   const bind = useDrag(
@@ -127,7 +127,7 @@ export default function SubmissionsPanel() {
         right: window.innerWidth - size.width,
         bottom: window.innerHeight - 60,
       },
-    }
+    },
   );
 
   const bindResize = useDrag(
@@ -139,7 +139,7 @@ export default function SubmissionsPanel() {
     },
     {
       from: () => [size.width, size.height],
-    }
+    },
   );
 
   return createPortal(
@@ -158,19 +158,42 @@ export default function SubmissionsPanel() {
         className="flex items-center justify-between px-3 py-2 bg-neu-100 dark:bg-neu-800 cursor-move select-none touch-none"
       >
         <span className="text-sm text-neu-700 dark:text-neu-200">
-          Submissions {totalCount > 100 ? `(first 100 of ${totalCount})` : `(${submissions.length})`}
+          Submissions{" "}
+          {totalCount > 100
+            ? `(first 100 of ${totalCount})`
+            : `(${submissions.length})`}
         </span>
         <button
           onClick={() => setMinimized(!minimized)}
           className="p-1 text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-200 transition-colors"
         >
           {minimized ? (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 15l7-7 7 7"
+              />
             </svg>
           ) : (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           )}
         </button>
@@ -199,7 +222,7 @@ export default function SubmissionsPanel() {
                     name={submission.name}
                     createdAt={submission.createdAt}
                   />
-                ) : null
+                ) : null,
               )
             )}
           </div>
@@ -218,6 +241,6 @@ export default function SubmissionsPanel() {
         </>
       )}
     </div>,
-    document.body
+    document.body,
   );
 }

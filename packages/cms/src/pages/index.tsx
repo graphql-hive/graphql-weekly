@@ -78,7 +78,7 @@ export default function IndexPage() {
           break;
       }
     },
-    [issues, selectedIndex, navigate]
+    [issues, selectedIndex, navigate],
   );
 
   useEffect(() => {
