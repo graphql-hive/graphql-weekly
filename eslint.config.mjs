@@ -1,8 +1,8 @@
-import { theGuild } from '@hasparus/eslint-config'
+import { theGuild } from "@hasparus/eslint-config";
 
 export default [
   ...theGuild,
   {
-    ignores: ['.localflare/**'],
+    ignores: [".localflare/**"],
   },
-]
+];

@@ -1,15 +1,21 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "$schema": "https://json.schemastore.org/tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"]
   },
-  "include": ["src/**/*", "*.ts", "*.mjs", "*.mts"],
-  "exclude": ["node_modules", "dist"]
+  "references": [
+    {
+      "path": "./packages/web/tsconfig.json"
+    }
+  ]
 }
