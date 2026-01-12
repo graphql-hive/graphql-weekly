@@ -1,0 +1,7 @@
+node_modules
+.DS_Store
+.serverless
+.envrc
+.build
+.history
+dist

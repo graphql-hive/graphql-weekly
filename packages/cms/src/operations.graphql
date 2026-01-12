@@ -1,0 +1,160 @@
+query AllLinks {
+  allLinks {
+    id
+    url
+    text
+    title
+    topic {
+      id
+      position
+    }
+  }
+}
+
+query Issue($id: String!) {
+  issue(id: $id) {
+    id
+    title
+    published
+    versionCount
+    previewImage
+    topics {
+      id
+      title
+      position
+      links {
+        id
+        title
+        text
+        url
+        topic {
+          id
+          position
+        }
+      }
+    }
+  }
+}
+
+query AllIssues {
+  allIssues {
+    id
+    title
+    published
+    date
+  }
+}
+
+mutation CreateLink($url: String!) {
+  createLink(url: $url) {
+    id
+  }
+}
+
+mutation UpdateLink(
+  $id: String!
+  $title: String!
+  $text: String!
+  $url: String!
+) {
+  updateLink(id: $id, title: $title, text: $text, url: $url) {
+    id
+  }
+}
+
+mutation DeleteLink($id: String!) {
+  deleteLink(id: $id) {
+    id
+  }
+}
+
+mutation CreateTopic(
+  $issue_comment: String!
+  $title: String!
+  $issueId: String!
+) {
+  createTopic(issue_comment: $issue_comment, title: $title, issueId: $issueId) {
+    id
+  }
+}
+
+mutation UpdateTopic($id: String!, $position: Int) {
+  updateTopic(id: $id, position: $position) {
+    id
+  }
+}
+
+mutation PublishIssue($id: String!, $published: Boolean) {
+  updateIssue(id: $id, published: $published) {
+    id
+  }
+}
+
+mutation PublishEmailDraft(
+  $id: String!
+  $versionCount: Int
+  $isFoundation: Boolean
+) {
+  publishEmailDraft(
+    id: $id
+    versionCount: $versionCount
+    isFoundation: $isFoundation
+  ) {
+    id
+    versionCount
+  }
+}
+
+mutation DeleteIssue($id: String!) {
+  deleteIssue(id: $id) {
+    id
+  }
+}
+
+mutation UpdateTopicWhenIssueDeleted($id: String!) {
+  updateTopicWhenIssueDeleted(id: $id) {
+    id
+  }
+}
+
+mutation AddLinksToTopic($topicId: String!, $linkId: String!) {
+  addLinksToTopic(topicId: $topicId, linkId: $linkId) {
+    id
+    issueId
+  }
+}
+
+mutation CreateIssue(
+  $title: String!
+  $number: Int!
+  $date: DateTime!
+  $published: Boolean!
+) {
+  createIssue(
+    title: $title
+    number: $number
+    date: $date
+    published: $published
+  ) {
+    id
+  }
+}
+
+mutation UpdateIssuePreviewImage($id: String!, $previewImage: String!) {
+  updateIssue(id: $id, previewImage: $previewImage) {
+    id
+    previewImage
+  }
+}
+
+query AllLinkSubmissions {
+  allLinkSubmissions {
+    id
+    title
+    description
+    url
+    email
+    name
+    createdAt
+  }
+}

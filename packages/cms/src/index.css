@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "CommitMono";
+  src: url("./fonts/CommitMono-VariableFont.woff2") format("woff2");
+  font-weight: 200 700;
+  font-display: swap;
+  font-feature-settings: "ss01" on, "ss02" on, "ss04" on, "ss05" on, "cv08" on;
+}
+
+@theme inline {
+  --font-sans: "CommitMono", ui-monospace, monospace;
+  --font-mono: "CommitMono", ui-monospace, monospace;
+  --color-primary: #c2f653;
+  --color-neu-50: var(--color-neutral-50);
+  --color-neu-100: var(--color-neutral-100);
+  --color-neu-200: var(--color-neutral-200);
+  --color-neu-300: var(--color-neutral-300);
+  --color-neu-400: var(--color-neutral-400);
+  --color-neu-500: var(--color-neutral-500);
+  --color-neu-600: var(--color-neutral-600);
+  --color-neu-700: var(--color-neutral-700);
+  --color-neu-800: var(--color-neutral-800);
+  --color-neu-900: var(--color-neutral-900);
+  --color-neu-950: var(--color-neutral-950);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #fafafa;
+  font-family: "CommitMono", ui-monospace, monospace;
+  font-feature-settings: "ss01" on, "ss02" on, "ss04" on, "ss05" on, "cv08" on;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0a0a0a;
+    color: #e5e5e5;
+  }
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neu-500);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neu-600);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neu-500) transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a8d448;
+  }
+
+  * {
+    scrollbar-color: var(--color-primary) transparent;
+  }
+}
+
+@keyframes loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-right {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
