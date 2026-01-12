@@ -11,14 +11,4 @@
   "observability": {
     "enabled": true,
   },
-  "env": {
-    "production": {
-      "routes": [
-        {
-          "pattern": "graphqlweekly.com",
-          "custom_domain": true,
-        },
-      ],
-    },
-  },
 }
