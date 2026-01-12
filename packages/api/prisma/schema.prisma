@@ -1,0 +1,87 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_CONN_STRING")
+}
+
+model Author {
+  avatarUrl   String
+  createdAt   DateTime @default(now())
+  description String
+  id          String   @id
+  name        String
+  updatedAt   DateTime @default(now())
+  issues      Issue[]
+}
+
+model Issue {
+  authorId     String?
+  comment      String?
+  date         DateTime
+  description  String?
+  id           String   @id @default(cuid())
+  number       Int      @unique
+  previewImage String?
+  published    Boolean
+  specialPerk  String?
+  title        String
+  versionCount Int      @default(0)
+  author       Author?  @relation(fields: [authorId], references: [id])
+  topics       Topic[]
+
+  @@index([authorId], name: "author")
+}
+
+model Link {
+  id       String  @id @default(cuid())
+  position Int?    @default(0)
+  text     String?
+  title    String?
+  topicId  String?
+  url      String
+  topic    Topic?  @relation(fields: [topicId], references: [id])
+
+  @@index([topicId], name: "topic")
+}
+
+model LinkSubmission {
+  createdAt   DateTime @default(now())
+  description String
+  email       String
+  id          String   @id @default(cuid())
+  name        String
+  title       String
+  updatedAt   DateTime @default(now())
+  url         String
+}
+
+model Subscriber {
+  email String
+  id    String @id @default(cuid())
+  name  String
+}
+
+model Topic {
+  id            String  @id @default(cuid())
+  issueId       String?
+  issue_comment String
+  position      Int?
+  title         String
+  issue         Issue?  @relation(fields: [issueId], references: [id])
+  links         Link[]
+
+  @@index([issueId], name: "issue")
+}
+
+model User {
+  id    String  @id
+  roles String?
+}

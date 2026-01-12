@@ -1,0 +1,51 @@
+{
+  "name": "graphqlweekly-api",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "gatsby build && yarn generate && tsc",
+    "generate": "yarn generate:prisma && yarn generate:schema",
+    "generate:prisma": "prisma generate",
+    "generate:schema": "ts-node ./scripts/schema.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@netlify/functions": "^1.4.0",
+    "@pothos/core": "^3.24.0",
+    "@pothos/plugin-prisma": "^3.40.1",
+    "@pothos/plugin-relay": "^3.33.1",
+    "@pothos/plugin-scope-auth": "^3.17.0",
+    "@prisma/client": "4.7.1",
+    "aws-lambda": "^1.0.7",
+    "axios": "^1.2.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.16.3",
+    "gatsby": "^2.27.4",
+    "graphql": "^16.6.0",
+    "graphql-iso-date": "^3.6.1",
+    "graphql-scalars": "^1.20.1",
+    "graphql-yoga": "^3.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "prettier": "^2.8.3",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.110",
+    "@types/graphql-iso-date": "^3.4.0",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/node": "^18.11.18",
+    "prisma": "4.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.1.2"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  }
+}

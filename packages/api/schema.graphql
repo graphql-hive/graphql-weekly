@@ -1,0 +1,98 @@
+type Author {
+  avatarUrl: String
+  createdAt: DateTime
+  description: String
+  id: String
+  issues: [Issue!]
+  name: String
+  updatedAt: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type Issue {
+  author: Author
+  authorId: String
+  comment: String
+  date: DateTime
+  description: String
+  id: String
+  number: Int
+  previewImage: String
+  published: Boolean
+  specialPerk: String
+  title: String
+  topics: [Topic!]
+  versionCount: Int
+}
+
+type Link {
+  id: String
+  position: Int
+  text: String
+  title: String
+  topic: Topic
+  topicId: String
+  url: String
+}
+
+type LinkSubmission {
+  createdAt: DateTime
+  description: String
+  email: String
+  id: String
+  name: String
+  title: String
+  updatedAt: DateTime
+  url: String
+}
+
+type Mutation {
+  addLinksToTopic(linkId: String!, topicId: String!): Topic
+  createIssue(date: DateTime, number: Int!, published: Boolean!, title: String!): Issue
+  createLink(url: String!): Link
+  createSubmissionLink(description: String!, email: String!, name: String!, title: String!, url: String!): LinkSubmission
+  createSubscriber(email: String!, name: String!): Subscriber
+  createTopic(issueId: String!, issue_comment: String!, title: String!): Topic
+  deleteIssue(id: String!): Issue
+  deleteLink(id: String!): Link
+  publishEmailDraft(id: String!, isFoundation: Boolean, versionCount: Int): Issue
+  updateIssue(id: String!, previewImage: String, published: Boolean, versionCount: Int): Issue
+  updateLink(id: String!, text: String, title: String!, url: String): Link
+  updateTopic(id: String!, position: Int): Topic
+  updateTopicWhenIssueDeleted(id: String!): Topic
+}
+
+type Query {
+  allAuthors: [Author!]
+  allIssues: [Issue!]
+  allLinkSubmissions: [LinkSubmission!]
+  allLinks: [Link!]
+  allSubscribers: [Subscriber!]
+  allTopics: [Topic!]
+  issue(id: String!): Issue
+}
+
+type Subscriber {
+  email: String
+  id: String
+  name: String
+}
+
+type Topic {
+  id: String
+  issue: Issue
+  issueId: String
+  issue_comment: String
+  links: [Link!]
+  position: Int
+  title: String
+}
+
+type User {
+  id: String
+  roles: String
+}
