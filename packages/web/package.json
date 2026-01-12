@@ -3,15 +3,10 @@
   "description": "GraphQL Weekly Homepage",
   "version": "2.0.0",
   "type": "module",
-  "packageManager": "bun@1.3.5",
   "private": true,
-  "engines": {
-    "node": ">=24.1.0"
+  "imports": {
+    "#src/*": "./src/*"
   },
-  "workspaces": [
-    ".",
-    "tests/visually-same"
-  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -19,24 +14,20 @@
     "localflare": "bunx localflare",
     "format": "prettier src --write",
     "astro": "astro",
-    "compare-against-prod": "./tests/compare-against-production/run.sh",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
-    "visually-same": "bun ./tests/visually-same"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/cloudflare": "12.6.12",
     "@astrojs/react": "4.2.0",
     "@astrojs/sitemap": "3.3.0",
-    "@hasparus/eslint-config": "2.0.8",
     "@tailwindcss/vite": "^4.1.18",
     "@types/popper.js": "1.11.0",
     "astro": "5.1.0",
     "fast-memoize": "2.5.2",
     "node-fetch": "3.3.2",
     "polished": "4.3.1",
-    "prettier-plugin-astro": "0.14.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-popper": "2.3.0",
@@ -50,10 +41,7 @@
     "@types/react": "18.3.17",
     "@types/react-dom": "18.3.5",
     "@types/react-syntax-highlighter": "15.5.13",
-    "prettier": "3.4.2",
     "tailwindcss": "^4.1.18",
-    "typescript": "5.7.2",
-    "visually-same": "workspace:*",
     "wrangler": "4.58.0"
   }
 }

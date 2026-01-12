@@ -6,17 +6,12 @@
     "jsxImportSource": "react",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "baseUrl": ".",
+    "rootDir": ".",
+    "outDir": "./dist-ts",
     "paths": {
-      "@/*": ["packages/web/src/*"]
+      "#src/*": ["./src/*"]
     }
   },
-  "include": [
-    "packages/web/src/**/*",
-    "*.ts",
-    "*.mjs",
-    "*.mts",
-    "packages/web/astro.config.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "*.ts", "*.mjs", "*.mts"],
+  "exclude": ["node_modules", "dist", "dist-ts"]
 }

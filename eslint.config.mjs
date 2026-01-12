@@ -3,6 +3,15 @@ import { theGuild } from "@hasparus/eslint-config";
 export default [
   ...theGuild,
   {
-    ignores: [".localflare/**"],
+    ignores: [
+      ".cache/",
+      ".localflare/",
+      ".turbo/",
+      ".wrangler/",
+      "dist/",
+      "node_modules/",
+      "playwright-report/",
+      "test-results/",
+    ],
   },
 ];

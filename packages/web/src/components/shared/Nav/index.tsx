@@ -1,5 +1,6 @@
-import { cn } from "@/lib/cn";
 import { Component, type CSSProperties } from "react";
+
+import { cn } from "#src/lib/cn";
 
 import { Arrow } from "../../vectors/Arrow";
 // Local
