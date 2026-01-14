@@ -3,13 +3,7 @@ import type { Kysely } from 'kysely'
 /// <reference types="@cloudflare/workers-types" />
 import { createSchema, createYoga } from 'graphql-yoga'
 
-import {
-  type AuthEnv,
-  checkGitHubCollaborator,
-  createAuth,
-  GITHUB_REPO_NAME,
-  GITHUB_REPO_OWNER,
-} from './auth'
+import { type AuthEnv, checkGitHubCollaborator, createAuth } from './auth'
 import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
 
@@ -193,7 +187,9 @@ export default {
       } else {
         const auth = createAuth(env)
         try {
-          const session = await auth.api.getSession({ headers: request.headers })
+          const session = await auth.api.getSession({
+            headers: request.headers,
+          })
           if (session?.user) {
             const account = await db
               .selectFrom('account')
