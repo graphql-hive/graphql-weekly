@@ -1,39 +1,36 @@
 {
-  "name": "graphqlweekly-api",
+  "name": "@gqlweekly/api",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "wrangler dev",
-    "build": "bun run generate && tsc",
-    "generate": "bun run generate:prisma && bun run generate:schema",
-    "generate:prisma": "prisma generate",
-    "generate:schema": "bun ./scripts/schema.ts",
-    "typecheck": "tsc --noEmit"
+    "codegen": "graphql-codegen",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "email": "email dev --dir src/email/templates"
   },
   "dependencies": {
     "@mailchimp/mailchimp_marketing": "^3.0.80",
-    "@netlify/functions": "^1.4.0",
-    "@pothos/core": "^3.24.0",
-    "@pothos/plugin-prisma": "^3.40.1",
-    "@pothos/plugin-relay": "^3.33.1",
-    "@pothos/plugin-scope-auth": "^3.17.0",
-    "@prisma/client": "4.7.1",
-    "axios": "^1.4.0",
-    "dotenv": "^8.2.0",
+    "@react-email/components": "^1.0.4",
     "graphql": "^16.6.0",
-    "graphql-iso-date": "^3.6.1",
     "graphql-scalars": "^1.20.1",
-    "graphql-yoga": "^3.4.0",
-    "jsonwebtoken": "^8.5.1"
+    "graphql-yoga": "^5.18.0",
+    "kysely": "^0.28.9",
+    "kysely-d1": "^0.4.0",
+    "react": "^19.2.3",
+    "react-email": "^5.2.3"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.110",
-    "@types/graphql-iso-date": "^3.4.0",
-    "@types/jsonwebtoken": "^8.5.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.0",
+    "@graphql-codegen/cli": "^6.1.1",
+    "@graphql-codegen/typescript": "^5.0.7",
+    "@graphql-codegen/typescript-resolvers": "^5.1.5",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@types/node": "^20.2.5",
-    "prisma": "4.7.1",
-    "typescript": "^5.0.0"
+    "@types/react": "^19.2.8",
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0"
   },
   "prettier": {
     "semi": false,

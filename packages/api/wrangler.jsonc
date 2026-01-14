@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "main": "src/worker.ts",
+  "name": "graphqlweekly-api",
+  "dev": { "port": 2012 },
+  "compatibility_date": "2026-01-07",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "observability": {
+    "enabled": true,
+  },
+  "d1_databases": [
+    {
+      "binding": "graphqlweekly",
+      "database_name": "graphqlweekly",
+      "database_id": "f7a8d65f-a03c-4505-b7bb-5cd48ad7f390",
+    },
+  ],
+}
