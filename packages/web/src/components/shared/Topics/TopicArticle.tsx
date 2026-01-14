@@ -21,18 +21,20 @@ export function TopicArticle({
   return (
     <div className="group">
       <a
-        className="mt-5 md:m-0 font-medium leading-[1.33] text-lg md:text-2xl no-underline text-footer-dark"
+        className="mt-5 md:m-0 font-medium leading-[1.33] text-lg md:text-2xl no-underline text-footer-dark focus-visible:outline-2 focus-visible:outline-purple focus-visible:outline-offset-2"
         href={url}
         rel="noreferrer"
         target="_blank"
       >
         {title}
         <div
+          aria-hidden="true"
           className="relative top-[-2px] inline-block ml-2.5 opacity-0 group-hover:opacity-100"
           style={{ color: arrowColor }}
         >
           <TitleArrow />
         </div>
+        <span className="sr-only">(opens in new tab)</span>
       </a>
 
       {isTextSafe ? (

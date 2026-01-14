@@ -31,7 +31,7 @@ export function IssuePage({
       <Header submitModalClickHandler={openModal} />
 
       <Container>
-        <div className="flex">
+        <main className="flex" id="main-content">
           <Issue
             firstIssueNumber={firstIssueNumber}
             issue={issue}
@@ -44,7 +44,7 @@ export function IssuePage({
             submitModalClickHandler={openModal}
             topicsTitles={topicsTitles}
           />
-        </div>
+        </main>
       </Container>
 
       <SubmitForm ref={submitFormRef} />

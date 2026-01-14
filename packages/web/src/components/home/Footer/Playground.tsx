@@ -1,4 +1,4 @@
-import { Component, createRef } from "react";
+import { Component, createRef, useEffect, useState } from "react";
 
 import { fetchGraphQL } from "../../../lib/api";
 import { Code } from "../../shared/Code";
@@ -187,7 +187,7 @@ export class Playground extends Component<Props, State> {
             className="w-full h-4 font-normal leading-none text-base text-center"
             style={{ color: "rgba(255, 255, 255, 0.33)" }}
           >
-            or press CMD + Enter
+            or press <KeyboardShortcut modifier="Cmd" fallback="Ctrl" /> + Enter
           </div>
         </div>
         <div className="grow h-auto">
@@ -208,4 +208,23 @@ export class Playground extends Component<Props, State> {
       </div>
     );
   }
+}
+
+function KeyboardShortcut({
+  fallback,
+  modifier,
+}: {
+  fallback: string;
+  modifier: string;
+}) {
+  const [isMac, setIsMac] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setIsMac(navigator.platform.toUpperCase().includes("MAC"));
+  }, []);
+
+  // SSR: show nothing until client hydrates
+  if (isMac === null) return <>{modifier}</>;
+
+  return <>{isMac ? modifier : fallback}</>;
 }

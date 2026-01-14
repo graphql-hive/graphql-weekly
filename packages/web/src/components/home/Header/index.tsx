@@ -64,6 +64,7 @@ export const Header = (props: Props) => {
             >
               <Twitter />
               Twitter
+              <span className="sr-only">(opens in new tab)</span>
             </a>
             <a
               className="w-auto h-[22px] flex items-center font-medium leading-none text-lg text-white [&_svg]:mr-4 [&_svg]:opacity-80 [&_path]:stroke-white ml-10"
@@ -73,6 +74,7 @@ export const Header = (props: Props) => {
             >
               <Slack stroke="#ffffff" />
               Slack
+              <span className="sr-only">(opens in new tab)</span>
             </a>
           </div>
         </Container>

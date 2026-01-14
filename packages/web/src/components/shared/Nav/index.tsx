@@ -45,6 +45,7 @@ export class Nav extends Component<Props, State> {
           </Link>
 
           <button
+            aria-controls="nav-menu"
             aria-expanded={isOpened}
             aria-label={isOpened ? "Close menu" : "Open menu"}
             className="w-auto h-5 mt-2.5 mr-1.5 cursor-pointer md:hidden border-none bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
@@ -61,17 +62,19 @@ export class Nav extends Component<Props, State> {
                 ? "h-auto pt-7 pb-5 border-b border-white/50"
                 : "h-0 pt-0",
             )}
+            id="nav-menu"
           >
             <a
-              className="cursor-pointer ml-0 p-3 flex items-center hover:bg-white/10 rounded-md"
+              className="cursor-pointer ml-0 p-3 flex items-center hover:bg-white/10 rounded-md focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               href="https://www.howtographql.com"
               rel="noreferrer"
               target="_blank"
             >
-              <span className="mr-3 font-medium  text-lg text-white">
+              <span className="mr-3 font-medium text-lg text-white">
                 What is GraphQL?
               </span>
               <Arrow className="mt-px" />
+              <span className="sr-only">(opens in new tab)</span>
             </a>
             <button
               className="border-none bg-none cursor-pointer ml-0 p-3 hover:bg-white/10 rounded-md text-lg text-white font-medium focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"

@@ -4,6 +4,8 @@ import { Component } from "react";
 
 import { PrimaryButton } from "../../shared/Buttons/Index";
 import { Input } from "../../shared/Input/Input";
+import { AlertCircle } from "../../vectors/AlertCircle";
+import { Check } from "../../vectors/Check";
 import { Subscribe } from "../../vectors/Subscribe";
 
 type Props = {};
@@ -81,7 +83,15 @@ export class Subscription extends Component<Props, State> {
         />
 
         {this.state.message && (
-          <div className="absolute px-[10px] py-[5px] right-[25px] bottom-[-15px] bg-body-bg rounded-sm text-[#424242] text-sm">
+          <div
+            className="absolute px-[10px] py-[5px] right-[25px] bottom-[-15px] bg-body-bg rounded-sm text-[#424242] text-sm flex items-center gap-1.5"
+            role="status"
+          >
+            {this.state.message.includes("successfully") ? (
+              <Check aria-hidden="true" className="shrink-0 [&_path]:stroke-green-600 [&_path]:opacity-100" />
+            ) : (
+              <AlertCircle aria-hidden="true" className="shrink-0" />
+            )}
             {this.state.message}
           </div>
         )}

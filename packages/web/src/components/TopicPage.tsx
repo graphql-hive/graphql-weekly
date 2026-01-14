@@ -32,7 +32,7 @@ export function TopicPage({
       <Header submitModalClickHandler={openModal} />
 
       <Container>
-        <div className="flex">
+        <main className="flex" id="main-content">
           <Topic title={topicTitle} topicLinks={topicLinks} />
           <Sidebar
             allIssues={allIssues}
@@ -40,7 +40,7 @@ export function TopicPage({
             submitModalClickHandler={openModal}
             topicsTitles={topicsTitles}
           />
-        </div>
+        </main>
       </Container>
 
       <SubmitForm ref={submitFormRef} />

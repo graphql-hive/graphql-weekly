@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
+import { AlertCircle } from "../../vectors/AlertCircle";
 import { Check } from "../../vectors/Check";
 import { PrimaryButton, SecondaryButton } from "../Buttons/Index";
 import { Input } from "../Input/Input";
@@ -134,7 +135,11 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
             )}
 
             {message && (
-              <div className="p-[9px_10px] my-[15px] mx-6 md:mx-12 bg-body-bg rounded-sm text-[#424242] text-[15px]">
+              <div
+                className="p-[9px_10px] my-[15px] mx-6 md:mx-12 bg-body-bg rounded-sm text-[#424242] text-[15px] flex items-center gap-2"
+                role="alert"
+              >
+                <AlertCircle aria-hidden="true" className="shrink-0" />
                 {message}
               </div>
             )}
