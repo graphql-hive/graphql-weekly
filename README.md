@@ -8,6 +8,16 @@ Archive website for the GraphQL Weekly newsletter at [graphqlweekly.com](https:/
 - **React** — interactive components (sidebar, playground)
 - **Tailwind CSS** — styling
 - **Bun** — package manager and runtime
+- **Cloudflare Workers + D1** — API and database
+
+## Monorepo Structure
+
+```
+packages/
+├── web/         # Astro static site (graphqlweekly.com)
+├── api/         # Cloudflare Worker + D1 (GraphQL API)
+└── cms/         # Astro + React curator app
+```
 
 ## Development
 
@@ -20,7 +30,6 @@ Build for production:
 
 ```bash
 bun run build
-bun wrangler:dev
 ```
 
 ## Deployment
@@ -39,19 +48,16 @@ No environment variables required.
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    graphqlweekly.com                        │
-│                   (Static Site - Astro)                     │
 └─────────────────────────────────────────────────────────────┘
-          │                              │
-          │ Build time + Runtime         │ Runtime only
-          │ (read)                       │ (write)
+          │                               │
+          │ read                          │ write
           ▼                              ▼
-┌─────────────────────────┐    ┌─────────────────────────────┐
-│  graphql-weekly         │    │  graphqlweekly-api          │
-│  .graphcdn.app          │    │  .netlify.app               │
-│                         │    │  /.netlify/functions/graphql│
-│  (Stellate/GraphCDN)    │    │  (Netlify Functions)        │
-│  Issues, Topics, Links  │    │  Subscriptions, Submissions │
-└─────────────────────────┘    └─────────────────────────────┘
+┌───────────────────────────────┐    ┌─────────────────────────────┐
+│  graphql-weekly.graphqcdn.app |    │  graphqlweekly.com/graphql  │
+│                               │    │                             │
+│  (Stellate)                   │    |  (GraphQL Yoga, Workers)    │
+│  Issues, Topics, Links        │    │  Subscriptions, Submissions │
+└───────────────────────────────┘    └─────────────────────────────┘
 ```
 
 ### Read API — `https://graphql-weekly.graphcdn.app`
@@ -62,16 +68,38 @@ Stellate (formerly GraphCDN) edge-cached GraphQL endpoint serving all newsletter
 
 **Runtime:** The interactive Playground in the footer (`src/components/home/Footer/Playground.tsx`) lets users run GraphQL queries against this endpoint.
 
-### Write API — `https://graphqlweekly-api.netlify.app/.netlify/functions/graphql`
+### Write API — Cloudflare Worker
 
-Netlify Functions backend handling user submissions. Called at runtime only.
+GraphQL API running on Cloudflare Workers with D1 database. Handles mutations at runtime.
 
 | Mutation               | Purpose             | Component                                                                                 |
 | ---------------------- | ------------------- | ----------------------------------------------------------------------------------------- |
 | `createSubscriber`     | Newsletter signup   | `src/components/home/Subscription/index.tsx`                                              |
 | `createSubmissionLink` | Submit article link | `src/components/home/Header/SubmitForm.tsx`, `src/components/shared/SubmitForm/index.tsx` |
 
-This is a separate Netlify deployment. The static site just calls it via HTTPS.
+## CMS (Curator App)
+
+Internal tool for curating newsletter issues at `packages/cms`.
+
+**Stack:** Astro + React, TanStack Query, Tailwind CSS, Cloudflare Workers
+
+**Scripts:**
+
+```bash
+bun dev          # Dev server
+bun run preview  # Preview with Wrangler
+bun run deploy   # Build and deploy
+bun test:e2e     # Playwright tests
+bun run codegen  # GraphQL types
+```
+
+**Workflow:**
+
+1. Collect links throughout the week
+2. Create new issue, add topics (Articles & Videos, Open Source, etc.)
+3. Assign 5-6 links per issue, write descriptions
+4. Publish to preview, gather feedback
+5. Send newsletter via Mailchimp
 
 ## Debt
 
