@@ -72,3 +72,7 @@ Netlify Functions backend handling user submissions. Called at runtime only.
 | `createSubmissionLink` | Submit article link | `src/components/home/Header/SubmitForm.tsx`, `src/components/shared/SubmitForm/index.tsx` |
 
 This is a separate Netlify deployment. The static site just calls it via HTTPS.
+
+## Debt
+
+- Can't update Vitest to v4 until [cloudflare/workers-sdk#11064](https://github.com/cloudflare/workers-sdk/issues/11064) is closed.
