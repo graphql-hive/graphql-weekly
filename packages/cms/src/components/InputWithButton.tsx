@@ -67,8 +67,10 @@ export default function InputWithButton({
           />
         </label>
         <Button
-          disabled={buttonDisabled}
-          onClick={onClick}
+          {...(buttonDisabled !== undefined
+            ? { disabled: buttonDisabled }
+            : {})}
+          {...(onClick !== undefined ? { onClick } : {})}
           className="shrink-0"
         >
           {buttonLabel}

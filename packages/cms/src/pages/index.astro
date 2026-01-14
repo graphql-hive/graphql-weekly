@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro'
+import '../index.css'
+import IndexPage from '../islands/index'
+import { serverFetch } from '../client/fetcher'
+import { AllIssuesDocument, type AllIssuesQuery } from '../generated/graphql'
+
+const data = await serverFetch<AllIssuesQuery>(AllIssuesDocument)
+const initialIssues = data.allIssues ?? []
+---
+
+<Layout title="GraphQL Weekly CMS">
+  <IndexPage client:load initialIssues={initialIssues} />
+</Layout>

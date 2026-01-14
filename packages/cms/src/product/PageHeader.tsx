@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { Button } from "../components/Button";
 
 import {
@@ -8,6 +7,8 @@ import {
   useDeleteIssueMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
+
+const BASE_PATH = import.meta.env.BASE_URL || "/admin";
 
 interface Topic {
   id?: string | null;
@@ -28,7 +29,6 @@ export default function PageHeader({
   published,
   topics = [],
 }: PageHeaderProps) {
-  const [, navigate] = useLocation();
   const [isFoundation, setIsFoundation] = useState(false);
 
   const publishIssueMutation = usePublishIssueMutation();
@@ -59,7 +59,7 @@ export default function PageHeader({
       }
     }
     await deleteIssueMutation.mutateAsync({ id });
-    navigate("/");
+    window.location.href = BASE_PATH;
   };
 
   return (

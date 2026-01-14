@@ -1,7 +1,8 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql",
+  // Use local API schema from packages/api (run `bun run dev` in api package first)
+  schema: "../api/src/schema.graphql",
   documents: ["src/**/*.graphql"],
   generates: {
     "./src/generated/graphql.ts": {

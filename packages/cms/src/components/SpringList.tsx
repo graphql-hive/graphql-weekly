@@ -19,9 +19,12 @@ const swap = <T,>(arr: T[], from: number, to: number): T[] => {
   return copy;
 };
 
+// Narrower type that excludes bigint (unsupported by react-spring animated components)
+type AnimatableNode = Exclude<ReactNode, bigint>;
+
 export type SpringListProps = {
   onDragEnd?: (newOrder: number[]) => void;
-  children: ReactNode[];
+  children: AnimatableNode[];
 };
 
 export default function SpringList({ onDragEnd, children }: SpringListProps) {
@@ -147,26 +150,31 @@ export default function SpringList({ onDragEnd, children }: SpringListProps) {
       className="spring-list"
       style={{ position: "relative", height: containerHeight }}
     >
-      {springs.map(({ y, scale, zIndex, shadow }, i) => (
-        <animated.div
-          {...bind(i)}
-          key={i}
-          className="spring-item"
-          style={{
-            position: "absolute",
-            width: "100%",
-            zIndex,
-            transform: y.to((yVal) => `translate3d(0, ${yVal}px, 0)`),
-            scale,
-            boxShadow: shadow.to(
-              (s) => `0 ${s}px ${s * 2.5}px rgba(0,0,0,0.12)`,
-            ),
-            touchAction: "none",
-          }}
-        >
-          {children[i]}
-        </animated.div>
-      ))}
+      {springs.map(({ y, scale, zIndex, shadow }, i) => {
+        // Type assertion needed due to react-spring/use-gesture type incompatibility with React 19
+        const gestureHandlers = bind(i) as React.HTMLAttributes<HTMLDivElement>;
+        return (
+          <animated.div
+            {...gestureHandlers}
+            key={i}
+            className="spring-item"
+            style={{
+              position: "absolute",
+              width: "100%",
+              zIndex,
+              transform: y.to((yVal) => `translate3d(0, ${yVal}px, 0)`),
+              scale,
+              boxShadow: shadow.to(
+                (s) => `0 ${s}px ${s * 2.5}px rgba(0,0,0,0.12)`,
+              ),
+              touchAction: "none",
+            }}
+          >
+            {/* Bridge React 19 ReactNode to react-spring's expected type */}
+            {children[i] as unknown as JSX.Element}
+          </animated.div>
+        );
+      })}
     </div>
   );
 }

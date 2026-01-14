@@ -1,7 +1,19 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { useParams } from "wouter";
-import { useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 import {
   DndContext,
   DragOverlay,
@@ -137,9 +149,16 @@ function Trash({ isOver }: { isOver: boolean }) {
   );
 }
 
-export default function IssuePage() {
-  const { id } = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
+export default function IssuePage({ id }: { id: string }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <IssuePageContent id={id} />
+    </QueryClientProvider>
+  );
+}
+
+function IssuePageContent({ id }: { id: string }) {
+  const qc = useQueryClient();
 
   const [newTopic, setNewTopic] = useState("");
   const [newLink, setNewLink] = useState("");
@@ -175,9 +194,9 @@ export default function IssuePage() {
   const addLinksToTopicMutation = useAddLinksToTopicMutation();
 
   const invalidateQueries = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["AllLinks"] });
-    queryClient.invalidateQueries({ queryKey: ["Issue", { id }] });
-  }, [queryClient, id]);
+    qc.invalidateQueries({ queryKey: ["AllLinks"] });
+    qc.invalidateQueries({ queryKey: ["Issue", { id }] });
+  }, [qc, id]);
 
   const issue = issueData?.issue;
   const topics = issue?.topics ?? [];
@@ -860,38 +879,41 @@ export default function IssuePage() {
             );
           })}
 
-          {/* Drag Overlay */}
-          {createPortal(
-            <DragOverlay>
-              {activeId && activeLink ? (
-                <div className="shadow-lg scale-[1.02]">
-                  <LinkCard
-                    link={getMergedLink(activeLink)}
-                    topics={topics}
-                    onChange={() => {}}
-                    onDelete={() => {}}
-                    refresh={() => {}}
-                    isDragOverlay
-                  />
-                </div>
-              ) : activeId && activeSubmission ? (
-                <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
-                  <div className="text-sm text-neu-900 dark:text-neu-100 truncate">
-                    {activeSubmission.title || "Untitled"}
+          {/* Drag Overlay - rendered via portal to document.body */}
+          {
+            createPortal(
+              <DragOverlay>
+                {activeId && activeLink ? (
+                  <div className="shadow-lg scale-[1.02]">
+                    <LinkCard
+                      link={getMergedLink(activeLink)}
+                      topics={topics}
+                      onChange={() => {}}
+                      onDelete={() => {}}
+                      refresh={() => {}}
+                      isDragOverlay
+                    />
                   </div>
-                  {activeSubmission.description && (
-                    <div className="text-xs text-neu-500 dark:text-neu-400 truncate mt-0.5">
-                      {activeSubmission.description}
+                ) : activeId && activeSubmission ? (
+                  <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
+                    <div className="text-sm text-neu-900 dark:text-neu-100 truncate">
+                      {activeSubmission.title || "Untitled"}
                     </div>
-                  )}
-                  <div className="text-xs text-neu-400 dark:text-neu-500 truncate mt-1 font-mono">
-                    {activeSubmission.url}
+                    {activeSubmission.description && (
+                      <div className="text-xs text-neu-500 dark:text-neu-400 truncate mt-0.5">
+                        {activeSubmission.description}
+                      </div>
+                    )}
+                    <div className="text-xs text-neu-400 dark:text-neu-500 truncate mt-1 font-mono">
+                      {activeSubmission.url}
+                    </div>
                   </div>
-                </div>
-              ) : null}
-            </DragOverlay>,
-            document.body,
-          )}
+                ) : null}
+              </DragOverlay>,
+              document.body,
+              // React 19's ReactPortal type differs from dnd-kit's expected ReactNode
+            ) as unknown as JSX.Element
+          }
 
           {/* Trash zone - shown when dragging */}
           {activeId && !containers.includes(String(activeId)) && (

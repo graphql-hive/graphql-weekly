@@ -1,6 +1,5 @@
 import type React from "react";
 import type { ComponentProps, DetailedHTMLProps, HTMLAttributes } from "react";
-import { Link } from "wouter";
 import { cn } from "../cn";
 
 const variantClasses = {
@@ -24,9 +23,7 @@ export declare namespace ButtonProps {
     disabled?: boolean;
   }
 
-  interface LinkProps
-    extends BaseProps,
-      Omit<ComponentProps<typeof Link>, "href" | "to"> {
+  interface LinkProps extends BaseProps, Omit<ComponentProps<"a">, "href"> {
     href: string;
     as?: never;
   }
@@ -35,7 +32,7 @@ export declare namespace ButtonProps {
     extends BaseProps,
       Omit<ComponentProps<"button">, "color"> {
     href?: never;
-    as?: never;
+    as?: undefined;
     type?: "button" | "submit" | "reset";
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
   }
@@ -70,11 +67,10 @@ export function Button(props: ButtonProps) {
       href,
       as: ___,
       className: ____,
-      asChild: _____,
       ...rest
     } = props;
     return (
-      <Link
+      <a
         href={href}
         {...rest}
         className={className}
