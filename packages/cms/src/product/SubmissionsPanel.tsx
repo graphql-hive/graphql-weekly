@@ -208,7 +208,7 @@ export function SubmissionsPanel() {
               <div className="p-4 text-center text-neu-500 dark:text-neu-400 text-sm">
                 Loading...
               </div>
-            ) : (submissions.length === 0 ? (
+            ) : submissions.length === 0 ? (
               <div className="p-4 text-center text-neu-500 dark:text-neu-400 text-sm">
                 No submissions
               </div>
@@ -226,7 +226,7 @@ export function SubmissionsPanel() {
                   />
                 ) : null,
               )
-            ))}
+            )}
           </div>
           <div
             {...bindResize()}

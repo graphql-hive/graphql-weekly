@@ -1,9 +1,5 @@
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
-import { ClickTarget } from "../components/ClickTarget";
-import { OpenPanel } from "../components/Panels";
-import { TopicDialog } from "./TopicDialog";
-
 interface Link {
   id?: string | null;
   text?: string | null;
@@ -12,20 +8,12 @@ interface Link {
   url?: string | null;
 }
 
-interface Topic {
-  id?: string | null;
-  position?: number | null;
-  title?: string | null;
-}
-
 interface LinkCardProps {
   dragListeners?: SyntheticListenerMap;
   isDragOverlay?: boolean;
   link: Link;
   onChange: (link: Link) => void;
   onDelete: () => void;
-  refresh: () => void;
-  topics: Topic[];
 }
 
 export function LinkCard({
@@ -34,8 +22,6 @@ export function LinkCard({
   link,
   onChange,
   onDelete,
-  refresh,
-  topics,
 }: LinkCardProps) {
   return (
     <div
@@ -113,41 +99,6 @@ export function LinkCard({
       </div>
 
       <div className="flex items-center gap-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity hover:duration-0">
-        <OpenPanel>
-          {({ showPanel }) => (
-            <ClickTarget
-              aria-label="Assign to topic"
-              onClick={() =>
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TopicDialog props mismatch with panel system
-                showPanel(TopicDialog as any, {
-                  link,
-                  linkId: link.id,
-                  refresh,
-                  topics,
-                })
-              }
-            >
-              <div
-                className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-950  transition-colors hover:duration-0"
-                title="Assign to topic"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                  />
-                </svg>
-              </div>
-            </ClickTarget>
-          )}
-        </OpenPanel>
         <button
           aria-label="Delete link"
           className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors hover:duration-0 outline-none focus-visible:ring-2 focus-visible:ring-primary"

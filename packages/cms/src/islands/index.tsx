@@ -5,8 +5,13 @@ import {
 } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { cn } from "../cn";
 import { Navbar } from "../components/Navbar";
-import { type AllIssuesQuery, useAllIssuesQuery } from "../generated/graphql";
+import {
+  type AllIssuesQuery,
+  useAllIssuesQuery,
+  useDeleteIssueMutation,
+} from "../generated/graphql";
 import { IssueCreator } from "../product/IssueCreator";
 
 const queryClient = new QueryClient({
@@ -45,6 +50,7 @@ export function IndexPage({ initialIssues }: Props) {
 
 function IndexPageContent({ initialIssues }: Props) {
   const qc = useQueryClient();
+  const deleteIssueMutation = useDeleteIssueMutation();
   const { data } = useAllIssuesQuery(
     {},
     {
@@ -135,8 +141,37 @@ function IndexPageContent({ initialIssues }: Props) {
   const issueNum = (issue: (typeof issues)[0]) =>
     issue.title?.split(" ")[1] ?? "0";
 
+  const handleDelete = (issue: Issue, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm(`Delete issue #${issueNum(issue)}?`)) return;
+    deleteIssueMutation.mutate(
+      { id: issue.id! },
+      {
+        onSuccess: () => {
+          qc.setQueriesData<AllIssuesQuery>(
+            { queryKey: ["AllIssues"] },
+            (old) => {
+              if (!old) return old;
+              return {
+                ...old,
+                allIssues:
+                  old.allIssues?.filter((i) => i.id !== issue.id) ?? null,
+              };
+            },
+          );
+        },
+      },
+    );
+  };
+
   return (
-    <div className="min-h-screen md:h-screen md:overflow-hidden md:flex md:flex-col bg-neu-50 dark:bg-neu-950">
+    <div
+      className={cn(
+        "min-h-screen md:h-screen md:overflow-hidden md:flex md:flex-col bg-neu-50 dark:bg-neu-950",
+        deleteIssueMutation.isPending && "cursor-progress",
+      )}
+    >
       <Navbar />
 
       <div className="md:flex md:flex-1 md:min-h-0 md:max-w-4xl md:mx-auto md:gap-8">
@@ -169,45 +204,56 @@ function IndexPageContent({ initialIssues }: Props) {
               const isSelected = index === selectedIndex;
 
               return (
-                <a
-                  className={`flex items-center justify-between px-4 py-2.5 border-b border-neu-100 dark:border-neu-800 last:border-b-0 no-underline hover:duration-0 ${
-                    isSelected
-                      ? "bg-neu-100 dark:bg-neu-800"
-                      : "hover:bg-neu-50 dark:hover:bg-neu-800/50"
-                  }`}
-                  href={`${BASE_PATH}/issue/${issue.id}`}
+                <div
+                  className="group relative border-b border-neu-100 dark:border-neu-800 last:border-b-0"
                   key={issue.id}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
-                  {/* Issue number */}
-                  <span
-                    className={`font-mono text-sm tabular-nums ${
+                  <a
+                    className={`flex items-center justify-between px-4 py-2.5 no-underline hover:duration-0 ${
                       isSelected
-                        ? "text-neu-900 dark:text-neu-100 "
-                        : "text-neu-600 dark:text-neu-400"
+                        ? "bg-neu-100 dark:bg-neu-800"
+                        : "hover:bg-neu-50 dark:hover:bg-neu-800/50"
                     }`}
+                    href={`${BASE_PATH}/issue/${issue.id}`}
                   >
-                    #{issueNum(issue)}
-                  </span>
-
-                  {/* Right side: date + status */}
-                  <div className="flex items-center gap-3">
-                    {issue.date && (
-                      <span className="text-sm tabular-nums text-neu-400 dark:text-neu-500">
-                        {formatDate(issue.date)}
-                      </span>
-                    )}
-                    {issue.published ? (
-                      <span className="text-xs uppercase text-neu-500 dark:text-neu-400 px-1.5 py-0.5 border border-neu-200 dark:border-neu-700 bg-neu-100 dark:bg-neu-800">
-                        published
-                      </span>
-                    ) : (
-                      <span className="text-xs uppercase text-amber-600 dark:text-amber-400 px-1.5 py-0.5 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950">
-                        draft
-                      </span>
-                    )}
-                  </div>
-                </a>
+                    <span
+                      className={`font-mono text-sm tabular-nums ${
+                        isSelected
+                          ? "text-neu-900 dark:text-neu-100 "
+                          : "text-neu-600 dark:text-neu-400"
+                      }`}
+                    >
+                      #{issueNum(issue)}
+                    </span>
+                    <div className="flex items-center gap-3">
+                      {issue.date && (
+                        <span className="text-sm tabular-nums text-neu-400 dark:text-neu-500">
+                          {formatDate(issue.date)}
+                        </span>
+                      )}
+                      {issue.published ? (
+                        <span className="text-xs uppercase text-neu-500 dark:text-neu-400 px-1.5 py-0.5 border border-neu-200 dark:border-neu-700 bg-neu-100 dark:bg-neu-800">
+                          published
+                        </span>
+                      ) : (
+                        <span className="text-xs uppercase text-amber-600 dark:text-amber-400 px-1.5 py-0.5 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 group-hover:invisible">
+                          draft
+                        </span>
+                      )}
+                    </div>
+                  </a>
+                  {!issue.published && (
+                    <button
+                      aria-label="Delete issue"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 invisible group-hover:visible text-base leading-none text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 px-1.5 py-0.5 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950"
+                      onClick={(e) => handleDelete(issue, e)}
+                      type="button"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>

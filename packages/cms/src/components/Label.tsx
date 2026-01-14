@@ -1,9 +1,6 @@
 import type { ComponentProps } from "react";
 
-export function Label({
-  className,
-  ...props
-}: ComponentProps<"label">) {
+export function Label({ className, ...props }: ComponentProps<"label">) {
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control -- generic wrapper, consumers provide htmlFor
     <label
