@@ -192,9 +192,9 @@ export default {
         headers.set('Access-Control-Allow-Origin', corsOrigin)
         headers.set('Access-Control-Allow-Credentials', 'true')
         return new Response(response.body, {
+          headers,
           status: response.status,
           statusText: response.statusText,
-          headers,
         })
       }
       return response
@@ -241,9 +241,11 @@ export default {
       return new Response('OK', { status: 200 })
     }
 
-    // Redirect root to CMS (this is hit after OAuth callback)
+    // Redirect root to CMS (Better Auth defaults to '/' after OAuth)
     if (url.pathname === '/' || url.pathname === '') {
-      const cmsUrl = env.LOCAL_DEV ? 'http://localhost:2016' : 'https://cms.graphqlweekly.com'
+      const cmsUrl = env.LOCAL_DEV
+        ? 'http://localhost:2016'
+        : 'https://cms.graphqlweekly.com'
       return Response.redirect(cmsUrl, 302)
     }
 

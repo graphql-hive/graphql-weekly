@@ -1,15 +1,15 @@
-import { createAuthClient } from 'better-auth/react'
+import { createAuthClient } from "better-auth/react";
 
 const baseURL = import.meta.env.DEV
-  ? 'http://localhost:2012'
-  : (import.meta.env.PUBLIC_API_URL || 'https://api.graphqlweekly.com')
+  ? "http://localhost:2012"
+  : import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com";
 
 export const authClient = createAuthClient({
-  basePath: '/auth',
+  basePath: "/auth",
   baseURL,
   fetchOptions: {
-    credentials: 'include',
+    credentials: "include",
   },
-})
+});
 
-export const { signIn, signOut, useSession } = authClient
+export const { signIn, signOut, useSession } = authClient;

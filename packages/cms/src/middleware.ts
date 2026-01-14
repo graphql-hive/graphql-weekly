@@ -2,7 +2,7 @@ import { defineMiddleware } from "astro:middleware";
 
 const API_URL = import.meta.env.DEV
   ? "http://localhost:2012"
-  : (import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com");
+  : import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com";
 
 interface MeResponse {
   data: {
@@ -20,14 +20,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const response = await fetch(`${API_URL}/graphql`, {
-    method: "POST",
+    body: JSON.stringify({
+      query: "{ me { isCollaborator } }",
+    }),
     headers: {
       "Content-Type": "application/json",
       Cookie: context.request.headers.get("Cookie") || "",
     },
-    body: JSON.stringify({
-      query: "{ me { isCollaborator } }",
-    }),
+    method: "POST",
   });
 
   const result = (await response.json()) as MeResponse;

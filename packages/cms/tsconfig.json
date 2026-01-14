@@ -9,7 +9,7 @@
   },
   "include": [
     "src",
-    ".astro",
+    ".astro/types.d.ts",
     "astro.config.mjs",
     "codegen.ts",
     "graphql-codegen.ts"
