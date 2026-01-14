@@ -5,3 +5,4 @@ node_modules
 .build
 .history
 dist
+e2e/.auth/

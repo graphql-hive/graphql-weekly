@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Delete Workflow", () => {
+  test.use({ storageState: "e2e/.auth/user.json" });
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();

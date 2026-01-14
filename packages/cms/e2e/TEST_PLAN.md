@@ -111,6 +111,23 @@ Every scenario should:
 
 The refresh-and-verify step is critical - it's what makes these E2E tests, not unit tests.
 
+## Authentication
+
+Most E2E tests require authentication. The tests use Playwright's `storageState` to persist auth.
+
+### Setup Auth for Tests
+
+1. Run the CMS and API locally
+2. Run `bun run test:e2e:setup-auth` to login via GitHub and save the session
+3. Or manually create `e2e/.auth/user.json` with your session cookies
+
+### Test Categories
+
+- **Public tests** (no auth): Index page, login page, access-denied page
+- **Authenticated tests**: All `/issue/*` pages, mutations
+
+The middleware redirects unauthenticated users from `/issue/*` routes to `/login`.
+
 ## Running Tests
 
 ```bash
@@ -125,4 +142,7 @@ bun run test:e2e -g "topic"
 
 # Run with retries for transient 503 errors
 bun run test:e2e --retries=1
+
+# Setup auth (login via GitHub, save session)
+bun run test:e2e:setup-auth
 ```

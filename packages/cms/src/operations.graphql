@@ -1,3 +1,14 @@
+query Me {
+  me {
+    id
+    name
+    email
+    image
+    isCollaborator
+    repositoryUrl
+  }
+}
+
 query AllLinks {
   allLinks {
     id

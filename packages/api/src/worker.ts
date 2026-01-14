@@ -172,47 +172,35 @@ export default {
 
     if (url.pathname === '/graphql' || url.pathname === '/graphql/') {
       const db = createDb(env.graphqlweekly)
+      const auth = createAuth(env)
 
       let user: GraphQLContext['user'] = null
+      try {
+        const session = await auth.api.getSession({
+          headers: request.headers,
+        })
+        if (session?.user) {
+          const account = await db
+            .selectFrom('account')
+            .select('accessToken')
+            .where('userId', '=', session.user.id)
+            .where('providerId', '=', 'github')
+            .executeTakeFirst()
 
-      const testUserId = request.headers.get('X-Test-User-Id')
-      if (env.LOCAL_DEV && testUserId) {
-        user = {
-          email: 'test@example.com',
-          id: testUserId,
-          image: null,
-          isCollaborator: true,
-          name: 'Test User',
-        }
-      } else {
-        const auth = createAuth(env)
-        try {
-          const session = await auth.api.getSession({
-            headers: request.headers,
-          })
-          if (session?.user) {
-            const account = await db
-              .selectFrom('account')
-              .select('accessToken')
-              .where('userId', '=', session.user.id)
-              .where('providerId', '=', 'github')
-              .executeTakeFirst()
+          const isCollaborator = account?.accessToken
+            ? await checkGitHubCollaborator(account.accessToken)
+            : false
 
-            const isCollaborator = account?.accessToken
-              ? await checkGitHubCollaborator(account.accessToken)
-              : false
-
-            user = {
-              email: session.user.email,
-              id: session.user.id,
-              image: session.user.image,
-              isCollaborator,
-              name: session.user.name,
-            }
+          user = {
+            email: session.user.email,
+            id: session.user.id,
+            image: session.user.image,
+            isCollaborator,
+            name: session.user.name,
           }
-        } catch {
-          // No session or invalid session
         }
+      } catch {
+        // No session or invalid session
       }
 
       return yoga.fetch(request, { db, env, user })

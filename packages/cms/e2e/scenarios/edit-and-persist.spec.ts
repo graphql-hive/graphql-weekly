@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Edit and Persist", () => {
+  test.use({ storageState: "e2e/.auth/user.json" });
   test.beforeEach(async ({ page }) => {
     // Navigate to first issue
     await page.goto("/");

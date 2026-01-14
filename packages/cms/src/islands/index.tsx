@@ -23,8 +23,6 @@ const queryClient = new QueryClient({
   },
 });
 
-const BASE_PATH = import.meta.env.BASE_URL || "/";
-
 type Issue = NonNullable<AllIssuesQuery["allIssues"]>[number];
 
 const formatDate = (dateStr: string | null | undefined) => {
@@ -114,7 +112,7 @@ function IndexPageContent({ initialIssues }: Props) {
         case "Enter":
           e.preventDefault();
           if (issues[selectedIndex]?.id) {
-            globalThis.location.href = `${BASE_PATH}/issue/${issues[selectedIndex].id}`;
+            globalThis.location.href = `/issue/${issues[selectedIndex].id}`;
           }
           break;
         case "g":
@@ -215,7 +213,7 @@ function IndexPageContent({ initialIssues }: Props) {
                         ? "bg-neu-100 dark:bg-neu-800"
                         : "hover:bg-neu-50 dark:hover:bg-neu-800/50"
                     }`}
-                    href={`${BASE_PATH}/issue/${issue.id}`}
+                    href={`/issue/${issue.id}`}
                   >
                     <span
                       className={`font-mono text-sm tabular-nums ${

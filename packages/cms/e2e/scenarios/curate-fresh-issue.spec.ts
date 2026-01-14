@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Curate Fresh Issue", () => {
+  test.use({ storageState: "e2e/.auth/user.json" });
   test("create issue, add link, edit metadata, save, verify persistence", async ({
     page,
   }) => {
