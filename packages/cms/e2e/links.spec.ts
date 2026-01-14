@@ -3,11 +3,11 @@ import { expect, test } from "@playwright/test";
 test.describe("Link Management", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to an issue page
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     // Navigate to first issue
-    const firstIssue = page.locator('a[href^="/admin/issue/"]').first();
+    const firstIssue = page.locator('a[href^="/issue/"]').first();
     await firstIssue.click();
     // Wait for issue data to load
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });

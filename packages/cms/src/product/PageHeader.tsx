@@ -8,7 +8,7 @@ import {
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
 
-const BASE_PATH = import.meta.env.BASE_URL || "/admin";
+const BASE_PATH = import.meta.env.BASE_URL || "/";
 
 interface Topic {
   id?: string | null;

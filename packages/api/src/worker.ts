@@ -3,19 +3,26 @@ import type { Kysely } from 'kysely'
 /// <reference types="@cloudflare/workers-types" />
 import { createSchema, createYoga } from 'graphql-yoga'
 
+import { createAuth, type AuthEnv } from './auth'
 import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
 
-export interface Env {
-  graphqlweekly: D1Database
-  JWT_SECRET?: string
+export interface Env extends AuthEnv {
   LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
+}
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  image?: string | null
 }
 
 export interface GraphQLContext {
   db: Kysely<Database>
   env: Env
+  user: User | null
 }
 
 const typeDefs = /* GraphQL */ `
@@ -146,9 +153,33 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url)
 
+    // Better Auth handler
+    if (url.pathname.startsWith('/auth')) {
+      const auth = createAuth(env)
+      return auth.handler(request)
+    }
+
     if (url.pathname === '/graphql' || url.pathname === '/graphql/') {
       const db = createDb(env.graphqlweekly)
-      return yoga.fetch(request, { db, env })
+      const auth = createAuth(env)
+
+      // Get current user from session
+      let user: GraphQLContext['user'] = null
+      try {
+        const session = await auth.api.getSession({ headers: request.headers })
+        if (session?.user) {
+          user = {
+            id: session.user.id,
+            name: session.user.name,
+            email: session.user.email,
+            image: session.user.image,
+          }
+        }
+      } catch {
+        // No session or invalid session
+      }
+
+      return yoga.fetch(request, { db, env, user })
     }
 
     // Health check

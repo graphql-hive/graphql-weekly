@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
-const BASE_PATH = import.meta.env.BASE_URL || "/admin";
+import { UserMenu } from "./UserMenu";
+
+const BASE_PATH = import.meta.env.BASE_URL || "/";
 
 interface NavbarProps {
   children?: ReactNode;
@@ -20,6 +22,9 @@ export function Navbar({ children }: NavbarProps) {
           {children}
         </div>
       )}
+      <div className="absolute right-4">
+        <UserMenu />
+      </div>
     </div>
   );
 }

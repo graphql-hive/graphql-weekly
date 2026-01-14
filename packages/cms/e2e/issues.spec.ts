@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Issue Management", () => {
   test("shows issue list on index page", async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/");
 
     // Should show the GraphQL Weekly header
     await expect(page.getByText("GraphQL Weekly")).toBeVisible();
@@ -12,20 +12,20 @@ test.describe("Issue Management", () => {
   });
 
   test("shows issue cards with titles", async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     // Issue links should exist
-    const issueLinks = page.locator('a[href^="/admin/issue/"]');
+    const issueLinks = page.locator('a[href^="/issue/"]');
     const count = await issueLinks.count();
     expect(count).toBeGreaterThan(0);
   });
 
   test("can navigate to issue detail", async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    const firstIssue = page.locator('a[href^="/admin/issue/"]').first();
+    const firstIssue = page.locator('a[href^="/issue/"]').first();
     await firstIssue.click();
 
     // Wait for loading to complete - "Curating:" appears when issue data loads
@@ -33,24 +33,24 @@ test.describe("Issue Management", () => {
   });
 
   test("issue detail shows navbar with back link", async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    const firstIssue = page.locator('a[href^="/admin/issue/"]').first();
+    const firstIssue = page.locator('a[href^="/issue/"]').first();
     await firstIssue.click();
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
 
     // Should have logo/link back to index
-    const logo = page.locator('a[href="/admin"]');
+    const logo = page.locator('a[href="/"]');
     await expect(logo).toBeVisible();
   });
 
   test("can create a new issue", async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     // Count current issues
-    const issueLinks = page.locator('a[href^="/admin/issue/"]');
+    const issueLinks = page.locator('a[href^="/issue/"]');
     const initialCount = await issueLinks.count();
 
     // The input is pre-filled with the next suggested number (highestNum + 1)
@@ -74,15 +74,15 @@ test.describe("Issue Management", () => {
   });
 
   test("can navigate back from issue detail to index", async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    const firstIssue = page.locator('a[href^="/admin/issue/"]').first();
+    const firstIssue = page.locator('a[href^="/issue/"]').first();
     await firstIssue.click();
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
 
     // Click logo to go back
-    await page.locator('a[href="/admin"]').click();
+    await page.locator('a[href="/"]').click();
 
     // Should be back on index with issue list
     await expect(page.getByText(/\d+ issues/)).toBeVisible();

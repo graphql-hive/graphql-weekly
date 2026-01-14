@@ -10,6 +10,19 @@ Archive website for the GraphQL Weekly newsletter at [graphqlweekly.com](https:/
 - **Bun** — package manager and runtime
 - **Cloudflare Workers + D1** — API and database
 
+## Domains
+
+| Service | Local | Production |
+|---------|-------|------------|
+| API | http://localhost:2012 | https://api.graphqlweekly.com |
+| CMS | http://localhost:2016 | https://cms.graphqlweekly.com |
+| Website | - | https://graphqlweekly.com |
+
+### API Endpoints
+- `/graphql` - GraphQL API
+- `/auth/*` - Better Auth (GitHub OAuth)
+- `/health` - Health check
+
 ## Monorepo Structure
 
 ```

@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const BASE_PATH = import.meta.env.BASE_URL || "/admin";
+const BASE_PATH = import.meta.env.BASE_URL || "/";
 
 type Issue = NonNullable<AllIssuesQuery["allIssues"]>[number];
 

@@ -10,14 +10,14 @@ Using Better Auth + `better-auth-cloudflare` package instead of CF Access.
 - [x] GitHub OAuth
 
 **Implementation:**
-- [ ] Install `better-auth`, `better-auth-cloudflare`
-- [ ] Create auth schema migration (user, session, account, verification tables)
-- [ ] Integrate Better Auth with Kysely (or run Drizzle alongside for auth only)
-- [ ] Mount auth handler at `/auth/*` in API worker
-- [ ] Add auth client to CMS
-- [ ] Add `BETTER_AUTH_SECRET` to worker secrets
-- [ ] Link User to Author (every Author requires a User; User optionally has Author profile)
-- [ ] Add audit fields (`createdBy`, `updatedBy`) to mutations
+- [x] Install `better-auth`, `better-auth-cloudflare`
+- [x] Create auth schema migration (user, session, account, verification tables)
+- [x] Integrate Better Auth with Drizzle (running alongside Kysely for auth only)
+- [x] Mount auth handler at `/auth/*` in API worker
+- [x] Add auth client to CMS
+- [ ] Add `BETTER_AUTH_SECRET` to worker secrets (need to set in CF dashboard)
+- [x] Link User to Author (every Author requires a User; User optionally has Author profile)
+- [x] Add audit fields (`createdBy`, `updatedBy`) to mutations
 
 ### CMS
 

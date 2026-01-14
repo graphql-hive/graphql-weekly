@@ -10,3 +10,4 @@ test-results
 .wrangler
 .turbo
 data-dump/
+.dev.vars

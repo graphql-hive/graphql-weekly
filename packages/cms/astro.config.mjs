@@ -9,7 +9,6 @@ export default defineConfig({
       enabled: true,
     },
   }),
-  base: "/admin",
   integrations: [react()],
   output: "server",
   server: { port: 2016 },

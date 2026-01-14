@@ -16,7 +16,11 @@ export const resolvers: Resolvers = {
     addLinksToTopic: async (_parent, { linkId, topicId }, ctx) => {
       await ctx.db
         .updateTable('Link')
-        .set({ topicId })
+        .set({
+          topicId,
+          updatedAt: new Date().toISOString(),
+          updatedBy: ctx.user?.id ?? null,
+        })
         .where('id', '=', linkId)
         .execute()
       const topic = await ctx.db
@@ -29,14 +33,19 @@ export const resolvers: Resolvers = {
     createIssue: async (_parent, { date, number, published, title }, ctx) => {
       const id = generateId()
       const dateStr = date ? date.toISOString() : new Date().toISOString()
+      const now = new Date().toISOString()
       await ctx.db
         .insertInto('Issue')
         .values({
+          createdAt: now,
+          createdBy: ctx.user?.id ?? null,
           date: dateStr,
           id,
           number,
           published: published ? 1 : 0,
           title,
+          updatedAt: now,
+          updatedBy: ctx.user?.id ?? null,
           versionCount: 0,
         })
         .execute()
@@ -49,7 +58,18 @@ export const resolvers: Resolvers = {
     },
     createLink: async (_parent, { url }, ctx) => {
       const id = generateId()
-      await ctx.db.insertInto('Link').values({ id, url }).execute()
+      const now = new Date().toISOString()
+      await ctx.db
+        .insertInto('Link')
+        .values({
+          createdAt: now,
+          createdBy: ctx.user?.id ?? null,
+          id,
+          updatedAt: now,
+          updatedBy: ctx.user?.id ?? null,
+          url,
+        })
+        .execute()
       const link = await ctx.db
         .selectFrom('Link')
         .selectAll()
@@ -94,9 +114,19 @@ export const resolvers: Resolvers = {
     },
     createTopic: async (_parent, { issue_comment, issueId, title }, ctx) => {
       const id = generateId()
+      const now = new Date().toISOString()
       await ctx.db
         .insertInto('Topic')
-        .values({ id, issue_comment, issueId, title })
+        .values({
+          createdAt: now,
+          createdBy: ctx.user?.id ?? null,
+          id,
+          issue_comment,
+          issueId,
+          title,
+          updatedAt: now,
+          updatedBy: ctx.user?.id ?? null,
+        })
         .execute()
       const topic = await ctx.db
         .selectFrom('Topic')
@@ -222,7 +252,10 @@ export const resolvers: Resolvers = {
       { id, previewImage, published, versionCount },
       ctx,
     ) => {
-      const updates: Record<string, unknown> = {}
+      const updates: Record<string, unknown> = {
+        updatedAt: new Date().toISOString(),
+        updatedBy: ctx.user?.id ?? null,
+      }
       if (published !== null && published !== undefined)
         updates.published = published ? 1 : 0
       if (versionCount !== null && versionCount !== undefined)
@@ -230,13 +263,11 @@ export const resolvers: Resolvers = {
       if (previewImage !== null && previewImage !== undefined)
         updates.previewImage = previewImage
 
-      if (Object.keys(updates).length > 0) {
-        await ctx.db
-          .updateTable('Issue')
-          .set(updates)
-          .where('id', '=', id)
-          .execute()
-      }
+      await ctx.db
+        .updateTable('Issue')
+        .set(updates)
+        .where('id', '=', id)
+        .execute()
       const issue = await ctx.db
         .selectFrom('Issue')
         .selectAll()
@@ -249,6 +280,8 @@ export const resolvers: Resolvers = {
         .updateTable('Link')
         .set({
           title,
+          updatedAt: new Date().toISOString(),
+          updatedBy: ctx.user?.id ?? null,
           ...(text !== null && text !== undefined ? { text } : {}),
           ...(url !== null && url !== undefined ? { url } : {}),
         })
@@ -262,13 +295,18 @@ export const resolvers: Resolvers = {
       return link ?? null
     },
     updateTopic: async (_parent, { id, position }, ctx) => {
-      if (position !== null && position !== undefined) {
-        await ctx.db
-          .updateTable('Topic')
-          .set({ position })
-          .where('id', '=', id)
-          .execute()
+      const updates: Record<string, unknown> = {
+        updatedAt: new Date().toISOString(),
+        updatedBy: ctx.user?.id ?? null,
       }
+      if (position !== null && position !== undefined) {
+        updates.position = position
+      }
+      await ctx.db
+        .updateTable('Topic')
+        .set(updates)
+        .where('id', '=', id)
+        .execute()
       const topic = await ctx.db
         .selectFrom('Topic')
         .selectAll()

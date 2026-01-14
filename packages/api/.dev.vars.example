@@ -1,0 +1,10 @@
+# Better Auth secrets
+BETTER_AUTH_SECRET=your-secret-at-least-32-characters-long
+BETTER_AUTH_URL=http://localhost:2012
+
+# GitHub OAuth (create at https://github.com/settings/developers)
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
+# Mailchimp
+MAILCHIMP_API_KEY=your-mailchimp-api-key

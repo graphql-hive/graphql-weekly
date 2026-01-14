@@ -1,13 +1,11 @@
 import { GraphQLClient } from "graphql-request";
 
-// In dev, use absolute URL since CMS and API run on different ports
-// In production, use PUBLIC_API_URL if set (for PR previews), otherwise relative /graphql (routes handle it)
+// In dev, use localhost. In production, use PUBLIC_API_URL or api.graphqlweekly.com
 const endpoint = import.meta.env.DEV
   ? "http://localhost:2012/graphql"
-  : (import.meta.env.PUBLIC_API_URL || "/graphql");
+  : (import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com/graphql");
 
 export const graphqlClient = new GraphQLClient(endpoint, {
-  // Auth handled by Cloudflare Access (JWT in cookie)
   credentials: "include",
 });
 
@@ -20,10 +18,9 @@ export function fetcher<TData, TVariables extends Record<string, unknown>>(
 }
 
 // Server-side fetcher for Astro SSR
-// Uses absolute URL since relative URLs don't work in SSR context
 const serverEndpoint = import.meta.env.DEV
   ? "http://localhost:2012/graphql"
-  : (import.meta.env.PUBLIC_API_URL || "/graphql");
+  : (import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com/graphql");
 
 const serverClient = new GraphQLClient(serverEndpoint);
 

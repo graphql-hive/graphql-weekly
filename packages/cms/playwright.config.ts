@@ -29,7 +29,7 @@ export default defineConfig({
       command: "bun run dev",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
-      url: "http://localhost:2016/admin",
+      url: "http://localhost:2016",
     },
   ],
 });
