@@ -7,10 +7,12 @@
 Using Better Auth + `better-auth-cloudflare` package instead of CF Access.
 
 **Auth method (decide):**
+
 - [ ] Option A: GitHub OAuth — ties to repo collaborators, simple
 - [ ] Option B: Passkeys for invited emails — modern, explicit invite model
 
 **Implementation:**
+
 - [ ] Install `better-auth`, `better-auth-cloudflare`
 - [ ] Create auth schema migration (user, session, account, verification tables)
 - [ ] Integrate Better Auth with Kysely (or run Drizzle alongside for auth only)

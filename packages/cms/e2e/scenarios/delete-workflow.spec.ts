@@ -20,11 +20,15 @@ test.describe("Delete Workflow", () => {
     await expect(linkInput).toHaveValue("");
 
     // Wait for link to appear
-    const linkUrlInput = page.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
+    const linkUrlInput = page.locator(
+      `[aria-label="Link URL"][value="${testUrl}"]`,
+    );
     await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
 
     // Find the link card containing our test URL and hover
-    const linkCard = linkUrlInput.locator("xpath=ancestor::div[@role='button']");
+    const linkCard = linkUrlInput.locator(
+      "xpath=ancestor::div[@role='button']",
+    );
     await linkCard.hover();
 
     // Click delete button within this card
@@ -35,7 +39,9 @@ test.describe("Delete Workflow", () => {
 
     // Save the deletion
     await page.getByRole("button", { name: "Save" }).click();
-    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
+      timeout: 10_000,
+    });
 
     // Refresh and verify link is gone
     await page.reload();
@@ -57,17 +63,21 @@ test.describe("Delete Workflow", () => {
     await expect(linkInput).toHaveValue("");
 
     // Wait for link
-    const linkUrlInput = page.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
+    const linkUrlInput = page.locator(
+      `[aria-label="Link URL"][value="${testUrl}"]`,
+    );
     await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
 
     // Find the link card and delete it
-    const linkCard = linkUrlInput.locator("xpath=ancestor::div[@role='button']");
+    const linkCard = linkUrlInput.locator(
+      "xpath=ancestor::div[@role='button']",
+    );
     await linkCard.hover();
     await linkCard.locator('[aria-label="Delete link"]').click();
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
     // Discard instead of save
-    await page.getByRole("button", { name: "Discard", exact: true }).click();
+    await page.getByRole("button", { exact: true, name: "Discard" }).click();
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible();
 
     // Link should still be there

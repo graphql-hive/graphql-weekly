@@ -4,7 +4,7 @@ import { GraphQLClient } from "graphql-request";
 // In production, use PUBLIC_API_URL if set (for PR previews), otherwise relative /graphql (routes handle it)
 const endpoint = import.meta.env.DEV
   ? "http://localhost:2012/graphql"
-  : (import.meta.env.PUBLIC_API_URL || "/graphql");
+  : import.meta.env.PUBLIC_API_URL || "/graphql";
 
 export const graphqlClient = new GraphQLClient(endpoint, {
   // Auth handled by Cloudflare Access (JWT in cookie)
@@ -23,7 +23,7 @@ export function fetcher<TData, TVariables extends Record<string, unknown>>(
 // Uses absolute URL since relative URLs don't work in SSR context
 const serverEndpoint = import.meta.env.DEV
   ? "http://localhost:2012/graphql"
-  : (import.meta.env.PUBLIC_API_URL || "/graphql");
+  : import.meta.env.PUBLIC_API_URL || "/graphql";
 
 const serverClient = new GraphQLClient(serverEndpoint);
 

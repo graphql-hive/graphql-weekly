@@ -43,15 +43,28 @@ export function RadioInput({
             `}
           >
             {isActive && (
-              <svg className="w-4 h-4 text-neu-900" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                <path d="M5 13l4 4L19 7" strokeLinecap="square" strokeLinejoin="miter" />
+              <svg
+                className="w-4 h-4 text-neu-900"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={3}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  strokeLinecap="square"
+                  strokeLinejoin="miter"
+                />
               </svg>
             )}
           </div>
         </label>
       </FlexCell>
       <FlexCell>
-        <label className="m-0 text-base cursor-pointer dark:text-neu-100" htmlFor={id}>
+        <label
+          className="m-0 text-base cursor-pointer dark:text-neu-100"
+          htmlFor={id}
+        >
           {children}
         </label>
       </FlexCell>

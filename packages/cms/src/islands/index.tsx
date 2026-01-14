@@ -149,15 +149,19 @@ function IndexPageContent({ initialIssues }: Props) {
       { id: issue.id! },
       {
         onSuccess: () => {
-          qc.setQueriesData<AllIssuesQuery>({ queryKey: ["AllIssues"] }, (old) => {
-            if (!old) return old;
-            return {
-              ...old,
-              allIssues: old.allIssues?.filter((i) => i.id !== issue.id) ?? null,
-            };
-          });
+          qc.setQueriesData<AllIssuesQuery>(
+            { queryKey: ["AllIssues"] },
+            (old) => {
+              if (!old) return old;
+              return {
+                ...old,
+                allIssues:
+                  old.allIssues?.filter((i) => i.id !== issue.id) ?? null,
+              };
+            },
+          );
         },
-      }
+      },
     );
   };
 

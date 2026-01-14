@@ -10,7 +10,9 @@ test.describe("Edit and Persist", () => {
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
   });
 
-  test("edit link metadata and verify persistence after refresh", async ({ page }) => {
+  test("edit link metadata and verify persistence after refresh", async ({
+    page,
+  }) => {
     const timestamp = Date.now();
     const newTitle = `Edited Title ${timestamp}`;
     const newDescription = `Edited description ${timestamp}`;
@@ -22,9 +24,11 @@ test.describe("Edit and Persist", () => {
     await expect(linkInput).toHaveValue("");
 
     // Wait for the link to appear
-    await expect(page.locator('[aria-label="Link title"]').first()).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(page.locator('[aria-label="Link title"]').first()).toBeVisible(
+      {
+        timeout: 5000,
+      },
+    );
 
     // Edit the title
     const titleInput = page.locator('[aria-label="Link title"]').first();
@@ -43,7 +47,9 @@ test.describe("Edit and Persist", () => {
 
     // Save
     await page.getByRole("button", { name: "Save" }).click();
-    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
+      timeout: 10_000,
+    });
 
     // Refresh
     await page.reload();
@@ -53,7 +59,9 @@ test.describe("Edit and Persist", () => {
     const persistedTitle = page.locator('[aria-label="Link title"]').first();
     await expect(persistedTitle).toHaveValue(newTitle);
 
-    const persistedDesc = page.locator('[aria-label="Link description"]').first();
+    const persistedDesc = page
+      .locator('[aria-label="Link description"]')
+      .first();
     await expect(persistedDesc).toHaveValue(newDescription);
   });
 
@@ -66,7 +74,9 @@ test.describe("Edit and Persist", () => {
       const linkInput = page.getByPlaceholder("Paste URL to add link...");
       await linkInput.fill(`https://example.com/discard-test-${Date.now()}`);
       await page.getByRole("button", { exact: true, name: "Add" }).click();
-      await expect(page.locator('[aria-label="Link title"]').first()).toBeVisible({
+      await expect(
+        page.locator('[aria-label="Link title"]').first(),
+      ).toBeVisible({
         timeout: 5000,
       });
     }
@@ -77,11 +87,14 @@ test.describe("Edit and Persist", () => {
       .inputValue();
 
     // Make edits
-    await page.locator('[aria-label="Link title"]').first().fill("CHANGED TITLE");
+    await page
+      .locator('[aria-label="Link title"]')
+      .first()
+      .fill("CHANGED TITLE");
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
     // Discard
-    await page.getByRole("button", { name: "Discard", exact: true }).click();
+    await page.getByRole("button", { exact: true, name: "Discard" }).click();
 
     // Verify unsaved bar gone
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible();

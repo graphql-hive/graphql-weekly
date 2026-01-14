@@ -81,7 +81,7 @@ test.describe("Topic Organization", () => {
       } else {
         expect(newTopic2Box!.y).toBeGreaterThan(newTopic1Box!.y);
       }
-    }).toPass({ timeout: 10000 });
+    }).toPass({ timeout: 10_000 });
 
     // Refresh and verify persistence
     await page.reload();
@@ -120,14 +120,18 @@ test.describe("Topic Organization", () => {
     await removeBtn.click();
 
     // Wait for topic to be removed
-    await expect(page.getByRole("heading", { name: topicName })).not.toBeVisible({
+    await expect(
+      page.getByRole("heading", { name: topicName }),
+    ).not.toBeVisible({
       timeout: 5000,
     });
 
     // Refresh and verify it's still gone
     await page.reload();
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole("heading", { name: topicName })).not.toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: topicName }),
+    ).not.toBeVisible();
   });
 
   // TODO: dnd-kit drag simulation doesn't work with Playwright's mouse/keyboard APIs
@@ -150,11 +154,15 @@ test.describe("Topic Organization", () => {
     await expect(linkInput).toHaveValue("");
 
     // Wait for link to appear in Unassigned
-    const linkUrlInput = page.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
+    const linkUrlInput = page.locator(
+      `[aria-label="Link URL"][value="${testUrl}"]`,
+    );
     await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
 
     // Find the link card (sortable item with keyboard support)
-    const linkCard = linkUrlInput.locator("xpath=ancestor::div[@role='button']");
+    const linkCard = linkUrlInput.locator(
+      "xpath=ancestor::div[@role='button']",
+    );
     await expect(linkCard).toBeVisible();
 
     // Find the topic section (drop target)
@@ -172,7 +180,9 @@ test.describe("Topic Organization", () => {
 
     // Verify link is now in topic section (optimistic update)
     await expect(async () => {
-      const linkInTopic = topicSection.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
+      const linkInTopic = topicSection.locator(
+        `[aria-label="Link URL"][value="${testUrl}"]`,
+      );
       await expect(linkInTopic).toBeVisible();
     }).toPass({ timeout: 5000 });
 
@@ -181,7 +191,9 @@ test.describe("Topic Organization", () => {
 
     // Save
     await page.getByRole("button", { name: "Save" }).click();
-    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
+      timeout: 10_000,
+    });
 
     // Refresh and verify persistence
     await page.reload();
@@ -192,7 +204,9 @@ test.describe("Topic Organization", () => {
       has: page.getByRole("heading", { name: topicName }),
     });
     await expect(
-      persistedTopicSection.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
+      persistedTopicSection.locator(
+        `[aria-label="Link URL"][value="${testUrl}"]`,
+      ),
     ).toBeVisible();
   });
 });

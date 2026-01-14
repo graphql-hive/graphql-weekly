@@ -481,7 +481,6 @@ const styles = {
   },
 } as const
 
-// eslint-disable-next-line import/no-default-export -- required by react-email preview
 export default Newsletter
 
 Newsletter.PreviewProps = issue399 satisfies NewsletterProps

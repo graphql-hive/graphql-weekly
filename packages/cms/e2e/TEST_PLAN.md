@@ -102,6 +102,7 @@ Note: Drag link to topic not tested - drag & drop needs manual verification firs
 ## Assertions
 
 Every scenario should:
+
 1. Perform the user action
 2. Verify immediate UI feedback (optimistic update)
 3. Save changes

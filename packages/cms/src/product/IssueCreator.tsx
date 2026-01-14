@@ -79,14 +79,18 @@ export function IssueCreator({
     createIssueMutation.mutate(variables, {
       onError: (error) => {
         // Rollback on error
-        qc.setQueriesData<AllIssuesQuery>({ queryKey: ["AllIssues"] }, (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            allIssues:
-              old.allIssues?.filter((i) => i.id !== optimisticIssue.id) ?? null,
-          };
-        });
+        qc.setQueriesData<AllIssuesQuery>(
+          { queryKey: ["AllIssues"] },
+          (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              allIssues:
+                old.allIssues?.filter((i) => i.id !== optimisticIssue.id) ??
+                null,
+            };
+          },
+        );
         setNumber(number);
         setNumberError(
           error instanceof Error ? error.message : "Error creating issue",
@@ -100,7 +104,9 @@ export function IssueCreator({
   };
 
   const isAddButtonDisabled =
-    createIssueMutation.isPending || number === "" || Number.isNaN(Number(number));
+    createIssueMutation.isPending ||
+    number === "" ||
+    Number.isNaN(Number(number));
 
   return (
     <InputWithButton

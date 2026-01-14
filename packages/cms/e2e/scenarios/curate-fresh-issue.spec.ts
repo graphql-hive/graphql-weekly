@@ -58,10 +58,14 @@ test.describe("Curate Fresh Issue", () => {
     const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
     await addTopicBtn.click();
     await expect(topicInput).toHaveValue("");
-    await expect(page.getByRole("heading", { name: testTopicName })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: testTopicName }),
+    ).toBeVisible();
 
     // 5. Edit the link's title and description
-    const titleInput = unassignedSection.locator('[aria-label="Link title"]').first();
+    const titleInput = unassignedSection
+      .locator('[aria-label="Link title"]')
+      .first();
     await titleInput.click();
     await titleInput.fill(testLinkTitle);
 
@@ -77,20 +81,26 @@ test.describe("Curate Fresh Issue", () => {
     // 6. Save all changes
     const saveBtn = page.getByRole("button", { name: "Save" });
     await saveBtn.click();
-    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
+      timeout: 10_000,
+    });
 
     // 7. Refresh and verify persistence
     await page.reload();
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
 
     // Topic should still exist
-    await expect(page.getByRole("heading", { name: testTopicName })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: testTopicName }),
+    ).toBeVisible();
 
     // Link should have persisted title and description
     const persistedTitle = page.locator('[aria-label="Link title"]').first();
     await expect(persistedTitle).toHaveValue(testLinkTitle);
 
-    const persistedDesc = page.locator('[aria-label="Link description"]').first();
+    const persistedDesc = page
+      .locator('[aria-label="Link description"]')
+      .first();
     await expect(persistedDesc).toHaveValue(testLinkDesc);
   });
 

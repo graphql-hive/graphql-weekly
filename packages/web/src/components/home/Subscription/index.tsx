@@ -88,7 +88,10 @@ export class Subscription extends Component<Props, State> {
             role="status"
           >
             {this.state.message.includes("successfully") ? (
-              <Check aria-hidden="true" className="shrink-0 [&_path]:stroke-green-600 [&_path]:opacity-100" />
+              <Check
+                aria-hidden="true"
+                className="shrink-0 [&_path]:stroke-green-600 [&_path]:opacity-100"
+              />
             ) : (
               <AlertCircle aria-hidden="true" className="shrink-0" />
             )}

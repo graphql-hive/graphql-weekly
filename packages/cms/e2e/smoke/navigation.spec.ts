@@ -21,8 +21,12 @@ test.describe("Navigation Smoke Tests", () => {
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
 
     // Verify issue page structure
-    await expect(page.getByRole("heading", { name: "Unassigned" })).toBeVisible();
-    await expect(page.getByPlaceholder("Paste URL to add link...")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Unassigned" }),
+    ).toBeVisible();
+    await expect(
+      page.getByPlaceholder("Paste URL to add link..."),
+    ).toBeVisible();
     await expect(page.getByPlaceholder("New topic name...")).toBeVisible();
 
     // Navigate back

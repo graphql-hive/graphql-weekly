@@ -23,7 +23,8 @@ interface ButtonBaseProps {
   variant?: ButtonVariant;
 }
 
-interface ButtonLinkProps extends ButtonBaseProps, Omit<ComponentProps<"a">, "href"> {
+interface ButtonLinkProps
+  extends ButtonBaseProps, Omit<ComponentProps<"a">, "href"> {
   as?: never;
   href: string;
 }
