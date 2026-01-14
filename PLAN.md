@@ -16,7 +16,7 @@
 ### CMS
 
 - [ ] Add topic name autocomplete in editor
-- [ ] Add Playwright E2E tests against local API + CMS
+- [x] Add Playwright E2E tests against local API + CMS
 
 ### Deploy
 

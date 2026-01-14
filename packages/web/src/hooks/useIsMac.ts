@@ -1,6 +1,9 @@
 import { useSyncExternalStore } from "react";
 
-const subscribe = () => () => {};
+// eslint-disable-next-line unicorn/consistent-function-scoping
+const subscribe = () => () => {
+  // noop
+};
 const getSnapshot = () => navigator.platform.toUpperCase().includes("MAC");
 const getServerSnapshot = () => true; // assume Mac on server
 
