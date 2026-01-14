@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "email": "email dev --dir src/email/templates",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@mailchimp/mailchimp_marketing": "3.0.80",
@@ -31,7 +33,7 @@
     "@types/node": "25.0.8",
     "@types/react": "19.2.8",
     "typescript": "5.9.3",
-    "vitest": "4.0.17"
+    "vitest": "3.2.0"
   },
   "prettier": {
     "semi": false,
