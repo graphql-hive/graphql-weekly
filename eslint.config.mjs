@@ -25,6 +25,7 @@ export default [
       "**/test-results/",
       "generated/",
       "**/generated/",
+      "**/data-dump/",
     ],
   },
   {
