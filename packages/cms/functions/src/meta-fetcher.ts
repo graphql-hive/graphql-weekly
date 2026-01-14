@@ -1,5 +1,6 @@
-import { callbackRuntime, APIGatewayEvent } from "lambda-helpers";
 import { GraphQLClient } from "graphql-request";
+import { APIGatewayEvent, callbackRuntime } from "lambda-helpers";
+
 import ogs = require("open-graph-scraper");
 
 interface Payload {
@@ -23,7 +24,7 @@ export default callbackRuntime(async (event: APIGatewayEvent): Promise<any> => {
     "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql",
   );
 
-  const url = payload.data.Link.node.url;
+  const { url } = payload.data.Link.node;
 
   const metaData = await new Promise<{ title: string }>((resolve, reject) => {
     ogs({ url }, (err, results) => {

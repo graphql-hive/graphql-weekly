@@ -1,210 +1,19 @@
-import type { Resolvers } from '../generated/graphql'
 import { DateTimeResolver } from 'graphql-scalars'
-import { createEmailCampaign } from '../services/mailchimp'
+
 import type { NewsletterTopic } from '../email'
+import type { Resolvers } from '../generated/graphql'
+
+import { createEmailCampaign } from '../services/mailchimp'
 
 function generateId(): string {
-  return crypto.randomUUID().replace(/-/g, '').slice(0, 25)
+  return crypto.randomUUID().replaceAll('-', '').slice(0, 25)
 }
 
 export const resolvers: Resolvers = {
   DateTime: DateTimeResolver,
 
-  Query: {
-    allIssues: async (_parent, _args, ctx) => {
-      const issues = await ctx.db.selectFrom('Issue').selectAll().execute()
-      return issues
-    },
-    allTopics: async (_parent, _args, ctx) => {
-      const topics = await ctx.db.selectFrom('Topic').selectAll().execute()
-      return topics
-    },
-    allAuthors: async (_parent, _args, ctx) => {
-      const authors = await ctx.db.selectFrom('Author').selectAll().execute()
-      return authors
-    },
-    allLinks: async (_parent, _args, ctx) => {
-      const links = await ctx.db.selectFrom('Link').selectAll().execute()
-      return links
-    },
-    allSubscribers: async (_parent, _args, ctx) => {
-      const subscribers = await ctx.db
-        .selectFrom('Subscriber')
-        .selectAll()
-        .execute()
-      return subscribers
-    },
-    allLinkSubmissions: async (_parent, _args, ctx) => {
-      const submissions = await ctx.db
-        .selectFrom('LinkSubmission')
-        .selectAll()
-        .orderBy('createdAt', 'desc')
-        .execute()
-      return submissions
-    },
-    issue: async (_parent, { id }, ctx) => {
-      const issue = await ctx.db
-        .selectFrom('Issue')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return issue ?? null
-    },
-  },
-
   Mutation: {
-    createSubscriber: async (_parent, { email, name }, ctx) => {
-      const id = generateId()
-      await ctx.db
-        .insertInto('Subscriber')
-        .values({ id, email, name })
-        .execute()
-      return { id, email, name }
-    },
-    createLink: async (_parent, { url }, ctx) => {
-      const id = generateId()
-      await ctx.db.insertInto('Link').values({ id, url }).execute()
-      const link = await ctx.db
-        .selectFrom('Link')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return link ?? null
-    },
-    createIssue: async (_parent, { title, number, published, date }, ctx) => {
-      const id = generateId()
-      const dateStr = date ? date.toISOString() : new Date().toISOString()
-      await ctx.db
-        .insertInto('Issue')
-        .values({
-          id,
-          title,
-          number,
-          published: published ? 1 : 0,
-          date: dateStr,
-          versionCount: 0,
-        })
-        .execute()
-      const issue = await ctx.db
-        .selectFrom('Issue')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return issue ?? null
-    },
-    createTopic: async (_parent, { title, issue_comment, issueId }, ctx) => {
-      const id = generateId()
-      await ctx.db
-        .insertInto('Topic')
-        .values({ id, title, issue_comment, issueId })
-        .execute()
-      const topic = await ctx.db
-        .selectFrom('Topic')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return topic ?? null
-    },
-    createSubmissionLink: async (
-      _parent,
-      { name, email, description, title, url },
-      ctx,
-    ) => {
-      const id = generateId()
-      const now = new Date().toISOString()
-      await ctx.db
-        .insertInto('LinkSubmission')
-        .values({
-          id,
-          name,
-          email,
-          description,
-          title,
-          url,
-          createdAt: now,
-          updatedAt: now,
-        })
-        .execute()
-      const submission = await ctx.db
-        .selectFrom('LinkSubmission')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return submission ?? null
-    },
-    updateLink: async (_parent, { id, title, text, url }, ctx) => {
-      await ctx.db
-        .updateTable('Link')
-        .set({
-          title,
-          ...(text !== null && text !== undefined ? { text } : {}),
-          ...(url !== null && url !== undefined ? { url } : {}),
-        })
-        .where('id', '=', id)
-        .execute()
-      const link = await ctx.db
-        .selectFrom('Link')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return link ?? null
-    },
-    updateIssue: async (
-      _parent,
-      { id, published, versionCount, previewImage },
-      ctx,
-    ) => {
-      const updates: Record<string, unknown> = {}
-      if (published !== null && published !== undefined)
-        updates.published = published ? 1 : 0
-      if (versionCount !== null && versionCount !== undefined)
-        updates.versionCount = versionCount
-      if (previewImage !== null && previewImage !== undefined)
-        updates.previewImage = previewImage
-
-      if (Object.keys(updates).length > 0) {
-        await ctx.db
-          .updateTable('Issue')
-          .set(updates)
-          .where('id', '=', id)
-          .execute()
-      }
-      const issue = await ctx.db
-        .selectFrom('Issue')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return issue ?? null
-    },
-    updateTopic: async (_parent, { id, position }, ctx) => {
-      if (position !== null && position !== undefined) {
-        await ctx.db
-          .updateTable('Topic')
-          .set({ position })
-          .where('id', '=', id)
-          .execute()
-      }
-      const topic = await ctx.db
-        .selectFrom('Topic')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return topic ?? null
-    },
-    updateTopicWhenIssueDeleted: async (_parent, { id }, ctx) => {
-      await ctx.db
-        .updateTable('Topic')
-        .set({ issueId: null })
-        .where('id', '=', id)
-        .execute()
-      const topic = await ctx.db
-        .selectFrom('Topic')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return topic ?? null
-    },
-    addLinksToTopic: async (_parent, { topicId, linkId }, ctx) => {
+    addLinksToTopic: async (_parent, { linkId, topicId }, ctx) => {
       await ctx.db
         .updateTable('Link')
         .set({ topicId })
@@ -217,16 +26,84 @@ export const resolvers: Resolvers = {
         .executeTakeFirst()
       return topic ?? null
     },
-    deleteLink: async (_parent, { id }, ctx) => {
+    createIssue: async (_parent, { date, number, published, title }, ctx) => {
+      const id = generateId()
+      const dateStr = date ? date.toISOString() : new Date().toISOString()
+      await ctx.db
+        .insertInto('Issue')
+        .values({
+          date: dateStr,
+          id,
+          number,
+          published: published ? 1 : 0,
+          title,
+          versionCount: 0,
+        })
+        .execute()
+      const issue = await ctx.db
+        .selectFrom('Issue')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return issue ?? null
+    },
+    createLink: async (_parent, { url }, ctx) => {
+      const id = generateId()
+      await ctx.db.insertInto('Link').values({ id, url }).execute()
       const link = await ctx.db
         .selectFrom('Link')
         .selectAll()
         .where('id', '=', id)
         .executeTakeFirst()
-      if (link) {
-        await ctx.db.deleteFrom('Link').where('id', '=', id).execute()
-      }
       return link ?? null
+    },
+    createSubmissionLink: async (
+      _parent,
+      { description, email, name, title, url },
+      ctx,
+    ) => {
+      const id = generateId()
+      const now = new Date().toISOString()
+      await ctx.db
+        .insertInto('LinkSubmission')
+        .values({
+          createdAt: now,
+          description,
+          email,
+          id,
+          name,
+          title,
+          updatedAt: now,
+          url,
+        })
+        .execute()
+      const submission = await ctx.db
+        .selectFrom('LinkSubmission')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return submission ?? null
+    },
+    createSubscriber: async (_parent, { email, name }, ctx) => {
+      const id = generateId()
+      await ctx.db
+        .insertInto('Subscriber')
+        .values({ email, id, name })
+        .execute()
+      return { email, id, name }
+    },
+    createTopic: async (_parent, { issue_comment, issueId, title }, ctx) => {
+      const id = generateId()
+      await ctx.db
+        .insertInto('Topic')
+        .values({ id, issue_comment, issueId, title })
+        .execute()
+      const topic = await ctx.db
+        .selectFrom('Topic')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return topic ?? null
     },
     deleteIssue: async (_parent, { id }, ctx) => {
       const issue = await ctx.db
@@ -239,9 +116,20 @@ export const resolvers: Resolvers = {
       }
       return issue ?? null
     },
+    deleteLink: async (_parent, { id }, ctx) => {
+      const link = await ctx.db
+        .selectFrom('Link')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      if (link) {
+        await ctx.db.deleteFrom('Link').where('id', '=', id).execute()
+      }
+      return link ?? null
+    },
     publishEmailDraft: async (
       _parent,
-      { id, versionCount, isFoundation },
+      { id, isFoundation, versionCount },
       ctx,
     ) => {
       if (versionCount !== null && versionCount !== undefined) {
@@ -279,12 +167,12 @@ export const resolvers: Resolvers = {
             .orderBy('position', 'asc')
             .execute()
           return {
-            title: topic.title,
             links: links.map((link) => ({
-              url: link.url,
-              title: link.title ?? '',
               text: link.text ?? '',
+              title: link.title ?? '',
+              url: link.url,
             })),
+            title: topic.title,
           }
         }),
       )
@@ -306,10 +194,126 @@ export const resolvers: Resolvers = {
 
       return issue
     },
+    updateIssue: async (
+      _parent,
+      { id, previewImage, published, versionCount },
+      ctx,
+    ) => {
+      const updates: Record<string, unknown> = {}
+      if (published !== null && published !== undefined)
+        updates.published = published ? 1 : 0
+      if (versionCount !== null && versionCount !== undefined)
+        updates.versionCount = versionCount
+      if (previewImage !== null && previewImage !== undefined)
+        updates.previewImage = previewImage
+
+      if (Object.keys(updates).length > 0) {
+        await ctx.db
+          .updateTable('Issue')
+          .set(updates)
+          .where('id', '=', id)
+          .execute()
+      }
+      const issue = await ctx.db
+        .selectFrom('Issue')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return issue ?? null
+    },
+    updateLink: async (_parent, { id, text, title, url }, ctx) => {
+      await ctx.db
+        .updateTable('Link')
+        .set({
+          title,
+          ...(text !== null && text !== undefined ? { text } : {}),
+          ...(url !== null && url !== undefined ? { url } : {}),
+        })
+        .where('id', '=', id)
+        .execute()
+      const link = await ctx.db
+        .selectFrom('Link')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return link ?? null
+    },
+    updateTopic: async (_parent, { id, position }, ctx) => {
+      if (position !== null && position !== undefined) {
+        await ctx.db
+          .updateTable('Topic')
+          .set({ position })
+          .where('id', '=', id)
+          .execute()
+      }
+      const topic = await ctx.db
+        .selectFrom('Topic')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return topic ?? null
+    },
+    updateTopicWhenIssueDeleted: async (_parent, { id }, ctx) => {
+      await ctx.db
+        .updateTable('Topic')
+        .set({ issueId: null })
+        .where('id', '=', id)
+        .execute()
+      const topic = await ctx.db
+        .selectFrom('Topic')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return topic ?? null
+    },
+  },
+
+  Query: {
+    allAuthors: async (_parent, _args, ctx) => {
+      const authors = await ctx.db.selectFrom('Author').selectAll().execute()
+      return authors
+    },
+    allIssues: async (_parent, _args, ctx) => {
+      const issues = await ctx.db.selectFrom('Issue').selectAll().execute()
+      return issues
+    },
+    allLinks: async (_parent, _args, ctx) => {
+      const links = await ctx.db.selectFrom('Link').selectAll().execute()
+      return links
+    },
+    allLinkSubmissions: async (_parent, _args, ctx) => {
+      const submissions = await ctx.db
+        .selectFrom('LinkSubmission')
+        .selectAll()
+        .orderBy('createdAt', 'desc')
+        .execute()
+      return submissions
+    },
+    allSubscribers: async (_parent, _args, ctx) => {
+      const subscribers = await ctx.db
+        .selectFrom('Subscriber')
+        .selectAll()
+        .execute()
+      return subscribers
+    },
+    allTopics: async (_parent, _args, ctx) => {
+      const topics = await ctx.db.selectFrom('Topic').selectAll().execute()
+      return topics
+    },
+    issue: async (_parent, { id }, ctx) => {
+      const issue = await ctx.db
+        .selectFrom('Issue')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      return issue ?? null
+    },
   },
 
   // Type resolvers for relationships
   Author: {
+    createdAt: (parent) =>
+      parent.createdAt ? new Date(parent.createdAt) : null,
     issues: async (parent, _args, ctx) => {
       const issues = await ctx.db
         .selectFrom('Issue')
@@ -318,8 +322,6 @@ export const resolvers: Resolvers = {
         .execute()
       return issues
     },
-    createdAt: (parent) =>
-      parent.createdAt ? new Date(parent.createdAt) : null,
     updatedAt: (parent) =>
       parent.updatedAt ? new Date(parent.updatedAt) : null,
   },
@@ -334,6 +336,8 @@ export const resolvers: Resolvers = {
         .executeTakeFirst()
       return author ?? null
     },
+    date: (parent) => (parent.date ? new Date(parent.date) : null),
+    published: (parent) => Boolean(parent.published),
     topics: async (parent, _args, ctx) => {
       const topics = await ctx.db
         .selectFrom('Topic')
@@ -341,28 +345,6 @@ export const resolvers: Resolvers = {
         .where('issueId', '=', parent.id)
         .execute()
       return topics
-    },
-    published: (parent) => Boolean(parent.published),
-    date: (parent) => (parent.date ? new Date(parent.date) : null),
-  },
-
-  Topic: {
-    issue: async (parent, _args, ctx) => {
-      if (!parent.issueId) return null
-      const issue = await ctx.db
-        .selectFrom('Issue')
-        .selectAll()
-        .where('id', '=', parent.issueId)
-        .executeTakeFirst()
-      return issue ?? null
-    },
-    links: async (parent, _args, ctx) => {
-      const links = await ctx.db
-        .selectFrom('Link')
-        .selectAll()
-        .where('topicId', '=', parent.id)
-        .execute()
-      return links
     },
   },
 
@@ -383,5 +365,25 @@ export const resolvers: Resolvers = {
       parent.createdAt ? new Date(parent.createdAt) : null,
     updatedAt: (parent) =>
       parent.updatedAt ? new Date(parent.updatedAt) : null,
+  },
+
+  Topic: {
+    issue: async (parent, _args, ctx) => {
+      if (!parent.issueId) return null
+      const issue = await ctx.db
+        .selectFrom('Issue')
+        .selectAll()
+        .where('id', '=', parent.issueId)
+        .executeTakeFirst()
+      return issue ?? null
+    },
+    links: async (parent, _args, ctx) => {
+      const links = await ctx.db
+        .selectFrom('Link')
+        .selectAll()
+        .where('topicId', '=', parent.id)
+        .execute()
+      return links
+    },
   },
 }

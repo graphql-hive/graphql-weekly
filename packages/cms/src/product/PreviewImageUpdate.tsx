@@ -1,16 +1,17 @@
-import { useState, ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
+
 import InputWithButton from "../components/InputWithButton";
 import { useUpdateIssuePreviewImageMutation } from "../generated/graphql";
 
 interface PreviewImageUpdateProps {
-  previewImage?: string | null;
   id?: string | null;
+  previewImage?: string | null;
   refresh?: () => void;
 }
 
 export default function PreviewImageUpdate({
-  previewImage,
   id,
+  previewImage,
   refresh,
 }: PreviewImageUpdateProps) {
   const [link, setLink] = useState(previewImage ?? "");
@@ -34,13 +35,13 @@ export default function PreviewImageUpdate({
     updatePreviewMutation.mutate(
       { id, previewImage: link },
       {
+        onError: () => {
+          setLinkError("Error while submitting");
+        },
         onSuccess: () => {
           setLink("");
           setLinkError("");
           refresh?.();
-        },
-        onError: () => {
-          setLinkError("Error while submitting");
         },
       },
     );
@@ -52,11 +53,11 @@ export default function PreviewImageUpdate({
   return (
     <section>
       {previewImage ? (
-        <div style={{ maxWidth: 320, height: "auto", marginBottom: 16 }}>
+        <div style={{ height: "auto", marginBottom: 16, maxWidth: 320 }}>
           <img
-            style={{ maxWidth: "100%", height: "auto" }}
-            src={previewImage}
             alt="Preview"
+            src={previewImage}
+            style={{ height: "auto", maxWidth: "100%" }}
           />
         </div>
       ) : (
@@ -66,14 +67,14 @@ export default function PreviewImageUpdate({
       )}
 
       <InputWithButton
-        value={link}
-        disabled={updatePreviewMutation.isPending}
-        placeholder="Preview Image"
-        onClick={submitChange}
-        onChange={handleChange}
-        buttonLabel="Update Preview Image"
         buttonDisabled={isAddButtonDisabled}
+        buttonLabel="Update Preview Image"
+        disabled={updatePreviewMutation.isPending}
         errorText={linkError}
+        onChange={handleChange}
+        onClick={submitChange}
+        placeholder="Preview Image"
+        value={link}
       />
     </section>
   );

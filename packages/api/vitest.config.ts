@@ -4,10 +4,10 @@ export default defineWorkersConfig({
   test: {
     poolOptions: {
       workers: {
-        wrangler: { configPath: '../../wrangler.jsonc' },
         miniflare: {
           d1Databases: ['graphqlweekly'],
         },
+        wrangler: { configPath: './wrangler.jsonc' },
       },
     },
   },

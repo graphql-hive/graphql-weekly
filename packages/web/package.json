@@ -20,28 +20,28 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "12.6.12",
-    "@astrojs/react": "4.2.0",
-    "@astrojs/sitemap": "3.3.0",
+    "@astrojs/react": "4.4.2",
+    "@astrojs/sitemap": "3.6.1",
     "@tailwindcss/vite": "^4.1.18",
     "@types/popper.js": "1.11.0",
-    "astro": "5.1.0",
+    "astro": "5.16.9",
     "fast-memoize": "2.5.2",
     "node-fetch": "3.3.2",
     "polished": "4.3.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-popper": "2.3.0",
-    "react-syntax-highlighter": "15.6.1",
-    "react-tooltip": "5.28.0",
+    "react-syntax-highlighter": "16.1.0",
+    "react-tooltip": "5.30.0",
     "react-visibility-sensor": "5.1.1",
     "tailwind-merge": "3.4.0"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",
-    "@types/react": "18.3.17",
-    "@types/react-dom": "18.3.5",
+    "@types/react": "19.2.8",
+    "@types/react-dom": "19.2.3",
     "@types/react-syntax-highlighter": "15.5.13",
     "tailwindcss": "^4.1.18",
-    "wrangler": "4.58.0"
+    "wrangler": "4.59.1"
   }
 }

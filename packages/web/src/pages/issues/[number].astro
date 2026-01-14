@@ -1,21 +1,21 @@
 ---
-import Layout from '../../layouts/Layout.astro'
-import { getAllIssues } from '../../lib/api'
-import { IssuePage } from '../../components/IssuePage'
-import Footer from '../../components/home/Footer/Footer.astro'
-import { Playground } from '../../components/home/Footer/Playground'
+import Layout from "../../layouts/Layout.astro";
+import { getAllIssues } from "../../lib/api";
+import { IssuePage } from "../../components/IssuePage";
+import Footer from "../../components/home/Footer/Footer.astro";
+import { Playground } from "../../components/home/Footer/Playground";
 
 export async function getStaticPaths() {
-  const { allIssues, firstIssueNumber, topicsList } = await getAllIssues()
-  const topicsTitles = Object.keys(topicsList)
+  const { allIssues, firstIssueNumber, topicsList } = await getAllIssues();
+  const topicsTitles = Object.keys(topicsList);
 
   return allIssues.map((issue) => ({
     params: { number: String(issue.number) },
     props: { issue, allIssues, firstIssueNumber, topicsTitles },
-  }))
+  }));
 }
 
-const { issue, allIssues, firstIssueNumber, topicsTitles } = Astro.props
+const { issue, allIssues, firstIssueNumber, topicsTitles } = Astro.props;
 ---
 
 <Layout>

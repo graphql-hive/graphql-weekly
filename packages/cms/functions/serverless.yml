@@ -17,7 +17,7 @@ functions:
     memorySize: 128
     events:
       - http:
-          path: "/meta-fetcher"
+          path: /meta-fetcher
           method: post
 
   NewsletterSender:
@@ -25,7 +25,7 @@ functions:
     memorySize: 128
     events:
       - http:
-          path: "/newsletter-sender"
+          path: /newsletter-sender
           method: post
 
 resources:

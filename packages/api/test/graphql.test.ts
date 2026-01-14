@@ -1,12 +1,27 @@
-import { describe, it, expect, beforeAll } from 'vitest'
 import { env, SELF } from 'cloudflare:test'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { beforeAll, describe, expect, it } from 'vitest'
+
+function parseMigrationStatements(sql: string): string[] {
+  return sql
+    .split(';')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0 && !s.startsWith('--'))
+}
 
 describe('GraphQL API', () => {
   beforeAll(async () => {
-    // Run migrations - D1 exec requires single statements
-    await env.graphqlweekly.exec(
-      `CREATE TABLE IF NOT EXISTS Issue (id TEXT PRIMARY KEY, authorId TEXT, comment TEXT, date TEXT NOT NULL, description TEXT, number INTEGER NOT NULL UNIQUE, previewImage TEXT, published INTEGER NOT NULL DEFAULT 0, specialPerk TEXT, title TEXT NOT NULL, versionCount INTEGER NOT NULL DEFAULT 0)`,
+    const migrationPath = resolve(
+      import.meta.dirname,
+      '../migrations/0001_init.sql',
     )
+    const migrationSql = readFileSync(migrationPath, 'utf8')
+    const statements = parseMigrationStatements(migrationSql)
+
+    for (const stmt of statements) {
+      await env.graphqlweekly.exec(stmt)
+    }
   })
 
   it('should respond to health check', async () => {
@@ -17,9 +32,9 @@ describe('GraphQL API', () => {
 
   it('should return empty issues list', async () => {
     const response = await SELF.fetch('http://localhost/graphql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query: '{ allIssues { id title } }' }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
     })
     const data = await response.json()
     expect(data).toEqual({ data: { allIssues: [] } })
@@ -28,8 +43,6 @@ describe('GraphQL API', () => {
   it('should create and query an issue', async () => {
     // Create issue
     const createResponse = await SELF.fetch('http://localhost/graphql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query: `mutation {
           createIssue(title: "Test Issue", number: 1, published: false) {
@@ -37,14 +50,16 @@ describe('GraphQL API', () => {
           }
         }`,
       }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
     })
     const createData = (await createResponse.json()) as {
       data: {
         createIssue: {
           id: string
-          title: string
           number: number
           published: boolean
+          title: string
         }
       }
     }
@@ -54,12 +69,12 @@ describe('GraphQL API', () => {
 
     // Query issues
     const queryResponse = await SELF.fetch('http://localhost/graphql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query: '{ allIssues { id title number } }' }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
     })
     const queryData = (await queryResponse.json()) as {
-      data: { allIssues: Array<{ title: string }> }
+      data: { allIssues: { title: string }[] }
     }
     expect(queryData.data.allIssues).toHaveLength(1)
     expect(queryData.data.allIssues[0].title).toBe('Test Issue')

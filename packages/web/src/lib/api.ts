@@ -1,6 +1,8 @@
 import type { IssueType, TopicLinksType } from "../types";
 
-const GRAPHQL_ENDPOINT = "https://graphql-weekly.graphcdn.app";
+const GRAPHQL_ENDPOINT = import.meta.env.DEV
+  ? "http://localhost:2012"
+  : "https://graphql-weekly.graphcdn.app";
 
 export async function fetchGraphQL<T>({
   query,

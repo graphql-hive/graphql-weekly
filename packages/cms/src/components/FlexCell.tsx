@@ -1,27 +1,27 @@
 import type { ComponentProps, CSSProperties } from "react";
 
 interface FlexCellProps extends ComponentProps<"section"> {
-  grow?: string | number;
-  basis?: string;
-  margin?: string;
   align?: string;
+  basis?: string;
+  grow?: number | string;
+  margin?: string;
 }
 
 export default function FlexCell({
-  grow = 1,
-  basis = "0px",
-  margin,
   align = "flex-start",
-  style,
+  basis = "0px",
   className,
+  grow = 1,
+  margin,
+  style,
   ...props
 }: FlexCellProps) {
   const combinedStyle: CSSProperties = {
+    alignSelf: align,
     flex: `${grow} 0 ${basis}`,
     margin: margin ?? 0,
-    alignSelf: align,
     ...style,
   };
 
-  return <section {...props} style={combinedStyle} className={className} />;
+  return <section {...props} className={className} style={combinedStyle} />;
 }

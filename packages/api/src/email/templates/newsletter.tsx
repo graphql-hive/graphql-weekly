@@ -1,28 +1,28 @@
 import {
   Body,
+  Column,
   Container,
+  Font,
   Head,
   Html,
   Img,
   Link,
   Preview,
+  Row,
   Section,
   Text,
-  Row,
-  Column,
-  Font,
 } from '@react-email/components'
 import * as React from 'react'
 
 export const colorMap: Record<string, string> = {
-  default: '#f531b1',
   articles: '#f531b1',
-  tutorials: '#6560E2',
   'community & events': '#009BE3',
-  videos: '#27AE60',
-  'tools & open source': '#F0950C',
-  'open source': '#F0950C',
   conference: '#6560E2',
+  default: '#f531b1',
+  'open source': '#F0950C',
+  'tools & open source': '#F0950C',
+  tutorials: '#6560E2',
+  videos: '#27AE60',
 }
 
 function getColor(title: string): string {
@@ -30,20 +30,20 @@ function getColor(title: string): string {
 }
 
 export interface NewsletterLink {
-  url: string
-  title: string
   text: string
+  title: string
+  url: string
 }
 
 export interface NewsletterTopic {
-  title: string
   links: NewsletterLink[]
+  title: string
 }
 
 export interface NewsletterProps {
+  isFoundationEdition?: boolean
   issueTitle: string
   topics: NewsletterTopic[]
-  isFoundationEdition?: boolean
 }
 
 function TopicSection({ topic }: { topic: NewsletterTopic }) {
@@ -53,8 +53,8 @@ function TopicSection({ topic }: { topic: NewsletterTopic }) {
     <Section style={{ marginBottom: '16px' }}>
       <Row>
         <Column
-          width={8}
           style={{ backgroundColor: color, borderRadius: '8px 0 0 8px' }}
+          width={8}
         />
         <Column
           style={{
@@ -69,7 +69,7 @@ function TopicSection({ topic }: { topic: NewsletterTopic }) {
               {index > 0 && <div style={styles.hr} />}
               <Link
                 href={link.url}
-                style={{ textDecoration: 'none', color: '#081146' }}
+                style={{ color: '#081146', textDecoration: 'none' }}
               >
                 <Text style={styles.linkTitle}>{link.title}</Text>
               </Link>
@@ -167,9 +167,9 @@ function FoundationFooter() {
 }
 
 export function Newsletter({
+  isFoundationEdition = false,
   issueTitle,
   topics,
-  isFoundationEdition = false,
 }: NewsletterProps) {
   const firstTopic = topics[0]
   const restTopics = topics.slice(1)
@@ -181,14 +181,14 @@ export function Newsletter({
     <Html>
       <Head>
         <Font
-          fontFamily="Rubik"
           fallbackFontFamily={['Helvetica', 'Arial', 'sans-serif']}
-          webFont={{
-            url: 'https://fonts.googleapis.com/css?family=Rubik:400,500,700',
-            format: 'woff2',
-          }}
-          fontWeight={400}
+          fontFamily="Rubik"
           fontStyle="normal"
+          fontWeight={400}
+          webFont={{
+            format: 'woff2',
+            url: 'https://fonts.googleapis.com/css?family=Rubik:400,500,700',
+          }}
         />
       </Head>
       <Preview>GraphQL Weekly - {issueTitle}</Preview>
@@ -201,10 +201,10 @@ export function Newsletter({
                 <Row>
                   <Column width={55}>
                     <Img
+                      alt="GraphQL Weekly"
+                      height={55}
                       src="https://graphqlweekly.com/assets/WeeklyLogo.png"
                       width={55}
-                      height={55}
-                      alt="GraphQL Weekly"
                     />
                   </Column>
                   <Column style={{ paddingLeft: '6px' }}>
@@ -228,17 +228,17 @@ export function Newsletter({
             >
               <Row>
                 <Column
-                  width={8}
                   style={{
                     backgroundColor: firstTopicColor,
                     borderRadius: '8px 0 0 8px',
                   }}
+                  width={8}
                 />
                 <Column
                   style={{ ...styles.articleBoxContent, paddingTop: '32px' }}
                 >
                   <Section
-                    style={{ textAlign: 'center', marginBottom: '32px' }}
+                    style={{ marginBottom: '32px', textAlign: 'center' }}
                   >
                     <Text style={styles.issueTag}>
                       GraphQL Weekly - {issueTitle}
@@ -257,7 +257,7 @@ export function Newsletter({
                       {index > 0 && <div style={styles.hr} />}
                       <Link
                         href={link.url}
-                        style={{ textDecoration: 'none', color: '#081146' }}
+                        style={{ color: '#081146', textDecoration: 'none' }}
                       >
                         <Text style={styles.linkTitle}>{link.title}</Text>
                       </Link>
@@ -280,11 +280,11 @@ export function Newsletter({
           <Section style={styles.bannerBox}>
             <Link href="https://stellate.co/">
               <Img
-                src="https://imgur.com/ihcMKzO.png"
-                width={680}
-                height={340}
                 alt="Stellate"
-                style={{ maxWidth: '100%', height: 'auto' }}
+                height={340}
+                src="https://imgur.com/ihcMKzO.png"
+                style={{ height: 'auto', maxWidth: '100%' }}
+                width={680}
               />
             </Link>
           </Section>
@@ -292,7 +292,7 @@ export function Newsletter({
           {isFoundationEdition && <FoundationFooter />}
 
           {/* Footer Links */}
-          <Section style={{ textAlign: 'center', marginTop: '64px' }}>
+          <Section style={{ marginTop: '64px', textAlign: 'center' }}>
             <Link
               href="https://www.graphqlweekly.com/"
               style={styles.footerLink}
@@ -311,7 +311,7 @@ export function Newsletter({
           </Section>
 
           {/* Footer Text */}
-          <Section style={{ textAlign: 'center', padding: '42px 0 64px' }}>
+          <Section style={{ padding: '42px 0 64px', textAlign: 'center' }}>
             <Text style={styles.footerText}>
               If you were forwarded this newsletter and you like it, you can{' '}
               <Link
@@ -337,45 +337,6 @@ export function Newsletter({
 }
 
 const styles = {
-  body: {
-    backgroundColor: '#E5E5E5',
-    fontFamily:
-      '"Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    margin: 0,
-    padding: 0,
-  },
-  container: {
-    maxWidth: '680px',
-    margin: '0 auto',
-  },
-  header: {
-    backgroundColor: '#D60690',
-    padding: '40px 20px 25px',
-  },
-  logoTitle: {
-    color: '#ffffff',
-    fontSize: '16px',
-    fontWeight: 500,
-    lineHeight: '15px',
-    margin: 0,
-  },
-  logoSubtitle: {
-    color: '#ffffff',
-    fontSize: '25px',
-    fontWeight: 'bold' as const,
-    letterSpacing: '-0.02em',
-    lineHeight: '25px',
-    margin: 0,
-  },
-  viewLink: {
-    textDecoration: 'none',
-  },
-  viewLinkText: {
-    color: '#ffffff',
-    fontSize: '18px',
-    fontWeight: 500,
-    margin: 0,
-  },
   articleBox: {
     backgroundColor: '#f6f6f7',
     boxShadow: '0px 4px 16px rgba(8, 17, 70, 0.05)',
@@ -383,43 +344,12 @@ const styles = {
   articleBoxContent: {
     padding: '48px 48px 48px 40px',
   },
-  issueTag: {
-    display: 'inline-block',
-    backgroundColor: '#6560e2',
-    borderRadius: '32px',
-    color: '#ffffff',
-    fontSize: '16px',
-    fontWeight: 500,
-    lineHeight: '16px',
-    padding: '9px 12px',
-    textTransform: 'uppercase' as const,
-    margin: 0,
-  },
   articleTitle: {
     fontSize: '18px',
     fontWeight: 500,
     lineHeight: '18px',
-    textTransform: 'uppercase' as const,
     margin: '0 0 32px 0',
-  },
-  linkTitle: {
-    color: '#081146',
-    fontSize: '24px',
-    fontWeight: 500,
-    lineHeight: '1.33',
-    margin: 0,
-    textDecoration: 'none',
-  },
-  linkText: {
-    color: '#081146',
-    fontSize: '16px',
-    fontWeight: 300,
-    lineHeight: '1.75',
-    margin: '24px 0 0 0',
-  },
-  hr: {
-    borderTop: '1px solid rgb(197, 200, 220)',
-    margin: '40px 0',
+    textTransform: 'uppercase' as const,
   },
   bannerBox: {
     backgroundColor: '#f6f6f7',
@@ -427,6 +357,24 @@ const styles = {
     boxShadow: '0px 4px 16px rgba(8, 17, 70, 0.05)',
     marginTop: '16px',
     overflow: 'hidden',
+  },
+  body: {
+    backgroundColor: '#E5E5E5',
+    fontFamily:
+      '"Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    margin: 0,
+    padding: 0,
+  },
+  bodyText: {
+    color: '#081146',
+    fontSize: '16px',
+    fontWeight: 300,
+    lineHeight: '1.75',
+    margin: '0 0 16px 0',
+  },
+  container: {
+    margin: '0 auto',
+    maxWidth: '680px',
   },
   footerLink: {
     color: '#081146',
@@ -446,16 +394,10 @@ const styles = {
     color: '#698391',
     textDecoration: 'underline',
   },
-  bodyText: {
-    color: '#081146',
-    fontSize: '16px',
-    fontWeight: 300,
-    lineHeight: '1.75',
+  footerTitle: {
+    fontSize: '20px',
+    fontWeight: 500,
     margin: '0 0 16px 0',
-  },
-  link: {
-    color: '#D60690',
-    textDecoration: 'underline',
   },
   foundationBox: {
     backgroundColor: '#eaeaea',
@@ -469,10 +411,68 @@ const styles = {
     lineHeight: '1.6',
     margin: '8px 0',
   },
-  footerTitle: {
-    fontSize: '20px',
+  header: {
+    backgroundColor: '#D60690',
+    padding: '40px 20px 25px',
+  },
+  hr: {
+    borderTop: '1px solid rgb(197, 200, 220)',
+    margin: '40px 0',
+  },
+  issueTag: {
+    backgroundColor: '#6560e2',
+    borderRadius: '32px',
+    color: '#ffffff',
+    display: 'inline-block',
+    fontSize: '16px',
     fontWeight: 500,
-    margin: '0 0 16px 0',
+    lineHeight: '16px',
+    margin: 0,
+    padding: '9px 12px',
+    textTransform: 'uppercase' as const,
+  },
+  link: {
+    color: '#D60690',
+    textDecoration: 'underline',
+  },
+  linkText: {
+    color: '#081146',
+    fontSize: '16px',
+    fontWeight: 300,
+    lineHeight: '1.75',
+    margin: '24px 0 0 0',
+  },
+  linkTitle: {
+    color: '#081146',
+    fontSize: '24px',
+    fontWeight: 500,
+    lineHeight: '1.33',
+    margin: 0,
+    textDecoration: 'none',
+  },
+  logoSubtitle: {
+    color: '#ffffff',
+    fontSize: '25px',
+    fontWeight: 'bold' as const,
+    letterSpacing: '-0.02em',
+    lineHeight: '25px',
+    margin: 0,
+  },
+  logoTitle: {
+    color: '#ffffff',
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: '15px',
+    margin: 0,
+  },
+  viewLink: {
+    textDecoration: 'none',
+  },
+  viewLinkText: {
+    color: '#ffffff',
+    fontSize: '18px',
+    fontWeight: 500,
+    margin: 0,
   },
 } as const
 

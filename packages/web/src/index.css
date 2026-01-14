@@ -19,8 +19,9 @@
   --color-purple: #6560e2;
   --color-white: #ffffff;
 
-  --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Rubik", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: Roboto Mono, Consolas, Menlo, Monaco, monospace;
 
   --text-huge: 48px;

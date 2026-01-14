@@ -1,13 +1,13 @@
 ---
-import Layout from '../../layouts/Layout.astro'
-import { getAllIssues, getTopicUrlFriendly } from '../../lib/api'
-import { TopicPage } from '../../components/TopicPage'
-import Footer from '../../components/home/Footer/Footer.astro'
-import { Playground } from '../../components/home/Footer/Playground'
+import Layout from "../../layouts/Layout.astro";
+import { getAllIssues, getTopicUrlFriendly } from "../../lib/api";
+import { TopicPage } from "../../components/TopicPage";
+import Footer from "../../components/home/Footer/Footer.astro";
+import { Playground } from "../../components/home/Footer/Playground";
 
 export async function getStaticPaths() {
-  const { allIssues, firstIssueNumber, topicsList } = await getAllIssues()
-  const topicsTitles = Object.keys(topicsList)
+  const { allIssues, firstIssueNumber, topicsList } = await getAllIssues();
+  const topicsTitles = Object.keys(topicsList);
 
   return topicsTitles
     .map((topicTitle) => ({
@@ -20,10 +20,11 @@ export async function getStaticPaths() {
         topicsTitles,
       },
     }))
-    .filter(({ params }) => params.slug && params.slug.length > 0)
+    .filter(({ params }) => params.slug && params.slug.length > 0);
 }
 
-const { topicTitle, topicLinks, allIssues, firstIssueNumber, topicsTitles } = Astro.props
+const { topicTitle, topicLinks, allIssues, firstIssueNumber, topicsTitles } =
+  Astro.props;
 ---
 
 <Layout title={`${topicTitle} - GraphQL Weekly`}>

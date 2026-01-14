@@ -1,4 +1,5 @@
 import { render } from '@react-email/components'
+
 import { Newsletter, type NewsletterTopic } from '../email'
 
 const MAILCHIMP_LIST_ID = 'b07e0b3012'
@@ -21,24 +22,24 @@ export async function createEmailCampaign(
 
   // Create campaign
   const campaignResponse = await fetch(`${baseUrl}/campaigns`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: authHeader,
-    },
     body: JSON.stringify({
-      type: 'regular',
       recipients: {
         list_id: MAILCHIMP_LIST_ID,
       },
       settings: {
-        subject_line: `GraphQL Weekly - ${issueTitle}`,
-        reply_to: 'hello@graphqlweekly.com',
         from_name: 'GraphQL Weekly',
-        title: `GraphQL Weekly - ${issueTitle} (version ${versionCount})`,
         inline_css: true,
+        reply_to: 'hello@graphqlweekly.com',
+        subject_line: `GraphQL Weekly - ${issueTitle}`,
+        title: `GraphQL Weekly - ${issueTitle} (version ${versionCount})`,
       },
+      type: 'regular',
     }),
+    headers: {
+      Authorization: authHeader,
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
   })
 
   if (!campaignResponse.ok) {
@@ -51,21 +52,21 @@ export async function createEmailCampaign(
 
   // Render email HTML
   const emailHtml = await render(
-    Newsletter({ issueTitle, topics, isFoundationEdition }),
+    Newsletter({ isFoundationEdition, issueTitle, topics }),
   )
 
   // Set campaign content
   const contentResponse = await fetch(
     `${baseUrl}/campaigns/${campaignId}/content`,
     {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: authHeader,
-      },
       body: JSON.stringify({
         html: emailHtml,
       }),
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      method: 'PUT',
     },
   )
 

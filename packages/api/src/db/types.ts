@@ -2,20 +2,20 @@
 // These are the raw types returned from database queries
 
 export interface AuthorRow {
-  id: string
   avatarUrl: string
-  name: string
-  description: string
   createdAt: string // ISO date string from SQLite
+  description: string
+  id: string
+  name: string
   updatedAt: string
 }
 
 export interface IssueRow {
-  id: string
   authorId: string | null
   comment: string | null
   date: string // ISO date string
   description: string | null
+  id: string
   number: number
   previewImage: string | null
   published: number // SQLite boolean (0/1)
@@ -35,26 +35,26 @@ export interface LinkRow {
 
 export interface TopicRow {
   id: string
-  issueId: string | null
   issue_comment: string
+  issueId: string | null
   position: number | null
   title: string
 }
 
 export interface SubscriberRow {
-  id: string
   email: string
+  id: string
   name: string
 }
 
 export interface LinkSubmissionRow {
-  id: string
   createdAt: string
-  updatedAt: string
   description: string
   email: string
+  id: string
   name: string
   title: string
+  updatedAt: string
   url: string
 }
 
@@ -68,8 +68,8 @@ export interface Database {
   Author: AuthorRow
   Issue: IssueRow
   Link: LinkRow
-  Topic: TopicRow
-  Subscriber: SubscriberRow
   LinkSubmission: LinkSubmissionRow
+  Subscriber: SubscriberRow
+  Topic: TopicRow
   User: UserRow
 }

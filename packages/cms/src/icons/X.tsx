@@ -1,26 +1,26 @@
 interface XProps {
-  size?: number;
   color?: string;
+  size?: number;
 }
 
-export default function X({ size = 8, color = "#FFF" }: XProps) {
+export default function X({ color = "#FFF", size = 8 }: XProps) {
   return (
     <svg
-      width={size}
+      fill="none"
       height={size}
       viewBox="0 0 8 8"
-      fill="none"
+      width={size}
       xmlns="http://www.w3.org/2000/svg"
     >
       <g
         id="x"
         stroke={color}
-        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeWidth="2"
       >
-        <path id="Vector" d="M6 0L0 6" transform="translate(1 1)" />
-        <path id="Vector_2" d="M0 0L6 6" transform="translate(1 1)" />
+        <path d="M6 0L0 6" id="Vector" transform="translate(1 1)" />
+        <path d="M0 0L6 6" id="Vector_2" transform="translate(1 1)" />
       </g>
     </svg>
   );

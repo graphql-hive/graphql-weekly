@@ -1,33 +1,34 @@
-import { callbackRuntime, APIGatewayEvent } from "lambda-helpers";
+import { APIGatewayEvent, callbackRuntime } from "lambda-helpers";
 import "source-map-support/register";
+
 import mcapi = require("mailchimp-api");
 
 interface Payload {
   data: {
     Issue: {
-      updatedFields: string[];
       node: Issue;
+      updatedFields: string[];
     };
   };
 }
 
 interface Issue {
   id: string;
-  title: string;
   published: boolean;
-  versionCount: number;
+  title: string;
   topics: Topic[];
+  versionCount: number;
 }
 
 interface Topic {
-  title: string;
   links: Link[];
+  title: string;
 }
 
 interface Link {
-  url: string;
-  title: string;
   text: string;
+  title: string;
+  url: string;
 }
 
 export default callbackRuntime(async (event: APIGatewayEvent): Promise<any> => {
@@ -52,16 +53,16 @@ export default callbackRuntime(async (event: APIGatewayEvent): Promise<any> => {
 
   await new Promise((resolve, reject) => {
     const params = {
+      content: {
+        html: formatTemplate(issue),
+      },
       options: {
-        list_id: mailchimpListId,
-        subject: `GraphQL Weekly - ${issue.title}`,
         from_email: "hello@graphqlweekly.com",
         from_name: "GraphQL Weekly",
         inline_css: true,
+        list_id: mailchimpListId,
+        subject: `GraphQL Weekly - ${issue.title}`,
         title: `GraphQL Weekly - ${issue.title} (version ${issue.versionCount})`,
-      },
-      content: {
-        html: formatTemplate(issue),
       },
       type: "regular",
     };
@@ -75,26 +76,26 @@ export default callbackRuntime(async (event: APIGatewayEvent): Promise<any> => {
 });
 
 const colorMap = {
-  default: "#f531b1",
-
   articles: "#f531b1",
-  tutorials: "#6560e2",
 
   "community & events": "#009be3",
   conference: "#009be3",
+
+  default: "#f531b1",
   events: "#009be3",
+  "frameworks and libraries": "#f0950c",
 
-  videos: "#27ae60",
-  talks: "#27ae60",
+  libraries: "#f0950c",
+  "libraries and tools": "#f0950c",
+  "open source": "#f0950c",
   "podcasts and shows": "#27ae60",
-  slides: "#27ae60",
 
+  slides: "#27ae60",
+  talks: "#27ae60",
   "tools & open source": "#f0950c",
   "tools and open source": "#f0950c",
-  "libraries and tools": "#f0950c",
-  libraries: "#f0950c",
-  "frameworks and libraries": "#f0950c",
-  "open source": "#f0950c",
+  tutorials: "#6560e2",
+  videos: "#27ae60",
 };
 
 /**
@@ -102,23 +103,23 @@ const colorMap = {
  * @param issue
  */
 function renderContent(issue: Issue): {
+  content: string;
   firstTopic: {
-    text: string;
     color: string;
+    text: string;
     title: string;
   };
-  content: string;
 } {
   const firstTopic = issue.topics.slice(0, 1)[0];
   const restTopics = issue.topics.slice(1);
 
   return {
+    content: renderTopics(restTopics),
     firstTopic: {
-      title: firstTopic.title,
       color: getColor(firstTopic.title),
       text: renderTopicContent(firstTopic),
+      title: firstTopic.title,
     },
-    content: renderTopics(restTopics),
   };
 }
 
@@ -167,7 +168,7 @@ function renderTopicContent(topic: Topic) {
   return topic.links.map(renderLink).join('\n<div class="hr"></div>\n');
 }
 
-function renderLink({ url, title, text }: Link) {
+function renderLink({ text, title, url }: Link) {
   return `<a href="${url}" target="_blank">
     <h1>${title}</h1>
   </a>
@@ -177,7 +178,7 @@ function renderLink({ url, title, text }: Link) {
 }
 
 function formatTemplate(issue: Issue) {
-  const { firstTopic, content } = renderContent(issue);
+  const { content, firstTopic } = renderContent(issue);
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
@@ -775,9 +776,9 @@ function slugify(text: string) {
   return text
     .toString()
     .toLowerCase()
-    .replace(/\s+/g, "-") // Replace spaces with -
-    .replace(/[^\w\-]+/g, "") // Remove all non-word chars
-    .replace(/\-\-+/g, "-") // Replace multiple - with single -
+    .replaceAll(/\s+/g, "-") // Replace spaces with -
+    .replaceAll(/[^\w\-]+/g, "") // Remove all non-word chars
+    .replaceAll(/\-\-+/g, "-") // Replace multiple - with single -
     .replace(/^-+/, "") // Trim - from start of text
     .replace(/-+$/, ""); // Trim - from end of text
 }

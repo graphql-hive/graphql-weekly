@@ -5,38 +5,39 @@ import {
   ReactNode,
   RefObject,
 } from "react";
+
 import { Button } from "./Button";
 import ErrorText from "./ErrorText";
 
 interface InputWithButtonProps {
-  buttonLabel: ReactNode;
   buttonDisabled?: boolean;
+  buttonLabel: ReactNode;
   disabled?: boolean;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  style?: CSSProperties;
-  type?: string;
-  placeholder?: string;
   errorText?: ReactNode;
-  value?: string;
   inputRef?: RefObject<HTMLInputElement | null> | undefined;
   label?: string;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  placeholder?: string;
+  style?: CSSProperties;
+  type?: string;
+  value?: string;
 }
 
 // TODO: This component shouldn't exist.
 export default function InputWithButton({
-  buttonLabel,
   buttonDisabled,
+  buttonLabel,
   disabled,
-  onChange,
-  onClick,
-  style,
-  type,
-  placeholder,
   errorText,
-  value,
   inputRef,
   label,
+  onChange,
+  onClick,
+  placeholder,
+  style,
+  type,
+  value,
 }: InputWithButtonProps) {
   return (
     <>
@@ -56,21 +57,21 @@ export default function InputWithButton({
             </span>
           )}
           <input
-            ref={inputRef}
-            type={type}
-            style={style}
-            value={value}
+            className="flex-1 min-w-0 bg-transparent border-none outline-none text-right dark:text-neu-100 placeholder:text-neu-400 dark:placeholder:text-neu-600"
             disabled={disabled}
             onChange={onChange}
             placeholder={placeholder}
-            className="flex-1 min-w-0 bg-transparent border-none outline-none text-right dark:text-neu-100 placeholder:text-neu-400 dark:placeholder:text-neu-600"
+            ref={inputRef}
+            style={style}
+            type={type}
+            value={value}
           />
         </label>
         <Button
-          {...(buttonDisabled !== undefined
-            ? { disabled: buttonDisabled }
-            : {})}
-          {...(onClick !== undefined ? { onClick } : {})}
+          {...(buttonDisabled === undefined
+            ? {}
+            : { disabled: buttonDisabled })}
+          {...(onClick === undefined ? {} : { onClick })}
           className="shrink-0"
         >
           {buttonLabel}

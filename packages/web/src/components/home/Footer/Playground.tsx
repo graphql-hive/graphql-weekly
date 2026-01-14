@@ -132,8 +132,9 @@ export class Playground extends Component<Props, State> {
             Enter a query
           </span>
 
-          <label className="w-[400px] min-h-12 mb-4 p-4 inline-flex items-center bg-footer-box shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded-sm cursor-pointer relative transition-colors duration-120 ease-out hover:bg-footer-box-hover group">
+          <label className="w-[400px] min-h-12 mb-4 p-4 inline-flex items-center bg-footer-box shadow-[0px_4px_16px_rgba(0,0,0,0.1)] rounded-sm cursor-pointer relative transition-colors duration-120 ease-out hover:bg-footer-box-hover group focus-within:ring-2 focus-within:ring-pink focus-within:ring-offset-2 focus-within:ring-offset-footer-dark">
             <select
+              aria-label="Select query example"
               className="absolute top-0 bottom-0 right-0 w-full opacity-0 cursor-pointer"
               onChange={this.exampleChanged}
               value={selectedQuery.title}
@@ -164,7 +165,7 @@ export class Playground extends Component<Props, State> {
             </Code>
 
             <button
-              className="flex items-center justify-center w-full min-h-10 p-3 mt-6 border-none outline-hidden bg-pink shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded-sm cursor-pointer transition-all duration-140 ease-out hover:transform hover:-translate-y-px hover:shadow-[0px_7px_16px_rgba(23,43,58,0.22)] disabled:shadow-none disabled:bg-disabled"
+              className="flex items-center justify-center w-full min-h-10 p-3 mt-6 border-none bg-pink shadow-[0px_4px_10px_rgba(23,43,58,0.25)] rounded-sm cursor-pointer transition-all duration-140 ease-out hover:transform hover:-translate-y-px hover:shadow-[0px_7px_16px_rgba(23,43,58,0.22)] disabled:shadow-none disabled:bg-disabled focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               disabled={this.state.loading}
               onClick={this.runQuery}
             >

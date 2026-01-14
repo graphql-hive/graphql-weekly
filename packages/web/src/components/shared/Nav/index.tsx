@@ -45,7 +45,9 @@ export class Nav extends Component<Props, State> {
           </Link>
 
           <button
-            className="w-auto h-5 mt-2.5 mr-1.5 cursor-pointer md:hidden border-none bg-transparent p-0"
+            aria-expanded={isOpened}
+            aria-label={isOpened ? "Close menu" : "Open menu"}
+            className="w-auto h-5 mt-2.5 mr-1.5 cursor-pointer md:hidden border-none bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
             onClick={this.menuClickHandler}
             type="button"
           >
@@ -72,7 +74,7 @@ export class Nav extends Component<Props, State> {
               <Arrow className="mt-px" />
             </a>
             <button
-              className="border-none bg-none outline-hidden cursor-pointer ml-0 p-3 hover:bg-white/10 rounded-md text-lg text-white font-medium"
+              className="border-none bg-none cursor-pointer ml-0 p-3 hover:bg-white/10 rounded-md text-lg text-white font-medium focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               onClick={() => this.props.submitModalClickHandler()}
             >
               Submit a link

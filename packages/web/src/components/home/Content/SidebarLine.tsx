@@ -2,8 +2,7 @@ import type React from "react";
 
 import { cn } from "../../../lib/cn";
 
-export interface SidebarLineProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface SidebarLineProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function SidebarLine({ className, ...rest }: SidebarLineProps) {
   return (

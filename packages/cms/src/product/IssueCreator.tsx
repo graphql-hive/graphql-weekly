@@ -1,17 +1,18 @@
-import { useState, useEffect, ChangeEvent, RefObject } from "react";
+import { ChangeEvent, RefObject, useEffect, useState } from "react";
+
 import InputWithButton from "../components/InputWithButton";
 import { useCreateIssueMutation } from "../generated/graphql";
 
 interface IssueCreatorProps {
-  refresh?: () => void;
   defaultValue?: string;
   inputRef?: RefObject<HTMLInputElement | null>;
+  refresh?: () => void;
 }
 
 export default function IssueCreator({
-  refresh,
   defaultValue,
   inputRef,
+  refresh,
 }: IssueCreatorProps) {
   const [number, setNumber] = useState(defaultValue ?? "");
   const [numberError, setNumberError] = useState("");
@@ -38,21 +39,21 @@ export default function IssueCreator({
 
     createIssueMutation.mutate(
       {
-        title: `Issue ${number}`,
         date: new Date().toISOString(),
-        number: parseInt(number, 10),
+        number: Number.parseInt(number, 10),
         published: false,
+        title: `Issue ${number}`,
       },
       {
-        onSuccess: () => {
-          setNumber("");
-          setNumberError("");
-          refresh?.();
-        },
         onError: (error) => {
           setNumberError(
             error instanceof Error ? error.message : "Error creating issue",
           );
+        },
+        onSuccess: () => {
+          setNumber("");
+          setNumberError("");
+          refresh?.();
         },
       },
     );
@@ -63,15 +64,15 @@ export default function IssueCreator({
 
   return (
     <InputWithButton
-      inputRef={inputRef}
-      disabled={createIssueMutation.isPending}
-      label="issue number"
-      placeholder="Number"
-      onClick={submitIssueChange}
-      onChange={handleNumberChange}
-      buttonLabel="Add Issue"
       buttonDisabled={isAddButtonDisabled}
+      buttonLabel="Add Issue"
+      disabled={createIssueMutation.isPending}
       errorText={numberError}
+      inputRef={inputRef}
+      label="issue number"
+      onChange={handleNumberChange}
+      onClick={submitIssueChange}
+      placeholder="Number"
       value={number}
     />
   );

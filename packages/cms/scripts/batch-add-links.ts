@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
-import { GraphQLClient, gql } from "graphql-request";
-import { readFileSync } from "fs";
+
+import { gql, GraphQLClient } from "graphql-request";
+import { readFileSync } from "node:fs";
 
 const endpoint =
   "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
@@ -18,10 +19,10 @@ interface Issue {
 }
 
 interface Link {
-  url: string;
-  title: string;
   description: string;
   tag: string;
+  title: string;
+  url: string;
 }
 
 const ALL_ISSUES = gql`
@@ -99,7 +100,7 @@ function parseTSV(filePath: string): Link[] {
 
   return rows.map((row) => {
     const [url, title, description, tag] = row.split("\t");
-    return { url, title, description, tag };
+    return { description, tag, title, url };
   });
 }
 
@@ -129,27 +130,27 @@ async function updateLink(
   text: string,
   url: string,
 ): Promise<void> {
-  await client.request(UPDATE_LINK, { id, title, text, url });
+  await client.request(UPDATE_LINK, { id, text, title, url });
 }
 
 async function createTopic(issueId: string, title: string): Promise<string> {
   const data = await client.request<{ createTopic: { id: string } }>(
     CREATE_TOPIC,
     {
+      issue_comment: "",
       issueId,
       title,
-      issue_comment: "",
     },
   );
   return data.createTopic.id;
 }
 
 async function addLinkToTopic(topicId: string, linkId: string): Promise<void> {
-  await client.request(ADD_LINK_TO_TOPIC, { topicId, linkId });
+  await client.request(ADD_LINK_TO_TOPIC, { linkId, topicId });
 }
 
 async function main() {
-  const issueNumber = parseInt(process.argv[2], 10);
+  const issueNumber = Number.parseInt(process.argv[2], 10);
   const tsvPath = process.argv[3];
 
   if (!issueNumber || isNaN(issueNumber) || !tsvPath) {
@@ -168,7 +169,7 @@ async function main() {
 
   const issueWithTopics = await getIssueWithTopics(issue.id);
   const existingTopics = new Map(
-    issueWithTopics?.topics?.map((t) => [t.title.toLowerCase(), t.id]) ?? [],
+    issueWithTopics?.topics?.map((t) => [t.title.toLowerCase(), t.id]),
   );
   console.log(
     `Existing topics: ${[...existingTopics.keys()].join(", ") || "(none)"}`,
@@ -204,7 +205,7 @@ async function main() {
   console.log("\nDone!");
 }
 
-main().catch((err) => {
-  console.error("Error:", err);
+main().catch((error) => {
+  console.error("Error:", error);
   process.exit(1);
 });

@@ -1,40 +1,41 @@
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { OpenPanel } from "../components/Panels";
+
 import ClickTarget from "../components/ClickTarget";
+import { OpenPanel } from "../components/Panels";
 import TopicDialog from "./TopicDialog";
 
 interface Link {
   id?: string | null;
-  title?: string | null;
   text?: string | null;
-  url?: string | null;
+  title?: string | null;
   topic?: { id?: string | null; position?: number | null } | null;
+  url?: string | null;
 }
 
 interface Topic {
   id?: string | null;
-  title?: string | null;
   position?: number | null;
+  title?: string | null;
 }
 
 interface LinkCardProps {
+  dragListeners?: SyntheticListenerMap;
+  isDragOverlay?: boolean;
   link: Link;
-  topics: Topic[];
   onChange: (link: Link) => void;
   onDelete: () => void;
   refresh: () => void;
-  dragListeners?: SyntheticListenerMap;
-  isDragOverlay?: boolean;
+  topics: Topic[];
 }
 
 export default function LinkCard({
+  dragListeners,
+  isDragOverlay,
   link,
-  topics,
   onChange,
   onDelete,
   refresh,
-  dragListeners,
-  isDragOverlay,
+  topics,
 }: LinkCardProps) {
   return (
     <div
@@ -46,8 +47,8 @@ export default function LinkCard({
       >
         <svg
           className="w-4 h-4 text-neu-400 dark:text-neu-500"
-          viewBox="0 0 24 24"
           fill="currentColor"
+          viewBox="0 0 24 24"
         >
           <circle cx="9" cy="5" r="1.5" />
           <circle cx="15" cy="5" r="1.5" />
@@ -60,33 +61,33 @@ export default function LinkCard({
 
       <div className="flex-1 p-3 space-y-2 min-w-0">
         <input
-          type="text"
-          placeholder="Title"
-          value={link.title ?? ""}
-          onChange={(e) => onChange({ ...link, title: e.target.value })}
           className="w-full text-sm  text-neu-900 dark:text-neu-100 bg-transparent border border-transparent  px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
+          onChange={(e) => onChange({ ...link, title: e.target.value })}
+          placeholder="Title"
+          type="text"
+          value={link.title ?? ""}
         />
         <textarea
-          placeholder="Description"
-          value={link.text ?? ""}
-          onChange={(e) => onChange({ ...link, text: e.target.value })}
-          rows={2}
           className="w-full text-sm text-neu-600 dark:text-neu-300 bg-transparent border border-transparent  px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] resize-none transition-colors hover:duration-0"
+          onChange={(e) => onChange({ ...link, text: e.target.value })}
+          placeholder="Description"
+          rows={2}
+          value={link.text ?? ""}
         />
         <div className="flex items-center gap-2">
           <input
-            type="text"
-            placeholder="URL"
-            value={link.url ?? ""}
-            onChange={(e) => onChange({ ...link, url: e.target.value })}
             className="flex-1 text-xs text-neu-500 dark:text-neu-400 bg-transparent border border-transparent  px-1 py-0.5 font-mono hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
+            onChange={(e) => onChange({ ...link, url: e.target.value })}
+            placeholder="URL"
+            type="text"
+            value={link.url ?? ""}
           />
           {link.url && (
             <a
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
               className="text-neu-400 dark:text-neu-500 hover:text-primary transition-colors hover:duration-0"
+              href={link.url}
+              rel="noopener noreferrer"
+              target="_blank"
             >
               <svg
                 className="w-4 h-4"
@@ -95,10 +96,10 @@ export default function LinkCard({
                 viewBox="0 0 24 24"
               >
                 <path
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                 />
               </svg>
             </a>
@@ -114,8 +115,8 @@ export default function LinkCard({
                 showPanel(TopicDialog as any, {
                   link,
                   linkId: link.id,
-                  topics,
                   refresh,
+                  topics,
                 })
               }
             >
@@ -130,10 +131,10 @@ export default function LinkCard({
                   viewBox="0 0 24 24"
                 >
                   <path
+                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
                   />
                 </svg>
               </div>
@@ -141,8 +142,8 @@ export default function LinkCard({
           )}
         </OpenPanel>
         <button
-          onClick={onDelete}
           className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950  transition-colors hover:duration-0"
+          onClick={onDelete}
           title="Delete"
         >
           <svg
@@ -152,10 +153,10 @@ export default function LinkCard({
             viewBox="0 0 24 24"
           >
             <path
+              d="M6 18L18 6M6 6l12 12"
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
             />
           </svg>
         </button>

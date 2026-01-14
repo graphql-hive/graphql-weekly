@@ -2,8 +2,7 @@ import type React from "react";
 
 import { Arrow } from "../vectors/Arrow";
 
-export interface ArrowLinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface ArrowLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
   text: string;
 }

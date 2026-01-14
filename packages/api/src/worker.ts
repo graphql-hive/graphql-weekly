@@ -1,13 +1,15 @@
-/// <reference types="@cloudflare/workers-types" />
-import { createYoga, createSchema } from 'graphql-yoga'
 import type { Kysely } from 'kysely'
+
+/// <reference types="@cloudflare/workers-types" />
+import { createSchema, createYoga } from 'graphql-yoga'
+
 import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
 
 export interface Env {
   graphqlweekly: D1Database
-  MAILCHIMP_API_KEY?: string
   JWT_SECRET?: string
+  MAILCHIMP_API_KEY?: string
 }
 
 export interface GraphQLContext {
@@ -128,11 +130,11 @@ const typeDefs = /* GraphQL */ `
   }
 `
 
-const schema = createSchema<GraphQLContext>({ typeDefs, resolvers })
+const schema = createSchema<GraphQLContext>({ resolvers, typeDefs })
 
 const yoga = createYoga<GraphQLContext>({
-  schema,
   graphqlEndpoint: '/graphql',
+  schema,
 })
 
 export default {

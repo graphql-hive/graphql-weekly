@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-type SpinnerColor = "white" | "grey";
+type SpinnerColor = "grey" | "white";
 
 interface SpinnerProps {
   color?: SpinnerColor;
@@ -8,13 +8,13 @@ interface SpinnerProps {
 }
 
 const spinnerColors: Record<SpinnerColor, { bg: string; fg: string }> = {
-  white: {
-    bg: "rgba(255,255,255,0.2)",
-    fg: "rgba(255,255,255,1)",
-  },
   grey: {
     bg: "rgba(120,120,120,0.2)",
     fg: "rgba(120,120,120,1)",
+  },
+  white: {
+    bg: "rgba(255,255,255,0.2)",
+    fg: "rgba(255,255,255,1)",
   },
 };
 
@@ -23,18 +23,18 @@ export default function Spinner({ color = "grey", size = 40 }: SpinnerProps) {
   const colors = spinnerColors[color];
 
   const style: CSSProperties = {
-    width: size,
-    height: size,
-    borderRadius: "50%",
-    fontSize: 10,
-    position: "relative",
-    textIndent: "-9999em",
-    borderTop: `${borderWidth}px solid ${colors.bg}`,
-    borderRight: `${borderWidth}px solid ${colors.bg}`,
+    animation: "loader 0.7s infinite ease-out",
     borderBottom: `${borderWidth}px solid ${colors.bg}`,
     borderLeft: `${borderWidth}px solid ${colors.fg}`,
+    borderRadius: "50%",
+    borderRight: `${borderWidth}px solid ${colors.bg}`,
+    borderTop: `${borderWidth}px solid ${colors.bg}`,
+    fontSize: 10,
+    height: size,
+    position: "relative",
+    textIndent: "-9999em",
     transform: "translateZ(0)",
-    animation: "loader 0.7s infinite ease-out",
+    width: size,
   };
 
   return <div className="loader" style={style} />;

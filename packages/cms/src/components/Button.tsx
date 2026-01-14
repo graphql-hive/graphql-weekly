@@ -1,13 +1,14 @@
 import type React from "react";
 import type { ComponentProps, DetailedHTMLProps, HTMLAttributes } from "react";
+
 import { cn } from "../cn";
 
 const variantClasses = {
+  danger:
+    "bg-red-500 text-white border-red-500 hover:bg-red-600 hover:border-red-600",
   primary: "bg-primary text-neu-900 border-primary hover:bg-primary/80",
   secondary:
     "bg-transparent text-neu-600 dark:text-neu-300 border-neu-300 dark:border-neu-600 hover:bg-neu-100 dark:hover:bg-neu-800",
-  danger:
-    "bg-red-500 text-white border-red-500 hover:bg-red-600 hover:border-red-600",
 } satisfies Record<string, string>;
 
 export type ButtonVariant = keyof typeof variantClasses;
@@ -17,37 +18,37 @@ const baseClasses =
 
 export declare namespace ButtonProps {
   interface BaseProps {
-    variant?: ButtonVariant;
     block?: boolean;
     className?: string;
     disabled?: boolean;
+    variant?: ButtonVariant;
   }
 
   interface LinkProps extends BaseProps, Omit<ComponentProps<"a">, "href"> {
-    href: string;
     as?: never;
+    href: string;
   }
 
   interface ButtonElementProps
-    extends BaseProps,
-      Omit<ComponentProps<"button">, "color"> {
-    href?: never;
+    extends BaseProps, Omit<ComponentProps<"button">, "color"> {
     as?: undefined;
-    type?: "button" | "submit" | "reset";
+    href?: never;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    type?: "button" | "reset" | "submit";
   }
 
   interface NonInteractiveProps
-    extends BaseProps,
+    extends
+      BaseProps,
       DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {
+    as: "div" | "label" | "span";
     href?: never;
-    as: "span" | "div" | "label";
   }
 }
 
 export type ButtonProps =
-  | ButtonProps.LinkProps
   | ButtonProps.ButtonElementProps
+  | ButtonProps.LinkProps
   | ButtonProps.NonInteractiveProps;
 
 export function Button(props: ButtonProps) {
@@ -61,31 +62,31 @@ export function Button(props: ButtonProps) {
 
   if ("href" in props && typeof props.href === "string") {
     const {
-      variant: _,
+      as: ___,
       block: __,
+      className: ____,
       disabled,
       href,
-      as: ___,
-      className: ____,
+      variant: _,
       ...rest
     } = props;
     return (
       <a
         href={href}
         {...rest}
-        className={className}
         aria-disabled={disabled || undefined}
+        className={className}
       />
     );
   }
 
   if (props.as) {
-    const { variant: _, block: __, as, className: ___, ...rest } = props;
+    const { as, block: __, className: ___, variant: _, ...rest } = props;
     const Root = as as "span";
     return <Root {...rest} className={className} />;
   }
 
-  const { variant: _, block: __, className: ___, ...rest } = props;
+  const { block: __, className: ___, variant: _, ...rest } = props;
   return <button {...rest} className={className} />;
 }
 

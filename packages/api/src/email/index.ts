@@ -1,6 +1,6 @@
-export { Newsletter, colorMap } from './templates/newsletter'
+export { colorMap, Newsletter } from './templates/newsletter'
 export type {
+  NewsletterLink,
   NewsletterProps,
   NewsletterTopic,
-  NewsletterLink,
 } from './templates/newsletter'

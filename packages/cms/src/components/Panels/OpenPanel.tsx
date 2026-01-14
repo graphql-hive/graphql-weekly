@@ -1,4 +1,5 @@
 import { ComponentType, ReactNode } from "react";
+
 import PanelConsumer from "./PanelConsumer";
 
 interface OpenPanelRenderProps {

@@ -1,7 +1,8 @@
 import { useState } from "react";
+
 import { Button } from "../components/Button";
-import Radio from "../components/Radio";
 import Flex from "../components/Flex";
+import Radio from "../components/Radio";
 import { useAddLinksToTopicMutation } from "../generated/graphql";
 
 interface Topic {
@@ -16,17 +17,17 @@ interface Link {
 interface TopicDialogProps {
   link?: Link;
   linkId?: string;
-  topics?: Topic[];
-  refresh?: () => void;
   onPanelClose?: () => void;
+  refresh?: () => void;
+  topics?: Topic[];
 }
 
 export default function TopicDialog({
   link,
   linkId,
-  topics = [],
-  refresh,
   onPanelClose,
+  refresh,
+  topics = [],
 }: TopicDialogProps) {
   const [topicId, setTopicId] = useState(link?.topic?.id ?? "");
   const addLinksToTopicMutation = useAddLinksToTopicMutation();
@@ -34,7 +35,7 @@ export default function TopicDialog({
   const handleClick = () => {
     if (!topicId || !linkId) return;
     addLinksToTopicMutation.mutate(
-      { topicId, linkId },
+      { linkId, topicId },
       {
         onSuccess: () => {
           refresh?.();
@@ -49,18 +50,18 @@ export default function TopicDialog({
       <h1 style={{ margin: "0 0 32px" }}>Assign this link to a topic:</h1>
       {topics.map((topic, index) => (
         <Radio
+          key={index}
           onClick={setTopicId}
           selectedValue={topicId}
           value={topic.id ?? ""}
-          key={index}
         >
           {topic.title}
         </Radio>
       ))}
       <Flex align="flex-end">
         <Button
-          onClick={handleClick}
           disabled={addLinksToTopicMutation.isPending}
+          onClick={handleClick}
         >
           {addLinksToTopicMutation.isPending ? "Saving..." : "Submit"}
         </Button>

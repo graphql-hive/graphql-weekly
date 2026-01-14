@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
-import Flex from "./Flex";
+
 import ClickTarget from "./ClickTarget";
+import Flex from "./Flex";
 import FlexCell from "./FlexCell";
 
 interface RadioInputProps {
@@ -20,7 +21,7 @@ export default function RadioInput({
 
   return (
     <Flex margin="0 0 16px">
-      <FlexCell align="center" grow="0" basis="auto">
+      <FlexCell align="center" basis="auto" grow="0">
         <ClickTarget onClick={() => onClick(value)}>
           <div
             className={`

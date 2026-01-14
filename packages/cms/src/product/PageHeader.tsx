@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button } from "../components/Button";
 
+import { Button } from "../components/Button";
 import {
-  usePublishIssueMutation,
-  usePublishEmailDraftMutation,
   useDeleteIssueMutation,
+  usePublishEmailDraftMutation,
+  usePublishIssueMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
 
@@ -16,18 +16,18 @@ interface Topic {
 
 interface PageHeaderProps {
   id?: string | null;
-  title?: string | null;
-  versionCount?: number | null;
   published?: boolean | null;
+  title?: string | null;
   topics?: Topic[];
+  versionCount?: number | null;
 }
 
 export default function PageHeader({
   id,
-  title,
-  versionCount,
   published,
+  title,
   topics = [],
+  versionCount,
 }: PageHeaderProps) {
   const [isFoundation, setIsFoundation] = useState(false);
 
@@ -46,8 +46,8 @@ export default function PageHeader({
     if (!id) return;
     publishEmailDraftMutation.mutate({
       id,
-      versionCount: (versionCount ?? 0) + 1,
       isFoundation,
+      versionCount: (versionCount ?? 0) + 1,
     });
   };
 
@@ -59,7 +59,7 @@ export default function PageHeader({
       }
     }
     await deleteIssueMutation.mutateAsync({ id });
-    window.location.href = BASE_PATH;
+    globalThis.location.href = BASE_PATH;
   };
 
   return (
@@ -75,23 +75,23 @@ export default function PageHeader({
       <div className="flex items-center gap-3">
         <label className="flex items-center gap-1.5 text-sm text-neu-600 dark:text-neu-400 cursor-pointer select-none">
           <input
-            type="checkbox"
             checked={isFoundation}
-            onChange={(e) => setIsFoundation(e.target.checked)}
             className="w-3.5 h-3.5"
+            onChange={(e) => setIsFoundation(e.target.checked)}
+            type="checkbox"
           />
           Foundation
         </label>
 
         <div className="flex items-center gap-2">
-          <Button variant="primary" onClick={handlePublish}>
+          <Button onClick={handlePublish} variant="primary">
             Publish
           </Button>
-          <Button variant="secondary" onClick={increaseVersion}>
+          <Button onClick={increaseVersion} variant="secondary">
             Create Email
           </Button>
           {!published && (
-            <Button variant="danger" onClick={handleDeleteIssue}>
+            <Button onClick={handleDeleteIssue} variant="danger">
               Delete
             </Button>
           )}

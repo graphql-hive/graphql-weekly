@@ -94,8 +94,8 @@ function escapeValue(value: unknown): string {
   if (value instanceof Date) return `'${value.toISOString()}'`
   const str = String(value)
     .replaceAll("'", "''")
-    .replaceAll('\n', '\\n')
-    .replaceAll('\r', '\\r')
+    .replaceAll('\n', String.raw`\n`)
+    .replaceAll('\r', String.raw`\r`)
   return `'${str}'`
 }
 

@@ -1,13 +1,13 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { getAllIssues } from '../lib/api'
-import { IssuePage } from '../components/IssuePage'
-import Footer from '../components/home/Footer/Footer.astro'
-import { Playground } from '../components/home/Footer/Playground'
+import Layout from "../layouts/Layout.astro";
+import { getAllIssues } from "../lib/api";
+import { IssuePage } from "../components/IssuePage";
+import Footer from "../components/home/Footer/Footer.astro";
+import { Playground } from "../components/home/Footer/Playground";
 
-const { allIssues, firstIssueNumber, topicsList } = await getAllIssues()
-const topicsTitles = Object.keys(topicsList)
-const lastIssue = allIssues[0]
+const { allIssues, firstIssueNumber, topicsList } = await getAllIssues();
+const topicsTitles = Object.keys(topicsList);
+const lastIssue = allIssues[0];
 ---
 
 <Layout>

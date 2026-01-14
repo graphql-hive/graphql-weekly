@@ -1,3 +1,1 @@
-import { twMerge } from "tailwind-merge";
-
-export const cn = twMerge;
+export { twMerge as cn } from "tailwind-merge";

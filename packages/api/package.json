@@ -12,26 +12,26 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@mailchimp/mailchimp_marketing": "^3.0.80",
-    "@react-email/components": "^1.0.4",
-    "graphql": "^16.6.0",
-    "graphql-scalars": "^1.20.1",
-    "graphql-yoga": "^5.18.0",
-    "kysely": "^0.28.9",
-    "kysely-d1": "^0.4.0",
-    "react": "^19.2.3",
-    "react-email": "^5.2.3"
+    "@mailchimp/mailchimp_marketing": "3.0.80",
+    "@react-email/components": "1.0.4",
+    "graphql": "16.6.0",
+    "graphql-scalars": "1.20.1",
+    "graphql-yoga": "5.18.0",
+    "kysely": "0.28.9",
+    "kysely-d1": "0.4.0",
+    "react": "19.2.3",
+    "react-email": "5.2.3"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.0",
-    "@graphql-codegen/cli": "^6.1.1",
-    "@graphql-codegen/typescript": "^5.0.7",
-    "@graphql-codegen/typescript-resolvers": "^5.1.5",
-    "@graphql-typed-document-node/core": "^3.2.0",
-    "@types/node": "^20.2.5",
-    "@types/react": "^19.2.8",
-    "typescript": "^5.0.0",
-    "vitest": "^3.0.0"
+    "@cloudflare/vitest-pool-workers": "0.12.3",
+    "@graphql-codegen/cli": "6.1.1",
+    "@graphql-codegen/typescript": "5.0.7",
+    "@graphql-codegen/typescript-resolvers": "5.1.5",
+    "@graphql-typed-document-node/core": "3.2.0",
+    "@types/node": "25.0.8",
+    "@types/react": "19.2.8",
+    "typescript": "5.9.3",
+    "vitest": "4.0.17"
   },
   "prettier": {
     "semi": false,

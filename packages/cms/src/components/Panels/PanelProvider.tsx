@@ -1,4 +1,5 @@
 import { Component, ComponentType, ReactNode } from "react";
+
 import PanelContext, { PanelContextValue } from "./PanelContext";
 
 interface PanelProviderProps {
@@ -13,9 +14,9 @@ export default class PanelProvider extends Component<
     super(props);
     this.state = {
       component: null,
+      hidePanel: this.hidePanel,
       props: {},
       showPanel: this.showPanel,
-      hidePanel: this.hidePanel,
     };
   }
 

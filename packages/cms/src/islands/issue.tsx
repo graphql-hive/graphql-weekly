@@ -1,66 +1,65 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
-import { createPortal } from "react-dom";
+import {
+  closestCenter,
+  type CollisionDetection,
+  DndContext,
+  DragOverlay,
+  getFirstCollision,
+  KeyboardSensor,
+  MeasuringStrategy,
+  MouseSensor,
+  pointerWithin,
+  rectIntersection,
+  TouchSensor,
+  type UniqueIdentifier,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   QueryClient,
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  pointerWithin,
-  rectIntersection,
-  getFirstCollision,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensors,
-  useSensor,
-  MeasuringStrategy,
-  useDroppable,
-  type UniqueIdentifier,
-  type CollisionDetection,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  arrayMove,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { Button } from "../components/Button";
 import Loading from "../components/Loading";
 import Navbar from "../components/Navbar";
+import {
+  type IssueQuery,
+  useAddLinksToTopicMutation,
+  useAllLinksQuery,
+  useCreateLinkMutation,
+  useCreateTopicMutation,
+  useDeleteLinkMutation,
+  useIssueQuery,
+  useUpdateLinkMutation,
+  useUpdateTopicMutation,
+  useUpdateTopicWhenIssueDeletedMutation,
+} from "../generated/graphql";
 import LinkCard from "../product/LinkCard";
 import PageHeader from "../product/PageHeader";
 import SubmissionsPanel, {
-  SUBMISSION_PREFIX,
   markSubmissionConsumed,
+  SUBMISSION_PREFIX,
 } from "../product/SubmissionsPanel";
 
-import {
-  useAllLinksQuery,
-  useIssueQuery,
-  useCreateTopicMutation,
-  useCreateLinkMutation,
-  useUpdateLinkMutation,
-  useDeleteLinkMutation,
-  useUpdateTopicMutation,
-  useUpdateTopicWhenIssueDeletedMutation,
-  useAddLinksToTopicMutation,
-  type IssueQuery,
-} from "../generated/graphql";
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60,
+    },
+  },
+});
 
 type TopicData = NonNullable<
   NonNullable<IssueQuery["issue"]>["topics"]
@@ -75,44 +74,44 @@ type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 // SortableItem wraps LinkCard with drag functionality
 function SortableItem({
   id,
+  isDragOverlay,
   link,
-  topics,
   onChange,
   onDelete,
   refresh,
-  isDragOverlay,
+  topics,
 }: {
   id: UniqueIdentifier;
+  isDragOverlay?: boolean;
   link: LinkData;
-  topics: TopicData[];
   onChange: (link: LinkData) => void;
   onDelete: () => void;
   refresh: () => void;
-  isDragOverlay?: boolean;
+  topics: TopicData[];
 }) {
   const {
-    setNodeRef,
     attributes,
+    isDragging,
     listeners,
+    setNodeRef,
     transform,
     transition,
-    isDragging,
   } = useSortable({ id });
 
   const style = {
+    opacity: isDragging ? 0.5 : 1,
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <LinkCard
         link={link}
-        topics={topics}
         onChange={onChange}
         onDelete={onDelete}
         refresh={refresh}
+        topics={topics}
         {...(listeners && { dragListeners: listeners })}
         {...(isDragOverlay && { isDragOverlay })}
       />
@@ -126,18 +125,18 @@ function Trash({ isOver }: { isOver: boolean }) {
 
   return (
     <div
-      ref={setNodeRef}
       className={`fixed bottom-6 left-6 flex items-center gap-2 px-4 py-3 border-2 border-dashed transition-colors ${
         isOver
           ? "border-red-500 bg-red-500/10 text-red-500"
           : "border-neu-400 dark:border-neu-600 text-neu-500 dark:text-neu-400"
       }`}
+      ref={setNodeRef}
     >
       <svg
         className="w-5 h-5"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
       >
         <path
           d="M16 2v4h6v2h-2v14H4V8H2V6h6V2h8zm-2 2h-4v2h4V4zm0 4H6v12h12V8h-4zm-5 2h2v8H9v-8zm6 0h-2v8h2v-8z"
@@ -177,8 +176,8 @@ function IssuePageContent({ id }: { id: string }) {
   const [linkMoves, setLinkMoves] = useState<Map<string, string>>(new Map());
   const [deletedLinkIds, setDeletedLinkIds] = useState<Set<string>>(new Set());
   const [activeSubmission, setActiveSubmission] = useState<{
-    title: string;
     description: string;
+    title: string;
     url: string;
   } | null>(null);
 
@@ -205,14 +204,14 @@ function IssuePageContent({ id }: { id: string }) {
   // Build link lookup map
   const linkMap = useMemo(() => {
     const map = new Map<string, LinkData>();
-    allLinks.forEach((link) => {
+    for (const link of allLinks) {
       if (link.id) map.set(link.id, link as LinkData);
-    });
-    topics.forEach((topic) => {
-      (topic.links ?? []).forEach((link) => {
+    }
+    for (const topic of topics) {
+      for (const link of topic.links ?? []) {
         if (link.id) map.set(link.id, link);
-      });
-    });
+      }
+    }
     return map;
   }, [allLinks, topics]);
 
@@ -232,17 +231,16 @@ function IssuePageContent({ id }: { id: string }) {
     newItems[UNASSIGNED_ID] = unassigned;
 
     // Topic links
-    topics.forEach((topic) => {
+    for (const topic of topics) {
       if (topic.id) {
         const topicLinks = (topic.links ?? [])
           .filter((link) => link.id && !deletedLinkIds.has(link.id))
           .map((link) => link.id!);
         newItems[topic.id] = topicLinks;
       }
-    });
+    }
 
     setItems(newItems);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [issue, allLinks, topics, deletedLinkIds]);
 
   // Containers list (for iteration)
@@ -335,7 +333,7 @@ function IssuePageContent({ id }: { id: string }) {
   // Other handlers
   const submitTopic = useCallback(() => {
     createTopicMutation.mutate(
-      { issue_comment: " ", title: newTopic, issueId: id },
+      { issue_comment: " ", issueId: id, title: newTopic },
       {
         onSuccess: () => {
           setNewTopic("");
@@ -361,8 +359,8 @@ function IssuePageContent({ id }: { id: string }) {
   const handleLinkChange = useCallback((link: LinkData) => {
     setEditedLinks((prev) =>
       new Map(prev).set(link.id!, {
-        title: link.title ?? null,
         text: link.text ?? null,
+        title: link.title ?? null,
         url: link.url ?? null,
       }),
     );
@@ -384,7 +382,7 @@ function IssuePageContent({ id }: { id: string }) {
   );
 
   const handleTopicMove = useCallback(
-    async (topicIndex: number, direction: "up" | "down") => {
+    async (topicIndex: number, direction: "down" | "up") => {
       if (!topics) return;
       const targetIndex = direction === "up" ? topicIndex - 1 : topicIndex + 1;
       if (targetIndex < 0 || targetIndex >= topics.length) return;
@@ -424,8 +422,8 @@ function IssuePageContent({ id }: { id: string }) {
     const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
       updateLinkMutation.mutateAsync({
         id: lid,
-        title: changes.title!,
         text: changes.text!,
+        title: changes.title!,
         url: changes.url!,
       }),
     );
@@ -439,7 +437,7 @@ function IssuePageContent({ id }: { id: string }) {
         // TODO: Need a mutation to unassign link from topic
         return Promise.resolve();
       }
-      return addLinksToTopicMutation.mutateAsync({ topicId, linkId });
+      return addLinksToTopicMutation.mutateAsync({ linkId, topicId });
     });
 
     await Promise.all([...linkPromises, ...deletePromises, ...movePromises]);
@@ -488,98 +486,25 @@ function IssuePageContent({ id }: { id: string }) {
       <main className="max-w-4xl mx-auto px-4 py-6">
         <div className="mb-6 flex gap-2">
           <input
-            type="text"
-            placeholder="Paste URL to add link..."
-            value={newLink}
-            onChange={(e) => setNewLink(e.target.value)}
             className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
+            onChange={(e) => setNewLink(e.target.value)}
+            placeholder="Paste URL to add link..."
+            type="text"
+            value={newLink}
           />
           <Button
-            variant="secondary"
-            onClick={submitLink}
             disabled={createLinkMutation.isPending || !newLink}
+            onClick={submitLink}
+            variant="secondary"
           >
             Add
           </Button>
         </div>
 
         <DndContext
-          sensors={sensors}
           collisionDetection={collisionDetectionStrategy}
           measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-          onDragStart={({ active }) => {
-            setActiveId(active.id);
-            setClonedItems(items);
-
-            // Track submission data for overlay
-            const activeIdStr = String(active.id);
-            if (activeIdStr.startsWith(SUBMISSION_PREFIX)) {
-              const data = active.data.current as
-                | {
-                    title: string;
-                    description: string;
-                    url: string;
-                  }
-                | undefined;
-              setActiveSubmission(data ?? null);
-            } else {
-              setActiveSubmission(null);
-            }
-          }}
-          onDragOver={({ active, over }) => {
-            const overId = over?.id;
-            if (overId == null || overId === TRASH_ID || active.id in items)
-              return;
-
-            const overContainer = findContainer(overId);
-            const activeContainer = findContainer(active.id);
-
-            if (
-              !overContainer ||
-              !activeContainer ||
-              activeContainer === overContainer
-            )
-              return;
-
-            setItems((items) => {
-              const activeItems = items[activeContainer];
-              const overItems = items[overContainer];
-              if (!activeItems || !overItems) return items;
-
-              const overIndex = overItems.indexOf(overId);
-              const activeIndex = activeItems.indexOf(active.id);
-              const movedItem = activeItems[activeIndex];
-              if (movedItem === undefined) return items;
-
-              let newIndex: number;
-              if (overId in items) {
-                newIndex = overItems.length + 1;
-              } else {
-                const isBelowOverItem =
-                  over &&
-                  active.rect.current.translated &&
-                  active.rect.current.translated.top >
-                    over.rect.top + over.rect.height;
-                const modifier = isBelowOverItem ? 1 : 0;
-                newIndex =
-                  overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-              }
-
-              recentlyMovedToNewContainer.current = true;
-
-              return {
-                ...items,
-                [activeContainer]: activeItems.filter(
-                  (item) => item !== active.id,
-                ),
-                [overContainer]: [
-                  ...overItems.slice(0, newIndex),
-                  movedItem,
-                  ...overItems.slice(newIndex),
-                ],
-              };
-            });
-          }}
+          onDragCancel={onDragCancel}
           onDragEnd={({ active, over }) => {
             const activeIdStr = String(active.id);
             const isSubmission = activeIdStr.startsWith(SUBMISSION_PREFIX);
@@ -603,11 +528,11 @@ function IssuePageContent({ id }: { id: string }) {
               // Get submission data from active.data
               const submissionData = active.data.current as
                 | {
-                    type: string;
-                    id: string;
-                    url: string;
-                    title: string;
                     description: string;
+                    id: string;
+                    title: string;
+                    type: string;
+                    url: string;
                   }
                 | undefined;
 
@@ -626,8 +551,8 @@ function IssuePageContent({ id }: { id: string }) {
                       // Prefill link data from submission
                       await updateLinkMutation.mutateAsync({
                         id: newLinkId,
-                        title: submissionData.title || "",
                         text: submissionData.description || "",
+                        title: submissionData.title || "",
                         url: submissionData.url,
                       });
 
@@ -636,14 +561,14 @@ function IssuePageContent({ id }: { id: string }) {
                         markSubmissionConsumed(submissionData.id);
                       }
 
-                      if (overContainer !== UNASSIGNED_ID) {
+                      if (overContainer === UNASSIGNED_ID) {
+                        invalidateQueries();
+                      } else {
                         // If dropped on a topic, also assign it
                         addLinksToTopicMutation.mutate(
-                          { topicId: String(overContainer), linkId: newLinkId },
+                          { linkId: newLinkId, topicId: String(overContainer) },
                           { onSuccess: invalidateQueries },
                         );
-                      } else {
-                        invalidateQueries();
                       }
                     },
                   },
@@ -720,7 +645,82 @@ function IssuePageContent({ id }: { id: string }) {
             setActiveId(null);
             setActiveSubmission(null);
           }}
-          onDragCancel={onDragCancel}
+          onDragOver={({ active, over }) => {
+            const overId = over?.id;
+            if (overId == null || overId === TRASH_ID || active.id in items)
+              return;
+
+            const overContainer = findContainer(overId);
+            const activeContainer = findContainer(active.id);
+
+            if (
+              !overContainer ||
+              !activeContainer ||
+              activeContainer === overContainer
+            )
+              return;
+
+            setItems((items) => {
+              const activeItems = items[activeContainer];
+              const overItems = items[overContainer];
+              if (!activeItems || !overItems) return items;
+
+              const overIndex = overItems.indexOf(overId);
+              const activeIndex = activeItems.indexOf(active.id);
+              const movedItem = activeItems[activeIndex];
+              if (movedItem === undefined) return items;
+
+              let newIndex: number;
+              if (overId in items) {
+                newIndex = overItems.length + 1;
+              } else {
+                const isBelowOverItem =
+                  over &&
+                  active.rect.current.translated &&
+                  active.rect.current.translated.top >
+                    over.rect.top + over.rect.height;
+                const modifier = isBelowOverItem ? 1 : 0;
+                newIndex =
+                  overIndex === -1
+                    ? overItems.length + 1
+                    : overIndex + modifier;
+              }
+
+              recentlyMovedToNewContainer.current = true;
+
+              return {
+                ...items,
+                [activeContainer]: activeItems.filter(
+                  (item) => item !== active.id,
+                ),
+                [overContainer]: [
+                  ...overItems.slice(0, newIndex),
+                  movedItem,
+                  ...overItems.slice(newIndex),
+                ],
+              };
+            });
+          }}
+          onDragStart={({ active }) => {
+            setActiveId(active.id);
+            setClonedItems(items);
+
+            // Track submission data for overlay
+            const activeIdStr = String(active.id);
+            if (activeIdStr.startsWith(SUBMISSION_PREFIX)) {
+              const data = active.data.current as
+                | {
+                    description: string;
+                    title: string;
+                    url: string;
+                  }
+                | undefined;
+              setActiveSubmission(data ?? null);
+            } else {
+              setActiveSubmission(null);
+            }
+          }}
+          sensors={sensors}
         >
           {/* Unassigned section */}
           <section className="mb-8">
@@ -743,13 +743,13 @@ function IssuePageContent({ id }: { id: string }) {
                   if (!link) return null;
                   return (
                     <SortableItem
-                      key={linkId}
                       id={linkId}
+                      key={linkId}
                       link={getMergedLink(link)}
-                      topics={topics}
                       onChange={handleLinkChange}
                       onDelete={() => handleLinkDelete(link.id!)}
                       refresh={invalidateQueries}
+                      topics={topics}
                     />
                   );
                 })
@@ -768,10 +768,9 @@ function IssuePageContent({ id }: { id: string }) {
             const isLast = topicIndex === topics.length - 1;
 
             return (
-              <section key={topic.id} className="mb-8 group/topic">
+              <section className="mb-8 group/topic" key={topic.id}>
                 <div
                   className="flex items-center gap-3 mb-3"
-                  tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "ArrowUp" && !isFirst) {
                       e.preventDefault();
@@ -781,6 +780,7 @@ function IssuePageContent({ id }: { id: string }) {
                       handleTopicMove(topicIndex, "down");
                     }
                   }}
+                  tabIndex={0}
                 >
                   <h3 className="text-lg text-neu-900 dark:text-neu-100">
                     {topic.title}
@@ -790,9 +790,9 @@ function IssuePageContent({ id }: { id: string }) {
                   </span>
                   <div className="ml-auto flex items-center gap-1 opacity-0 group-hover/topic:opacity-100">
                     <button
-                      onClick={() => handleTopicMove(topicIndex, "up")}
-                      disabled={isFirst || updateTopicMutation.isPending}
                       className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled={isFirst || updateTopicMutation.isPending}
+                      onClick={() => handleTopicMove(topicIndex, "up")}
                       title="Move up"
                     >
                       <svg
@@ -802,17 +802,17 @@ function IssuePageContent({ id }: { id: string }) {
                         viewBox="0 0 24 24"
                       >
                         <path
+                          d="M5 15l7-7 7 7"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M5 15l7-7 7 7"
                         />
                       </svg>
                     </button>
                     <button
-                      onClick={() => handleTopicMove(topicIndex, "down")}
-                      disabled={isLast || updateTopicMutation.isPending}
                       className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled={isLast || updateTopicMutation.isPending}
+                      onClick={() => handleTopicMove(topicIndex, "down")}
                       title="Move down"
                     >
                       <svg
@@ -822,17 +822,17 @@ function IssuePageContent({ id }: { id: string }) {
                         viewBox="0 0 24 24"
                       >
                         <path
+                          d="M19 9l-7 7-7-7"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
                         />
                       </svg>
                     </button>
                     <button
-                      onClick={() => handleTopicRemove(topic.id!, topic.title!)}
-                      disabled={removeTopicMutation.isPending}
                       className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors hover:duration-0 disabled:opacity-50"
+                      disabled={removeTopicMutation.isPending}
+                      onClick={() => handleTopicRemove(topic.id!, topic.title!)}
                       title="Remove topic from issue"
                     >
                       <svg
@@ -842,10 +842,10 @@ function IssuePageContent({ id }: { id: string }) {
                         viewBox="0 0 24 24"
                       >
                         <path
+                          d="M6 18L18 6M6 6l12 12"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
                         />
                       </svg>
                     </button>
@@ -859,13 +859,13 @@ function IssuePageContent({ id }: { id: string }) {
                       if (!link) return null;
                       return (
                         <SortableItem
-                          key={linkId}
                           id={linkId}
+                          key={linkId}
                           link={getMergedLink(link)}
-                          topics={topics}
                           onChange={handleLinkChange}
                           onDelete={() => handleLinkDelete(link.id!)}
                           refresh={invalidateQueries}
+                          topics={topics}
                         />
                       );
                     })
@@ -886,15 +886,15 @@ function IssuePageContent({ id }: { id: string }) {
                 {activeId && activeLink ? (
                   <div className="shadow-lg scale-[1.02]">
                     <LinkCard
+                      isDragOverlay
                       link={getMergedLink(activeLink)}
-                      topics={topics}
                       onChange={() => {}}
                       onDelete={() => {}}
                       refresh={() => {}}
-                      isDragOverlay
+                      topics={topics}
                     />
                   </div>
-                ) : activeId && activeSubmission ? (
+                ) : (activeId && activeSubmission ? (
                   <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
                     <div className="text-sm text-neu-900 dark:text-neu-100 truncate">
                       {activeSubmission.title || "Untitled"}
@@ -908,7 +908,7 @@ function IssuePageContent({ id }: { id: string }) {
                       {activeSubmission.url}
                     </div>
                   </div>
-                ) : null}
+                ) : null)}
               </DragOverlay>,
               document.body,
               // React 19's ReactPortal type differs from dnd-kit's expected ReactNode
@@ -926,16 +926,16 @@ function IssuePageContent({ id }: { id: string }) {
 
         <div className="flex gap-2">
           <input
-            type="text"
-            placeholder="New topic name..."
-            value={newTopic}
-            onChange={(e) => setNewTopic(e.target.value)}
             className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
+            onChange={(e) => setNewTopic(e.target.value)}
+            placeholder="New topic name..."
+            type="text"
+            value={newTopic}
           />
           <Button
-            variant="secondary"
-            onClick={submitTopic}
             disabled={createTopicMutation.isPending || !newTopic}
+            onClick={submitTopic}
+            variant="secondary"
           >
             Add Topic
           </Button>
@@ -953,13 +953,13 @@ function IssuePageContent({ id }: { id: string }) {
               </span>
               <div className="flex gap-2">
                 <Button
-                  variant="secondary"
-                  onClick={discardAll}
                   disabled={isSaving}
+                  onClick={discardAll}
+                  variant="secondary"
                 >
                   Discard
                 </Button>
-                <Button variant="primary" onClick={saveAll} disabled={isSaving}>
+                <Button disabled={isSaving} onClick={saveAll} variant="primary">
                   {isSaving ? "Saving..." : "Save"}
                 </Button>
               </div>
@@ -973,23 +973,23 @@ function IssuePageContent({ id }: { id: string }) {
 
 // Droppable container component
 function DroppableContainer({
+  children,
   id,
   items,
-  children,
 }: {
+  children: React.ReactNode;
   id: UniqueIdentifier;
   items: UniqueIdentifier[];
-  children: React.ReactNode;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id });
+  const { isOver, setNodeRef } = useDroppable({ id });
 
   return (
     <SortableContext items={items} strategy={verticalListSortingStrategy}>
       <div
-        ref={setNodeRef}
         className={`bg-white dark:bg-neu-900 border border-neu-200 dark:border-neu-700 min-h-[60px] transition-colors ${
           isOver ? "bg-neu-100 dark:bg-neu-800" : ""
         }`}
+        ref={setNodeRef}
       >
         {children}
       </div>

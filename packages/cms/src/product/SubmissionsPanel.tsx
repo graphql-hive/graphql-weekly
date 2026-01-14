@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import { createPortal } from "react-dom";
-import { useDrag } from "@use-gesture/react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { useDrag } from "@use-gesture/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
 import { useAllLinkSubmissionsQuery } from "../generated/graphql";
 
 export const SUBMISSION_PREFIX = "submission:";
@@ -21,17 +22,17 @@ export function markSubmissionConsumed(id: string) {
   if (!consumed.includes(id)) {
     consumed.push(id);
     localStorage.setItem(CONSUMED_KEY, JSON.stringify(consumed));
-    window.dispatchEvent(new Event("submissions-consumed"));
+    globalThis.dispatchEvent(new Event("submissions-consumed"));
   }
 }
 
 interface DraggableSubmissionProps {
-  id: string;
-  title: string | null | undefined;
-  description: string | null | undefined;
-  url: string | null | undefined;
-  name: string | null | undefined;
   createdAt: string | null | undefined;
+  description: string | null | undefined;
+  id: string;
+  name: string | null | undefined;
+  title: string | null | undefined;
+  url: string | null | undefined;
 }
 
 function formatDate(dateStr: string | null | undefined) {
@@ -40,22 +41,22 @@ function formatDate(dateStr: string | null | undefined) {
 }
 
 function DraggableSubmission({
-  id,
-  title,
-  description,
-  url,
-  name,
   createdAt,
+  description,
+  id,
+  name,
+  title,
+  url,
 }: DraggableSubmissionProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
+  const { attributes, isDragging, listeners, setNodeRef, transform } =
     useDraggable({
+      data: { description, id, name, title, type: "submission", url },
       id: `${SUBMISSION_PREFIX}${id}`,
-      data: { type: "submission", id, title, description, url, name },
     });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.5 : 1,
+    transform: CSS.Translate.toString(transform),
   };
 
   return (
@@ -87,10 +88,10 @@ function DraggableSubmission({
 
 export default function SubmissionsPanel() {
   const [position, setPosition] = useState(() => ({
-    x: typeof window !== "undefined" ? window.innerWidth - 340 : 20,
+    x: globalThis.window === undefined ? 20 : window.innerWidth - 340,
     y: 100,
   }));
-  const [size, setSize] = useState({ width: 320, height: 384 });
+  const [size, setSize] = useState({ height: 384, width: 320 });
   const [minimized, setMinimized] = useState(false);
   const [consumed, setConsumed] = useState<string[]>(getConsumedSubmissions);
   const dragRef = useRef<HTMLDivElement>(null);
@@ -98,11 +99,11 @@ export default function SubmissionsPanel() {
   // Listen for consumed changes
   useEffect(() => {
     const handleConsumed = () => setConsumed(getConsumedSubmissions());
-    window.addEventListener("submissions-consumed", handleConsumed);
-    window.addEventListener("storage", handleConsumed);
+    globalThis.addEventListener("submissions-consumed", handleConsumed);
+    globalThis.addEventListener("storage", handleConsumed);
     return () => {
-      window.removeEventListener("submissions-consumed", handleConsumed);
-      window.removeEventListener("storage", handleConsumed);
+      globalThis.removeEventListener("submissions-consumed", handleConsumed);
+      globalThis.removeEventListener("storage", handleConsumed);
     };
   }, []);
 
@@ -120,21 +121,21 @@ export default function SubmissionsPanel() {
       setPosition({ x, y });
     },
     {
-      from: () => [position.x, position.y],
       bounds: {
-        left: 0,
-        top: 0,
-        right: window.innerWidth - size.width,
         bottom: window.innerHeight - 60,
+        left: 0,
+        right: window.innerWidth - size.width,
+        top: 0,
       },
+      from: () => [position.x, position.y],
     },
   );
 
   const bindResize = useDrag(
     ({ offset: [x, y] }) => {
       setSize({
-        width: Math.max(200, x),
         height: Math.max(150, y),
+        width: Math.max(200, x),
       });
     },
     {
@@ -146,10 +147,10 @@ export default function SubmissionsPanel() {
     <div
       className="fixed z-50 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-sm"
       style={{
+        height: minimized ? "auto" : size.height,
         left: position.x,
         top: position.y,
         width: size.width,
-        height: minimized ? "auto" : size.height,
       }}
     >
       <div
@@ -164,35 +165,35 @@ export default function SubmissionsPanel() {
             : `(${submissions.length})`}
         </span>
         <button
-          onClick={() => setMinimized(!minimized)}
           className="p-1 text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-200 transition-colors"
+          onClick={() => setMinimized(!minimized)}
         >
           {minimized ? (
             <svg
               className="w-4 h-4"
               fill="none"
-              viewBox="0 0 24 24"
               stroke="currentColor"
+              viewBox="0 0 24 24"
             >
               <path
+                d="M5 15l7-7 7 7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M5 15l7-7 7 7"
               />
             </svg>
           ) : (
             <svg
               className="w-4 h-4"
               fill="none"
-              viewBox="0 0 24 24"
               stroke="currentColor"
+              viewBox="0 0 24 24"
             >
               <path
+                d="M19 9l-7 7-7-7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M19 9l-7 7-7-7"
               />
             </svg>
           )}
@@ -206,7 +207,7 @@ export default function SubmissionsPanel() {
               <div className="p-4 text-center text-neu-500 dark:text-neu-400 text-sm">
                 Loading...
               </div>
-            ) : submissions.length === 0 ? (
+            ) : (submissions.length === 0 ? (
               <div className="p-4 text-center text-neu-500 dark:text-neu-400 text-sm">
                 No submissions
               </div>
@@ -214,17 +215,17 @@ export default function SubmissionsPanel() {
               submissions.map((submission) =>
                 submission.id ? (
                   <DraggableSubmission
-                    key={submission.id}
-                    id={submission.id}
-                    title={submission.title}
-                    description={submission.description}
-                    url={submission.url}
-                    name={submission.name}
                     createdAt={submission.createdAt}
+                    description={submission.description}
+                    id={submission.id}
+                    key={submission.id}
+                    name={submission.name}
+                    title={submission.title}
+                    url={submission.url}
                   />
                 ) : null,
               )
-            )}
+            ))}
           </div>
           <div
             {...bindResize()}
@@ -232,8 +233,8 @@ export default function SubmissionsPanel() {
           >
             <svg
               className="w-4 h-4 text-neu-400"
-              viewBox="0 0 16 16"
               fill="currentColor"
+              viewBox="0 0 16 16"
             >
               <path d="M14 14H12V12H14V14ZM14 10H12V8H14V10ZM10 14H8V12H10V14Z" />
             </svg>

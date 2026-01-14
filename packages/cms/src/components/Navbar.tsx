@@ -10,8 +10,8 @@ export default function Navbar({ children }: NavbarProps) {
   return (
     <div className="relative z-10 bg-white dark:bg-neu-900 shadow-xs dark:shadow-none dark:border-b dark:border-neu-800 w-screen flex h-12 shrink-0 items-center justify-center">
       <a
-        href={BASE_PATH}
         className="absolute left-4 text-neu-600 dark:text-neu-200 text-xl no-underline"
+        href={BASE_PATH}
       >
         qlator
       </a>

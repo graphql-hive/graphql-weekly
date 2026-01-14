@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Issue Management", () => {
   test("shows issue list on index page", async ({ page }) => {
