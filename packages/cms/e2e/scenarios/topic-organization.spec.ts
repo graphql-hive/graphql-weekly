@@ -2,10 +2,10 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Topic Organization", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    await page.locator('a[href^="/admin/issue/"]').first().click();
+    await page.locator('a[href^="/issue/"]').first().click();
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
   });
 

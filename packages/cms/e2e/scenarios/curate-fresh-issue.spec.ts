@@ -10,10 +10,10 @@ test.describe("Curate Fresh Issue", () => {
     const testLinkDesc = `Description ${timestamp}`;
 
     // 1. Create new issue from index
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    const issueLinks = page.locator('a[href^="/admin/issue/"]');
+    const issueLinks = page.locator('a[href^="/issue/"]');
     const initialCount = await issueLinks.count();
 
     const issueInput = page.getByPlaceholder("Number");
@@ -107,10 +107,10 @@ test.describe("Curate Fresh Issue", () => {
   test("can add multiple links", async ({ page }) => {
     const timestamp = Date.now();
 
-    await page.goto("/admin");
+    await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    await page.locator('a[href^="/admin/issue/"]').first().click();
+    await page.locator('a[href^="/issue/"]').first().click();
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
 
     const unassignedSection = page.locator("section").filter({
