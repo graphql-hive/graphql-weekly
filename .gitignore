@@ -9,3 +9,4 @@ test-results
 .localflare/
 .wrangler
 .turbo
+data-dump/
