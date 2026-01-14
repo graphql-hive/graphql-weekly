@@ -36,6 +36,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { cn } from "../cn";
 import { Button } from "../components/Button";
 import { Loading } from "../components/Loading";
 import { Navbar } from "../components/Navbar";
@@ -85,16 +86,12 @@ function SortableItem({
   link,
   onChange,
   onDelete,
-  refresh,
-  topics,
 }: {
   id: UniqueIdentifier;
   isDragOverlay?: boolean;
   link: LinkData;
   onChange: (link: LinkData) => void;
   onDelete: () => void;
-  refresh: () => void;
-  topics: TopicData[];
 }) {
   const {
     attributes,
@@ -117,8 +114,6 @@ function SortableItem({
         link={link}
         onChange={onChange}
         onDelete={onDelete}
-        refresh={refresh}
-        topics={topics}
         {...(listeners && { dragListeners: listeners })}
         {...(isDragOverlay && { isDragOverlay })}
       />
@@ -482,10 +477,22 @@ function IssuePageContent({ id }: { id: string }) {
     deleteLinkMutation.isPending ||
     addLinksToTopicMutation.isPending;
 
+  const isMutating =
+    isSaving ||
+    updateTopicMutation.isPending ||
+    removeTopicMutation.isPending ||
+    createTopicMutation.isPending ||
+    createLinkMutation.isPending;
+
   const activeLink = activeId ? linkMap.get(String(activeId)) : null;
 
   return (
-    <div className="min-h-screen bg-neu-50 dark:bg-neu-950">
+    <div
+      className={cn(
+        "min-h-screen bg-neu-50 dark:bg-neu-950",
+        isMutating && "cursor-progress",
+      )}
+    >
       <Navbar>
         <PageHeader {...issue} topics={topics} />
       </Navbar>
@@ -755,8 +762,6 @@ function IssuePageContent({ id }: { id: string }) {
                       link={getMergedLink(link)}
                       onChange={handleLinkChange}
                       onDelete={() => handleLinkDelete(link.id!)}
-                      refresh={invalidateQueries}
-                      topics={topics}
                     />
                   );
                 })
@@ -874,8 +879,6 @@ function IssuePageContent({ id }: { id: string }) {
                           link={getMergedLink(link)}
                           onChange={handleLinkChange}
                           onDelete={() => handleLinkDelete(link.id!)}
-                          refresh={invalidateQueries}
-                          topics={topics}
                         />
                       );
                     })
@@ -901,8 +904,6 @@ function IssuePageContent({ id }: { id: string }) {
                       link={getMergedLink(activeLink)}
                       onChange={() => {}}
                       onDelete={() => {}}
-                      refresh={() => {}}
-                      topics={topics}
                     />
                     {/* eslint-enable @typescript-eslint/no-empty-function */}
                   </div>

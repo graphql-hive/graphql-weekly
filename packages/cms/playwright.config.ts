@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   forbidOnly: !!process.env.CI,
   fullyParallel: true,
+  globalTeardown: "./e2e/global-teardown.ts",
   projects: [
     {
       name: "chromium",
