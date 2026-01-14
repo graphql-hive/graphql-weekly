@@ -11,7 +11,6 @@
 
 ### API: Testing
 
-- [ ] Add `localflare` for D1 inspection dashboard
 - [ ] Test Mailchimp integration (mock API responses)
 
 ### CMS
@@ -21,7 +20,6 @@
 
 ### Deploy
 
-- [ ] Delete `packages/msg/` directory
 - [ ] Set up CF Worker secrets
 - [ ] Configure GitHub Actions CI/CD
 - [ ] Add `CF_API_TOKEN` secret to GitHub

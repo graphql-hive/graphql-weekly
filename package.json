@@ -22,7 +22,8 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "turbo typecheck",
     "format": "prettier --write .",
-    "test": "turbo test"
+    "test": "turbo test",
+    "localflare": "bunx localflare ./packages/api/wrangler.jsonc"
   },
   "overrides": {
     "react": "19.2.3",
