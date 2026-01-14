@@ -1,8 +1,4 @@
 import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { drizzle } from 'drizzle-orm/d1'
-
-import * as schema from './schema'
 
 export interface AuthEnv {
   BETTER_AUTH_SECRET: string
@@ -15,7 +11,9 @@ export interface AuthEnv {
 export const GITHUB_REPO_OWNER = 'graphql-hive'
 export const GITHUB_REPO_NAME = 'graphql-weekly'
 
-export async function checkGitHubCollaborator(accessToken: string): Promise<boolean> {
+export async function checkGitHubCollaborator(
+  accessToken: string,
+): Promise<boolean> {
   const userResponse = await fetch('https://api.github.com/user', {
     headers: {
       Accept: 'application/vnd.github.v3+json',
@@ -43,14 +41,10 @@ export async function checkGitHubCollaborator(accessToken: string): Promise<bool
 }
 
 export function createAuth(env: AuthEnv) {
-  const db = drizzle(env.graphqlweekly, { schema })
-
   return betterAuth({
     basePath: '/auth',
     baseURL: env.BETTER_AUTH_URL || 'http://localhost:2012',
-    database: drizzleAdapter(db, {
-      provider: 'sqlite',
-    }),
+    database: env.graphqlweekly,
     secret: env.BETTER_AUTH_SECRET,
     session: {
       cookieCache: {

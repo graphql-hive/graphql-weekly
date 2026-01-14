@@ -4,11 +4,11 @@ import type { Kysely } from 'kysely'
 import { createSchema, createYoga } from 'graphql-yoga'
 
 import {
+  type AuthEnv,
   checkGitHubCollaborator,
   createAuth,
   GITHUB_REPO_NAME,
   GITHUB_REPO_OWNER,
-  type AuthEnv,
 } from './auth'
 import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
@@ -19,11 +19,11 @@ export interface Env extends AuthEnv {
 }
 
 export interface User {
-  id: string
-  name: string
   email: string
+  id: string
   image?: string | null
   isCollaborator: boolean
+  name: string
 }
 
 export interface GraphQLContext {
@@ -184,11 +184,11 @@ export default {
       const testUserId = request.headers.get('X-Test-User-Id')
       if (env.LOCAL_DEV && testUserId) {
         user = {
-          id: testUserId,
-          name: 'Test User',
           email: 'test@example.com',
+          id: testUserId,
           image: null,
           isCollaborator: true,
+          name: 'Test User',
         }
       } else {
         const auth = createAuth(env)
@@ -207,11 +207,11 @@ export default {
               : false
 
             user = {
-              id: session.user.id,
-              name: session.user.name,
               email: session.user.email,
+              id: session.user.id,
               image: session.user.image,
               isCollaborator,
+              name: session.user.name,
             }
           }
         } catch {

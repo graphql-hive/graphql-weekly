@@ -41,7 +41,7 @@ describe('GraphQL API', () => {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
     })
-    const data = (await response.json()) as { errors?: { message: string; extensions?: { code: string } }[] }
+    const data = (await response.json()) as { errors?: { extensions?: { code: string }; message: string; }[] }
     expect(data.errors).toBeDefined()
     expect(data.errors?.[0]?.extensions?.code).toBe('UNAUTHENTICATED')
   })

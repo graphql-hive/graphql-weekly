@@ -9,8 +9,8 @@ export default defineWorkersConfig({
       workers: {
         miniflare: {
           bindings: {
-            TEST_MIGRATIONS: await readD1Migrations('migrations'),
             LOCAL_DEV: 'true',
+            TEST_MIGRATIONS: await readD1Migrations('migrations'),
           },
           d1Databases: ['graphqlweekly'],
         },

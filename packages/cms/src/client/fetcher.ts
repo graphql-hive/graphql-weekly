@@ -34,8 +34,8 @@ export function fetcher<TData, TVariables extends Record<string, unknown>>(
   return async () => {
     try {
       return await graphqlClient.request<TData>(query, variables);
-    } catch (err) {
-      throw normalizePossiblyUnauthedGraphQLError(err);
+    } catch (error) {
+      throw normalizePossiblyUnauthedGraphQLError(error);
     }
   };
 }
@@ -53,7 +53,7 @@ export async function serverFetch<TData>(
 ): Promise<TData> {
   try {
     return await serverClient.request<TData>(query, variables);
-  } catch (err) {
-    throw normalizePossiblyUnauthedGraphQLError(err);
+  } catch (error) {
+    throw normalizePossiblyUnauthedGraphQLError(error);
   }
 }

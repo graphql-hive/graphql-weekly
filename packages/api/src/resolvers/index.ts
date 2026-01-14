@@ -1,11 +1,11 @@
 import { GraphQLError } from 'graphql'
 import { DateTimeResolver } from 'graphql-scalars'
 
-import { GITHUB_REPO_NAME, GITHUB_REPO_OWNER } from '../auth'
 import type { NewsletterTopic } from '../email'
 import type { Resolvers } from '../generated/graphql'
 import type { GraphQLContext, User } from '../worker'
 
+import { GITHUB_REPO_NAME, GITHUB_REPO_OWNER } from '../auth'
 import { createEmailCampaign } from '../services/mailchimp'
 
 function generateId(): string {
@@ -13,7 +13,9 @@ function generateId(): string {
 }
 
 type AuthenticatedContext = GraphQLContext & { user: User }
-type CollaboratorContext = GraphQLContext & { user: User & { isCollaborator: true } }
+type CollaboratorContext = GraphQLContext & {
+  user: User & { isCollaborator: true }
+}
 
 function requireAuth(ctx: GraphQLContext): asserts ctx is AuthenticatedContext {
   if (!ctx.user) {
@@ -23,7 +25,9 @@ function requireAuth(ctx: GraphQLContext): asserts ctx is AuthenticatedContext {
   }
 }
 
-function requireCollaborator(ctx: GraphQLContext): asserts ctx is CollaboratorContext {
+function requireCollaborator(
+  ctx: GraphQLContext,
+): asserts ctx is CollaboratorContext {
   requireAuth(ctx)
   if (!ctx.user.isCollaborator) {
     throw new GraphQLError(
@@ -365,17 +369,6 @@ export const resolvers: Resolvers = {
   },
 
   Query: {
-    me: (_parent, _args, ctx) => {
-      if (!ctx.user) return null
-      return {
-        id: ctx.user.id,
-        name: ctx.user.name,
-        email: ctx.user.email,
-        image: ctx.user.image,
-        isCollaborator: ctx.user.isCollaborator,
-        repositoryUrl: `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
-      }
-    },
     allAuthors: async (_parent, _args, ctx) => {
       const authors = await ctx.db.selectFrom('Author').selectAll().execute()
       return authors
@@ -414,6 +407,17 @@ export const resolvers: Resolvers = {
         .where('id', '=', id)
         .executeTakeFirst()
       return issue ?? null
+    },
+    me: (_parent, _args, ctx) => {
+      if (!ctx.user) return null
+      return {
+        email: ctx.user.email,
+        id: ctx.user.id,
+        image: ctx.user.image,
+        isCollaborator: ctx.user.isCollaborator,
+        name: ctx.user.name,
+        repositoryUrl: `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
+      }
     },
   },
 

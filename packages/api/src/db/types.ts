@@ -73,62 +73,62 @@ export interface LinkSubmissionRow {
 
 // Better Auth tables
 export interface UserRow {
-  id: string
-  name: string
+  createdAt: string
   email: string
   emailVerified: number // SQLite boolean
+  id: string
   image: string | null
-  createdAt: string
+  name: string
   updatedAt: string
 }
 
 export interface SessionRow {
-  id: string
-  userId: string
-  token: string
-  expiresAt: string
-  ipAddress: string | null
-  userAgent: string | null
   createdAt: string
+  expiresAt: string
+  id: string
+  ipAddress: string | null
+  token: string
   updatedAt: string
+  userAgent: string | null
+  userId: string
 }
 
 export interface AccountRow {
-  id: string
-  userId: string
-  accountId: string
-  providerId: string
   accessToken: string | null
-  refreshToken: string | null
   accessTokenExpiresAt: string | null
-  refreshTokenExpiresAt: string | null
-  scope: string | null
+  accountId: string
+  createdAt: string
+  id: string
   idToken: string | null
   password: string | null
-  createdAt: string
+  providerId: string
+  refreshToken: string | null
+  refreshTokenExpiresAt: string | null
+  scope: string | null
   updatedAt: string
+  userId: string
 }
 
 export interface VerificationRow {
+  createdAt: string
+  expiresAt: string
   id: string
   identifier: string
-  value: string
-  expiresAt: string
-  createdAt: string
   updatedAt: string
+  value: string
 }
 
 // Kysely database interface
 export interface Database {
+  account: AccountRow
   Author: AuthorRow
   Issue: IssueRow
   Link: LinkRow
   LinkSubmission: LinkSubmissionRow
+  session: SessionRow
   Subscriber: SubscriberRow
   Topic: TopicRow
   // Better Auth tables (lowercase to match schema)
   user: UserRow
-  session: SessionRow
-  account: AccountRow
   verification: VerificationRow
 }

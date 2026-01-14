@@ -5,8 +5,8 @@ const baseURL = import.meta.env.DEV
   : (import.meta.env.PUBLIC_API_URL || 'https://api.graphqlweekly.com')
 
 export const authClient = createAuthClient({
-  baseURL,
   basePath: '/auth',
+  baseURL,
 })
 
 export const { signIn, signOut, useSession } = authClient
