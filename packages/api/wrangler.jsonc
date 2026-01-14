@@ -5,6 +5,7 @@
   "dev": { "port": 2012 },
   "compatibility_date": "2026-01-07",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "preview_urls": true,
   "observability": {
     "enabled": true,
   },

@@ -3,6 +3,7 @@
   "name": "graphqlweekly-cms",
   "compatibility_date": "2026-01-07",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "preview_urls": true,
   // Astro Cloudflare adapter outputs to dist/_worker.js
   "main": "dist/_worker.js/index.js",
   "assets": {
