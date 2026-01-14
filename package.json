@@ -21,7 +21,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "turbo typecheck",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "turbo test --ui stream"
   },
   "overrides": {
     "react": "^19.0.0",
