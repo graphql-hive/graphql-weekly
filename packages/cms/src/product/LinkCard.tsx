@@ -41,6 +41,7 @@ export default function LinkCard({
     <div
       className={`group flex bg-white dark:bg-neu-900 border-b border-neu-200 dark:border-neu-700 hover:bg-neu-50 dark:hover:bg-neu-800 transition-colors hover:duration-0 ${isDragOverlay ? "shadow-lg" : ""}`}
     >
+      {/* a11y: keyboard support provided by dnd-kit via dragListeners */}
       <div
         className="w-8 flex items-center justify-center opacity-30 group-hover:opacity-70 cursor-grab active:cursor-grabbing shrink-0 border-r border-neu-100 dark:border-neu-800 touch-none"
         {...dragListeners}
@@ -61,6 +62,7 @@ export default function LinkCard({
 
       <div className="flex-1 p-3 space-y-2 min-w-0">
         <input
+          aria-label="Link title"
           className="w-full text-sm  text-neu-900 dark:text-neu-100 bg-transparent border border-transparent  px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
           onChange={(e) => onChange({ ...link, title: e.target.value })}
           placeholder="Title"
@@ -68,6 +70,7 @@ export default function LinkCard({
           value={link.title ?? ""}
         />
         <textarea
+          aria-label="Link description"
           className="w-full text-sm text-neu-600 dark:text-neu-300 bg-transparent border border-transparent  px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] resize-none transition-colors hover:duration-0"
           onChange={(e) => onChange({ ...link, text: e.target.value })}
           placeholder="Description"
@@ -76,6 +79,7 @@ export default function LinkCard({
         />
         <div className="flex items-center gap-2">
           <input
+            aria-label="Link URL"
             className="flex-1 text-xs text-neu-500 dark:text-neu-400 bg-transparent border border-transparent  px-1 py-0.5 font-mono hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
             onChange={(e) => onChange({ ...link, url: e.target.value })}
             placeholder="URL"
@@ -84,6 +88,7 @@ export default function LinkCard({
           />
           {link.url && (
             <a
+              aria-label="Open link in new tab"
               className="text-neu-400 dark:text-neu-500 hover:text-primary transition-colors hover:duration-0"
               href={link.url}
               rel="noopener noreferrer"
@@ -111,6 +116,7 @@ export default function LinkCard({
         <OpenPanel>
           {({ showPanel }) => (
             <ClickTarget
+              aria-label="Assign to topic"
               onClick={() =>
                 showPanel(TopicDialog as any, {
                   link,
@@ -142,7 +148,8 @@ export default function LinkCard({
           )}
         </OpenPanel>
         <button
-          className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950  transition-colors hover:duration-0"
+          aria-label="Delete link"
+          className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors hover:duration-0 outline-none focus-visible:ring-2 focus-visible:ring-primary"
           onClick={onDelete}
           title="Delete"
         >

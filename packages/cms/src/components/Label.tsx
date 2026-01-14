@@ -7,7 +7,7 @@ export default function Label({
   return (
     <label
       {...props}
-      className={`block mb-2 text-left text-xs leading-[15px] text-[#0c344b] ${className ?? ""}`}
+      className={`block mb-2 text-left text-xs leading-[15px] text-neu-700 dark:text-neu-300 ${className ?? ""}`}
     />
   );
 }

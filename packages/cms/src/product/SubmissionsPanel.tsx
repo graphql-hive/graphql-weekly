@@ -165,7 +165,8 @@ export default function SubmissionsPanel() {
             : `(${submissions.length})`}
         </span>
         <button
-          className="p-1 text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-200 transition-colors"
+          aria-label={minimized ? "Expand panel" : "Minimize panel"}
+          className="p-1 text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-200 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary"
           onClick={() => setMinimized(!minimized)}
         >
           {minimized ? (

@@ -14,6 +14,7 @@ interface InputWithButtonProps {
   buttonLabel: ReactNode;
   disabled?: boolean;
   errorText?: ReactNode;
+  id?: string;
   inputRef?: RefObject<HTMLInputElement | null> | undefined;
   label?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
@@ -30,6 +31,7 @@ export default function InputWithButton({
   buttonLabel,
   disabled,
   errorText,
+  id,
   inputRef,
   label,
   onChange,
@@ -59,6 +61,7 @@ export default function InputWithButton({
           <input
             className="flex-1 min-w-0 bg-transparent border-none outline-none text-right dark:text-neu-100 placeholder:text-neu-400 dark:placeholder:text-neu-600"
             disabled={disabled}
+            id={id}
             onChange={onChange}
             placeholder={placeholder}
             ref={inputRef}

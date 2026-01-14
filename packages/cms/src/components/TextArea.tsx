@@ -8,11 +8,13 @@ export default function TextArea({
     <textarea
       {...props}
       className={`
-        px-4 py-[13px] rounded text-sm border border-[#d9e3ed] block
+        px-4 py-[13px] text-sm border border-neu-300 block
         transition-all duration-100 outline-none
-        placeholder:text-[rgba(61,85,107,0.4)]
-        focus:border-[#1f8ceb] focus:shadow-[0_0_2px_#1f8ceb]
-        disabled:italic
+        placeholder:text-neu-400
+        focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)]
+        disabled:italic disabled:bg-neu-200
+        dark:bg-neu-800 dark:border-neu-700 dark:text-neu-100
+        dark:placeholder:text-neu-500
         ${className ?? ""}
       `}
     />

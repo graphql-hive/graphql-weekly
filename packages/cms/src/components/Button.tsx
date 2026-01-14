@@ -14,7 +14,7 @@ const variantClasses = {
 export type ButtonVariant = keyof typeof variantClasses;
 
 const baseClasses =
-  "py-3 px-4 border box-border outline-none uppercase leading-none text-sm disabled:opacity-30 disabled:cursor-not-allowed";
+  "py-3 px-4 border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none text-sm disabled:opacity-30 disabled:cursor-not-allowed";
 
 export declare namespace ButtonProps {
   interface BaseProps {

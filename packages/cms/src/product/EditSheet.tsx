@@ -1,4 +1,4 @@
-import { ChangeEventHandler, MouseEventHandler } from "react";
+import { ChangeEventHandler, MouseEventHandler, useId } from "react";
 
 import { Button } from "../components/Button";
 import Input from "../components/Input";
@@ -33,24 +33,31 @@ export default function EditSheet({
   linkError,
   title,
 }: EditSheetProps) {
+  const titleId = useId();
+  const descId = useId();
+  const linkId = useId();
+
   return (
     <>
-      <Label>Title</Label>
+      <Label htmlFor={titleId}>Title</Label>
       <Input
+        id={titleId}
         onChange={handlers.handleTitleChange}
         placeholder="Title"
         style={{ marginBottom: 16, width: "90%" }}
         value={title}
       />
-      <Label>Description</Label>
+      <Label htmlFor={descId}>Description</Label>
       <TextArea
+        id={descId}
         onChange={handlers.handleDescChange}
         placeholder={`Description for ${title}`}
         style={{ height: 90, marginBottom: 16, width: "90%" }}
         value={description}
       />
-      <Label>Link</Label>
+      <Label htmlFor={linkId}>Link</Label>
       <InputWithButton
+        id={linkId}
         buttonLabel="Go"
         errorText={linkError}
         onChange={handlers.handleLinkChange}
