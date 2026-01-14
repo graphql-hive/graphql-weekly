@@ -14,6 +14,8 @@ import {
 } from '@react-email/components'
 import { Fragment } from 'react'
 
+import { issue399 } from './newsletter.fixture'
+
 export const colorMap: Record<string, string> = {
   articles: '#f531b1',
   'community & events': '#009BE3',
@@ -415,6 +417,7 @@ const styles = {
   },
   header: {
     backgroundColor: '#D60690',
+    marginBottom: '16px',
     padding: '40px 20px 25px',
   },
   hr: {
@@ -480,3 +483,5 @@ const styles = {
 
 // eslint-disable-next-line import/no-default-export -- required by react-email preview
 export default Newsletter
+
+Newsletter.PreviewProps = issue399 satisfies NewsletterProps

@@ -101,6 +101,17 @@ bun run codegen  # GraphQL types
 4. Publish to preview, gather feedback
 5. Send newsletter via Mailchimp
 
+## Email Templates
+
+Email templates are built with [react-email](https://react.email/).
+
+```bash
+bun run email  # Start dev server with live preview
+```
+
+Templates live in `src/email/templates/`.
+Each template default exports a React component with optional `PreviewProps` for the dev server.
+
 ## Debt
 
 - Can't update Vitest to v4 until [cloudflare/workers-sdk#11064](https://github.com/cloudflare/workers-sdk/issues/11064) is closed.
