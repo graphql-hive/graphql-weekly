@@ -163,11 +163,41 @@ export default {
     _ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url)
+    const origin = request.headers.get('Origin')
+    const allowedOrigins = [
+      'http://localhost:2016',
+      'https://cms.graphqlweekly.com',
+    ]
+    const corsOrigin = origin && allowedOrigins.includes(origin) ? origin : null
+
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: corsOrigin
+          ? {
+              'Access-Control-Allow-Credentials': 'true',
+              'Access-Control-Allow-Headers': 'Content-Type, Cookie',
+              'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+              'Access-Control-Allow-Origin': corsOrigin,
+            }
+          : {},
+      })
+    }
 
     // Better Auth handler
     if (url.pathname.startsWith('/auth')) {
       const auth = createAuth(env)
-      return auth.handler(request)
+      const response = await auth.handler(request)
+      if (corsOrigin) {
+        const headers = new Headers(response.headers)
+        headers.set('Access-Control-Allow-Origin', corsOrigin)
+        headers.set('Access-Control-Allow-Credentials', 'true')
+        return new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers,
+        })
+      }
+      return response
     }
 
     if (url.pathname === '/graphql' || url.pathname === '/graphql/') {
@@ -211,9 +241,10 @@ export default {
       return new Response('OK', { status: 200 })
     }
 
-    // Redirect root to GraphiQL in dev
+    // Redirect root to CMS (this is hit after OAuth callback)
     if (url.pathname === '/' || url.pathname === '') {
-      return Response.redirect(new URL('/graphql', url.origin).href, 302)
+      const cmsUrl = env.LOCAL_DEV ? 'http://localhost:2016' : 'https://cms.graphqlweekly.com'
+      return Response.redirect(cmsUrl, 302)
     }
 
     return new Response('Not Found', { status: 404 })

@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { D1Dialect } from 'kysely-d1'
 
 export interface AuthEnv {
   BETTER_AUTH_SECRET: string
@@ -44,7 +45,10 @@ export function createAuth(env: AuthEnv) {
   return betterAuth({
     basePath: '/auth',
     baseURL: env.BETTER_AUTH_URL || 'http://localhost:2012',
-    database: env.graphqlweekly,
+    database: {
+      dialect: new D1Dialect({ database: env.graphqlweekly }),
+      type: 'sqlite',
+    },
     secret: env.BETTER_AUTH_SECRET,
     session: {
       cookieCache: {

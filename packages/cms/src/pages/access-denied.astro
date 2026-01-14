@@ -2,10 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import "../index.css";
 
-const apiUrl = import.meta.env.DEV
-  ? "http://localhost:2012"
-  : (import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com");
-
 const repositoryUrl = "https://github.com/graphql-hive/graphql-weekly";
 ---
 
@@ -29,12 +25,20 @@ const repositoryUrl = "https://github.com/graphql-hive/graphql-weekly";
       <p class="text-sm text-neu-500 dark:text-neu-500 mb-6">
         Ask a repository admin to add you as a collaborator.
       </p>
-      <a
-        href={`${apiUrl}/auth/sign-out?callbackURL=${encodeURIComponent("/login")}`}
-        class="inline-block px-3 py-1.5 text-sm text-neu-500 dark:text-neu-400 border border-neu-200 dark:border-neu-700 hover:bg-neu-100 dark:hover:bg-neu-800 no-underline"
+      <button
+        id="sign-out-btn"
+        class="px-3 py-1.5 text-sm text-neu-500 dark:text-neu-400 border border-neu-200 dark:border-neu-700 hover:bg-neu-100 dark:hover:bg-neu-800 cursor-pointer"
       >
         Sign out
-      </a>
+      </button>
     </div>
   </div>
 </Layout>
+
+<script>
+  import { signOut } from "../client/auth";
+
+  document.getElementById("sign-out-btn")?.addEventListener("click", () => {
+    signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/login"; } } });
+  });
+</script>

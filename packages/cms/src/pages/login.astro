@@ -1,10 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import "../index.css";
-
-const apiUrl = import.meta.env.DEV
-  ? "http://localhost:2012"
-  : (import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com");
 ---
 
 <Layout title="Sign In - GraphQL Weekly CMS">
@@ -16,12 +12,36 @@ const apiUrl = import.meta.env.DEV
       <p class="text-neu-600 dark:text-neu-400 mb-6">
         Sign in with GitHub to manage newsletter issues.
       </p>
-      <a
-        href={`${apiUrl}/auth/sign-in/social?provider=github&callbackURL=${encodeURIComponent("/")}`}
-        class="inline-block px-4 py-2 bg-neu-900 dark:bg-neu-100 text-neu-100 dark:text-neu-900 hover:bg-neu-800 dark:hover:bg-neu-200 no-underline"
+      <button
+        id="sign-in-btn"
+        class="px-4 py-2 bg-neu-900 dark:bg-neu-100 text-neu-100 dark:text-neu-900 hover:bg-neu-800 dark:hover:bg-neu-200 cursor-pointer"
       >
         Sign in with GitHub
-      </a>
+      </button>
     </div>
   </div>
 </Layout>
+
+<script>
+  const btn = document.getElementById("sign-in-btn");
+  
+  btn?.addEventListener("click", async () => {
+    const isLocal = window.location.hostname === "localhost";
+    const apiUrl = isLocal ? "http://localhost:2012" : "https://api.graphqlweekly.com";
+    
+    const response = await fetch(`${apiUrl}/auth/sign-in/social`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: "github",
+        callbackURL: window.location.origin,
+      }),
+      credentials: "include",
+    });
+    
+    const data = await response.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  });
+</script>

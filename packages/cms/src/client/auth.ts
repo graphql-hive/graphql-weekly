@@ -7,6 +7,9 @@ const baseURL = import.meta.env.DEV
 export const authClient = createAuthClient({
   basePath: '/auth',
   baseURL,
+  fetchOptions: {
+    credentials: 'include',
+  },
 })
 
 export const { signIn, signOut, useSession } = authClient
