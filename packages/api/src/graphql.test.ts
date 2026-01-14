@@ -1,29 +1,7 @@
-import { env, SELF } from 'cloudflare:test'
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { beforeAll, describe, expect, it } from 'vitest'
-
-function parseMigrationStatements(sql: string): string[] {
-  return sql
-    .split(';')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0 && !s.startsWith('--'))
-}
+import { SELF } from 'cloudflare:test'
+import { describe, expect, it } from 'vitest'
 
 describe('GraphQL API', () => {
-  beforeAll(async () => {
-    const migrationPath = resolve(
-      import.meta.dirname,
-      '../migrations/0001_init.sql',
-    )
-    const migrationSql = readFileSync(migrationPath, 'utf8')
-    const statements = parseMigrationStatements(migrationSql)
-
-    for (const stmt of statements) {
-      await env.graphqlweekly.exec(stmt)
-    }
-  })
-
   it('should respond to health check', async () => {
     const response = await SELF.fetch('http://localhost/health')
     expect(response.status).toBe(200)
