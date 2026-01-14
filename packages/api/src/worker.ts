@@ -3,7 +3,13 @@ import type { Kysely } from 'kysely'
 /// <reference types="@cloudflare/workers-types" />
 import { createSchema, createYoga } from 'graphql-yoga'
 
-import { createAuth, type AuthEnv } from './auth'
+import {
+  checkGitHubCollaborator,
+  createAuth,
+  GITHUB_REPO_NAME,
+  GITHUB_REPO_OWNER,
+  type AuthEnv,
+} from './auth'
 import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
 
@@ -17,6 +23,7 @@ export interface User {
   name: string
   email: string
   image?: string | null
+  isCollaborator: boolean
 }
 
 export interface GraphQLContext {
@@ -91,7 +98,17 @@ const typeDefs = /* GraphQL */ `
     name: String
   }
 
+  type Me {
+    id: String!
+    name: String!
+    email: String!
+    image: String
+    isCollaborator: Boolean!
+    repositoryUrl: String!
+  }
+
   type Query {
+    me: Me
     allIssues: [Issue!]
     allTopics: [Topic!]
     allAuthors: [Author!]
@@ -161,22 +178,45 @@ export default {
 
     if (url.pathname === '/graphql' || url.pathname === '/graphql/') {
       const db = createDb(env.graphqlweekly)
-      const auth = createAuth(env)
 
-      // Get current user from session
       let user: GraphQLContext['user'] = null
-      try {
-        const session = await auth.api.getSession({ headers: request.headers })
-        if (session?.user) {
-          user = {
-            id: session.user.id,
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image,
-          }
+
+      const testUserId = request.headers.get('X-Test-User-Id')
+      if (env.LOCAL_DEV && testUserId) {
+        user = {
+          id: testUserId,
+          name: 'Test User',
+          email: 'test@example.com',
+          image: null,
+          isCollaborator: true,
         }
-      } catch {
-        // No session or invalid session
+      } else {
+        const auth = createAuth(env)
+        try {
+          const session = await auth.api.getSession({ headers: request.headers })
+          if (session?.user) {
+            const account = await db
+              .selectFrom('account')
+              .select('accessToken')
+              .where('userId', '=', session.user.id)
+              .where('providerId', '=', 'github')
+              .executeTakeFirst()
+
+            const isCollaborator = account?.accessToken
+              ? await checkGitHubCollaborator(account.accessToken)
+              : false
+
+            user = {
+              id: session.user.id,
+              name: session.user.name,
+              email: session.user.email,
+              image: session.user.image,
+              isCollaborator,
+            }
+          }
+        } catch {
+          // No session or invalid session
+        }
       }
 
       return yoga.fetch(request, { db, env, user })

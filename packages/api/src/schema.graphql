@@ -63,7 +63,17 @@ type Subscriber {
   name: String
 }
 
+type Me {
+  id: String!
+  name: String!
+  email: String!
+  image: String
+  isCollaborator: Boolean!
+  repositoryUrl: String!
+}
+
 type Query {
+  me: Me
   allIssues: [Issue!]
   allTopics: [Topic!]
   allAuthors: [Author!]
