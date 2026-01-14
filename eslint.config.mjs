@@ -23,6 +23,8 @@ export default [
       "**/playwright-report/",
       "test-results/",
       "**/test-results/",
+      "generated/",
+      "**/generated/",
     ],
   },
   {

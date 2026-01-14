@@ -24,6 +24,7 @@
 *.seed
 *.tgz
 .env
+.dev.vars
 .eslintcache
 .grunt
 .lock-wscript

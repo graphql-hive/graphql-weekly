@@ -9,6 +9,7 @@ import { resolvers } from './resolvers'
 export interface Env {
   graphqlweekly: D1Database
   JWT_SECRET?: string
+  LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
 }
 

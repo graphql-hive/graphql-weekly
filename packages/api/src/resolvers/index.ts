@@ -189,6 +189,28 @@ export const resolvers: Resolvers = {
           )
         } catch (error) {
           console.error('Failed to create Mailchimp campaign:', error)
+          throw new Error('Failed to create Mailchimp campaign')
+        }
+      } else if (issue.published) {
+        if (ctx.env.LOCAL_DEV) {
+          const [{ render }, { Newsletter }] = await Promise.all([
+            import('@react-email/components'),
+            import('../email'),
+          ])
+          const emailHtml = await render(
+            Newsletter({
+              isFoundationEdition: isFoundation ?? false,
+              issueTitle: issue.title,
+              topics: topicsWithLinks,
+            }),
+          )
+          /* eslint-disable no-console */
+          console.log('=== DEV EMAIL PREVIEW ===')
+          console.log(emailHtml)
+          console.log('=== END EMAIL PREVIEW ===')
+          /* eslint-enable no-console */
+        } else {
+          throw new Error('MAILCHIMP_API_KEY is required in production')
         }
       }
 
