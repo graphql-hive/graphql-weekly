@@ -366,6 +366,7 @@ export const resolvers: Resolvers = {
         .selectFrom('Topic')
         .selectAll()
         .where('issueId', '=', parent.id)
+        .orderBy('position', 'asc')
         .execute()
       return topics
     },
