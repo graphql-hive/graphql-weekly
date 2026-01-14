@@ -378,10 +378,12 @@ export const resolvers: Resolvers = {
       return issues
     },
     allLinks: async (_parent, _args, ctx) => {
+      requireCollaborator(ctx)
       const links = await ctx.db.selectFrom('Link').selectAll().execute()
       return links
     },
     allLinkSubmissions: async (_parent, _args, ctx) => {
+      requireCollaborator(ctx)
       const submissions = await ctx.db
         .selectFrom('LinkSubmission')
         .selectAll()
@@ -390,6 +392,7 @@ export const resolvers: Resolvers = {
       return submissions
     },
     allSubscribers: async (_parent, _args, ctx) => {
+      requireCollaborator(ctx)
       const subscribers = await ctx.db
         .selectFrom('Subscriber')
         .selectAll()
