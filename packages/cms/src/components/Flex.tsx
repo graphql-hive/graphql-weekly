@@ -6,7 +6,7 @@ interface FlexProps extends ComponentProps<"section"> {
   margin?: string;
 }
 
-export default function Flex({
+export function Flex({
   align = "flex-start",
   className,
   direction = "row",

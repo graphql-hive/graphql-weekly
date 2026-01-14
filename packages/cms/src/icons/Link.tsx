@@ -1,4 +1,4 @@
-export default function LinkIcon() {
+export function LinkIcon() {
   return (
     <svg fill="none" height="10" width="10" xmlns="http://www.w3.org/2000/svg">
       <path

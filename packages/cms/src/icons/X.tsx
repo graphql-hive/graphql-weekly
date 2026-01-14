@@ -3,7 +3,7 @@ interface XProps {
   size?: number;
 }
 
-export default function X({ color = "#FFF", size = 8 }: XProps) {
+export function X({ color = "#FFF", size = 8 }: XProps) {
   return (
     <svg
       fill="none"

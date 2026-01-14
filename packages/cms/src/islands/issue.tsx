@@ -27,12 +27,18 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "../components/Button";
-import Loading from "../components/Loading";
-import Navbar from "../components/Navbar";
+import { Loading } from "../components/Loading";
+import { Navbar } from "../components/Navbar";
 import {
   type IssueQuery,
   useAddLinksToTopicMutation,
@@ -45,11 +51,12 @@ import {
   useUpdateTopicMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
-import LinkCard from "../product/LinkCard";
-import PageHeader from "../product/PageHeader";
-import SubmissionsPanel, {
+import { LinkCard } from "../product/LinkCard";
+import { PageHeader } from "../product/PageHeader";
+import {
   markSubmissionConsumed,
   SUBMISSION_PREFIX,
+  SubmissionsPanel,
 } from "../product/SubmissionsPanel";
 
 const queryClient = new QueryClient({
@@ -148,7 +155,7 @@ function Trash({ isOver }: { isOver: boolean }) {
   );
 }
 
-export default function IssuePage({ id }: { id: string }) {
+export function IssuePage({ id }: { id: string }) {
   return (
     <QueryClientProvider client={queryClient}>
       <IssuePageContent id={id} />
@@ -198,10 +205,9 @@ function IssuePageContent({ id }: { id: string }) {
   }, [qc, id]);
 
   const issue = issueData?.issue;
-  const topics = issue?.topics ?? [];
-  const allLinks = linksData?.allLinks ?? [];
+  const topics = useMemo(() => issue?.topics ?? [], [issue]);
+  const allLinks = useMemo(() => linksData?.allLinks ?? [], [linksData]);
 
-  // Build link lookup map
   const linkMap = useMemo(() => {
     const map = new Map<string, LinkData>();
     for (const link of allLinks) {
@@ -900,7 +906,7 @@ function IssuePageContent({ id }: { id: string }) {
                     />
                     {/* eslint-enable @typescript-eslint/no-empty-function */}
                   </div>
-                ) : (activeId && activeSubmission ? (
+                ) : activeId && activeSubmission ? (
                   <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
                     <div className="text-sm text-neu-900 dark:text-neu-100 truncate">
                       {activeSubmission.title || "Untitled"}
@@ -914,7 +920,7 @@ function IssuePageContent({ id }: { id: string }) {
                       {activeSubmission.url}
                     </div>
                   </div>
-                ) : null)}
+                ) : null}
               </DragOverlay>,
               document.body,
               // React 19's ReactPortal type differs from dnd-kit's expected ReactNode

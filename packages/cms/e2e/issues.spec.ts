@@ -49,17 +49,28 @@ test.describe("Issue Management", () => {
     await page.goto("/admin");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    // Issue creator input has placeholder "Number"
+    // Count current issues
+    const issueLinks = page.locator('a[href^="/admin/issue/"]');
+    const initialCount = await issueLinks.count();
+
+    // The input is pre-filled with the next suggested number (highestNum + 1)
     const input = page.getByPlaceholder("Number");
-    const issueNum = String(Date.now()).slice(-4);
-    await input.clear();
-    await input.fill(issueNum);
+    const issueNum = await input.inputValue();
+    expect(issueNum).toBeTruthy(); // Ensure we have a number
 
-    // Click Add Issue button
-    await page.getByRole("button", { name: "Add Issue" }).click();
+    // Click Add Issue - retry until it takes effect (handles hydration)
+    const addButton = page.getByRole("button", { name: "Add Issue" });
+    await expect(addButton).toBeEnabled();
 
-    // Wait for new issue to appear in list
-    await expect(page.getByText(`#${issueNum}`)).toBeVisible({ timeout: 5000 });
+    await expect(async () => {
+      await addButton.click();
+      // After successful creation, either input clears OR issue count increases
+      const newCount = await issueLinks.count();
+      expect(newCount).toBeGreaterThan(initialCount);
+    }).toPass({ timeout: 5000 });
+
+    // New issue should be visible
+    await expect(page.getByText(`#${issueNum}`)).toBeVisible();
   });
 
   test("can navigate back from issue detail to index", async ({ page }) => {

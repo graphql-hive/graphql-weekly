@@ -18,7 +18,7 @@ test.describe("Link Management", () => {
     await expect(urlInput).toBeVisible();
 
     // Use exact: true to avoid matching "Add Topic" or draggable buttons
-    const addButton = page.getByRole("button", { name: "Add", exact: true });
+    const addButton = page.getByRole("button", { exact: true, name: "Add" });
     await expect(addButton).toBeVisible();
     await expect(addButton).toBeDisabled(); // disabled when no URL
   });
@@ -27,7 +27,7 @@ test.describe("Link Management", () => {
     const urlInput = page.getByPlaceholder("Paste URL to add link...");
     await urlInput.fill("https://example.com/test-link");
 
-    const addButton = page.getByRole("button", { name: "Add", exact: true });
+    const addButton = page.getByRole("button", { exact: true, name: "Add" });
     await expect(addButton).toBeEnabled();
     await addButton.click();
 

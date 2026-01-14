@@ -1,10 +1,10 @@
 import { ChangeEventHandler, MouseEventHandler, useId } from "react";
 
 import { Button } from "../components/Button";
-import Input from "../components/Input";
-import InputWithButton from "../components/InputWithButton";
-import Label from "../components/Label";
-import TextArea from "../components/TextArea";
+import { Input } from "../components/Input";
+import { InputWithButton } from "../components/InputWithButton";
+import { Label } from "../components/Label";
+import { TextArea } from "../components/TextArea";
 
 interface EditSheetHandlers {
   handleDescChange: ChangeEventHandler<HTMLTextAreaElement>;
@@ -24,7 +24,7 @@ interface EditSheetProps {
   title: string;
 }
 
-export default function EditSheet({
+export function EditSheet({
   description,
   handlers,
   hasChanged,

@@ -86,7 +86,7 @@ function DraggableSubmission({
   );
 }
 
-export default function SubmissionsPanel() {
+export function SubmissionsPanel() {
   const [position, setPosition] = useState(() => ({
     x: globalThis.window === undefined ? 20 : window.innerWidth - 340,
     y: 100,

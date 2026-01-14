@@ -1,10 +1,10 @@
 import { Component, ComponentType, MouseEvent } from "react";
 
-import X from "../../icons/X";
+import { X } from "../../icons/X";
 import { colors } from "../../style/colors";
-import CardBody from "../CardBody";
-import ClickTarget from "../ClickTarget";
-import PanelConsumer from "./PanelConsumer";
+import { CardBody } from "../CardBody";
+import { ClickTarget } from "../ClickTarget";
+import { PanelConsumer } from "./PanelConsumer";
 
 interface PanelBodyProps {
   Component: ComponentType<{ onPanelClose: () => void }>;
@@ -54,7 +54,7 @@ class PanelBody extends Component<PanelBodyProps> {
   }
 }
 
-export default function PanelRoot() {
+export function PanelRoot() {
   return (
     <PanelConsumer>
       {({ component: PanelComponent, hidePanel, props }) => {

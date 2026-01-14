@@ -23,4 +23,5 @@ const config: CodegenConfig = {
   schema: "../api/src/schema.graphql",
 };
 
+// eslint-disable-next-line import/no-default-export -- required by graphql-codegen
 export default config;

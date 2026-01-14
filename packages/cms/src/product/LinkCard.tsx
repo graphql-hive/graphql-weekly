@@ -1,8 +1,8 @@
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
-import ClickTarget from "../components/ClickTarget";
+import { ClickTarget } from "../components/ClickTarget";
 import { OpenPanel } from "../components/Panels";
-import TopicDialog from "./TopicDialog";
+import { TopicDialog } from "./TopicDialog";
 
 interface Link {
   id?: string | null;
@@ -28,7 +28,7 @@ interface LinkCardProps {
   topics: Topic[];
 }
 
-export default function LinkCard({
+export function LinkCard({
   dragListeners,
   isDragOverlay,
   link,

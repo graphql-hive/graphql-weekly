@@ -28,7 +28,7 @@ export type SpringListProps = {
   onDragEnd?: (newOrder: number[]) => void;
 };
 
-export default function SpringList({ children, onDragEnd }: SpringListProps) {
+export function SpringList({ children, onDragEnd }: SpringListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemHeights = useRef<number[]>([]);
   const order = useRef(children.map((_, i) => i));

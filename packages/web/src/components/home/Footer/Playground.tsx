@@ -1,7 +1,6 @@
 import { Component, createRef } from "react";
 
 import { useIsMac } from "../../../hooks/useIsMac";
-
 import { fetchGraphQL } from "../../../lib/api";
 import { Code } from "../../shared/Code";
 // Local

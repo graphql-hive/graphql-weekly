@@ -1,6 +1,6 @@
 import { ComponentType, ReactNode } from "react";
 
-import PanelConsumer from "./PanelConsumer";
+import { PanelConsumer } from "./PanelConsumer";
 
 interface OpenPanelRenderProps {
   showPanel: (
@@ -13,7 +13,7 @@ interface OpenPanelProps {
   children: (props: OpenPanelRenderProps) => ReactNode;
 }
 
-export default function OpenPanel({ children }: OpenPanelProps) {
+export function OpenPanel({ children }: OpenPanelProps) {
   return (
     <PanelConsumer>{({ showPanel }) => children({ showPanel })}</PanelConsumer>
   );

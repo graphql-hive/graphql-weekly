@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* eslint-disable no-console */
 
 import { gql, GraphQLClient } from "graphql-request";
 import { readFileSync } from "node:fs";

@@ -1,4 +1,4 @@
-export default function PrismaLogo() {
+export function PrismaLogo() {
   return (
     <svg
       height="29"

@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import { Button } from "./Button";
-import ErrorText from "./ErrorText";
+import { ErrorText } from "./ErrorText";
 
 interface InputWithButtonProps {
   buttonDisabled?: boolean;
@@ -26,7 +26,7 @@ interface InputWithButtonProps {
 }
 
 // TODO: This component shouldn't exist.
-export default function InputWithButton({
+export function InputWithButton({
   buttonDisabled,
   buttonLabel,
   disabled,

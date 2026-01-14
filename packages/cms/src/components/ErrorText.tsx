@@ -1,13 +1,13 @@
 import { ReactNode } from "react";
 
-import RedCross from "../icons/RedCross";
-import Flex from "./Flex";
+import { RedCross } from "../icons/RedCross";
+import { Flex } from "./Flex";
 
 interface ErrorTextProps {
   children: ReactNode;
 }
 
-export default function ErrorText({ children }: ErrorTextProps) {
+export function ErrorText({ children }: ErrorTextProps) {
   return (
     <Flex margin="10px 0 0">
       <RedCross />

@@ -188,6 +188,7 @@ export const resolvers: Resolvers = {
             isFoundation ?? false,
           )
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Failed to create Mailchimp campaign:', error)
           throw new Error('Failed to create Mailchimp campaign')
         }

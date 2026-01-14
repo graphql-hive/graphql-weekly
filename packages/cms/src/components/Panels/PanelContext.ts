@@ -13,7 +13,7 @@ export interface PanelContextValue {
 // eslint-disable-next-line @typescript-eslint/no-empty-function -- context defaults
 const noop = () => {};
 
-export default createContext<PanelContextValue>({
+export const PanelContext = createContext<PanelContextValue>({
   component: null,
   hidePanel: noop,
   props: {},

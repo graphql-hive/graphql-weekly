@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 
-export default function TextArea({
+export function TextArea({
   className,
   ...props
 }: ComponentProps<"textarea">) {

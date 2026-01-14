@@ -1,12 +1,12 @@
 import { Component, ComponentType, ReactNode } from "react";
 
-import PanelContext, { PanelContextValue } from "./PanelContext";
+import { PanelContext, PanelContextValue } from "./PanelContext";
 
 interface PanelProviderProps {
   children: ReactNode;
 }
 
-export default class PanelProvider extends Component<
+export class PanelProvider extends Component<
   PanelProviderProps,
   PanelContextValue
 > {

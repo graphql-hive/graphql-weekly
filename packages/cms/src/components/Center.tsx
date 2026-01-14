@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 
-export default function Center(props: ComponentProps<"div">) {
+export function Center(props: ComponentProps<"div">) {
   return (
     <div
       {...props}

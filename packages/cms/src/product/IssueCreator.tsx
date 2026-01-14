@@ -1,7 +1,11 @@
-import { ChangeEvent, RefObject, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
 
-import InputWithButton from "../components/InputWithButton";
-import { useCreateIssueMutation } from "../generated/graphql";
+import { InputWithButton } from "../components/InputWithButton";
+import {
+  type AllIssuesQuery,
+  useCreateIssueMutation,
+} from "../generated/graphql";
 
 interface IssueCreatorProps {
   defaultValue?: string;
@@ -9,16 +13,22 @@ interface IssueCreatorProps {
   refresh?: () => void;
 }
 
-export default function IssueCreator({
+export function IssueCreator({
   defaultValue,
   inputRef,
   refresh,
 }: IssueCreatorProps) {
+  const qc = useQueryClient();
   const [number, setNumber] = useState(defaultValue ?? "");
   const [numberError, setNumberError] = useState("");
+  const wasCleared = useRef(false);
 
-  // Update when defaultValue changes
+  // Update when defaultValue changes (but not after intentional clear)
   useEffect(() => {
+    if (wasCleared.current) {
+      wasCleared.current = false;
+      return;
+    }
     if (defaultValue && number === "") {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from props
       setNumber(defaultValue);
@@ -38,26 +48,55 @@ export default function IssueCreator({
       return;
     }
 
-    createIssueMutation.mutate(
-      {
-        date: new Date().toISOString(),
-        number: Number.parseInt(number, 10),
-        published: false,
-        title: `Issue ${number}`,
+    const variables = {
+      date: new Date().toISOString(),
+      number: Number.parseInt(number, 10),
+      published: false,
+      title: `Issue ${number}`,
+    };
+
+    // Optimistic update
+    const optimisticIssue = {
+      __typename: "Issue" as const,
+      date: variables.date,
+      id: `temp-${Date.now()}`,
+      published: variables.published,
+      title: variables.title,
+    };
+
+    wasCleared.current = true;
+    setNumber("");
+
+    // Optimistic update - use setQueriesData to match any AllIssues query regardless of variables
+    qc.setQueriesData<AllIssuesQuery>({ queryKey: ["AllIssues"] }, (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        allIssues: [optimisticIssue, ...(old.allIssues ?? [])],
+      };
+    });
+
+    createIssueMutation.mutate(variables, {
+      onError: (error) => {
+        // Rollback on error
+        qc.setQueriesData<AllIssuesQuery>({ queryKey: ["AllIssues"] }, (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            allIssues:
+              old.allIssues?.filter((i) => i.id !== optimisticIssue.id) ?? null,
+          };
+        });
+        setNumber(number);
+        setNumberError(
+          error instanceof Error ? error.message : "Error creating issue",
+        );
       },
-      {
-        onError: (error) => {
-          setNumberError(
-            error instanceof Error ? error.message : "Error creating issue",
-          );
-        },
-        onSuccess: () => {
-          setNumber("");
-          setNumberError("");
-          refresh?.();
-        },
+      onSettled: () => {
+        // Refetch to get real data
+        refresh?.();
       },
-    );
+    });
   };
 
   const isAddButtonDisabled =

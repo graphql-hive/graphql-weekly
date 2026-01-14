@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 
-export default function Label({
+export function Label({
   className,
   ...props
 }: ComponentProps<"label">) {

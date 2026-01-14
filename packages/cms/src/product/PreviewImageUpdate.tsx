@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 
-import InputWithButton from "../components/InputWithButton";
+import { InputWithButton } from "../components/InputWithButton";
 import { useUpdateIssuePreviewImageMutation } from "../generated/graphql";
 
 interface PreviewImageUpdateProps {
@@ -9,7 +9,7 @@ interface PreviewImageUpdateProps {
   refresh?: () => void;
 }
 
-export default function PreviewImageUpdate({
+export function PreviewImageUpdate({
   id,
   previewImage,
   refresh,

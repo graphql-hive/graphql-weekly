@@ -18,7 +18,7 @@ const spinnerColors: Record<SpinnerColor, { bg: string; fg: string }> = {
   },
 };
 
-export default function Spinner({ color = "grey", size = 40 }: SpinnerProps) {
+export function Spinner({ color = "grey", size = 40 }: SpinnerProps) {
   const borderWidth = size / 12;
   const colors = spinnerColors[color];
 

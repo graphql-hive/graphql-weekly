@@ -8,10 +8,7 @@
 - [ ] Configure OAuth provider (Google/GitHub)
 - [ ] Extract user from `Cf-Access-Jwt-Assertion` header
 - [ ] Add audit fields (`createdBy`, `updatedBy`) to mutations
-
-### API: Testing
-
-- [ ] Test Mailchimp integration (mock API responses)
+- [ ] Link User to Author (every Author requires a User; User optionally has Author profile)
 
 ### CMS
 

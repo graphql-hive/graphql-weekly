@@ -1,3 +1,3 @@
-import PanelContext from "./PanelContext";
+import { PanelContext } from "./PanelContext";
 
-export default PanelContext.Consumer;
+export const PanelConsumer = PanelContext.Consumer;

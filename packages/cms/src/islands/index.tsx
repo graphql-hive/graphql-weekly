@@ -5,9 +5,9 @@ import {
 } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import Navbar from "../components/Navbar";
+import { Navbar } from "../components/Navbar";
 import { type AllIssuesQuery, useAllIssuesQuery } from "../generated/graphql";
-import IssueCreator from "../product/IssueCreator";
+import { IssueCreator } from "../product/IssueCreator";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +35,7 @@ interface Props {
   initialIssues: Issue[];
 }
 
-export default function IndexPage({ initialIssues }: Props) {
+export function IndexPage({ initialIssues }: Props) {
   return (
     <QueryClientProvider client={queryClient}>
       <IndexPageContent initialIssues={initialIssues} />

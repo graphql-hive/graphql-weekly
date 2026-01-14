@@ -4,7 +4,7 @@ interface CardBodyProps extends ComponentProps<"div"> {
   padding?: string;
 }
 
-export default function CardBody({ padding, style, ...props }: CardBodyProps) {
+export function CardBody({ padding, style, ...props }: CardBodyProps) {
   const combinedStyle: CSSProperties = {
     padding: padding ?? "24px",
     ...style,

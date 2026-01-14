@@ -1,6 +1,6 @@
-import PrismaLogo from "../icons/Prisma";
+import { PrismaLogo } from "../icons/Prisma";
 
-export default function Logo() {
+export function Logo() {
   return (
     <a
       className="bg-[#0c344b] w-14 h-14 flex items-center justify-center"

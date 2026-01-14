@@ -7,7 +7,7 @@ interface FlexCellProps extends ComponentProps<"section"> {
   margin?: string;
 }
 
-export default function FlexCell({
+export function FlexCell({
   align = "flex-start",
   basis = "0px",
   className,

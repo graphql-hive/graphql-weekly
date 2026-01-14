@@ -6,7 +6,7 @@ interface NavbarProps {
   children?: ReactNode;
 }
 
-export default function Navbar({ children }: NavbarProps) {
+export function Navbar({ children }: NavbarProps) {
   return (
     <div className="relative z-10 bg-white dark:bg-neu-900 shadow-xs dark:shadow-none dark:border-b dark:border-neu-800 w-screen flex h-12 shrink-0 items-center justify-center">
       <a

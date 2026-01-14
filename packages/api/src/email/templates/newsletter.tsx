@@ -169,7 +169,7 @@ function FoundationFooter() {
 export function Newsletter({
   isFoundationEdition = false,
   issueTitle,
-  topics,
+  topics = [],
 }: NewsletterProps) {
   const firstTopic = topics[0]
   const restTopics = topics.slice(1)
@@ -214,6 +214,7 @@ export function Newsletter({
                 </Row>
               </Column>
               <Column align="right">
+                {/* Mailchimp merge tag, replaced at send time */}
                 <Link href="*|LIST:URL|*" style={styles.viewLink}>
                   <Text style={styles.viewLinkText}>View in browser</Text>
                 </Link>
@@ -324,6 +325,7 @@ export function Newsletter({
             </Text>
             <Text style={styles.footerText}>
               If you don't want these updates anymore, you can{' '}
+              {/* Mailchimp merge tag */}
               <Link href="*|UNSUB|*" style={styles.footerTextLink}>
                 unsubscribe here
               </Link>
@@ -476,4 +478,5 @@ const styles = {
   },
 } as const
 
+// eslint-disable-next-line import/no-default-export -- required by react-email preview
 export default Newsletter

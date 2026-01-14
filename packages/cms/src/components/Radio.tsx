@@ -1,7 +1,7 @@
 import { ReactNode, useId } from "react";
 
-import Flex from "./Flex";
-import FlexCell from "./FlexCell";
+import { Flex } from "./Flex";
+import { FlexCell } from "./FlexCell";
 
 interface RadioInputProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface RadioInputProps {
   value: string;
 }
 
-export default function RadioInput({
+export function RadioInput({
   children,
   onClick,
   selectedValue,

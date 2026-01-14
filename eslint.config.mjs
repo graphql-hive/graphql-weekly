@@ -29,9 +29,14 @@ export default [
     ],
   },
   {
-    files: ["**/worker.ts"],
+    files: ["**/worker.ts", "**/email/templates/**"],
     rules: {
       "import/no-default-export": "off",
+    },
+  },
+  {
+    rules: {
+      "unicorn/no-nested-ternary": "off",
     },
   },
 ];

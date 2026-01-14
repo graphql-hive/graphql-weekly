@@ -22,7 +22,7 @@ interface PageHeaderProps {
   versionCount?: number | null;
 }
 
-export default function PageHeader({
+export function PageHeader({
   id,
   published,
   title,

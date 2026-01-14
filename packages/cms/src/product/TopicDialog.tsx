@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import { Button } from "../components/Button";
-import Flex from "../components/Flex";
-import Radio from "../components/Radio";
+import { Flex } from "../components/Flex";
+import { RadioInput as Radio } from "../components/Radio";
 import { useAddLinksToTopicMutation } from "../generated/graphql";
 
 interface Topic {
@@ -22,7 +22,7 @@ interface TopicDialogProps {
   topics?: Topic[];
 }
 
-export default function TopicDialog({
+export function TopicDialog({
   link,
   linkId,
   onPanelClose,
