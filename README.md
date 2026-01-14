@@ -97,6 +97,12 @@ Internal tool for curating newsletter issues at `packages/cms`.
 
 **Stack:** Astro + React, TanStack Query, Tailwind CSS, Cloudflare Workers
 
+### Access Control
+
+CMS requires GitHub authentication. Access is granted to users with **Triage**, **Write**, **Maintain**, or **Admin** permissions on the `graphql-hive/graphql-weekly` repository.
+
+To grant someone CMS access, add them as a collaborator to the repo with at least Triage permissions.
+
 **Scripts:**
 
 ```bash

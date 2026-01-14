@@ -15,20 +15,8 @@ export const GITHUB_REPO_NAME = 'graphql-weekly'
 export async function checkGitHubCollaborator(
   accessToken: string,
 ): Promise<boolean> {
-  const userResponse = await fetch('https://api.github.com/user', {
-    headers: {
-      Accept: 'application/vnd.github.v3+json',
-      Authorization: `Bearer ${accessToken}`,
-      'User-Agent': 'graphql-weekly-cms',
-    },
-  })
-  if (!userResponse.ok) {
-    return false
-  }
-  const userData = (await userResponse.json()) as { login: string }
-
-  const collabResponse = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/collaborators/${userData.login}`,
+  const response = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
     {
       headers: {
         Accept: 'application/vnd.github.v3+json',
@@ -37,8 +25,17 @@ export async function checkGitHubCollaborator(
       },
     },
   )
-
-  return collabResponse.status === 204
+  if (!response.ok) return false
+  const data = (await response.json()) as {
+    permissions?: {
+      admin?: boolean
+      maintain?: boolean
+      push?: boolean
+      triage?: boolean
+    }
+  }
+  const p = data.permissions
+  return p?.triage || p?.push || p?.maintain || p?.admin || false
 }
 
 export function createAuth(env: AuthEnv) {
