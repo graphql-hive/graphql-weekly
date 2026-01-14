@@ -23,6 +23,7 @@ class PanelBody extends Component<PanelBodyProps> {
   override render() {
     const { Component: PanelComponent, componentProps, hidePanel } = this.props;
     return (
+      /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- modal backdrop */
       <div
         className="fixed w-full z-[11] h-full bg-black/[0.56]"
         id="panelRoot"
@@ -32,6 +33,7 @@ class PanelBody extends Component<PanelBodyProps> {
           className="max-w-[640px] h-screen overflow-hidden ml-auto z-[11] animate-[fade-right_0.15s_both]"
           onClick={(e: MouseEvent) => e.stopPropagation()}
         >
+          {/* eslint-enable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
           <div className="bg-white h-full">
             <section>
               <div className="py-4 px-3 pl-2 border-b border-black/[0.12] text-right">

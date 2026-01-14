@@ -9,6 +9,7 @@ export function HeaderContainer({
 
 export function Header({ className, ...props }: ComponentProps<"h1">) {
   return (
+    // eslint-disable-next-line jsx-a11y/heading-has-content -- children included in props spread
     <h1
       {...props}
       className={`text-[19px] flex-1 self-center leading-6 text-[#0C344B] m-0 ${className ?? ""}`}

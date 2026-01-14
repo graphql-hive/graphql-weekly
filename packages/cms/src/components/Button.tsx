@@ -16,40 +16,38 @@ export type ButtonVariant = keyof typeof variantClasses;
 const baseClasses =
   "py-3 px-4 border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none text-sm disabled:opacity-30 disabled:cursor-not-allowed";
 
-export declare namespace ButtonProps {
-  interface BaseProps {
-    block?: boolean;
-    className?: string;
-    disabled?: boolean;
-    variant?: ButtonVariant;
-  }
+interface ButtonBaseProps {
+  block?: boolean;
+  className?: string;
+  disabled?: boolean;
+  variant?: ButtonVariant;
+}
 
-  interface LinkProps extends BaseProps, Omit<ComponentProps<"a">, "href"> {
-    as?: never;
-    href: string;
-  }
+interface ButtonLinkProps extends ButtonBaseProps, Omit<ComponentProps<"a">, "href"> {
+  as?: never;
+  href: string;
+}
 
-  interface ButtonElementProps
-    extends BaseProps, Omit<ComponentProps<"button">, "color"> {
-    as?: undefined;
-    href?: never;
-    onClick?: React.MouseEventHandler<HTMLButtonElement>;
-    type?: "button" | "reset" | "submit";
-  }
+interface ButtonElementProps
+  extends ButtonBaseProps, Omit<ComponentProps<"button">, "color"> {
+  as?: undefined;
+  href?: never;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  type?: "button" | "reset" | "submit";
+}
 
-  interface NonInteractiveProps
-    extends
-      BaseProps,
-      DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {
-    as: "div" | "label" | "span";
-    href?: never;
-  }
+interface ButtonNonInteractiveProps
+  extends
+    ButtonBaseProps,
+    DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {
+  as: "div" | "label" | "span";
+  href?: never;
 }
 
 export type ButtonProps =
-  | ButtonProps.ButtonElementProps
-  | ButtonProps.LinkProps
-  | ButtonProps.NonInteractiveProps;
+  | ButtonElementProps
+  | ButtonLinkProps
+  | ButtonNonInteractiveProps;
 
 export function Button(props: ButtonProps) {
   const className = cn(
@@ -71,6 +69,7 @@ export function Button(props: ButtonProps) {
       ...rest
     } = props;
     return (
+      // eslint-disable-next-line jsx-a11y/anchor-has-content -- children included in rest spread
       <a
         href={href}
         {...rest}
@@ -91,5 +90,5 @@ export function Button(props: ButtonProps) {
 }
 
 export const ButtonLink = Button as (
-  props: ButtonProps.LinkProps,
+  props: ButtonLinkProps,
 ) => React.JSX.Element;

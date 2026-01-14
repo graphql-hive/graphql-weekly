@@ -27,7 +27,7 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "../components/Button";
@@ -240,6 +240,7 @@ function IssuePageContent({ id }: { id: string }) {
       }
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from server data
     setItems(newItems);
   }, [issue, allLinks, topics, deletedLinkIds]);
 
@@ -769,6 +770,7 @@ function IssuePageContent({ id }: { id: string }) {
 
             return (
               <section className="mb-8 group/topic" key={topic.id}>
+                {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- keyboard nav for reordering */}
                 <div
                   className="flex items-center gap-3 mb-3"
                   onKeyDown={(e) => {
@@ -780,8 +782,10 @@ function IssuePageContent({ id }: { id: string }) {
                       handleTopicMove(topicIndex, "down");
                     }
                   }}
+                  role="group"
                   tabIndex={0}
                 >
+                  {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
                   <h3 className="text-lg text-neu-900 dark:text-neu-100">
                     {topic.title}
                   </h3>
@@ -885,6 +889,7 @@ function IssuePageContent({ id }: { id: string }) {
               <DragOverlay>
                 {activeId && activeLink ? (
                   <div className="shadow-lg scale-[1.02]">
+                    {/* eslint-disable @typescript-eslint/no-empty-function -- drag overlay doesn't need handlers */}
                     <LinkCard
                       isDragOverlay
                       link={getMergedLink(activeLink)}
@@ -893,6 +898,7 @@ function IssuePageContent({ id }: { id: string }) {
                       refresh={() => {}}
                       topics={topics}
                     />
+                    {/* eslint-enable @typescript-eslint/no-empty-function */}
                   </div>
                 ) : (activeId && activeSubmission ? (
                   <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
@@ -912,7 +918,7 @@ function IssuePageContent({ id }: { id: string }) {
               </DragOverlay>,
               document.body,
               // React 19's ReactPortal type differs from dnd-kit's expected ReactNode
-            ) as unknown as JSX.Element
+            ) as unknown as React.JSX.Element
           }
 
           {/* Trash zone - shown when dragging */}

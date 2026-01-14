@@ -71,6 +71,7 @@ export default function SpringList({ children, onDragEnd }: SpringListProps) {
     if (!isDragging.current) {
       order.current = children.map((_, i) => i);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- needs sync measurement for layout
     measureHeights();
   }, [children.length, measureHeights, children]);
 
@@ -171,7 +172,7 @@ export default function SpringList({ children, onDragEnd }: SpringListProps) {
             }}
           >
             {/* Bridge React 19 ReactNode to react-spring's expected type */}
-            {children[i] as unknown as JSX.Element}
+            {children[i] as unknown as React.JSX.Element}
           </animated.div>
         );
       })}

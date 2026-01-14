@@ -7,5 +7,5 @@
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": false
   },
-  "include": ["src", ".astro"]
+  "include": ["src", ".astro", "astro.config.mjs", "codegen.ts", "graphql-codegen.ts"]
 }

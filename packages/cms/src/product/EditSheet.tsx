@@ -57,9 +57,9 @@ export default function EditSheet({
       />
       <Label htmlFor={linkId}>Link</Label>
       <InputWithButton
-        id={linkId}
         buttonLabel="Go"
         errorText={linkError}
+        id={linkId}
         onChange={handlers.handleLinkChange}
         onClick={() => window.open(link)}
         placeholder="Link"

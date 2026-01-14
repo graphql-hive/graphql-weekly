@@ -22,13 +22,13 @@ export default function RadioInput({
   return (
     <Flex margin="0 0 16px">
       <FlexCell align="center" basis="auto" grow="0">
-        <label htmlFor={id} className="cursor-pointer flex items-center">
+        <label className="cursor-pointer flex items-center" htmlFor={id}>
           <input
-            type="radio"
-            id={id}
             checked={isActive}
-            onChange={() => onClick(value)}
             className="sr-only peer"
+            id={id}
+            onChange={() => onClick(value)}
+            type="radio"
           />
           <div
             className={`
@@ -43,7 +43,7 @@ export default function RadioInput({
             `}
           >
             {isActive && (
-              <svg className="w-4 h-4 text-neu-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
+              <svg className="w-4 h-4 text-neu-900" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
                 <path d="M5 13l4 4L19 7" strokeLinecap="square" strokeLinejoin="miter" />
               </svg>
             )}
@@ -51,7 +51,7 @@ export default function RadioInput({
         </label>
       </FlexCell>
       <FlexCell>
-        <label htmlFor={id} className="m-0 text-base cursor-pointer dark:text-neu-100">
+        <label className="m-0 text-base cursor-pointer dark:text-neu-100" htmlFor={id}>
           {children}
         </label>
       </FlexCell>

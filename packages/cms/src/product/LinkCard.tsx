@@ -118,6 +118,7 @@ export default function LinkCard({
             <ClickTarget
               aria-label="Assign to topic"
               onClick={() =>
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TopicDialog props mismatch with panel system
                 showPanel(TopicDialog as any, {
                   link,
                   linkId: link.id,

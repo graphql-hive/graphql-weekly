@@ -94,7 +94,7 @@ const ADD_LINK_TO_TOPIC = gql`
 `;
 
 function parseTSV(filePath: string): Link[] {
-  const content = readFileSync(filePath, "utf-8");
+  const content = readFileSync(filePath, "utf8");
   const lines = content.trim().split("\n");
   const [_header, ...rows] = lines;
 
@@ -153,7 +153,7 @@ async function main() {
   const issueNumber = Number.parseInt(process.argv[2], 10);
   const tsvPath = process.argv[3];
 
-  if (!issueNumber || isNaN(issueNumber) || !tsvPath) {
+  if (!issueNumber || Number.isNaN(issueNumber) || !tsvPath) {
     console.error("Usage: bun run batch-add-links <issue-number> <tsv-path>");
     console.error("Example: bun run batch-add-links 399 links-to-add.tsv");
     process.exit(1);
@@ -205,7 +205,7 @@ async function main() {
   console.log("\nDone!");
 }
 
-main().catch((error) => {
+await main().catch((error) => {
   console.error("Error:", error);
   process.exit(1);
 });

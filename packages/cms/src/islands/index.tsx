@@ -22,6 +22,15 @@ const BASE_PATH = import.meta.env.BASE_URL || "/admin";
 
 type Issue = NonNullable<AllIssuesQuery["allIssues"]>[number];
 
+const formatDate = (dateStr: string | null | undefined) => {
+  if (!dateStr) return null;
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 interface Props {
   initialIssues: Issue[];
 }
@@ -122,15 +131,6 @@ function IndexPageContent({ initialIssues }: Props) {
     const selectedEl = listRef.current?.children[selectedIndex] as HTMLElement;
     selectedEl?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [selectedIndex]);
-
-  const formatDate = (dateStr: string | null | undefined) => {
-    if (!dateStr) return null;
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
 
   const issueNum = (issue: (typeof issues)[0]) =>
     issue.title?.split(" ")[1] ?? "0";

@@ -20,6 +20,7 @@ export default function IssueCreator({
   // Update when defaultValue changes
   useEffect(() => {
     if (defaultValue && number === "") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from props
       setNumber(defaultValue);
     }
   }, [defaultValue, number]);
@@ -60,7 +61,7 @@ export default function IssueCreator({
   };
 
   const isAddButtonDisabled =
-    createIssueMutation.isPending || number === "" || isNaN(Number(number));
+    createIssueMutation.isPending || number === "" || Number.isNaN(Number(number));
 
   return (
     <InputWithButton

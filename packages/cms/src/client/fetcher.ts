@@ -1,7 +1,10 @@
 import { GraphQLClient } from "graphql-request";
 
-// Use same-origin /graphql endpoint (served by the API worker)
-const endpoint = "/graphql";
+// In dev, use absolute URL since CMS and API run on different ports
+// In production, both are served from the same origin
+const endpoint = import.meta.env.DEV
+  ? "http://localhost:2012/graphql"
+  : "/graphql";
 
 export const graphqlClient = new GraphQLClient(endpoint, {
   // Auth handled by Cloudflare Access (JWT in cookie)
