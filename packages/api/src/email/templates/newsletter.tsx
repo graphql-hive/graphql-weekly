@@ -12,7 +12,7 @@ import {
   Section,
   Text,
 } from '@react-email/components'
-import * as React from 'react'
+import { Fragment } from 'react'
 
 export const colorMap: Record<string, string> = {
   articles: '#f531b1',
@@ -65,7 +65,7 @@ function TopicSection({ topic }: { topic: NewsletterTopic }) {
         >
           <Text style={{ ...styles.articleTitle, color }}>{topic.title}</Text>
           {topic.links.map((link, index) => (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               {index > 0 && <div style={styles.hr} />}
               <Link
                 href={link.url}
@@ -74,7 +74,7 @@ function TopicSection({ topic }: { topic: NewsletterTopic }) {
                 <Text style={styles.linkTitle}>{link.title}</Text>
               </Link>
               <Text style={styles.linkText}>{link.text}</Text>
-            </React.Fragment>
+            </Fragment>
           ))}
         </Column>
       </Row>
@@ -253,7 +253,7 @@ export function Newsletter({
                     {firstTopic.title}
                   </Text>
                   {firstTopic.links.map((link, index) => (
-                    <React.Fragment key={index}>
+                    <Fragment key={index}>
                       {index > 0 && <div style={styles.hr} />}
                       <Link
                         href={link.url}
@@ -262,7 +262,7 @@ export function Newsletter({
                         <Text style={styles.linkTitle}>{link.title}</Text>
                       </Link>
                       <Text style={styles.linkText}>{link.text}</Text>
-                    </React.Fragment>
+                    </Fragment>
                   ))}
                 </Column>
               </Row>

@@ -359,7 +359,7 @@ export const resolvers: Resolvers = {
       return author ?? null
     },
     date: (parent) => (parent.date ? new Date(parent.date) : null),
-    published: (parent) => Boolean(parent.published),
+    published: (parent) => !!parent.published,
     topics: async (parent, _args, ctx) => {
       const topics = await ctx.db
         .selectFrom('Topic')

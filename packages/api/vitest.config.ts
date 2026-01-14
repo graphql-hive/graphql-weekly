@@ -5,17 +5,17 @@ import {
 
 export default defineWorkersConfig({
   test: {
-    setupFiles: ['./src/test-setup.ts'],
     poolOptions: {
       workers: {
         miniflare: {
-          d1Databases: ['graphqlweekly'],
           bindings: {
             TEST_MIGRATIONS: await readD1Migrations('migrations'),
           },
+          d1Databases: ['graphqlweekly'],
         },
         wrangler: { configPath: './wrangler.jsonc' },
       },
     },
+    setupFiles: ['./src/test-setup.ts'],
   },
 })
