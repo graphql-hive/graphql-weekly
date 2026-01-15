@@ -48,7 +48,7 @@ jobs:
           PREVIEW_URL=$(echo "$OUTPUT" | grep -oE 'https://[^ ]+\.workers\.dev' | head -1)
           echo "preview-url=$PREVIEW_URL" >> $GITHUB_OUTPUT
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
   preview-cms:
     if: github.event_name == 'pull_request'
@@ -73,7 +73,7 @@ jobs:
         working-directory: packages/cms
         run: bunx wrangler versions upload --preview-alias pr-${{ github.event.pull_request.number }}
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
   deploy-api:
     if: github.ref == 'refs/heads/main'
@@ -92,7 +92,7 @@ jobs:
         working-directory: packages/api
         run: bunx wrangler deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
   deploy-cms:
     if: github.ref == 'refs/heads/main'
@@ -111,4 +111,4 @@ jobs:
         working-directory: packages/cms
         run: bun run deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

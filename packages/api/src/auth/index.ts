@@ -65,7 +65,7 @@ export function createAuth(env: AuthEnv) {
     trustedOrigins: [
       'http://localhost:2016', // CMS dev
       'http://localhost:2012', // API dev
-      'https://cms.graphqlweekly.com', // CMS prod (TODO: update if different)
+      'https://cms.graphqlweekly.com', // CMS prod
       'https://api.graphqlweekly.com', // API prod
     ],
   })
