@@ -28,7 +28,7 @@ export default defineConfig({
   webServer: [
     {
       command: process.env.CI
-        ? "cd ../api && printf 'E2E_TEST=1\\nBETTER_AUTH_SECRET=e2e-test-secret-at-least-32-chars\\nGITHUB_CLIENT_ID=test\\nGITHUB_CLIENT_SECRET=test\\n' > .dev.vars && bun run migrate:up && bun run dev"
+        ? String.raw`cd ../api && printf 'E2E_TEST=1\nBETTER_AUTH_SECRET=e2e-test-secret-at-least-32-chars\nGITHUB_CLIENT_ID=test\nGITHUB_CLIENT_SECRET=test\n' > .dev.vars && bun run migrate:up && bun run dev`
         : "cd ../api && bun run migrate:up && bun run dev",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
