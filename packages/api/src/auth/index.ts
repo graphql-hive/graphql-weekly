@@ -3,11 +3,11 @@ import { D1Dialect } from 'kysely-d1'
 
 export interface AuthEnv {
   BETTER_AUTH_SECRET: string
+  E2E_TEST?: string
   GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
   graphqlweekly: D1Database
   LOCAL_DEV?: string
-  E2E_TEST?: string
 }
 
 export const GITHUB_REPO_OWNER = 'graphql-hive'
