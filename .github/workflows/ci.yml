@@ -57,13 +57,12 @@ jobs:
           echo "branch-slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
           echo "preview-url=https://${BRANCH_SLUG}.api.graphqlweekly.com" >> $GITHUB_OUTPUT
 
-      - name: Deploy API Preview
+      - name: Upload API Preview Version
         working-directory: packages/api
-        run: turbo deploy -- --route "${{ steps.url.outputs.branch-slug }}.api.graphqlweekly.com/*"
+        run: bunx wrangler versions upload --preview-alias "${{ steps.url.outputs.branch-slug }}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
 
   preview-cms:
     if: github.event_name == 'pull_request'
@@ -84,13 +83,12 @@ jobs:
         env:
           PUBLIC_API_URL: ${{ needs.preview-api.outputs.preview_url }}/graphql
 
-      - name: Deploy CMS Preview
+      - name: Upload CMS Preview Version
         working-directory: packages/cms
-        run: turbo deploy -- --route "${{ needs.preview-api.outputs.branch_slug }}.cms.graphqlweekly.com/*"
+        run: bunx wrangler versions upload --preview-alias "${{ needs.preview-api.outputs.branch_slug }}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
 
   deploy-api:
     if: github.ref == 'refs/heads/main'

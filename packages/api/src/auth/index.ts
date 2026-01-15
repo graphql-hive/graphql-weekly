@@ -86,26 +86,11 @@ export function createAuth(env: AuthEnv) {
         scope: ['read:user', 'repo'],
       },
     },
-    trustedOrigins: (request) => {
-      const origin = request?.headers.get('origin')
-      if (!origin) return []
-      // Local dev
-      if (origin.startsWith('http://localhost:')) return [origin]
-      // Any *.graphqlweekly.com subdomain
-      try {
-        const url = new URL(origin)
-        if (
-          url.protocol === 'https:' &&
-          (url.hostname === 'graphqlweekly.com' ||
-            url.hostname.endsWith('.graphqlweekly.com'))
-        ) {
-          return [origin]
-        }
-      } catch {
-        // invalid URL
-      }
-      return []
-    },
+    trustedOrigins: [
+      'https://graphqlweekly.com',
+      'https://*.graphqlweekly.com',
+      'http://localhost:*',
+    ],
   })
 }
 

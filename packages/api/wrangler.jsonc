@@ -6,8 +6,23 @@
   "compatibility_date": "2026-01-07",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "preview_urls": true,
+  "workers_dev": true,
   "observability": {
     "enabled": true,
+  },
+  "routes": [
+    { "pattern": "api.graphqlweekly.com/*", "zone_name": "graphqlweekly.com" },
+    {
+      "pattern": "*.api.graphqlweekly.com/*",
+      "zone_name": "graphqlweekly.com",
+    },
+    {
+      "pattern": "*.cms.graphqlweekly.com/*",
+      "zone_name": "graphqlweekly.com",
+    },
+  ],
+  "vars": {
+    "WORKERS_DEV_SUBDOMAIN": "recc",
   },
   "d1_databases": [
     {

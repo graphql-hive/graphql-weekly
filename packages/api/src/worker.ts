@@ -12,6 +12,7 @@ export interface Env extends AuthEnv {
   LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
   MAILCHIMP_SERVER_PREFIX?: string
+  WORKERS_DEV_SUBDOMAIN?: string
 }
 
 export interface User {
@@ -158,6 +159,35 @@ const yoga = createYoga<GraphQLContext>({
   schema,
 })
 
+function getPreviewSubdomain(
+  hostname: string,
+): { service: 'api' | 'cms'; subdomain: string } | null {
+  const apiMatch = hostname.match(/^([a-z0-9-]+)\.api\.graphqlweekly\.com$/)
+  if (apiMatch && apiMatch[1] !== 'api') {
+    return { service: 'api', subdomain: apiMatch[1] }
+  }
+  const cmsMatch = hostname.match(/^([a-z0-9-]+)\.cms\.graphqlweekly\.com$/)
+  if (cmsMatch && cmsMatch[1] !== 'cms') {
+    return { service: 'cms', subdomain: cmsMatch[1] }
+  }
+  return null
+}
+
+function isAllowedOrigin(origin: string): boolean {
+  if (origin.startsWith('http://localhost:')) return true
+  try {
+    const url = new URL(origin)
+    if (url.protocol !== 'https:') return false
+    return (
+      url.hostname === 'graphqlweekly.com' ||
+      url.hostname === 'cms.graphqlweekly.com' ||
+      url.hostname.endsWith('.graphqlweekly.com')
+    )
+  } catch {
+    return false
+  }
+}
+
 export default {
   async fetch(
     request: Request,
@@ -165,12 +195,23 @@ export default {
     _ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url)
+    const { hostname } = url
+    const preview = getPreviewSubdomain(hostname)
+
+    if (preview && env.WORKERS_DEV_SUBDOMAIN) {
+      const workerName =
+        preview.service === 'api' ? 'graphqlweekly-api' : 'graphqlweekly-cms'
+      const previewUrl = `https://${preview.subdomain}-${workerName}.${env.WORKERS_DEV_SUBDOMAIN}.workers.dev${url.pathname}${url.search}`
+      const proxyRequest = new Request(previewUrl, {
+        body: request.body,
+        headers: request.headers,
+        method: request.method,
+      })
+      return fetch(proxyRequest)
+    }
+
     const origin = request.headers.get('Origin')
-    const allowedOrigins = [
-      'http://localhost:2016',
-      'https://cms.graphqlweekly.com',
-    ]
-    const corsOrigin = origin && allowedOrigins.includes(origin) ? origin : null
+    const corsOrigin = origin && isAllowedOrigin(origin) ? origin : null
 
     if (request.method === 'OPTIONS') {
       return new Response(null, {
