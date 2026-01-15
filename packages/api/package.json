@@ -8,6 +8,7 @@
     "migrate:up": "wrangler d1 migrations apply graphqlweekly --local",
     "codegen": "graphql-codegen",
     "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy",
     "test": "vitest",
     "email": "email dev --dir src/email/templates",
     "format": "prettier --write .",
