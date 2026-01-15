@@ -246,7 +246,10 @@ export const resolvers: Resolvers = {
       if (ctx.env.MAILCHIMP_API_KEY && issue.published) {
         try {
           await createEmailCampaign(
-            { apiKey: ctx.env.MAILCHIMP_API_KEY },
+            {
+              apiKey: ctx.env.MAILCHIMP_API_KEY,
+              serverPrefix: ctx.env.MAILCHIMP_SERVER_PREFIX,
+            },
             issue.title,
             topicsWithLinks,
             issue.versionCount,

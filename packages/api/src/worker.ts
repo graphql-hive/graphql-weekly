@@ -10,6 +10,7 @@ import { resolvers } from './resolvers'
 export interface Env extends AuthEnv {
   LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
+  MAILCHIMP_SERVER_PREFIX?: string
 }
 
 export interface User {

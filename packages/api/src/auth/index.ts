@@ -3,10 +3,10 @@ import { D1Dialect } from 'kysely-d1'
 
 export interface AuthEnv {
   BETTER_AUTH_SECRET: string
-  BETTER_AUTH_URL?: string
   GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
   graphqlweekly: D1Database
+  LOCAL_DEV?: string
 }
 
 export const GITHUB_REPO_OWNER = 'graphql-hive'
@@ -41,7 +41,9 @@ export async function checkGitHubCollaborator(
 export function createAuth(env: AuthEnv) {
   return betterAuth({
     basePath: '/auth',
-    baseURL: env.BETTER_AUTH_URL || 'http://localhost:2012',
+    baseURL: env.LOCAL_DEV
+      ? 'http://localhost:2012'
+      : 'https://api.graphqlweekly.com',
     database: {
       dialect: new D1Dialect({ database: env.graphqlweekly }),
       type: 'sqlite',
