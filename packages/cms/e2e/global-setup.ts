@@ -97,33 +97,43 @@ setup("create non-collaborator session", async ({ playwright }) => {
   );
 
   // Try to sign up
-  const signUpResponse = await requestContext.post(`${API_URL}/auth/sign-up/email`, {
-    data: {
-      email: NON_COLLABORATOR_USER.email,
-      name: NON_COLLABORATOR_USER.name,
-      password: NON_COLLABORATOR_USER.password,
+  const signUpResponse = await requestContext.post(
+    `${API_URL}/auth/sign-up/email`,
+    {
+      data: {
+        email: NON_COLLABORATOR_USER.email,
+        name: NON_COLLABORATOR_USER.name,
+        password: NON_COLLABORATOR_USER.password,
+      },
     },
-  });
+  );
 
   if (signUpResponse.ok()) {
     console.log("✅ Created non-collaborator user");
   }
 
   // Sign in
-  const signInResponse = await requestContext.post(`${API_URL}/auth/sign-in/email`, {
-    data: {
-      email: NON_COLLABORATOR_USER.email,
-      password: NON_COLLABORATOR_USER.password,
+  const signInResponse = await requestContext.post(
+    `${API_URL}/auth/sign-in/email`,
+    {
+      data: {
+        email: NON_COLLABORATOR_USER.email,
+        password: NON_COLLABORATOR_USER.password,
+      },
     },
-  });
+  );
 
   if (!signInResponse.ok()) {
     const text = await signInResponse.text();
-    throw new Error(`Failed to sign in non-collaborator: ${signInResponse.status()} ${text}`);
+    throw new Error(
+      `Failed to sign in non-collaborator: ${signInResponse.status()} ${text}`,
+    );
   }
 
   // Save to separate auth file
-  await requestContext.storageState({ path: "e2e/.auth/non-collaborator.json" });
+  await requestContext.storageState({
+    path: "e2e/.auth/non-collaborator.json",
+  });
   console.log("✅ Non-collaborator auth state saved");
 
   // Get user ID and link a non-collaborator account

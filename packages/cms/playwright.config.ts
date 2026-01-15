@@ -6,9 +6,9 @@ export default defineConfig({
   globalTeardown: "./e2e/global-teardown.ts",
   projects: [
     {
+      fullyParallel: false, // D1 commands need sequential execution to avoid SQLITE_BUSY
       name: "setup",
       testMatch: /global-setup\.ts/,
-      fullyParallel: false, // D1 commands need sequential execution to avoid SQLITE_BUSY
     },
     {
       dependencies: ["setup"],
@@ -27,7 +27,7 @@ export default defineConfig({
   // Start both API and CMS servers before tests
   webServer: [
     {
-      command: "cd ../api && bun run dev",
+      command: "cd ../api && bun run migrate:up && bun run dev",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
       url: "http://localhost:2012/health",

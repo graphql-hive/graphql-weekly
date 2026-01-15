@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "wrangler dev",
+    "migrate:up": "wrangler d1 migrations apply graphqlweekly --local",
     "codegen": "graphql-codegen",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
