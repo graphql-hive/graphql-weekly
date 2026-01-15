@@ -8,6 +8,7 @@ import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
 
 export interface Env extends AuthEnv {
+  E2E_TEST?: string
   LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
   MAILCHIMP_SERVER_PREFIX?: string
@@ -220,7 +221,7 @@ export default {
 
           const isCollaborator = account?.accessToken
             ? await checkGitHubCollaborator(account.accessToken, {
-                localDev: !!env.LOCAL_DEV,
+                localDev: !!(env.LOCAL_DEV || env.E2E_TEST),
               })
             : false
 
@@ -246,9 +247,10 @@ export default {
 
     // Redirect root to CMS (Better Auth defaults to '/' after OAuth)
     if (url.pathname === '/' || url.pathname === '') {
-      const cmsUrl = env.LOCAL_DEV
-        ? 'http://localhost:2016'
-        : 'https://cms.graphqlweekly.com'
+      const cmsUrl =
+        env.LOCAL_DEV || env.E2E_TEST
+          ? 'http://localhost:2016'
+          : 'https://cms.graphqlweekly.com'
       return Response.redirect(cmsUrl, 302)
     }
 

@@ -27,7 +27,9 @@ export default defineConfig({
   // Start both API and CMS servers before tests
   webServer: [
     {
-      command: "cd ../api && bun run migrate:up && bun run dev",
+      command: process.env.E2E_TEST
+        ? "cd ../api && bun run migrate:up && wrangler dev --var E2E_TEST:1"
+        : "cd ../api && bun run migrate:up && bun run dev",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
       url: "http://localhost:2012/health",

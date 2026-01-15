@@ -261,7 +261,7 @@ export const resolvers: Resolvers = {
           throw new Error('Failed to create Mailchimp campaign')
         }
       } else if (issue.published) {
-        if (ctx.env.LOCAL_DEV) {
+        if (ctx.env.LOCAL_DEV || ctx.env.E2E_TEST) {
           const [{ render }, { Newsletter }] = await Promise.all([
             import('@react-email/components'),
             import('../email'),

@@ -7,6 +7,7 @@ export interface AuthEnv {
   GITHUB_CLIENT_SECRET: string
   graphqlweekly: D1Database
   LOCAL_DEV?: string
+  E2E_TEST?: string
 }
 
 export const GITHUB_REPO_OWNER = 'graphql-hive'
@@ -49,17 +50,18 @@ export async function checkGitHubCollaborator(
 }
 
 export function createAuth(env: AuthEnv) {
+  const isTestMode = env.LOCAL_DEV || env.E2E_TEST
   return betterAuth({
     basePath: '/auth',
-    baseURL: env.LOCAL_DEV
+    baseURL: isTestMode
       ? 'http://localhost:2012'
       : 'https://api.graphqlweekly.com',
     database: {
       dialect: new D1Dialect({ database: env.graphqlweekly }),
       type: 'sqlite',
     },
-    // Enable email/password auth in LOCAL_DEV for E2E tests
-    advanced: env.LOCAL_DEV
+    // Enable email/password auth for E2E tests
+    advanced: isTestMode
       ? undefined
       : {
           crossSubDomainCookies: {
@@ -67,7 +69,7 @@ export function createAuth(env: AuthEnv) {
             enabled: true,
           },
         },
-    emailAndPassword: env.LOCAL_DEV ? { enabled: true } : undefined,
+    emailAndPassword: isTestMode ? { enabled: true } : undefined,
     secret: env.BETTER_AUTH_SECRET,
     session: {
       cookieCache: {
