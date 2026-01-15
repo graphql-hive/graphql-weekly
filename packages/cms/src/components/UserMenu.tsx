@@ -37,7 +37,11 @@ export function UserMenu() {
       </span>
       <button
         className="px-2 py-1 text-xs text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-200"
-        onClick={() => signOut()}
+        onClick={() =>
+          signOut({
+            fetchOptions: { onSuccess: () => location.reload() },
+          })
+        }
         type="button"
       >
         Sign out
