@@ -25,6 +25,8 @@ jobs:
       - run: bun run migrate:up
         working-directory: packages/api
 
+      - run: bunx playwright install --with-deps chromium
+
       - run: bun run test
 
   preview-api:
