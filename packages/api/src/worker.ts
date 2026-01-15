@@ -243,8 +243,9 @@ export default {
 
     // Redirect root to CMS (Better Auth defaults to '/' after OAuth)
     if (url.pathname === '/' || url.pathname === '') {
-      const isLocal = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
-      const cmsUrl = isLocal ? 'http://localhost:2016' : 'https://cms.graphqlweekly.com'
+      const cmsUrl = env.LOCAL_DEV
+        ? 'http://localhost:2016'
+        : 'https://cms.graphqlweekly.com'
       return Response.redirect(cmsUrl, 302)
     }
 
