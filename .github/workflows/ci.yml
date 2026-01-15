@@ -47,7 +47,7 @@ jobs:
 
       - name: Build API
         working-directory: packages/cms
-        run: turbo build
+        run: bun turbo build
 
       - name: Set preview URL
         id: url
@@ -79,7 +79,7 @@ jobs:
 
       - name: Build CMS
         working-directory: packages/cms
-        run: turbo build
+        run: bun turbo build
         env:
           PUBLIC_API_URL: ${{ needs.preview-api.outputs.preview_url }}/graphql
 
@@ -105,7 +105,7 @@ jobs:
 
       - name: Deploy API Worker
         working-directory: packages/api
-        run: turbo deploy
+        run: bun turbo deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -126,7 +126,7 @@ jobs:
 
       - name: Build and Deploy CMS
         working-directory: packages/cms
-        run: turbo deploy
+        run: bun turbo deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
