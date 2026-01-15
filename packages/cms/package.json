@@ -8,7 +8,7 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "wrangler dev",
-    "deploy": "bun run build && wrangler deploy",
+    "deploy": "wrangler deploy",
     "typecheck": "astro check",
     "codegen": "graphql-codegen --config graphql-codegen.ts",
     "test": "bun test:e2e",

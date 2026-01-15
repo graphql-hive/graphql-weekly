@@ -5,6 +5,9 @@
       "dependsOn": ["^build", "codegen"],
       "outputs": ["dist/**"]
     },
+    "deploy": {
+      "dependsOn": ["build"]
+    },
     "codegen": {
       "outputs": ["src/generated/**"]
     },
