@@ -1,0 +1,71 @@
+import { execSync } from "node:child_process";
+import { test as setup } from "@playwright/test";
+
+const API_URL = "http://localhost:2012";
+
+const TEST_USER = {
+  email: "test@e2e.local",
+  password: "test-password-123",
+  name: "E2E Test User",
+};
+
+setup("create authenticated session", async ({ request }) => {
+  // Create test account for GitHub collaborator check (will be linked after user creation)
+  execSync(
+    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'test-account-id'"`,
+    { stdio: "inherit" },
+  );
+
+  // Try to sign up (might fail if user exists, that's ok)
+  const signUpResponse = await request.post(`${API_URL}/auth/sign-up/email`, {
+    data: {
+      email: TEST_USER.email,
+      password: TEST_USER.password,
+      name: TEST_USER.name,
+    },
+  });
+
+  if (signUpResponse.ok()) {
+    console.log("✅ Created test user");
+  } else {
+    console.log("ℹ️ User might already exist, trying to sign in...");
+  }
+
+  // Sign in to get session cookies
+  const signInResponse = await request.post(`${API_URL}/auth/sign-in/email`, {
+    data: {
+      email: TEST_USER.email,
+      password: TEST_USER.password,
+    },
+  });
+
+  if (!signInResponse.ok()) {
+    const text = await signInResponse.text();
+    throw new Error(`Failed to sign in: ${signInResponse.status()} ${text}`);
+  }
+
+  // Save the storage state with the session cookies
+  await request.storageState({ path: "e2e/.auth/user.json" });
+  console.log("✅ Auth state saved");
+
+  // Get the user ID from the session
+  const meResponse = await request.post(`${API_URL}/graphql`, {
+    data: { query: "{ me { id } }" },
+  });
+
+  const meData = (await meResponse.json()) as {
+    data?: { me?: { id: string } };
+  };
+  const userId = meData.data?.me?.id;
+
+  if (userId) {
+    // Create/update account to link to this user for collaborator check
+    execSync(
+      `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('test-account-id', '${userId}', '12345', 'github', 'test-access-token', datetime('now'), datetime('now'))"`,
+      { stdio: "inherit" },
+    );
+    console.log("✅ Linked GitHub account for collaborator check");
+  } else {
+    console.warn("⚠️ Could not get user ID to link account");
+  }
+});

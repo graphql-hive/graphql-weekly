@@ -219,7 +219,9 @@ export default {
             .executeTakeFirst()
 
           const isCollaborator = account?.accessToken
-            ? await checkGitHubCollaborator(account.accessToken)
+            ? await checkGitHubCollaborator(account.accessToken, {
+                localDev: !!env.LOCAL_DEV,
+              })
             : false
 
           user = {

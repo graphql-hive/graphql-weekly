@@ -12,9 +12,20 @@ export interface AuthEnv {
 export const GITHUB_REPO_OWNER = 'graphql-hive'
 export const GITHUB_REPO_NAME = 'graphql-weekly'
 
+// Test tokens for E2E tests - only checked in LOCAL_DEV mode
+const TEST_COLLABORATOR_TOKEN = 'test-access-token'
+const TEST_NON_COLLABORATOR_TOKEN = 'test-non-collaborator-token'
+
 export async function checkGitHubCollaborator(
   accessToken: string,
+  opts?: { localDev?: boolean },
 ): Promise<boolean> {
+  // In local dev mode, check for test tokens
+  if (opts?.localDev) {
+    if (accessToken === TEST_COLLABORATOR_TOKEN) return true
+    if (accessToken === TEST_NON_COLLABORATOR_TOKEN) return false
+  }
+
   const response = await fetch(
     `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
     {
@@ -48,6 +59,8 @@ export function createAuth(env: AuthEnv) {
       dialect: new D1Dialect({ database: env.graphqlweekly }),
       type: 'sqlite',
     },
+    // Enable email/password auth in LOCAL_DEV for E2E tests
+    emailAndPassword: env.LOCAL_DEV ? { enabled: true } : undefined,
     secret: env.BETTER_AUTH_SECRET,
     session: {
       cookieCache: {
@@ -57,6 +70,14 @@ export function createAuth(env: AuthEnv) {
       expiresIn: 60 * 60 * 24 * 7, // 7 days
       updateAge: 60 * 60 * 24, // 1 day
     },
+    advanced: env.LOCAL_DEV
+      ? undefined
+      : {
+          crossSubDomainCookies: {
+            enabled: true,
+            domain: '.graphqlweekly.com',
+          },
+        },
     socialProviders: {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
@@ -64,12 +85,26 @@ export function createAuth(env: AuthEnv) {
         scope: ['read:user', 'repo'],
       },
     },
-    trustedOrigins: [
-      'http://localhost:2016', // CMS dev
-      'http://localhost:2012', // API dev
-      'https://cms.graphqlweekly.com', // CMS prod
-      'https://api.graphqlweekly.com', // API prod
-    ],
+    trustedOrigins: (request) => {
+      const origin = request?.headers.get('origin')
+      if (!origin) return []
+      // Local dev
+      if (origin.startsWith('http://localhost:')) return [origin]
+      // Any *.graphqlweekly.com subdomain
+      try {
+        const url = new URL(origin)
+        if (
+          url.protocol === 'https:' &&
+          (url.hostname === 'graphqlweekly.com' ||
+            url.hostname.endsWith('.graphqlweekly.com'))
+        ) {
+          return [origin]
+        }
+      } catch {
+        // invalid URL
+      }
+      return []
+    },
   })
 }
 

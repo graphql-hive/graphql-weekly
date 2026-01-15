@@ -1,12 +1,31 @@
+import { existsSync, readFileSync } from "node:fs";
+
 const API_URL = "http://localhost:2012/graphql";
+const AUTH_FILE = "e2e/.auth/user.json";
+
+function getAuthCookies(): string {
+  if (!existsSync(AUTH_FILE)) return "";
+  try {
+    const state = JSON.parse(readFileSync(AUTH_FILE, "utf-8"));
+    return (state.cookies || [])
+      .map((c: { name: string; value: string }) => `${c.name}=${c.value}`)
+      .join("; ");
+  } catch {
+    return "";
+  }
+}
 
 async function gql<T>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T> {
+  const cookies = getAuthCookies();
   const res = await fetch(API_URL, {
     body: JSON.stringify({ query, variables }),
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(cookies ? { Cookie: cookies } : {}),
+    },
     method: "POST",
   });
   const json = await res.json();

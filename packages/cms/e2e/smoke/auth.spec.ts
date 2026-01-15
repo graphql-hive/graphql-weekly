@@ -20,14 +20,17 @@ test.describe("Auth Gate (unauthenticated)", () => {
     await page.goto("/login");
 
     await expect(page.getByText("GraphQL Weekly CMS")).toBeVisible();
-    await expect(page.getByText("Sign in with GitHub")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Sign in with GitHub" }),
+    ).toBeVisible();
   });
 
   test("access-denied page is accessible", async ({ page }) => {
     await page.goto("/access-denied");
 
-    await expect(page.getByTestId("access-denied")).toBeVisible();
-    await expect(page.getByText("Access Required")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Access Required" }),
+    ).toBeVisible();
   });
 });
 

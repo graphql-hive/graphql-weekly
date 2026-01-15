@@ -6,7 +6,12 @@ export default defineConfig({
   globalTeardown: "./e2e/global-teardown.ts",
   projects: [
     {
+      name: "setup",
+      testMatch: /global-setup\.ts/,
+    },
+    {
       name: "chromium",
+      dependencies: ["setup"],
       use: { ...devices["Desktop Chrome"] },
     },
   ],
