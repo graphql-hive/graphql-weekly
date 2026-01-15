@@ -16,7 +16,13 @@ const NON_COLLABORATOR_USER = {
   password: "test-password-456",
 };
 
-setup("create authenticated session", async ({ request }) => {
+setup("create authenticated session", async ({ playwright }) => {
+  // Use fresh request context with Origin header for Better Auth
+  const request = await playwright.request.newContext({
+    baseURL: API_URL,
+    extraHTTPHeaders: { Origin: "http://localhost:2016" },
+  });
+
   // Create test account for GitHub collaborator check (will be linked after user creation)
   execSync(
     `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'test-account-id'"`,

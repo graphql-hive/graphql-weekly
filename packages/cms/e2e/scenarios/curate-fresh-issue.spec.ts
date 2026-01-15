@@ -55,6 +55,7 @@ test.describe("Curate Fresh Issue", () => {
     // 4. Create a topic (for coverage, even though we can't assign links to it yet)
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(testTopicName);
+    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
 
     const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
     await addTopicBtn.click();

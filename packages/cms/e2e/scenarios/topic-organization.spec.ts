@@ -16,6 +16,7 @@ test.describe("Topic Organization", () => {
 
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
+    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
 
     const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
     await addTopicBtn.click();
@@ -39,10 +40,12 @@ test.describe("Topic Organization", () => {
     const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
 
     await topicInput.fill(topic1);
+    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await addTopicBtn.click();
     await expect(page.getByRole("heading", { name: topic1 })).toBeVisible();
 
     await topicInput.fill(topic2);
+    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await addTopicBtn.click();
     await expect(page.getByRole("heading", { name: topic2 })).toBeVisible();
 
@@ -104,6 +107,7 @@ test.describe("Topic Organization", () => {
     // Create a topic
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
+    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await page.getByRole("button", { name: "Add Topic" }).click();
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
 
@@ -145,6 +149,7 @@ test.describe("Topic Organization", () => {
     // Create a topic
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
+    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await page.getByRole("button", { name: "Add Topic" }).click();
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
 

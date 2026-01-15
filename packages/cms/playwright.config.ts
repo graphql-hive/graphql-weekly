@@ -8,6 +8,7 @@ export default defineConfig({
     {
       name: "setup",
       testMatch: /global-setup\.ts/,
+      fullyParallel: false, // D1 commands need sequential execution to avoid SQLITE_BUSY
     },
     {
       dependencies: ["setup"],
