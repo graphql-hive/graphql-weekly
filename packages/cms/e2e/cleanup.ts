@@ -6,7 +6,7 @@ const AUTH_FILE = "e2e/.auth/user.json";
 function getAuthCookies(): string {
   if (!existsSync(AUTH_FILE)) return "";
   try {
-    const state = JSON.parse(readFileSync(AUTH_FILE, "utf-8"));
+    const state = JSON.parse(readFileSync(AUTH_FILE, "utf8"));
     return (state.cookies || [])
       .map((c: { name: string; value: string }) => `${c.name}=${c.value}`)
       .join("; ");

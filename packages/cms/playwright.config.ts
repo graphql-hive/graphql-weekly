@@ -10,8 +10,8 @@ export default defineConfig({
       testMatch: /global-setup\.ts/,
     },
     {
-      name: "chromium",
       dependencies: ["setup"],
+      name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
   ],

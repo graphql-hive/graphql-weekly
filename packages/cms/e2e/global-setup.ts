@@ -1,12 +1,13 @@
-import { execSync } from "node:child_process";
+/* eslint-disable no-console */
 import { test as setup } from "@playwright/test";
+import { execSync } from "node:child_process";
 
 const API_URL = "http://localhost:2012";
 
 const TEST_USER = {
   email: "test@e2e.local",
-  password: "test-password-123",
   name: "E2E Test User",
+  password: "test-password-123",
 };
 
 setup("create authenticated session", async ({ request }) => {
@@ -20,8 +21,8 @@ setup("create authenticated session", async ({ request }) => {
   const signUpResponse = await request.post(`${API_URL}/auth/sign-up/email`, {
     data: {
       email: TEST_USER.email,
-      password: TEST_USER.password,
       name: TEST_USER.name,
+      password: TEST_USER.password,
     },
   });
 
