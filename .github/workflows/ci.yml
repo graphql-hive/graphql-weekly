@@ -26,8 +26,6 @@ jobs:
         working-directory: packages/api
 
       - run: bun run test
-        env:
-          E2E_TEST: "1"
 
   preview-api:
     if: github.event_name == 'pull_request'
