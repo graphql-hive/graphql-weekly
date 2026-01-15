@@ -23,7 +23,7 @@ Using Better Auth with built-in Kysely adapter (D1 passed directly).
 - [x] Add auth guards to CMS mutations (require logged-in collaborator)
 - [x] Add `me` query to check auth status and collaborator access
 - [x] Verify user is `graphql-hive/graphql-weekly` collaborator on each request
-- [ ] Test GitHub OAuth
+- [x] Test GitHub OAuth
 
 ### CMS
 

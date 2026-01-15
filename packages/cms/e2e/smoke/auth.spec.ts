@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Auth Gate", () => {
+test.describe("Auth Gate (unauthenticated)", () => {
   test("index page is public (no auth required)", async ({ page }) => {
     await page.goto("/");
 
@@ -28,5 +28,47 @@ test.describe("Auth Gate", () => {
 
     await expect(page.getByTestId("access-denied")).toBeVisible();
     await expect(page.getByText("Access Required")).toBeVisible();
+  });
+});
+
+test.describe("Auth Gate (authenticated)", () => {
+  test.use({ storageState: "e2e/.auth/user.json" });
+
+  test("authenticated user can access issue pages", async ({ page }) => {
+    await page.goto("/");
+    const firstIssue = page.locator('a[href^="/issue/"]').first();
+    const href = await firstIssue.getAttribute("href");
+
+    await page.goto(href!);
+
+    await expect(page).not.toHaveURL("/login");
+    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+  });
+
+  test("user menu shows identity and sign out button", async ({ page }) => {
+    await page.goto("/");
+
+    const userMenu = page.getByRole("button", { name: "User menu" });
+    await expect(userMenu).toBeVisible();
+    await userMenu.click();
+
+    await expect(page.getByRole("menuitem", { name: "Log out" })).toBeVisible();
+  });
+
+  test("sign out clears session and redirects to login on protected page", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const firstIssue = page.locator('a[href^="/issue/"]').first();
+    const issueHref = await firstIssue.getAttribute("href");
+    await page.goto(issueHref!);
+    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+
+    await page.getByRole("button", { name: "User menu" }).click();
+    await page.getByRole("menuitem", { name: "Log out" }).click();
+    await page.waitForURL("/login");
+
+    await page.goto(issueHref!);
+    await expect(page).toHaveURL("/login");
   });
 });
