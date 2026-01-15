@@ -19,9 +19,10 @@ export async function checkGitHubCollaborator(
   accessToken: string,
   opts?: { localDev?: boolean },
 ): Promise<boolean> {
-  // In local dev mode, treat test token as collaborator
-  if (opts?.localDev && accessToken === TEST_COLLABORATOR_TOKEN) {
-    return true
+  // In local dev mode, only the test collaborator token grants access
+  // Any other token (including non-collaborator test tokens) returns false
+  if (opts?.localDev) {
+    return accessToken === TEST_COLLABORATOR_TOKEN
   }
 
   const response = await fetch(

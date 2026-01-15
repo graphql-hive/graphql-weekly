@@ -75,3 +75,22 @@ test.describe("Auth Gate (authenticated)", () => {
     await expect(page).toHaveURL("/login");
   });
 });
+
+test.describe("Auth Gate (non-collaborator)", () => {
+  test.use({ storageState: "e2e/.auth/non-collaborator.json" });
+
+  test("non-collaborator is redirected to access-denied on protected page", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const firstIssue = page.locator('a[href^="/issue/"]').first();
+    const href = await firstIssue.getAttribute("href");
+
+    await page.goto(href!);
+
+    await expect(page).toHaveURL("/access-denied");
+    await expect(
+      page.getByRole("heading", { name: "Access Required" }),
+    ).toBeVisible();
+  });
+});
