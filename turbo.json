@@ -20,6 +20,8 @@
     },
     "typecheck": {
       "dependsOn": ["codegen"]
-    }
+    },
+    "lint": {},
+    "lint:fix": {}
   }
 }

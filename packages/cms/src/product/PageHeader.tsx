@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { cn } from "../cn";
 import { Button } from "../components/Button";
 import {
   useDeleteIssueMutation,
@@ -37,6 +38,11 @@ export function PageHeader({
   const updateTopicWhenIssueDeletedMutation =
     useUpdateTopicWhenIssueDeletedMutation();
 
+  const isMutating =
+    publishIssueMutation.isPending ||
+    publishEmailDraftMutation.isPending ||
+    deleteIssueMutation.isPending;
+
   const handlePublish = () => {
     if (!id) return;
     publishIssueMutation.mutate({ id, published: true });
@@ -62,41 +68,75 @@ export function PageHeader({
     globalThis.location.href = BASE_PATH;
   };
 
+  // Extract issue number from title like "Issue 1"
+  const issueNumber = title?.match(/\d+/)?.[0];
+
   return (
-    <>
-      <span className="text-sm text-neu-600 dark:text-neu-400">
-        Curating:{" "}
-        <strong className="text-neu-900 dark:text-neu-100">{title}</strong>{" "}
-        <span className="text-neu-400 dark:text-neu-500">
-          (v{versionCount})
-        </span>
-      </span>
+    <header
+      className={cn(
+        "sticky top-12 z-10 bg-neu-100 dark:bg-neu-900 border-b border-neu-200 dark:border-neu-800",
+        isMutating && "opacity-70 pointer-events-none"
+      )}
+    >
+      <div className="max-w-4xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between gap-4">
+          {/* Left: Issue identification */}
+          <div className="flex items-baseline gap-3">
+            <h1 className="text-base text-neu-900 dark:text-neu-100 tabular-nums">
+              Issue #{issueNumber}
+            </h1>
+            <span className="text-xs text-neu-500 dark:text-neu-500 tabular-nums">
+              v{versionCount}
+            </span>
+            {published && (
+              <span className="text-[10px] uppercase tracking-wider text-primary px-1.5 py-0.5 border border-primary/30 bg-primary/10">
+                live
+              </span>
+            )}
+          </div>
 
-      <div className="flex items-center gap-3">
-        <label className="flex items-center gap-1.5 text-sm text-neu-600 dark:text-neu-400 cursor-pointer select-none">
-          <input
-            checked={isFoundation}
-            className="w-3.5 h-3.5"
-            onChange={(e) => setIsFoundation(e.target.checked)}
-            type="checkbox"
-          />
-          Foundation
-        </label>
+          {/* Right: Actions */}
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-xs text-neu-500 dark:text-neu-400 cursor-pointer select-none hover:text-neu-700 dark:hover:text-neu-300 transition-colors">
+              <input
+                checked={isFoundation}
+                className="w-3 h-3 accent-primary"
+                onChange={(e) => setIsFoundation(e.target.checked)}
+                type="checkbox"
+              />
+              <span className="uppercase tracking-wider">Foundation</span>
+            </label>
 
-        <div className="flex items-center gap-2">
-          <Button onClick={handlePublish} variant="primary">
-            Publish
-          </Button>
-          <Button onClick={increaseVersion} variant="secondary">
-            Create Email
-          </Button>
-          {!published && (
-            <Button onClick={handleDeleteIssue} variant="danger">
-              Delete
-            </Button>
-          )}
+            <div className="h-4 w-px bg-neu-300 dark:bg-neu-700" />
+
+            <div className="flex items-center gap-2">
+              <Button
+                disabled={isMutating}
+                onClick={handlePublish}
+                variant="primary"
+              >
+                Publish
+              </Button>
+              <Button
+                disabled={isMutating}
+                onClick={increaseVersion}
+                variant="secondary"
+              >
+                Email
+              </Button>
+              {!published && (
+                <Button
+                  disabled={isMutating}
+                  onClick={handleDeleteIssue}
+                  variant="danger"
+                >
+                  ×
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </>
+    </header>
   );
 }

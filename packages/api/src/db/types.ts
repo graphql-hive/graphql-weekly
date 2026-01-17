@@ -119,9 +119,19 @@ export interface VerificationRow {
   value: string
 }
 
+export interface AllowedEmailRow {
+  email: string
+}
+
+export interface AllowedOrgRow {
+  org: string
+}
+
 // Kysely database interface
 export interface Database {
   account: AccountRow
+  AllowedEmail: AllowedEmailRow
+  AllowedOrg: AllowedOrgRow
   Author: AuthorRow
   Issue: IssueRow
   Link: LinkRow

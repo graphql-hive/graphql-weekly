@@ -13,40 +13,54 @@ export interface AuthEnv {
 export const GITHUB_REPO_OWNER = 'graphql-hive'
 export const GITHUB_REPO_NAME = 'graphql-weekly'
 
-// Test token for E2E tests - only checked in LOCAL_DEV mode
+// Test token for E2E tests
 const TEST_COLLABORATOR_TOKEN = 'test-access-token'
 
-export async function checkGitHubCollaborator(
-  accessToken: string,
-  opts?: { localDev?: boolean },
-): Promise<boolean> {
-  // In local dev mode, only the test collaborator token grants access
-  // Any other token (including non-collaborator test tokens) returns false
-  if (opts?.localDev) {
-    return accessToken === TEST_COLLABORATOR_TOKEN
+export function isTestCollaboratorToken(accessToken: string): boolean {
+  return accessToken === TEST_COLLABORATOR_TOKEN
+}
+
+export async function getVerifiedEmails(accessToken: string): Promise<string[]> {
+  const response = await fetch('https://api.github.com/user/emails', {
+    headers: {
+      Accept: 'application/vnd.github.v3+json',
+      Authorization: `Bearer ${accessToken}`,
+      'User-Agent': 'graphql-weekly-api',
+    },
+  })
+
+  if (!response.ok) {
+    console.log('[getVerifiedEmails] GitHub API error:', response.status)
+    return []
   }
 
-  const response = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
-    {
-      headers: {
-        Accept: 'application/vnd.github.v3+json',
-        Authorization: `Bearer ${accessToken}`,
-        'User-Agent': 'graphql-weekly-cms',
-      },
+  const emails = (await response.json()) as {
+    email: string
+    verified: boolean
+  }[]
+
+  const verified = emails.filter((e) => e.verified).map((e) => e.email)
+  console.log('[getVerifiedEmails] found:', verified.length, 'verified emails')
+  return verified
+}
+
+export async function getUserOrgs(accessToken: string): Promise<string[]> {
+  const response = await fetch('https://api.github.com/user/orgs', {
+    headers: {
+      Accept: 'application/vnd.github.v3+json',
+      Authorization: `Bearer ${accessToken}`,
+      'User-Agent': 'graphql-weekly-api',
     },
-  )
-  if (!response.ok) return false
-  const data = (await response.json()) as {
-    permissions?: {
-      admin?: boolean
-      maintain?: boolean
-      push?: boolean
-      triage?: boolean
-    }
+  })
+
+  if (!response.ok) {
+    console.log('[getUserOrgs] GitHub API error:', response.status)
+    return []
   }
-  const p = data.permissions
-  return p?.triage || p?.push || p?.maintain || p?.admin || false
+
+  const orgs = (await response.json()) as {login: string}[]
+  console.log('[getUserOrgs] user orgs:', orgs.map((o) => o.login))
+  return orgs.map((o) => o.login)
 }
 
 export function createAuth(env: AuthEnv) {
@@ -86,7 +100,7 @@ export function createAuth(env: AuthEnv) {
         mapProfileToUser: (profile) => ({
           handle: profile.login,
         }),
-        scope: ['read:user', 'repo'],
+        scope: ['read:user', 'user:email', 'read:org'],
       },
     },
     trustedOrigins: [

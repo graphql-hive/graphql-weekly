@@ -493,9 +493,8 @@ function IssuePageContent({ id }: { id: string }) {
         isMutating && "cursor-progress",
       )}
     >
-      <Navbar>
-        <PageHeader {...issue} topics={topics} />
-      </Navbar>
+      <Navbar />
+      <PageHeader {...issue} topics={topics} />
 
       <main className="max-w-4xl mx-auto px-4 py-6">
         <div className="mb-6 flex gap-2">

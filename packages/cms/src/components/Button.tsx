@@ -21,10 +21,9 @@ const sizeClasses = {
 export type ButtonSize = keyof typeof sizeClasses;
 
 const baseClasses =
-  "border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center";
+  "border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5";
 
 interface ButtonBaseProps {
-  block?: boolean;
   className?: string;
   disabled?: boolean;
   size?: ButtonSize;
@@ -63,7 +62,6 @@ export function Button(props: ButtonProps) {
     baseClasses,
     sizeClasses[props.size ?? "md"],
     variantClasses[props.variant ?? "primary"],
-    props.block ? "block w-full" : "inline-block",
     props.disabled && "opacity-30 pointer-events-none",
     props.className,
   );
@@ -71,7 +69,6 @@ export function Button(props: ButtonProps) {
   if ("href" in props && typeof props.href === "string") {
     const {
       as: ___,
-      block: __,
       className: ____,
       disabled,
       href,
@@ -93,17 +90,16 @@ export function Button(props: ButtonProps) {
   if (props.as) {
     const {
       as,
-      block: _1,
-      className: _2,
-      size: _3,
-      variant: _4,
+      className: _1,
+      size: _2,
+      variant: _3,
       ...rest
     } = props;
     const Root = as as "span";
     return <Root {...rest} className={className} />;
   }
 
-  const { block: _1, className: _2, size: _3, variant: _4, ...rest } = props;
+  const { className: _1, size: _2, variant: _3, ...rest } = props;
   return <button {...rest} className={className} />;
 }
 

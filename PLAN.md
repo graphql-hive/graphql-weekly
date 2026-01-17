@@ -2,6 +2,14 @@
 
 ## Remaining Work
 
+### Auth
+
+- [ ] Mock GitHub API responses for E2E tests (`/user/emails`, `/user/orgs`)
+- [ ] Switch to GitHub App for granular permissions (`contents:read`, `members:read`)
+- [ ] When repo is public, switch org check to repo collaborator permissions check
+- [ ] Remove debug logging from auth functions
+- [ ] Run migration on production (`--remote`)
+
 ### CMS
 
 - [ ] Add topic name autocomplete in editor
