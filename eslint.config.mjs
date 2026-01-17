@@ -8,6 +8,16 @@ export default [
     },
   },
   {
+    files: ["**/*.ts", "**/*.tsx", "**/*.mjs"],
+    languageOptions: {
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ["*.config.ts", "*.config.mjs"],
+        },
+      },
+    },
+  },
+  {
     ignores: [
       ".cache/",
       ".localflare/",

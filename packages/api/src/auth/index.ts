@@ -1,6 +1,8 @@
 import { betterAuth } from 'better-auth'
 import { D1Dialect } from 'kysely-d1'
 
+import { createDb } from '../db'
+
 export interface AuthEnv {
   BETTER_AUTH_SECRET: string
   E2E_TEST?: string
@@ -63,8 +65,54 @@ export async function getUserOrgs(accessToken: string): Promise<string[]> {
   return orgs.map((o) => o.login)
 }
 
+async function checkIsCollaborator(
+  db: ReturnType<typeof createDb>,
+  userId: string,
+  isTestMode: boolean
+): Promise<boolean> {
+  const account = await db
+    .selectFrom('account')
+    .select('accessToken')
+    .where('userId', '=', userId)
+    .where('providerId', '=', 'github')
+    .executeTakeFirst()
+
+  if (!account?.accessToken) return false
+
+  // Test token shortcut for E2E
+  if (isTestMode && isTestCollaboratorToken(account.accessToken)) {
+    return true
+  }
+
+  // Check email allowlist
+  const verifiedEmails = await getVerifiedEmails(account.accessToken)
+  if (verifiedEmails.length > 0) {
+    const allowed = await db
+      .selectFrom('AllowedEmail')
+      .select('email')
+      .where('email', 'in', verifiedEmails)
+      .executeTakeFirst()
+    if (allowed) return true
+  }
+
+  // Check org allowlist
+  const userOrgs = await getUserOrgs(account.accessToken)
+  if (userOrgs.length > 0) {
+    const allowed = await db
+      .selectFrom('AllowedOrg')
+      .select('org')
+      .where('org', 'in', userOrgs)
+      .executeTakeFirst()
+    if (allowed) return true
+  }
+
+  return false
+}
+
 export function createAuth(env: AuthEnv) {
-  const isTestMode = env.LOCAL_DEV || env.E2E_TEST
+  const isTestMode = !!(env.LOCAL_DEV || env.E2E_TEST)
+  const db = createDb(env.graphqlweekly)
+
   return betterAuth({
     basePath: '/auth',
     baseURL: isTestMode
@@ -73,6 +121,21 @@ export function createAuth(env: AuthEnv) {
     database: {
       dialect: new D1Dialect({ database: env.graphqlweekly }),
       type: 'sqlite',
+    },
+    databaseHooks: {
+      session: {
+        create: {
+          before: async (session) => {
+            const isCollaborator = await checkIsCollaborator(db, session.userId, isTestMode)
+            return {
+              data: {
+                ...session,
+                isCollaborator,
+              },
+            }
+          },
+        },
+      },
     },
     // Enable email/password auth for E2E tests
     advanced: isTestMode
@@ -91,6 +154,12 @@ export function createAuth(env: AuthEnv) {
         maxAge: 60 * 5, // 5 minutes
       },
       expiresIn: 60 * 60 * 24 * 7, // 7 days
+      fields: {
+        isCollaborator: {
+          required: false,
+          type: 'boolean',
+        },
+      },
       updateAge: 60 * 60 * 24, // 1 day
     },
     socialProviders: {
