@@ -1,28 +1,28 @@
 import { createAuthClient } from "better-auth/react";
 
 export interface User {
-  id: string;
+  createdAt: Date;
   email: string;
   emailVerified: boolean;
-  name: string;
-  image?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
   handle: string;
+  id: string;
+  image?: string | null;
+  name: string;
+  updatedAt: Date;
 }
 
 export interface Session {
-  user: User;
   session: {
-    id: string;
-    userId: string;
-    token: string;
-    expiresAt: Date;
-    ipAddress?: string | null;
-    userAgent?: string | null;
     createdAt: Date;
+    expiresAt: Date;
+    id: string;
+    ipAddress?: string | null;
+    token: string;
     updatedAt: Date;
+    userAgent?: string | null;
+    userId: string;
   };
+  user: User;
 }
 
 const baseURL = import.meta.env.DEV
@@ -41,7 +41,9 @@ export const { signIn, signOut } = authClient;
 
 const _useSession = authClient.useSession;
 export function useSession() {
-  return _useSession() as ReturnType<typeof _useSession> & { data: Session | null };
+  return _useSession() as ReturnType<typeof _useSession> & {
+    data: Session | null;
+  };
 }
 
 export function logIn() {

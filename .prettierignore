@@ -6,3 +6,4 @@
 **/.cache/
 **/playwright-report/
 **/test-results/
+.wrangler

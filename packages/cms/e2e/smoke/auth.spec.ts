@@ -21,7 +21,7 @@ test.describe("Auth Gate (unauthenticated)", () => {
 
     await expect(page.getByText("GraphQL Weekly CMS")).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Sign in with GitHub" }),
+      page.getByRole("button", { name: "Log in with GitHub" }),
     ).toBeVisible();
   });
 

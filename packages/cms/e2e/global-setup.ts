@@ -6,16 +6,16 @@ const API_URL = "http://localhost:2012";
 
 const TEST_USER = {
   email: "test@e2e.local",
+  handle: "e2e-test-user",
   name: "E2E Test User",
   password: "test-password-123",
-  handle: "e2e-test-user",
 };
 
 const NON_COLLABORATOR_USER = {
   email: "non-collaborator@e2e.local",
+  handle: "non-collaborator",
   name: "Non-Collaborator User",
   password: "test-password-456",
-  handle: "non-collaborator",
 };
 
 setup("create authenticated session", async ({ playwright }) => {
@@ -35,9 +35,9 @@ setup("create authenticated session", async ({ playwright }) => {
   const signUpResponse = await request.post(`${API_URL}/auth/sign-up/email`, {
     data: {
       email: TEST_USER.email,
+      handle: TEST_USER.handle,
       name: TEST_USER.name,
       password: TEST_USER.password,
-      handle: TEST_USER.handle,
     },
   });
 
@@ -105,9 +105,9 @@ setup("create non-collaborator session", async ({ playwright }) => {
     {
       data: {
         email: NON_COLLABORATOR_USER.email,
+        handle: NON_COLLABORATOR_USER.handle,
         name: NON_COLLABORATOR_USER.name,
         password: NON_COLLABORATOR_USER.password,
-        handle: NON_COLLABORATOR_USER.handle,
       },
     },
   );

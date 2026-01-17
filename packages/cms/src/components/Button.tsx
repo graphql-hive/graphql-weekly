@@ -91,12 +91,19 @@ export function Button(props: ButtonProps) {
   }
 
   if (props.as) {
-    const { as, block: __, className: ___, size: ____, variant: _, ...rest } = props;
+    const {
+      as,
+      block: _1,
+      className: _2,
+      size: _3,
+      variant: _4,
+      ...rest
+    } = props;
     const Root = as as "span";
     return <Root {...rest} className={className} />;
   }
 
-  const { block: __, className: ___, size: ____, variant: _, ...rest } = props;
+  const { block: _1, className: _2, size: _3, variant: _4, ...rest } = props;
   return <button {...rest} className={className} />;
 }
 

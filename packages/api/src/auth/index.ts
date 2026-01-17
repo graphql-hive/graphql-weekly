@@ -89,19 +89,19 @@ export function createAuth(env: AuthEnv) {
         scope: ['read:user', 'repo'],
       },
     },
-    user: {
-      additionalFields: {
-        handle: {
-          type: 'string',
-          required: true,
-        },
-      },
-    },
     trustedOrigins: [
       'https://graphqlweekly.com',
       'https://*.graphqlweekly.com',
       'http://localhost:*',
     ],
+    user: {
+      additionalFields: {
+        handle: {
+          required: true,
+          type: 'string',
+        },
+      },
+    },
   })
 }
 
