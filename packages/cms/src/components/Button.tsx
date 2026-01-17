@@ -13,13 +13,21 @@ const variantClasses = {
 
 export type ButtonVariant = keyof typeof variantClasses;
 
+const sizeClasses = {
+  md: "py-3 px-4 text-sm",
+  sm: "py-1.5 px-3 text-xs",
+} satisfies Record<string, string>;
+
+export type ButtonSize = keyof typeof sizeClasses;
+
 const baseClasses =
-  "py-3 px-4 border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none text-sm disabled:opacity-30 disabled:cursor-not-allowed";
+  "border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none disabled:opacity-30 disabled:cursor-not-allowed";
 
 interface ButtonBaseProps {
   block?: boolean;
   className?: string;
   disabled?: boolean;
+  size?: ButtonSize;
   variant?: ButtonVariant;
 }
 
@@ -53,6 +61,7 @@ export type ButtonProps =
 export function Button(props: ButtonProps) {
   const className = cn(
     baseClasses,
+    sizeClasses[props.size ?? "md"],
     variantClasses[props.variant ?? "primary"],
     props.block ? "block w-full" : "inline-block",
     props.disabled && "opacity-30 pointer-events-none",
@@ -66,6 +75,7 @@ export function Button(props: ButtonProps) {
       className: ____,
       disabled,
       href,
+      size: _____,
       variant: _,
       ...rest
     } = props;
@@ -81,12 +91,12 @@ export function Button(props: ButtonProps) {
   }
 
   if (props.as) {
-    const { as, block: __, className: ___, variant: _, ...rest } = props;
+    const { as, block: __, className: ___, size: ____, variant: _, ...rest } = props;
     const Root = as as "span";
     return <Root {...rest} className={className} />;
   }
 
-  const { block: __, className: ___, variant: _, ...rest } = props;
+  const { block: __, className: ___, size: ____, variant: _, ...rest } = props;
   return <button {...rest} className={className} />;
 }
 

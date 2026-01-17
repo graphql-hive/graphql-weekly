@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { signOut, useSession } from "../client/auth";
+import { Button } from "./Button";
 
 type IconProps = React.SVGProps<SVGSVGElement>;
 
@@ -113,7 +114,11 @@ export function UserProfile() {
   }
 
   if (!session?.user) {
-    return null;
+    return (
+      <Button href="/login" size="sm" variant="secondary">
+        Log in
+      </Button>
+    );
   }
 
   const { user } = session;

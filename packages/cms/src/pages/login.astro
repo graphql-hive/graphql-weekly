@@ -1,47 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { Button } from "../components/Button";
 import "../index.css";
 ---
 
-<Layout title="Sign In - GraphQL Weekly CMS">
+<Layout title="Log In - GraphQL Weekly CMS">
   <div class="min-h-screen bg-neu-50 dark:bg-neu-950 flex items-center justify-center">
     <div class="text-center p-8 max-w-md">
       <h1 class="text-2xl text-neu-900 dark:text-neu-100 mb-4">
         GraphQL Weekly CMS
       </h1>
       <p class="text-neu-600 dark:text-neu-400 mb-6">
-        Sign in with GitHub to manage newsletter issues.
+        Log in with GitHub to manage newsletter issues.
       </p>
-      <button
-        id="sign-in-btn"
-        class="px-4 py-2 bg-neu-900 dark:bg-neu-100 text-neu-100 dark:text-neu-900 hover:bg-neu-800 dark:hover:bg-neu-200 cursor-pointer"
-      >
-        Sign in with GitHub
-      </button>
+      <Button id="login-btn" client:load>Log in with GitHub</Button>
     </div>
   </div>
 </Layout>
 
 <script>
-  const btn = document.getElementById("sign-in-btn");
-  
-  btn?.addEventListener("click", async () => {
-    const isLocal = window.location.hostname === "localhost";
-    const apiUrl = isLocal ? "http://localhost:2012" : "https://api.graphqlweekly.com";
-    
-    const response = await fetch(`${apiUrl}/auth/sign-in/social`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        provider: "github",
-        callbackURL: window.location.origin,
-      }),
-      credentials: "include",
-    });
-    
-    const data = await response.json();
-    if (data.url) {
-      window.location.href = data.url;
-    }
+  import { signIn } from "../client/auth";
+
+  document.getElementById("login-btn")?.addEventListener("click", () => {
+    signIn.social({ provider: "github", callbackURL: window.location.origin });
   });
 </script>
