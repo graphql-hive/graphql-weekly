@@ -50,13 +50,9 @@ export async function getUserOrgs(accessToken: string): Promise<string[]> {
     },
   })
 
-  if (!response.ok) {
-    console.log('[getUserOrgs] GitHub API error:', response.status)
-    return []
-  }
+  if (!response.ok) return []
 
   const orgs = (await response.json()) as {login: string}[]
-  console.log('[getUserOrgs] user orgs:', orgs.map((o) => o.login))
   return orgs.map((o) => o.login)
 }
 
