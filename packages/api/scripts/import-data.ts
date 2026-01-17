@@ -9,7 +9,6 @@
  *   bun run scripts/import-data.ts --remote   # Import to remote D1
  */
 
-// @ts-ignore - bun types not in tsconfig on CI
 import { $ } from 'bun'
 import { existsSync, readFileSync } from 'node:fs'
 
@@ -143,7 +142,6 @@ async function main() {
 
     const sql = generateInsertSQL(config, data)
     const tmpFile = `/tmp/import_${config.table}.sql`
-    // @ts-ignore - bun types not in tsconfig on CI
     Bun.write(tmpFile, sql)
 
     try {
