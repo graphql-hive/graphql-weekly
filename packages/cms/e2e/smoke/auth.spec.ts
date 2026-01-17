@@ -48,11 +48,12 @@ test.describe("Auth Gate (authenticated)", () => {
     await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
   });
 
-  test("user menu shows identity and sign out button", async ({ page }) => {
+  test("user menu shows handle and sign out button", async ({ page }) => {
     await page.goto("/");
 
     const userMenu = page.getByRole("button", { name: "User menu" });
     await expect(userMenu).toBeVisible();
+    await expect(userMenu).toContainText("e2e-test-user");
     await userMenu.click();
 
     await expect(page.getByRole("menuitem", { name: "Log out" })).toBeVisible();

@@ -19,9 +19,7 @@ import "../index.css";
 </Layout>
 
 <script>
-  import { signIn } from "../client/auth";
+  import { logIn } from "../client/auth";
 
-  document.getElementById("login-btn")?.addEventListener("click", () => {
-    signIn.social({ provider: "github", callbackURL: window.location.origin });
-  });
+  document.getElementById("login-btn")?.addEventListener("click", logIn);
 </script>

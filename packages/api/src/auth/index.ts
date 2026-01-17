@@ -83,7 +83,18 @@ export function createAuth(env: AuthEnv) {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
+        mapProfileToUser: (profile) => ({
+          handle: profile.login,
+        }),
         scope: ['read:user', 'repo'],
+      },
+    },
+    user: {
+      additionalFields: {
+        handle: {
+          type: 'string',
+          required: true,
+        },
       },
     },
     trustedOrigins: [

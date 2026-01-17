@@ -8,12 +8,14 @@ const TEST_USER = {
   email: "test@e2e.local",
   name: "E2E Test User",
   password: "test-password-123",
+  handle: "e2e-test-user",
 };
 
 const NON_COLLABORATOR_USER = {
   email: "non-collaborator@e2e.local",
   name: "Non-Collaborator User",
   password: "test-password-456",
+  handle: "non-collaborator",
 };
 
 setup("create authenticated session", async ({ playwright }) => {
@@ -35,6 +37,7 @@ setup("create authenticated session", async ({ playwright }) => {
       email: TEST_USER.email,
       name: TEST_USER.name,
       password: TEST_USER.password,
+      handle: TEST_USER.handle,
     },
   });
 
@@ -104,6 +107,7 @@ setup("create non-collaborator session", async ({ playwright }) => {
         email: NON_COLLABORATOR_USER.email,
         name: NON_COLLABORATOR_USER.name,
         password: NON_COLLABORATOR_USER.password,
+        handle: NON_COLLABORATOR_USER.handle,
       },
     },
   );

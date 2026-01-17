@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { signOut, useSession } from "../client/auth";
+import { logIn, signOut, useSession } from "../client/auth";
 import { Button } from "./Button";
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -64,7 +64,7 @@ function UserAvatar({
     return (
       <img
         alt={name || "User"}
-        className={`${className} rounded-lg bg-neu-200 dark:bg-neu-700`}
+        className={`${className} bg-neu-200 dark:bg-neu-700`}
         src={image}
       />
     );
@@ -72,7 +72,7 @@ function UserAvatar({
 
   return (
     <div
-      className={`${className} rounded-lg bg-neu-200 dark:bg-neu-700 flex items-center justify-center text-xs font-medium text-neu-600 dark:text-neu-300`}
+      className={`${className} bg-neu-200 dark:bg-neu-700 flex items-center justify-center text-xs text-neu-600 dark:text-neu-300`}
     >
       {name?.[0]?.toUpperCase() || "?"}
     </div>
@@ -80,16 +80,15 @@ function UserAvatar({
 }
 
 function UserProfileSkeleton() {
-  return (
-    <div className="flex items-center gap-2 rounded-lg p-2">
-      <div className="size-8 rounded-lg bg-neu-200 dark:bg-neu-700 animate-pulse" />
-      <div className="h-4 w-20 rounded bg-neu-200 dark:bg-neu-700 animate-pulse" />
-    </div>
-  );
+  return <div className="h-8 w-24 bg-neu-100 dark:bg-neu-800 animate-pulse" />;
 }
 
 const menuItemClass =
-  "flex w-full items-center gap-2 px-3 py-2 text-sm text-neu-700 dark:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors";
+  "flex w-full items-center gap-2 px-3 py-2 text-sm text-neu-700 dark:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0";
+
+const websiteURL = import.meta.env.DEV
+  ? "http://localhost:2015"
+  : "https://graphqlweekly.com";
 
 export function UserProfile() {
   const { data: session, isPending } = useSession();
@@ -115,7 +114,7 @@ export function UserProfile() {
 
   if (!session?.user) {
     return (
-      <Button href="/login" size="sm" variant="secondary">
+      <Button onClick={logIn} size="sm" variant="secondary">
         Log in
       </Button>
     );
@@ -129,24 +128,24 @@ export function UserProfile() {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="User menu"
-        className="flex w-full items-center gap-2 rounded-lg p-2 text-left hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors"
+        className="flex w-full items-center gap-3 p-2 text-left hover:bg-neu-100 hover:duration-0 dark:hover:bg-neu-800 transition-colors"
         onClick={() => setOpen(!open)}
         type="button"
       >
-        <UserAvatar image={user.image} name={user.name} />
-        <span className="text-sm font-medium text-neu-900 dark:text-neu-100 truncate">
-          {user.name}
+        <span className="text-sm text-neu-900 dark:text-neu-100 truncate">
+          {user.handle}
         </span>
+        <UserAvatar image={user.image} name={user.name} />
       </button>
 
       {open && (
         <div
-          className="absolute top-full right-0 mt-1 min-w-48 rounded-lg border border-neu-200 dark:border-neu-700 bg-white dark:bg-neu-900 shadow-lg py-1"
+          className="absolute top-full right-0 mt-1 min-w-48 border border-neu-200 dark:border-neu-700 bg-white dark:bg-neu-900"
           role="menu"
         >
           <a
             className={menuItemClass}
-            href="https://graphqlweekly.com"
+            href={websiteURL}
             rel="noopener noreferrer"
             role="menuitem"
             target="_blank"
@@ -156,7 +155,7 @@ export function UserProfile() {
           </a>
           <a
             className={menuItemClass}
-            href="https://graphqlweekly.com/graphql"
+            href={`${websiteURL}/graphql`}
             rel="noopener noreferrer"
             role="menuitem"
             target="_blank"
@@ -174,7 +173,7 @@ export function UserProfile() {
             <IconGithub className="size-4" />
             GitHub
           </a>
-          <div className="my-1 border-t border-neu-200 dark:border-neu-700" />
+          <hr className="border-t border-neu-200 dark:border-neu-700" />
           <button
             className={menuItemClass}
             onClick={() =>

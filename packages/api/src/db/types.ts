@@ -76,6 +76,7 @@ export interface UserRow {
   createdAt: string
   email: string
   emailVerified: number // SQLite boolean
+  handle: string
   id: string
   image: string | null
   name: string

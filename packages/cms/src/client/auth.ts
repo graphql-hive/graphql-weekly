@@ -1,12 +1,35 @@
 import { createAuthClient } from "better-auth/react";
 
-// Auth always uses production API (for OAuth callbacks to work)
-// Local dev uses local API
+export interface User {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  image?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  handle: string;
+}
+
+export interface Session {
+  user: User;
+  session: {
+    id: string;
+    userId: string;
+    token: string;
+    expiresAt: Date;
+    ipAddress?: string | null;
+    userAgent?: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+}
+
 const baseURL = import.meta.env.DEV
   ? "http://localhost:2012"
   : "https://api.graphqlweekly.com";
 
-export const authClient = createAuthClient({
+const authClient = createAuthClient({
   basePath: "/auth",
   baseURL,
   fetchOptions: {
@@ -14,4 +37,13 @@ export const authClient = createAuthClient({
   },
 });
 
-export const { signIn, signOut, useSession } = authClient;
+export const { signIn, signOut } = authClient;
+
+const _useSession = authClient.useSession;
+export function useSession() {
+  return _useSession() as ReturnType<typeof _useSession> & { data: Session | null };
+}
+
+export function logIn() {
+  signIn.social({ provider: "github" });
+}

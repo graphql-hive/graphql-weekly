@@ -21,7 +21,7 @@ const sizeClasses = {
 export type ButtonSize = keyof typeof sizeClasses;
 
 const baseClasses =
-  "border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none disabled:opacity-30 disabled:cursor-not-allowed";
+  "border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center";
 
 interface ButtonBaseProps {
   block?: boolean;
