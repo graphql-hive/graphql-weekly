@@ -3,13 +3,7 @@ import type { Kysely } from 'kysely'
 /// <reference types="@cloudflare/workers-types" />
 import { createSchema, createYoga } from 'graphql-yoga'
 
-import {
-  type AuthEnv,
-  createAuth,
-  getUserOrgs,
-  getVerifiedEmails,
-  isTestCollaboratorToken,
-} from './auth'
+import { type AuthEnv, createAuth } from './auth'
 import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
 
@@ -259,60 +253,11 @@ export default {
           headers: request.headers,
         })
         if (session?.user) {
-          const account = await db
-            .selectFrom('account')
-            .select('accessToken')
-            .where('userId', '=', session.user.id)
-            .where('providerId', '=', 'github')
-            .executeTakeFirst()
-
-          const isLocalDev = !!(env.LOCAL_DEV || env.E2E_TEST)
-
-          let isCollaborator = false
-
-          console.log('[auth] checking collaborator status, hasAccount:', !!account?.accessToken)
-
-          // Test token shortcut for E2E
-          if (isLocalDev && account?.accessToken && isTestCollaboratorToken(account.accessToken)) {
-            console.log('[auth] test token match')
-            isCollaborator = true
-          }
-
-          // Check email allowlist first (single API call, faster)
-          if (!isCollaborator && account?.accessToken) {
-            const verifiedEmails = await getVerifiedEmails(account.accessToken)
-            if (verifiedEmails.length > 0) {
-              const allowed = await db
-                .selectFrom('AllowedEmail')
-                .select('email')
-                .where('email', 'in', verifiedEmails)
-                .executeTakeFirst()
-              if (allowed) console.log('[auth] email allowlist match:', allowed.email)
-              isCollaborator = !!allowed
-            }
-          }
-
-          // Fallback: check org membership against allowlist
-          if (!isCollaborator && account?.accessToken) {
-            const userOrgs = await getUserOrgs(account.accessToken)
-            if (userOrgs.length > 0) {
-              const allowed = await db
-                .selectFrom('AllowedOrg')
-                .select('org')
-                .where('org', 'in', userOrgs)
-                .executeTakeFirst()
-              if (allowed) console.log('[auth] org allowlist match:', allowed.org)
-              isCollaborator = !!allowed
-            }
-          }
-
-          console.log('[auth] final isCollaborator:', isCollaborator)
-
           user = {
             email: session.user.email,
             id: session.user.id,
             image: session.user.image,
-            isCollaborator,
+            isCollaborator: !!(session.session as { isCollaborator?: boolean }).isCollaborator,
             name: session.user.name,
           }
         }

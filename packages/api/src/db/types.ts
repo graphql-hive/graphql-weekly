@@ -88,6 +88,7 @@ export interface SessionRow {
   expiresAt: string
   id: string
   ipAddress: string | null
+  isCollaborator: number | null // SQLite boolean
   token: string
   updatedAt: string
   userAgent: string | null

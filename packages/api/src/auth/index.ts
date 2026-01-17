@@ -31,19 +31,14 @@ export async function getVerifiedEmails(accessToken: string): Promise<string[]> 
     },
   })
 
-  if (!response.ok) {
-    console.log('[getVerifiedEmails] GitHub API error:', response.status)
-    return []
-  }
+  if (!response.ok) return []
 
   const emails = (await response.json()) as {
     email: string
     verified: boolean
   }[]
 
-  const verified = emails.filter((e) => e.verified).map((e) => e.email)
-  console.log('[getVerifiedEmails] found:', verified.length, 'verified emails')
-  return verified
+  return emails.filter((e) => e.verified).map((e) => e.email)
 }
 
 export async function getUserOrgs(accessToken: string): Promise<string[]> {
@@ -149,17 +144,17 @@ export function createAuth(env: AuthEnv) {
     emailAndPassword: isTestMode ? { enabled: true } : undefined,
     secret: env.BETTER_AUTH_SECRET,
     session: {
-      cookieCache: {
-        enabled: true,
-        maxAge: 60 * 5, // 5 minutes
-      },
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
-      fields: {
+      additionalFields: {
         isCollaborator: {
           required: false,
           type: 'boolean',
         },
       },
+      cookieCache: {
+        enabled: true,
+        maxAge: 60 * 5, // 5 minutes
+      },
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
       updateAge: 60 * 60 * 24, // 1 day
     },
     socialProviders: {
