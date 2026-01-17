@@ -11,9 +11,7 @@ export default [
     files: ["**/*.ts", "**/*.tsx", "**/*.mjs"],
     languageOptions: {
       parserOptions: {
-        projectService: {
-          allowDefaultProject: ["*.config.ts", "*.config.mjs"],
-        },
+        projectService: true,
       },
     },
   },
@@ -36,6 +34,8 @@ export default [
       "generated/",
       "**/generated/",
       "**/data-dump/",
+      "*.config.mjs",
+      "*.config.mts",
     ],
   },
   {

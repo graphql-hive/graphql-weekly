@@ -22,7 +22,9 @@ export function isTestCollaboratorToken(accessToken: string): boolean {
   return accessToken === TEST_COLLABORATOR_TOKEN
 }
 
-export async function getVerifiedEmails(accessToken: string): Promise<string[]> {
+export async function getVerifiedEmails(
+  accessToken: string,
+): Promise<string[]> {
   const response = await fetch('https://api.github.com/user/emails', {
     headers: {
       Accept: 'application/vnd.github.v3+json',
@@ -52,14 +54,14 @@ export async function getUserOrgs(accessToken: string): Promise<string[]> {
 
   if (!response.ok) return []
 
-  const orgs = (await response.json()) as {login: string}[]
+  const orgs = (await response.json()) as { login: string }[]
   return orgs.map((o) => o.login)
 }
 
 async function checkIsCollaborator(
   db: ReturnType<typeof createDb>,
   userId: string,
-  isTestMode: boolean
+  isTestMode: boolean,
 ): Promise<boolean> {
   const account = await db
     .selectFrom('account')
@@ -117,7 +119,11 @@ export function createAuth(env: AuthEnv) {
       session: {
         create: {
           before: async (session) => {
-            const isCollaborator = await checkIsCollaborator(db, session.userId, isTestMode)
+            const isCollaborator = await checkIsCollaborator(
+              db,
+              session.userId,
+              isTestMode,
+            )
             return {
               data: {
                 ...session,

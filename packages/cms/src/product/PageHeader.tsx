@@ -75,7 +75,7 @@ export function PageHeader({
     <header
       className={cn(
         "sticky top-12 z-10 bg-neu-100 dark:bg-neu-900 border-b border-neu-200 dark:border-neu-800",
-        isMutating && "opacity-70 pointer-events-none"
+        isMutating && "opacity-70 pointer-events-none",
       )}
     >
       <div className="max-w-4xl mx-auto px-4 py-3">

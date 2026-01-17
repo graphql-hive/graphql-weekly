@@ -257,7 +257,8 @@ export default {
             email: session.user.email,
             id: session.user.id,
             image: session.user.image,
-            isCollaborator: !!(session.session as { isCollaborator?: boolean }).isCollaborator,
+            isCollaborator: !!(session.session as { isCollaborator?: boolean })
+              .isCollaborator,
             name: session.user.name,
           }
         }
