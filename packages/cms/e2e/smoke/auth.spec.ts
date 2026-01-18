@@ -45,7 +45,7 @@ test.describe("Auth Gate (authenticated)", () => {
     await page.goto(href!);
 
     await expect(page).not.toHaveURL("/login");
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
   });
 
   test("user menu shows handle and sign out button", async ({ page }) => {
@@ -66,7 +66,7 @@ test.describe("Auth Gate (authenticated)", () => {
     const firstIssue = page.locator('a[href^="/issue/"]').first();
     const issueHref = await firstIssue.getAttribute("href");
     await page.goto(issueHref!);
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     await page.getByRole("button", { name: "User menu" }).click();
     await page.getByRole("menuitem", { name: "Log out" }).click();

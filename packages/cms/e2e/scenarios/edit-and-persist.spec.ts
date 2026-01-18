@@ -8,7 +8,7 @@ test.describe("Edit and Persist", () => {
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
   });
 
   test("edit link metadata and verify persistence after refresh", async ({
@@ -54,7 +54,7 @@ test.describe("Edit and Persist", () => {
 
     // Refresh
     await page.reload();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     // Verify edits persisted
     const persistedTitle = page.locator('[aria-label="Link title"]').first();

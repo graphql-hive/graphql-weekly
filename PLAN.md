@@ -4,11 +4,12 @@
 
 ### Auth
 
-- [ ] Mock GitHub API responses for E2E tests (`/user/emails`, `/user/orgs`)
+- [x] Mock GitHub API in E2E tests (`/user/emails`, `/user/orgs`) via Bun mock server — tests real `getVerifiedEmails`/`getUserOrgs` code paths
 - [ ] Switch to GitHub App for granular permissions (`contents:read`, `members:read`)
 - [ ] When repo is public, switch org check to repo collaborator permissions check
-- [ ] Remove debug logging from auth functions
-- [ ] Run migration on production (`--remote`)
+- [x] Remove debug logging from auth functions
+- [x] Run migration on production (`--remote`)
+- [x] Cache `isCollaborator` in session (computed once at login, not per-request)
 
 ### CMS
 

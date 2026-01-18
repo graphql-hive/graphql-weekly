@@ -16,7 +16,7 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  reporter: "html",
+  reporter: [["list", { printSteps: true }], ["html"]],
   retries: process.env.CI ? 2 : 1,
   testDir: "./e2e",
   use: {
@@ -24,11 +24,17 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   workers: process.env.CI ? 1 : 2,
-  // Start both API and CMS servers before tests
+  // Start mock GitHub API, API server, and CMS before tests
   webServer: [
     {
+      command: "bun run e2e/github-mock-server.ts",
+      reuseExistingServer: !process.env.CI,
+      timeout: 10_000,
+      url: "http://localhost:2099/user/emails",
+    },
+    {
       command: process.env.CI
-        ? String.raw`cd ../api && printf 'E2E_TEST=1\nBETTER_AUTH_SECRET=e2e-test-secret-at-least-32-chars\nGITHUB_CLIENT_ID=test\nGITHUB_CLIENT_SECRET=test\n' > .dev.vars && bun run migrate:up && bun run dev`
+        ? String.raw`cd ../api && printf 'E2E_TEST=1\nBETTER_AUTH_SECRET=e2e-test-secret-at-least-32-chars\nGITHUB_CLIENT_ID=test\nGITHUB_CLIENT_SECRET=test\nGITHUB_API_URL=http://localhost:2099\n' > .dev.vars && bun run migrate:up && bun run dev`
         : "cd ../api && bun run migrate:up && bun run dev",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,

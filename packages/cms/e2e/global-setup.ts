@@ -25,6 +25,12 @@ setup("create authenticated session", async ({ playwright }) => {
     extraHTTPHeaders: { Origin: "http://localhost:2016" },
   });
 
+  // Add test email to AllowedEmail so mock GitHub API grants collaborator access
+  execSync(
+    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO AllowedEmail (email) VALUES ('test@e2e.local')"`,
+    { stdio: "inherit" },
+  );
+
   // Create test account for GitHub collaborator check (will be linked after user creation)
   execSync(
     `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'test-account-id'"`,
@@ -47,8 +53,8 @@ setup("create authenticated session", async ({ playwright }) => {
     console.log("ℹ️ User might already exist, trying to sign in...");
   }
 
-  // Sign in to get session cookies
-  const signInResponse = await request.post(`${API_URL}/auth/sign-in/email`, {
+  // Sign in to get user ID
+  let signInResponse = await request.post(`${API_URL}/auth/sign-in/email`, {
     data: {
       email: TEST_USER.email,
       password: TEST_USER.password,
@@ -60,10 +66,6 @@ setup("create authenticated session", async ({ playwright }) => {
     throw new Error(`Failed to sign in: ${signInResponse.status()} ${text}`);
   }
 
-  // Save the storage state with the session cookies
-  await request.storageState({ path: "e2e/.auth/user.json" });
-  console.log("✅ Auth state saved");
-
   // Get the user ID from the session
   const meResponse = await request.post(`${API_URL}/graphql`, {
     data: { query: "{ me { id } }" },
@@ -74,16 +76,39 @@ setup("create authenticated session", async ({ playwright }) => {
   };
   const userId = meData.data?.me?.id;
 
-  if (userId) {
-    // Create/update account to link to this user for collaborator check
-    execSync(
-      `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('test-account-id', '${userId}', '12345', 'github', 'test-access-token', datetime('now'), datetime('now'))"`,
-      { stdio: "inherit" },
-    );
-    console.log("✅ Linked GitHub account for collaborator check");
-  } else {
-    console.warn("⚠️ Could not get user ID to link account");
+  if (!userId) {
+    throw new Error("Could not get user ID");
   }
+
+  // Link GitHub account with collaborator-token BEFORE the final sign-in
+  execSync(
+    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('test-account-id', '${userId}', '12345', 'github', 'collaborator-token', datetime('now'), datetime('now'))"`,
+    { stdio: "inherit" },
+  );
+  console.log("✅ Linked GitHub account for collaborator check");
+
+  // Sign out to clear the session (cookie cache has stale isCollaborator)
+  await request.post(`${API_URL}/auth/sign-out`);
+
+  // Sign in AGAIN - this creates a new session with isCollaborator=true
+  // because checkIsCollaborator will find the account with collaborator-token
+  signInResponse = await request.post(`${API_URL}/auth/sign-in/email`, {
+    data: {
+      email: TEST_USER.email,
+      password: TEST_USER.password,
+    },
+  });
+
+  if (!signInResponse.ok()) {
+    const text = await signInResponse.text();
+    throw new Error(
+      `Failed to sign in after linking account: ${signInResponse.status()} ${text}`,
+    );
+  }
+
+  // Save the storage state with the new session (has isCollaborator=true)
+  await request.storageState({ path: "e2e/.auth/user.json" });
+  console.log("✅ Auth state saved with collaborator session");
 });
 
 setup("create non-collaborator session", async ({ playwright }) => {

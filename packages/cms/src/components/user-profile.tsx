@@ -140,7 +140,7 @@ export function UserProfile() {
 
       {open && (
         <div
-          className="absolute top-full right-0 mt-1 min-w-48 border border-neu-200 dark:border-neu-700 bg-white dark:bg-neu-900"
+          className="absolute top-full right-0 z-40 mt-1 min-w-48 border border-neu-200 dark:border-neu-700 bg-white dark:bg-neu-900"
           role="menu"
         >
           <a

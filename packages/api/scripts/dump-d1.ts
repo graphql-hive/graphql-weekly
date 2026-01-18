@@ -44,7 +44,10 @@ async function main() {
       const filename = table
         .replaceAll(/([a-z])([A-Z])/g, '$1-$2')
         .toLowerCase()
-      writeFileSync(`${DATA_DIR}/${filename}.json`, JSON.stringify(rows, null, 2))
+      writeFileSync(
+        `${DATA_DIR}/${filename}.json`,
+        JSON.stringify(rows, null, 2),
+      )
     } catch {
       console.log(`  ${table}: skipped (table may not exist)`)
     }

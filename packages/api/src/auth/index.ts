@@ -6,6 +6,7 @@ import { createDb } from '../db'
 export interface AuthEnv {
   BETTER_AUTH_SECRET: string
   E2E_TEST?: string
+  GITHUB_API_URL?: string // For E2E mocking, defaults to https://api.github.com
   GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
   graphqlweekly: D1Database
@@ -15,17 +16,13 @@ export interface AuthEnv {
 export const GITHUB_REPO_OWNER = 'graphql-hive'
 export const GITHUB_REPO_NAME = 'graphql-weekly'
 
-// Test token for E2E tests
-const TEST_COLLABORATOR_TOKEN = 'test-access-token'
-
-export function isTestCollaboratorToken(accessToken: string): boolean {
-  return accessToken === TEST_COLLABORATOR_TOKEN
-}
+const DEFAULT_GITHUB_API_URL = 'https://api.github.com'
 
 export async function getVerifiedEmails(
   accessToken: string,
+  githubApiUrl = DEFAULT_GITHUB_API_URL,
 ): Promise<string[]> {
-  const response = await fetch('https://api.github.com/user/emails', {
+  const response = await fetch(`${githubApiUrl}/user/emails`, {
     headers: {
       Accept: 'application/vnd.github.v3+json',
       Authorization: `Bearer ${accessToken}`,
@@ -43,8 +40,11 @@ export async function getVerifiedEmails(
   return emails.filter((e) => e.verified).map((e) => e.email)
 }
 
-export async function getUserOrgs(accessToken: string): Promise<string[]> {
-  const response = await fetch('https://api.github.com/user/orgs', {
+export async function getUserOrgs(
+  accessToken: string,
+  githubApiUrl = DEFAULT_GITHUB_API_URL,
+): Promise<string[]> {
+  const response = await fetch(`${githubApiUrl}/user/orgs`, {
     headers: {
       Accept: 'application/vnd.github.v3+json',
       Authorization: `Bearer ${accessToken}`,
@@ -61,7 +61,7 @@ export async function getUserOrgs(accessToken: string): Promise<string[]> {
 async function checkIsCollaborator(
   db: ReturnType<typeof createDb>,
   userId: string,
-  isTestMode: boolean,
+  githubApiUrl: string,
 ): Promise<boolean> {
   const account = await db
     .selectFrom('account')
@@ -72,13 +72,11 @@ async function checkIsCollaborator(
 
   if (!account?.accessToken) return false
 
-  // Test token shortcut for E2E
-  if (isTestMode && isTestCollaboratorToken(account.accessToken)) {
-    return true
-  }
-
   // Check email allowlist
-  const verifiedEmails = await getVerifiedEmails(account.accessToken)
+  const verifiedEmails = await getVerifiedEmails(
+    account.accessToken,
+    githubApiUrl,
+  )
   if (verifiedEmails.length > 0) {
     const allowed = await db
       .selectFrom('AllowedEmail')
@@ -89,7 +87,7 @@ async function checkIsCollaborator(
   }
 
   // Check org allowlist
-  const userOrgs = await getUserOrgs(account.accessToken)
+  const userOrgs = await getUserOrgs(account.accessToken, githubApiUrl)
   if (userOrgs.length > 0) {
     const allowed = await db
       .selectFrom('AllowedOrg')
@@ -104,6 +102,7 @@ async function checkIsCollaborator(
 
 export function createAuth(env: AuthEnv) {
   const isTestMode = !!(env.LOCAL_DEV || env.E2E_TEST)
+  const githubApiUrl = env.GITHUB_API_URL || DEFAULT_GITHUB_API_URL
   const db = createDb(env.graphqlweekly)
 
   return betterAuth({
@@ -122,7 +121,7 @@ export function createAuth(env: AuthEnv) {
             const isCollaborator = await checkIsCollaborator(
               db,
               session.userId,
-              isTestMode,
+              githubApiUrl,
             )
             return {
               data: {

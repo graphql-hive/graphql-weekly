@@ -145,7 +145,7 @@ export function SubmissionsPanel() {
 
   return createPortal(
     <div
-      className="fixed z-50 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-sm"
+      className="fixed z-10 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-sm"
       style={{
         height: minimized ? "auto" : size.height,
         left: position.x,

@@ -7,7 +7,7 @@ test.describe("Topic Organization", () => {
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
   });
 
   test("create topic and verify it persists", async ({ page }) => {
@@ -26,7 +26,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify persistence
     await page.reload();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
   });
 
@@ -89,7 +89,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify persistence
     await page.reload();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     const persistedTopic1Box = await topic1Header.boundingBox();
     const persistedTopic2Box = await topic2Header.boundingBox();
@@ -133,7 +133,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify it's still gone
     await page.reload();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
     await expect(
       page.getByRole("heading", { name: topicName }),
     ).not.toBeVisible();
@@ -203,7 +203,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify persistence
     await page.reload();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     // Verify link is still in topic
     const persistedTopicSection = page.locator("section").filter({
