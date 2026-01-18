@@ -20,11 +20,11 @@ test.describe("Delete Workflow", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for link to appear
+    // Wait for link to appear (mutation + refetch can be slow)
     const linkUrlInput = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
-    await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
+    await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card containing our test URL and hover
     const linkCard = linkUrlInput.locator(
@@ -63,11 +63,11 @@ test.describe("Delete Workflow", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for link
+    // Wait for link (mutation + refetch can be slow)
     const linkUrlInput = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
-    await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
+    await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card and delete it
     const linkCard = linkUrlInput.locator(

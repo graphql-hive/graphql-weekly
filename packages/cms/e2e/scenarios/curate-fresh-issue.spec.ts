@@ -30,27 +30,35 @@ test.describe("Curate Fresh Issue", () => {
       expect(newCount).toBeGreaterThan(initialCount);
     }).toPass({ timeout: 5000 });
 
-    // 2. Navigate to the new issue
-    const newIssueLink = page.getByText(`#${issueNum}`);
-    await expect(newIssueLink).toBeVisible();
+    // 2. Navigate to the new issue - wait for real ID (not temp-xxx)
+    const newIssueLink = page
+      .locator('a[href^="/issue/"]')
+      .filter({ hasText: `#${issueNum}` })
+      .first();
+    await expect(async () => {
+      const href = await newIssueLink.getAttribute("href");
+      expect(href).not.toContain("temp-");
+    }).toPass({ timeout: 10_000 });
     await newIssueLink.click();
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     // 3. Add a link via URL
+    const testUrl = `https://example.com/curate-test-${timestamp}`;
     const linkInput = page.getByPlaceholder("Paste URL to add link...");
-    await linkInput.fill("https://graphql.org/learn/");
+    await linkInput.fill(testUrl);
 
     const addLinkBtn = page.getByRole("button", { exact: true, name: "Add" });
     await addLinkBtn.click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for link to appear in Unassigned
+    // Wait for our specific link to appear in Unassigned
     const unassignedSection = page.locator("section").filter({
       has: page.getByRole("heading", { name: "Unassigned" }),
     });
-    await expect(
-      unassignedSection.locator('[aria-label="Link URL"]').first(),
-    ).toBeVisible({ timeout: 5000 });
+    const ourLinkCard = unassignedSection.locator(
+      `[aria-label="Link URL"][value="${testUrl}"]`,
+    );
+    await expect(ourLinkCard).toBeVisible({ timeout: 10_000 });
 
     // 4. Create a topic (for coverage, even though we can't assign links to it yet)
     const topicInput = page.getByPlaceholder("New topic name...");
@@ -62,18 +70,15 @@ test.describe("Curate Fresh Issue", () => {
     await expect(topicInput).toHaveValue("");
     await expect(
       page.getByRole("heading", { name: testTopicName }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10_000 });
 
-    // 5. Edit the link's title and description
-    const titleInput = unassignedSection
-      .locator('[aria-label="Link title"]')
-      .first();
+    // 5. Edit the link's title and description - target our specific link
+    const linkCard = ourLinkCard.locator("xpath=ancestor::*[@role='button']");
+    const titleInput = linkCard.locator('[aria-label="Link title"]');
     await titleInput.click();
     await titleInput.fill(testLinkTitle);
 
-    const descInput = unassignedSection
-      .locator('[aria-label="Link description"]')
-      .first();
+    const descInput = linkCard.locator('[aria-label="Link description"]');
     await descInput.click();
     await descInput.fill(testLinkDesc);
 
@@ -84,7 +89,7 @@ test.describe("Curate Fresh Issue", () => {
     const saveBtn = page.getByRole("button", { name: "Save" });
     await saveBtn.click();
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
-      timeout: 10_000,
+      timeout: 15_000,
     });
 
     // 7. Refresh and verify persistence
@@ -96,13 +101,18 @@ test.describe("Curate Fresh Issue", () => {
       page.getByRole("heading", { name: testTopicName }),
     ).toBeVisible();
 
-    // Link should have persisted title and description
-    const persistedTitle = page.locator('[aria-label="Link title"]').first();
+    // Link should have persisted title and description - find by URL
+    const persistedLinkCard = page
+      .locator(`[aria-label="Link URL"][value="${testUrl}"]`)
+      .locator("xpath=ancestor::*[@role='button']");
+    await expect(persistedLinkCard).toBeVisible({ timeout: 10_000 });
+
+    const persistedTitle = persistedLinkCard.locator('[aria-label="Link title"]');
     await expect(persistedTitle).toHaveValue(testLinkTitle);
 
-    const persistedDesc = page
-      .locator('[aria-label="Link description"]')
-      .first();
+    const persistedDesc = persistedLinkCard.locator(
+      '[aria-label="Link description"]',
+    );
     await expect(persistedDesc).toHaveValue(testLinkDesc);
   });
 
@@ -122,24 +132,28 @@ test.describe("Curate Fresh Issue", () => {
       .locator('[aria-label="Link title"]')
       .count();
 
-    // Add two links
+    // Add two links - wait for first to appear before adding second
     const linkInput = page.getByPlaceholder("Paste URL to add link...");
     const addBtn = page.getByRole("button", { exact: true, name: "Add" });
 
     await linkInput.fill(`https://example.com/article-1-${timestamp}`);
     await addBtn.click();
     await expect(linkInput).toHaveValue("");
+    // Wait for first link to appear in DOM
+    await expect(
+      unassignedSection.locator('[aria-label="Link title"]'),
+    ).toHaveCount(initialLinkCount + 1, { timeout: 10_000 });
 
     await linkInput.fill(`https://example.com/article-2-${timestamp}`);
     await addBtn.click();
     await expect(linkInput).toHaveValue("");
 
-    // Verify links were added
+    // Verify links were added (mutation + refetch can be slow)
     await expect(async () => {
       const newCount = await unassignedSection
         .locator('[aria-label="Link title"]')
         .count();
       expect(newCount).toBeGreaterThanOrEqual(initialLinkCount + 2);
-    }).toPass({ timeout: 5000 });
+    }).toPass({ timeout: 10_000 });
   });
 });

@@ -6,7 +6,12 @@ import { readFileSync } from "node:fs";
 
 const endpoint =
   "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
-const token = "JWT_TOKEN_REDACTED";
+const token = process.env.OLD_JWT_TOKEN;
+
+if (!token) {
+  console.error("OLD_JWT_TOKEN not set. Run: direnv allow");
+  process.exit(1);
+}
 
 const client = new GraphQLClient(endpoint, {
   headers: { Authorization: token },

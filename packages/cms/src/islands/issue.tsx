@@ -334,27 +334,21 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Other handlers
   const submitTopic = useCallback(() => {
+    const topicTitle = newTopic;
+    setNewTopic("");
     createTopicMutation.mutate(
-      { issue_comment: " ", issueId: id, title: newTopic },
-      {
-        onSuccess: () => {
-          setNewTopic("");
-          invalidateQueries();
-        },
-      },
+      { issue_comment: " ", issueId: id, title: topicTitle },
+      { onSuccess: invalidateQueries },
     );
   }, [createTopicMutation, newTopic, id, invalidateQueries]);
 
   const submitLink = useCallback(() => {
     if (!newLink || !/^https?:\/\/.+/.test(newLink)) return;
+    const urlToAdd = newLink;
+    setNewLink("");
     createLinkMutation.mutate(
-      { url: newLink },
-      {
-        onSuccess: () => {
-          setNewLink("");
-          invalidateQueries();
-        },
-      },
+      { url: urlToAdd },
+      { onSuccess: invalidateQueries },
     );
   }, [createLinkMutation, newLink, invalidateQueries]);
 
