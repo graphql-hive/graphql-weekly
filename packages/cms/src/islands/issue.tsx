@@ -388,15 +388,21 @@ function IssuePageContent({ id }: { id: string }) {
         onSuccess: (data) => {
           const realId = data.createLink?.id;
           if (realId) {
-            // Migrate any edits from temp ID to real ID
-            setEditedLinks((prev) => {
-              const edits = prev.get(tempId);
-              if (!edits) return prev;
-              const next = new Map(prev);
-              next.delete(tempId);
-              next.set(realId, edits);
-              return next;
-            });
+            // Replace temp-ID with real ID in cache immediately (don't wait for refetch)
+            qc.setQueryData<{ allLinks: typeof allLinks }>(
+              ["AllLinks"],
+              (old) => {
+                if (!old) return old;
+                return {
+                  ...old,
+                  allLinks:
+                    old.allLinks?.map((l) =>
+                      l.id === tempId ? { ...l, id: realId } : l,
+                    ) ?? null,
+                };
+              },
+            );
+            // Note: editedLinks no longer needs migration - it's keyed by URL (immutable)
             // Migrate any link moves from temp ID to real ID
             setLinkMoves((prev) => {
               const topicId = prev.get(tempId);
@@ -421,12 +427,13 @@ function IssuePageContent({ id }: { id: string }) {
     );
   }, [createLinkMutation, newLink, invalidateQueries, qc]);
 
+  // Key edits by URL (immutable) instead of ID (changes from temp→real)
   const handleLinkChange = useCallback((link: LinkData) => {
+    if (!link.url) return;
     setEditedLinks((prev) =>
-      new Map(prev).set(link.id!, {
+      new Map(prev).set(link.url!, {
         text: link.text ?? null,
         title: link.title ?? null,
-        url: link.url ?? null,
       }),
     );
   }, []);
@@ -473,7 +480,8 @@ function IssuePageContent({ id }: { id: string }) {
 
   const getMergedLink = useCallback(
     (link: LinkData): LinkData => {
-      const edits = editedLinks.get(link.id!);
+      if (!link.url) return link;
+      const edits = editedLinks.get(link.url);
       return edits ? { ...link, ...edits } : link;
     },
     [editedLinks],
@@ -484,14 +492,22 @@ function IssuePageContent({ id }: { id: string }) {
   const changesCount = editedLinks.size + deletedLinkIds.size + linkMoves.size;
 
   const saveAll = useCallback(async () => {
-    const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
-      updateLinkMutation.mutateAsync({
-        id: lid,
-        text: changes.text!,
-        title: changes.title!,
-        url: changes.url!,
-      }),
-    );
+    // Resolve URL → current ID at save time (handles temp→real ID transition)
+    const savedUrls = new Set<string>();
+    const linkPromises = [...editedLinks.entries()].map(([url, changes]) => {
+      const link = [...linkMap.values()].find((l) => l.url === url);
+      if (!link?.id || link.id.startsWith("temp-")) {
+        // Skip links that haven't been persisted yet - keep in editedLinks
+        return Promise.resolve();
+      }
+      savedUrls.add(url);
+      return updateLinkMutation.mutateAsync({
+        id: link.id,
+        text: changes.text ?? "",
+        title: changes.title ?? "",
+        url,
+      });
+    });
 
     const deletePromises = [...deletedLinkIds].map((lid) =>
       deleteLinkMutation.mutateAsync({ id: lid }),
@@ -507,7 +523,14 @@ function IssuePageContent({ id }: { id: string }) {
 
     await Promise.all([...linkPromises, ...deletePromises, ...movePromises]);
 
-    setEditedLinks(new Map());
+    // Only clear edits that were actually saved
+    setEditedLinks((prev) => {
+      const next = new Map(prev);
+      for (const url of savedUrls) {
+        next.delete(url);
+      }
+      return next;
+    });
     setDeletedLinkIds(new Set());
     setLinkMoves(new Map());
     invalidateQueries();
@@ -515,6 +538,7 @@ function IssuePageContent({ id }: { id: string }) {
     editedLinks,
     deletedLinkIds,
     linkMoves,
+    linkMap,
     updateLinkMutation,
     deleteLinkMutation,
     addLinksToTopicMutation,
