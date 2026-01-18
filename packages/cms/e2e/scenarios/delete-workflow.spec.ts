@@ -27,9 +27,7 @@ test.describe("Delete Workflow", () => {
     await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card containing our test URL and hover
-    const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::*[@role='button']",
-    );
+    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
     await linkCard.hover();
 
     // Click delete button within this card
@@ -74,9 +72,7 @@ test.describe("Delete Workflow", () => {
     await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card and delete it
-    const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::*[@role='button']",
-    );
+    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
     await linkCard.hover();
     await linkCard.locator('[aria-label="Delete link"]').click();
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();

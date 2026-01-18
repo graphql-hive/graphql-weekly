@@ -373,13 +373,16 @@ function IssuePageContent({ id }: { id: string }) {
       {
         onError: () => {
           // Rollback optimistic update
-          qc.setQueryData<{ allLinks: typeof allLinks }>(["AllLinks"], (old) => {
-            if (!old) return old;
-            return {
-              ...old,
-              allLinks: old.allLinks?.filter((l) => l.id !== tempId) ?? null,
-            };
-          });
+          qc.setQueryData<{ allLinks: typeof allLinks }>(
+            ["AllLinks"],
+            (old) => {
+              if (!old) return old;
+              return {
+                ...old,
+                allLinks: old.allLinks?.filter((l) => l.id !== tempId) ?? null,
+              };
+            },
+          );
           setNewLink(urlToAdd);
         },
         onSuccess: (data) => {

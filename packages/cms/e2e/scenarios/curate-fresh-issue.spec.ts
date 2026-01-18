@@ -108,7 +108,9 @@ test.describe("Curate Fresh Issue", () => {
       .locator("xpath=ancestor::*[@role='button']");
     await expect(persistedLinkCard).toBeVisible({ timeout: 10_000 });
 
-    const persistedTitle = persistedLinkCard.locator('[aria-label="Link title"]');
+    const persistedTitle = persistedLinkCard.locator(
+      '[aria-label="Link title"]',
+    );
     await expect(persistedTitle).toHaveValue(testLinkTitle);
 
     const persistedDesc = persistedLinkCard.locator(

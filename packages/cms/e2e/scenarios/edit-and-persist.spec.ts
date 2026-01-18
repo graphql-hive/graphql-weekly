@@ -28,7 +28,9 @@ test.describe("Edit and Persist", () => {
     // Wait for network to settle (mutation + refetch complete) before editing
     // This ensures the link has a real ID from the server, not a temp optimistic ID
 
-    const ourLinkUrl = page.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
+    const ourLinkUrl = page.locator(
+      `[aria-label="Link URL"][value="${testUrl}"]`,
+    );
     await expect(ourLinkUrl).toBeVisible({ timeout: 5000 });
 
     const linkCard = ourLinkUrl.locator("xpath=ancestor::*[@role='button']");
@@ -91,7 +93,9 @@ test.describe("Edit and Persist", () => {
 
     // Wait for network to settle (mutation + refetch complete)
 
-    const ourLinkUrl = page.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
+    const ourLinkUrl = page.locator(
+      `[aria-label="Link URL"][value="${testUrl}"]`,
+    );
     await expect(ourLinkUrl).toBeVisible({ timeout: 5000 });
 
     const linkCard = ourLinkUrl.locator("xpath=ancestor::*[@role='button']");

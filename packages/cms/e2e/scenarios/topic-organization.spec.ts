@@ -180,9 +180,7 @@ test.describe("Topic Organization", () => {
     await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
 
     // Find the link card (sortable item with keyboard support)
-    const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::*[@role='button']",
-    );
+    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
     await expect(linkCard).toBeVisible();
 
     // Find the topic section (drop target)
