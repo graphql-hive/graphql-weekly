@@ -101,5 +101,6 @@ Auth tests: 10 passed
 Scenario tests: 7 failed (timing issues with GraphQL mutations), 2 flaky, 1 skipped, 6 passed
 
 Known issues:
+
 - Tests timeout waiting for `Issue #\d+` or mutation callbacks
 - May be related to async mutation timing in CI environment

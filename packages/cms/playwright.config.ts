@@ -33,7 +33,8 @@ export default defineConfig({
       url: "http://localhost:2099/user/emails",
     },
     {
-      command: "cd ../api && bun run migrate:up && bunx wrangler dev --env-file .dev.vars.e2e",
+      command:
+        "cd ../api && bun run migrate:up && bunx wrangler dev --env-file .dev.vars.e2e",
       reuseExistingServer: false,
       timeout: 60_000,
       url: "http://localhost:2012/health",
