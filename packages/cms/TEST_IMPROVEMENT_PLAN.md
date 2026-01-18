@@ -17,9 +17,9 @@
 
 ### Test Results
 
-With `--workers=1 --retries=2`: 21 passed, 1 failed, 1 flaky
+With `--workers=1 --retries=2`: 22 passed (2 flaky), 1 failed (unrelated issue creation test)
 
-Tests are **flaky, not broken**. The test architecture is correct but exposed a pre-existing race condition.
+**Race condition fixed** (commit dba3507). Remaining flakiness is due to Cloudflare Worker errors, not application logic.
 
 ---
 
@@ -162,7 +162,7 @@ isMigrating.current = false;
 
 ## Recommendation
 
-**Implement Option A (key by URL)** for these reasons:
+**Option A (key by URL) implemented** (commit dba3507) for these reasons:
 
 1. **Simplest mental model** - URL is the natural identifier for a link from user's perspective
 2. **No migration logic** - Eliminates the race condition entirely
@@ -172,6 +172,8 @@ isMigrating.current = false;
 The only downside (can't edit URL without losing other edits) is acceptable because:
 - URL edits are rare
 - User can save other edits first, then edit URL
+
+**Additional fix**: Also update the query cache directly with the real ID in `onSuccess` (not just invalidate). This ensures `linkMap` has the real ID immediately, rather than waiting for async refetch.
 
 ---
 
