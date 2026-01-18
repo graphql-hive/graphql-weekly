@@ -6,6 +6,7 @@ import {
   type AllIssuesQuery,
   useCreateIssueMutation,
 } from "../generated/graphql";
+import { replaceTempIdInCache } from "../optimistic-cache";
 
 interface IssueCreatorProps {
   defaultValue?: string;
@@ -104,18 +105,12 @@ export function IssueCreator({
         // Replace temp-ID with real ID in cache immediately (don't wait for refetch)
         const realId = data.createIssue?.id;
         if (realId) {
-          qc.setQueriesData<AllIssuesQuery>(
-            { queryKey: ["AllIssues"] },
-            (old) => {
-              if (!old) return old;
-              return {
-                ...old,
-                allIssues:
-                  old.allIssues?.map((i) =>
-                    i.id === optimisticIssue.id ? { ...i, id: realId } : i,
-                  ) ?? null,
-              };
-            },
+          replaceTempIdInCache<AllIssuesQuery>(
+            qc,
+            ["AllIssues"],
+            "allIssues",
+            optimisticIssue.id,
+            realId,
           );
         }
       },

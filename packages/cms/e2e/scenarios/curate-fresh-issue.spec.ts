@@ -1,11 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+// Dedicated issue number range for curate-fresh-issue tests: 60000-69999
+const getTestIssueNumber = () => 60_000 + Math.floor(Math.random() * 10_000);
+
 test.describe("Curate Fresh Issue", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
-
-  // Dedicated issue number range for curate-fresh-issue tests: 60000-69999
-  const getTestIssueNumber = () =>
-    60_000 + Math.floor(Math.random() * 10_000);
 
   test("create issue, add link, edit metadata, save, verify persistence", async ({
     page,

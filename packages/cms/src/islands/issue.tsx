@@ -41,6 +41,7 @@ import { Button } from "../components/Button";
 import { Loading } from "../components/Loading";
 import { Navbar } from "../components/Navbar";
 import {
+  type AllLinksQuery,
   type IssueQuery,
   useAddLinksToTopicMutation,
   useAllLinksQuery,
@@ -52,6 +53,7 @@ import {
   useUpdateTopicMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
+import { replaceTempIdInCache } from "../optimistic-cache";
 import { LinkCard } from "../product/LinkCard";
 import { PageHeader } from "../product/PageHeader";
 import {
@@ -389,18 +391,12 @@ function IssuePageContent({ id }: { id: string }) {
           const realId = data.createLink?.id;
           if (realId) {
             // Replace temp-ID with real ID in cache immediately (don't wait for refetch)
-            qc.setQueryData<{ allLinks: typeof allLinks }>(
+            replaceTempIdInCache<AllLinksQuery>(
+              qc,
               ["AllLinks"],
-              (old) => {
-                if (!old) return old;
-                return {
-                  ...old,
-                  allLinks:
-                    old.allLinks?.map((l) =>
-                      l.id === tempId ? { ...l, id: realId } : l,
-                    ) ?? null,
-                };
-              },
+              "allLinks",
+              tempId,
+              realId,
             );
             // Note: editedLinks no longer needs migration - it's keyed by URL (immutable)
             // Migrate any link moves from temp ID to real ID
