@@ -26,6 +26,7 @@ query Issue($id: String!) {
   issue(id: $id) {
     id
     title
+    number
     published
     versionCount
     previewImage

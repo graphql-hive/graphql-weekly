@@ -16,7 +16,7 @@ test.describe("Topic Organization", () => {
     const issueNumber = 70_000 + Math.floor(Math.random() * 10_000);
     const res = await request.post(`${API_URL}/graphql`, {
       data: {
-        query: `mutation { createIssue(title: "Issue ${issueNumber}", number: ${issueNumber}, published: false) { id } }`,
+        query: `mutation { createIssue(title: "Topic Organization Test", number: ${issueNumber}, published: false) { id } }`,
       },
     });
     const json = await res.json();

@@ -17,16 +17,16 @@ interface Topic {
 
 interface PageHeaderProps {
   id?: string | null;
+  number?: number | null;
   published?: boolean | null;
-  title?: string | null;
   topics?: Topic[];
   versionCount?: number | null;
 }
 
 export function PageHeader({
   id,
+  number,
   published,
-  title,
   topics = [],
   versionCount,
 }: PageHeaderProps) {
@@ -68,9 +68,6 @@ export function PageHeader({
     globalThis.location.href = BASE_PATH;
   };
 
-  // Extract issue number from title like "Issue 1"
-  const issueNumber = title?.match(/\d+/)?.[0];
-
   return (
     <header
       className={cn(
@@ -83,7 +80,7 @@ export function PageHeader({
           {/* Left: Issue identification */}
           <div className="flex items-baseline gap-3">
             <h1 className="text-base text-neu-900 dark:text-neu-100 tabular-nums">
-              Issue #{issueNumber}
+              Issue #{number}
             </h1>
             <span className="text-xs text-neu-500 dark:text-neu-500 tabular-nums">
               v{versionCount}
