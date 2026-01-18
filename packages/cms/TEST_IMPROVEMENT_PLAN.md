@@ -1,117 +1,191 @@
 # Test Improvement Plan
 
-## Problem
+## Current State
 
-Tests pass individually in `--ui` mode but fail when run together due to shared state.
+### Implemented (commits a1c2903, 099bd18)
 
-## Root Causes
+1. **Dedicated issues per spec file** - Each scenario spec creates its own issue via GraphQL API in `beforeAll`:
+   - `delete-workflow.spec.ts` → issue number 90000-99999
+   - `edit-and-persist.spec.ts` → issue number 80000-89999
+   - `topic-organization.spec.ts` → issue number 70000-79999
 
-### 1. All scenario tests target the same issue
+2. **Dedicated sign-out user** - `e2e/.auth/signout-user.json` prevents session invalidation from affecting other tests
 
-```ts
-// delete-workflow, edit-and-persist, topic-organization
-await page.locator('a[href^="/issue/"]').first().click();
+3. **Direct navigation** - Tests navigate to `/issue/${issueId}` instead of clicking through list
+
+4. **PageHeader fix** - Uses `number` prop directly instead of regex extraction from title
+
+### Test Results
+
+With `--workers=1 --retries=2`: 21 passed, 1 failed, 1 flaky
+
+Tests are **flaky, not broken**. The test architecture is correct but exposed a pre-existing race condition.
+
+---
+
+## Discovered Issue: Optimistic Update Race Condition
+
+### Symptom
+
+Link edits don't persist after save+reload, even though "unsaved" indicator appears and disappears correctly.
+
+### Root Cause
+
+Race condition in temp→real ID migration during optimistic updates:
+
+```
+Timeline:
+1. User clicks "Add" → createLinkMutation starts
+2. Optimistic update adds link with temp-ID to cache
+3. Link appears in UI with temp-ID
+4. User edits title → editedLinks.set(tempId, {...})
+5. Mutation completes → onSuccess migrates editedLinks[tempId] → editedLinks[realId]
+6. User clicks Save → updateLinkMutation(realId, edits)
+7. Reload → edits are gone
 ```
 
-Parallel runs modify the same DB row → save conflicts, flaky link counts.
+The bug: Step 5's `setEditedLinks` is async. If steps 4-6 interleave with React's state batching, the migration can race with ongoing edits, causing:
+- Edits stored with temp-ID after migration already happened
+- Edits lost when cache is invalidated and refetched
 
-### 2. `curate-fresh-issue` changes what "first" means
+### Why Old Tests Didn't Fail
 
-Creating new issues shifts which issue is `.first()` for other tests mid-run.
+Old tests clicked on existing issues from the list. Those issues already had stable real IDs. The temp→real migration only happens for newly created links, and old tests added links to issues that had time to stabilize.
 
-### 3. Sign-out test invalidates shared session
+---
 
-```ts
-// auth.spec.ts
-await page.getByRole("menuitem", { name: "Log out" }).click();
-```
+## Solution: Robust Optimistic Update Pattern
 
-Server-side session invalidated → other tests using `user.json` get 401s.
+### Option A: Key Edits by URL (Immutable Key) ✓ Recommended
 
-## Solution
+Instead of keying `editedLinks` by link ID (which changes), key by URL (which is immutable):
 
-### Dedicated test issues
+```tsx
+// Before: Map<linkId, edits>
+const [editedLinks, setEditedLinks] = useState<Map<string, Partial<LinkData>>>(new Map());
 
-Each spec file gets its own issue to operate on:
+// After: Map<url, edits>
+const [editedLinks, setEditedLinks] = useState<Map<string, Partial<LinkData>>>(new Map());
 
-| Spec file | Issue |
-|-----------|-------|
-| delete-workflow.spec.ts | Red |
-| edit-and-persist.spec.ts | Green |
-| topic-organization.spec.ts | Blue |
-| curate-fresh-issue.spec.ts | creates new (no change needed) |
+const handleLinkChange = useCallback((link: LinkData) => {
+  if (!link.url) return;
+  setEditedLinks((prev) =>
+    new Map(prev).set(link.url!, {  // Key by URL, not ID
+      text: link.text ?? null,
+      title: link.title ?? null,
+    }),
+  );
+}, []);
 
-### Dedicated sign-out user
-
-Create separate user + auth state for sign-out test:
-
-- `e2e/.auth/signout-user.json`
-
-Other tests remain unaffected when this session is invalidated.
-
-## Implementation
-
-### 1. Update global-setup.ts
-
-```ts
-const TEST_ISSUES = ["Red", "Green", "Blue"];
-
-const SIGNOUT_USER = {
-  email: "signout@e2e.local",
-  handle: "signout-user",
-  name: "Sign Out Test User",
-  password: "test-password-signout",
-};
-
-setup("create test issues", async ({ request }) => {
-  for (const name of TEST_ISSUES) {
-    await request.post(`${API_URL}/graphql`, {
-      data: {
-        query: `mutation { createIssue(input: { number: 0, title: "${name}" }) { id } }`,
-      },
+const saveAll = useCallback(async () => {
+  // Resolve URL → current ID at save time
+  const linkPromises = [...editedLinks.entries()].map(([url, changes]) => {
+    const link = [...linkMap.values()].find(l => l.url === url);
+    if (!link?.id || link.id.startsWith('temp-')) return Promise.resolve(); // Skip unsaved links
+    return updateLinkMutation.mutateAsync({
+      id: link.id,
+      text: changes.text!,
+      title: changes.title!,
+      url,
     });
-  }
-});
-
-setup("create signout user session", async ({ playwright }) => {
-  // Same pattern as other users, save to e2e/.auth/signout-user.json
-});
-```
-
-### 2. Update spec files
-
-```ts
-// delete-workflow.spec.ts
-test.beforeEach(async ({ page }) => {
-  await page.goto("/");
-  await page.locator('a[href^="/issue/"]').filter({ hasText: "Red" }).click();
-  await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
-});
-```
-
-```ts
-// edit-and-persist.spec.ts → "Green"
-// topic-organization.spec.ts → "Blue"
-```
-
-### 3. Update auth.spec.ts sign-out test
-
-```ts
-test("sign out clears session", async ({ browser }) => {
-  const ctx = await browser.newContext({
-    storageState: "e2e/.auth/signout-user.json",
   });
-  const page = await ctx.newPage();
-
-  // ... test sign out ...
-
-  await ctx.close();
-});
+  // ...
+}, [editedLinks, linkMap, updateLinkMutation]);
 ```
 
-## Result
+**Pros:**
+- URL is immutable once link is created
+- No migration needed
+- Simple mental model
 
-- Full parallel execution
-- No shared mutable state
-- No race conditions
-- Deterministic test results
+**Cons:**
+- Can't edit URL without losing other edits (acceptable - URL edits are rare)
+
+### Option B: Block Edits Until Real ID
+
+Disable input fields on links with temp-IDs:
+
+```tsx
+<input
+  disabled={link.id?.startsWith('temp-')}
+  // ...
+/>
+```
+
+**Pros:**
+- Simple
+- Makes race impossible
+
+**Cons:**
+- Worse UX - user has to wait
+
+### Option C: Queue Edits During Migration
+
+Use a ref to queue edits that arrive during mutation:
+
+```tsx
+const pendingEditsRef = useRef<Map<string, Partial<LinkData>>>(new Map());
+const isMigrating = useRef(false);
+
+const handleLinkChange = useCallback((link: LinkData) => {
+  if (isMigrating.current && link.id?.startsWith('temp-')) {
+    // Queue for after migration
+    pendingEditsRef.current.set(link.id, {...});
+    return;
+  }
+  setEditedLinks(...);
+}, []);
+
+// In onSuccess:
+isMigrating.current = true;
+setEditedLinks((prev) => {
+  // ... migrate ...
+  // Also apply any queued edits
+  for (const [tempId, edits] of pendingEditsRef.current) {
+    // ...
+  }
+  pendingEditsRef.current.clear();
+  return next;
+});
+isMigrating.current = false;
+```
+
+**Pros:**
+- No UX impact
+- Handles all edge cases
+
+**Cons:**
+- Complex
+- Refs + state coordination is error-prone
+
+---
+
+## Recommendation
+
+**Implement Option A (key by URL)** for these reasons:
+
+1. **Simplest mental model** - URL is the natural identifier for a link from user's perspective
+2. **No migration logic** - Eliminates the race condition entirely
+3. **Minimal code change** - Only `handleLinkChange` and `saveAll` need updates
+4. **URL stability** - URLs don't change during normal editing flow
+
+The only downside (can't edit URL without losing other edits) is acceptable because:
+- URL edits are rare
+- User can save other edits first, then edit URL
+
+---
+
+## Test Improvements (Future)
+
+1. **Add explicit wait for real ID** in tests that create then edit links:
+   ```ts
+   // After adding link, wait for temp-ID to be replaced
+   await expect(async () => {
+     const linkId = await linkCard.getAttribute('data-link-id');
+     expect(linkId).not.toMatch(/^temp-/);
+   }).toPass({ timeout: 5000 });
+   ```
+
+2. **Increase retries in CI** - Flaky tests need safety margin
+
+3. **Add data-link-id attribute** for debugging test failures
