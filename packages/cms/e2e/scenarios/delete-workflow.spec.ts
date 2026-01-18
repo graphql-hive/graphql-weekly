@@ -71,6 +71,7 @@ test.describe("Delete Workflow", () => {
 
     // Refresh and verify link is gone
     await page.reload();
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     await expect(

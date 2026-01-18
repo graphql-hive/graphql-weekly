@@ -19,26 +19,22 @@ test.describe("Curate Fresh Issue", () => {
     await page.goto("/");
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    const issueLinks = page.locator('a[href^="/issue/"]');
-    const initialCount = await issueLinks.count();
-
     // Use dedicated test issue number to avoid conflicts
     const issueInput = page.getByPlaceholder("Number");
     const addIssueBtn = page.getByRole("button", { name: "Add Issue" });
 
-    // Wait for hydration, then clear and type the number
+    // Wait for hydration, then fill input (uncontrolled input - no race condition)
     await expect(addIssueBtn).toBeEnabled();
-    await issueInput.click();
-    await issueInput.fill("");
-    await issueInput.pressSequentially(String(issueNum), { delay: 50 });
+    await issueInput.fill(String(issueNum));
     await expect(issueInput).toHaveValue(String(issueNum));
 
     // Click and wait for issue to be created
     await addIssueBtn.click();
-    await expect(async () => {
-      const newCount = await issueLinks.count();
-      expect(newCount).toBeGreaterThan(initialCount);
-    }).toPass({ timeout: 10_000 });
+    // Wait for input to be cleared (confirms click worked) then wait for issue to appear
+    await expect(issueInput).toHaveValue("", { timeout: 5000 });
+    await expect(
+      page.locator('a[href^="/issue/"]').filter({ hasText: `#${issueNum}` }),
+    ).toBeVisible({ timeout: 10_000 });
 
     // 2. Navigate to the new issue - wait for real ID (not temp-xxx)
     const newIssueLink = page
@@ -48,7 +44,7 @@ test.describe("Curate Fresh Issue", () => {
     await expect(async () => {
       const href = await newIssueLink.getAttribute("href");
       expect(href).not.toContain("temp-");
-    }).toPass({ timeout: 10_000 });
+    }).toPass({ timeout: 15_000 });
     await newIssueLink.click();
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 

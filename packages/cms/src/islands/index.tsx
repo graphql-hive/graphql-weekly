@@ -49,18 +49,14 @@ export function IndexPage({ initialIssues }: Props) {
 function IndexPageContent({ initialIssues }: Props) {
   const qc = useQueryClient();
   const deleteIssueMutation = useDeleteIssueMutation();
-  const { data } = useAllIssuesQuery(
-    {},
-    {
-      initialData: { allIssues: initialIssues },
-    },
-  );
+  const { data } = useAllIssuesQuery(undefined, {
+    initialData: { allIssues: initialIssues },
+  });
 
   // TODO: This shouldn't be in state, because the perf isn't great.
   // We should just use the focus activeElement and manage it with keyboard events.
   const [selectedIndex, setSelectedIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["AllIssues"] });
@@ -97,12 +93,7 @@ function IndexPageContent({ initialIssues }: Props) {
         case "ArrowUp":
         case "k":
           e.preventDefault();
-          if (selectedIndex === 0) {
-            // Focus the input when at top
-            inputRef.current?.focus();
-          } else {
-            setSelectedIndex((i) => Math.max(i - 1, 0));
-          }
+          setSelectedIndex((i) => Math.max(i - 1, 0));
           break;
         case "End":
         case "G":
@@ -188,11 +179,7 @@ function IndexPageContent({ initialIssues }: Props) {
 
         <main className="flex-1 px-4 pb-16 md:py-8 md:overflow-y-auto">
           <div className="mb-4 p-3 bg-white dark:bg-neu-900  border border-neu-200 dark:border-neu-800">
-            <IssueCreator
-              defaultValue={nextIssueNum}
-              inputRef={inputRef}
-              refresh={refresh}
-            />
+            <IssueCreator defaultValue={nextIssueNum} refresh={refresh} />
           </div>
           <div
             className="bg-white dark:bg-neu-900  border border-neu-200 dark:border-neu-800 overflow-hidden"

@@ -1,7 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
-import { InputWithButton } from "../components/InputWithButton";
+import { Button } from "../components/Button";
+import { ErrorText } from "../components/ErrorText";
+import { Input } from "../components/Input";
 import {
   type AllIssuesQuery,
   useCreateIssueMutation,
@@ -10,41 +12,24 @@ import { replaceTempIdInCache } from "../optimistic-cache";
 
 interface IssueCreatorProps {
   defaultValue?: string;
-  inputRef?: RefObject<HTMLInputElement | null>;
   refresh?: () => void;
 }
 
-export function IssueCreator({
-  defaultValue,
-  inputRef,
-  refresh,
-}: IssueCreatorProps) {
-  const qc = useQueryClient();
-  const [number, setNumber] = useState(defaultValue ?? "");
-  const [numberError, setNumberError] = useState("");
-  const wasCleared = useRef(false);
+const ISSUE_NUMBER_INPUT_ID = "issue-creator-input";
 
-  // Update when defaultValue changes (but not after intentional clear)
-  useEffect(() => {
-    if (wasCleared.current) {
-      wasCleared.current = false;
-      return;
-    }
-    if (defaultValue && number === "") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from props
-      setNumber(defaultValue);
-    }
-  }, [defaultValue, number]);
+export function IssueCreator({ defaultValue, refresh }: IssueCreatorProps) {
+  const qc = useQueryClient();
+  const [numberError, setNumberError] = useState("");
 
   const createIssueMutation = useCreateIssueMutation();
 
-  const handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNumber(e.target.value);
-    setNumberError("");
-  };
+  const handleClick = () => {
+    const input = document.getElementById(
+      ISSUE_NUMBER_INPUT_ID,
+    ) as HTMLInputElement | null;
+    const number = input?.value ?? "";
 
-  const submitIssueChange = () => {
-    if (!number) {
+    if (!number || Number.isNaN(Number(number))) {
       setNumberError("Must supply a valid Issue Number");
       return;
     }
@@ -65,8 +50,8 @@ export function IssueCreator({
       title: variables.title,
     };
 
-    wasCleared.current = true;
-    setNumber("");
+    // Clear input immediately
+    if (input) input.value = "";
 
     // Optimistic update - use setQueriesData to match any AllIssues query regardless of variables
     qc.setQueriesData<AllIssuesQuery>({ queryKey: ["AllIssues"] }, (old) => {
@@ -79,7 +64,9 @@ export function IssueCreator({
 
     createIssueMutation.mutate(variables, {
       onError: (error) => {
-        // Rollback on error
+        // Rollback on error - restore input value
+        if (input) input.value = number;
+
         qc.setQueriesData<AllIssuesQuery>(
           { queryKey: ["AllIssues"] },
           (old) => {
@@ -92,7 +79,6 @@ export function IssueCreator({
             };
           },
         );
-        setNumber(number);
         setNumberError(
           error instanceof Error ? error.message : "Error creating issue",
         );
@@ -117,23 +103,41 @@ export function IssueCreator({
     });
   };
 
-  const isAddButtonDisabled =
-    createIssueMutation.isPending ||
-    number === "" ||
-    Number.isNaN(Number(number));
+  const isAddButtonDisabled = createIssueMutation.isPending;
 
   return (
-    <InputWithButton
-      buttonDisabled={isAddButtonDisabled}
-      buttonLabel="Add Issue"
-      disabled={createIssueMutation.isPending}
-      errorText={numberError}
-      inputRef={inputRef}
-      label="issue number"
-      onChange={handleNumberChange}
-      onClick={submitIssueChange}
-      placeholder="Number"
-      value={number}
-    />
+    <>
+      <div className="flex items-stretch gap-2.5">
+        <label
+          className={`
+            flex items-center flex-1 min-w-0
+            px-4 py-3 text-sm border border-neu-300
+            focus-within:border-primary focus-within:shadow-[inset_0_0_0_1px_var(--color-primary)]
+            dark:bg-neu-800 dark:border-neu-700
+            ${createIssueMutation.isPending ? "italic bg-neu-200" : ""}
+          `}
+          htmlFor={ISSUE_NUMBER_INPUT_ID}
+        >
+          <span className="text-neu-400 dark:text-neu-500 shrink-0">
+            issue number
+          </span>
+          <Input
+            className="flex-1 min-w-0 bg-transparent border-none outline-none text-right dark:text-neu-100 placeholder:text-neu-400 dark:placeholder:text-neu-600 !p-0 !shadow-none"
+            defaultValue={defaultValue}
+            disabled={createIssueMutation.isPending}
+            id={ISSUE_NUMBER_INPUT_ID}
+            placeholder="Number"
+          />
+        </label>
+        <Button
+          className="shrink-0"
+          disabled={isAddButtonDisabled}
+          onClick={handleClick}
+        >
+          Add Issue
+        </Button>
+      </div>
+      {numberError && <ErrorText>{numberError}</ErrorText>}
+    </>
   );
 }

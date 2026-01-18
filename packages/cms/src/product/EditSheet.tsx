@@ -1,8 +1,8 @@
 import { ChangeEventHandler, MouseEventHandler, useId } from "react";
 
 import { Button } from "../components/Button";
+import { ErrorText } from "../components/ErrorText";
 import { Input } from "../components/Input";
-import { InputWithButton } from "../components/InputWithButton";
 import { Label } from "../components/Label";
 import { TextArea } from "../components/TextArea";
 
@@ -56,16 +56,19 @@ export function EditSheet({
         value={description}
       />
       <Label htmlFor={linkId}>Link</Label>
-      <InputWithButton
-        buttonLabel="Go"
-        errorText={linkError}
-        id={linkId}
-        onChange={handlers.handleLinkChange}
-        onClick={() => window.open(link)}
-        placeholder="Link"
-        style={{ width: "70%" }}
-        value={link}
-      />
+      <div className="flex items-stretch gap-2.5" style={{ width: "90%" }}>
+        <Input
+          className="flex-1"
+          id={linkId}
+          onChange={handlers.handleLinkChange}
+          placeholder="Link"
+          value={link}
+        />
+        <Button className="shrink-0" onClick={() => window.open(link)}>
+          Go
+        </Button>
+      </div>
+      {linkError && <ErrorText>{linkError}</ErrorText>}
 
       {hasChanged && (
         <section style={{ marginTop: "16px" }}>
