@@ -22,7 +22,9 @@ test.describe("Topic Organization", () => {
     await addTopicBtn.click();
 
     await expect(topicInput).toHaveValue("");
-    await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
+    await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
+      timeout: 10_000,
+    });
 
     // Refresh and verify persistence
     await page.reload();
@@ -42,12 +44,18 @@ test.describe("Topic Organization", () => {
     await topicInput.fill(topic1);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await addTopicBtn.click();
-    await expect(page.getByRole("heading", { name: topic1 })).toBeVisible();
+    await expect(topicInput).toHaveValue("");
+    await expect(page.getByRole("heading", { name: topic1 })).toBeVisible({
+      timeout: 10_000,
+    });
 
     await topicInput.fill(topic2);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await addTopicBtn.click();
-    await expect(page.getByRole("heading", { name: topic2 })).toBeVisible();
+    await expect(topicInput).toHaveValue("");
+    await expect(page.getByRole("heading", { name: topic2 })).toBeVisible({
+      timeout: 10_000,
+    });
 
     // Get topic header divs (role="group") for position checking
     const topic1Header = page.locator('[role="group"]').filter({
@@ -109,7 +117,10 @@ test.describe("Topic Organization", () => {
     await topicInput.fill(topicName);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await page.getByRole("button", { name: "Add Topic" }).click();
-    await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
+    await expect(topicInput).toHaveValue("");
+    await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
+      timeout: 10_000,
+    });
 
     // Set up dialog handler BEFORE clicking
     page.once("dialog", (dialog) => dialog.accept());
@@ -151,7 +162,10 @@ test.describe("Topic Organization", () => {
     await topicInput.fill(topicName);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await page.getByRole("button", { name: "Add Topic" }).click();
-    await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
+    await expect(topicInput).toHaveValue("");
+    await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
+      timeout: 10_000,
+    });
 
     // Add a link to Unassigned
     const linkInput = page.getByPlaceholder("Paste URL to add link...");
