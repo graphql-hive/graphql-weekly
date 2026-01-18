@@ -28,21 +28,19 @@ export default defineConfig({
   webServer: [
     {
       command: "bun run e2e/github-mock-server.ts",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 10_000,
       url: "http://localhost:2099/user/emails",
     },
     {
-      command: process.env.CI
-        ? String.raw`cd ../api && printf 'E2E_TEST=1\nBETTER_AUTH_SECRET=e2e-test-secret-at-least-32-chars\nGITHUB_CLIENT_ID=test\nGITHUB_CLIENT_SECRET=test\nGITHUB_API_URL=http://localhost:2099\n' > .dev.vars && bun run migrate:up && bun run dev`
-        : "cd ../api && bun run migrate:up && bun run dev",
-      reuseExistingServer: !process.env.CI,
+      command: "cd ../api && bun run migrate:up && bunx wrangler dev --env-file .dev.vars.e2e",
+      reuseExistingServer: false,
       timeout: 60_000,
       url: "http://localhost:2012/health",
     },
     {
       command: "bun run dev",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 60_000,
       url: "http://localhost:2016",
     },

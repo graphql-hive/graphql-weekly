@@ -97,4 +97,9 @@ Total: 2 workers (API + CMS), no per-branch workers.
 
 ### E2E Tests
 
-Passed: 20 passed, 2 flaky (pre-existing UI timing), 1 skipped
+Auth tests: 10 passed
+Scenario tests: 7 failed (timing issues with GraphQL mutations), 2 flaky, 1 skipped, 6 passed
+
+Known issues:
+- Tests timeout waiting for `Issue #\d+` or mutation callbacks
+- May be related to async mutation timing in CI environment
