@@ -24,26 +24,21 @@ test.describe("Curate Fresh Issue", () => {
 
     // Use dedicated test issue number to avoid conflicts
     const issueInput = page.getByPlaceholder("Number");
-    // Clear and fill, then verify - hydration can reset the value
-    await issueInput.clear();
-    await issueInput.fill(String(issueNum));
+    const addIssueBtn = page.getByRole("button", { name: "Add Issue" });
+
+    // Wait for hydration, then clear and type the number
+    await expect(addIssueBtn).toBeEnabled();
+    await issueInput.click();
+    await issueInput.fill("");
+    await issueInput.pressSequentially(String(issueNum), { delay: 50 });
     await expect(issueInput).toHaveValue(String(issueNum));
 
-    const addIssueBtn = page.getByRole("button", { name: "Add Issue" });
-    await expect(addIssueBtn).toBeEnabled();
-
-    // Retry click until issue is created (handles hydration)
+    // Click and wait for issue to be created
+    await addIssueBtn.click();
     await expect(async () => {
-      // Re-verify value before clicking (hydration may have reset it)
-      const currentValue = await issueInput.inputValue();
-      if (currentValue !== String(issueNum)) {
-        await issueInput.clear();
-        await issueInput.fill(String(issueNum));
-      }
-      await addIssueBtn.click();
       const newCount = await issueLinks.count();
       expect(newCount).toBeGreaterThan(initialCount);
-    }).toPass({ timeout: 5000 });
+    }).toPass({ timeout: 10_000 });
 
     // 2. Navigate to the new issue - wait for real ID (not temp-xxx)
     const newIssueLink = page
