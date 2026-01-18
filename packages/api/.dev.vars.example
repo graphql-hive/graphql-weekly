@@ -3,13 +3,13 @@ LOCAL_DEV=true
 # Better Auth secrets
 BETTER_AUTH_SECRET=your-secret-at-least-32-characters-long
 
-# GitHub OAuth (test OAuth app values for localhost below)
-# This is safe to commit as the callback always goes to localhost
+# GitHub OAuth -- test OAuth app values for localhost below
+# (this is safe to commit as the callback always goes to localhost)
 GITHUB_CLIENT_ID=Ov23li3XCQt2N8dL6MKV
 GITHUB_CLIENT_SECRET=a94082fb410b25adf62df6e734de5a79a46042d6
 
 # Used for end-to-end tests to mock GitHub API
 # GITHUB_API_URL=""
 
-# Mailchimp
-MAILCHIMP_API_KEY=your-mailchimp-api-key
+# Mailchimp -- can be left empty for local development
+# MAILCHIMP_API_KEY=your-mailchimp-api-key

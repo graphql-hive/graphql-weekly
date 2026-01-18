@@ -33,7 +33,7 @@ function getTokenFromHeader(authHeader: string | null): string | null {
 }
 
 const server = Bun.serve({
-  fetch(request) {
+  fetch(request: Request) {
     const url = new URL(request.url);
     const token = getTokenFromHeader(request.headers.get("Authorization"));
     const isCollaborator = token && COLLABORATOR_TOKENS.has(token);
