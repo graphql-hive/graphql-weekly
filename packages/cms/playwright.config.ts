@@ -13,6 +13,7 @@ export default defineConfig({
     {
       dependencies: ["setup"],
       name: "chromium",
+      testMatch: /\.spec\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
   ],
@@ -35,6 +36,7 @@ export default defineConfig({
     {
       command:
         "cd ../api && bun run migrate:up && bunx wrangler dev --env-file .dev.vars.e2e",
+      env: { WRANGLER_LOG: "none" },
       reuseExistingServer: false,
       timeout: 60_000,
       url: "http://localhost:2012/health",

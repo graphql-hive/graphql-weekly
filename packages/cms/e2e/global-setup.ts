@@ -18,6 +18,13 @@ const NON_COLLABORATOR_USER = {
   password: "test-password-456",
 };
 
+const SIGNOUT_USER = {
+  email: "signout@e2e.local",
+  handle: "signout-user",
+  name: "Sign Out Test User",
+  password: "test-password-signout",
+};
+
 setup("create authenticated session", async ({ playwright }) => {
   // Use fresh request context with Origin header for Better Auth
   const request = await playwright.request.newContext({
@@ -183,4 +190,83 @@ setup("create non-collaborator session", async ({ playwright }) => {
     );
     console.log("✅ Linked non-collaborator GitHub account");
   }
+});
+
+setup("create signout user session", async ({ playwright }) => {
+  const requestContext = await playwright.request.newContext({
+    baseURL: API_URL,
+    extraHTTPHeaders: { Origin: "http://localhost:2016" },
+  });
+
+  // Add to AllowedEmail for collaborator access
+  execSync(
+    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO AllowedEmail (email) VALUES ('${SIGNOUT_USER.email}')"`,
+    { stdio: "inherit" },
+  );
+
+  // Try to sign up
+  const signUpResponse = await requestContext.post(
+    `${API_URL}/auth/sign-up/email`,
+    {
+      data: {
+        email: SIGNOUT_USER.email,
+        handle: SIGNOUT_USER.handle,
+        name: SIGNOUT_USER.name,
+        password: SIGNOUT_USER.password,
+      },
+    },
+  );
+
+  if (signUpResponse.ok()) {
+    console.log("✅ Created signout user");
+  }
+
+  // Sign in
+  const signInResponse = await requestContext.post(
+    `${API_URL}/auth/sign-in/email`,
+    {
+      data: {
+        email: SIGNOUT_USER.email,
+        password: SIGNOUT_USER.password,
+      },
+    },
+  );
+
+  if (!signInResponse.ok()) {
+    const text = await signInResponse.text();
+    throw new Error(
+      `Failed to sign in signout user: ${signInResponse.status()} ${text}`,
+    );
+  }
+
+  // Get user ID and link GitHub account for collaborator check
+  const meResponse = await requestContext.post(`${API_URL}/graphql`, {
+    data: { query: "{ me { id } }" },
+  });
+
+  const meData = (await meResponse.json()) as {
+    data?: { me?: { id: string } };
+  };
+  const userId = meData.data?.me?.id;
+
+  if (userId) {
+    execSync(
+      `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('signout-account-id', '${userId}', '88888', 'github', 'collaborator-token', datetime('now'), datetime('now'))"`,
+      { stdio: "inherit" },
+    );
+  }
+
+  // Sign out and back in to get fresh session with isCollaborator=true
+  await requestContext.post(`${API_URL}/auth/sign-out`);
+  await requestContext.post(`${API_URL}/auth/sign-in/email`, {
+    data: {
+      email: SIGNOUT_USER.email,
+      password: SIGNOUT_USER.password,
+    },
+  });
+
+  await requestContext.storageState({
+    path: "e2e/.auth/signout-user.json",
+  });
+  console.log("✅ Signout user auth state saved");
 });

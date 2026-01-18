@@ -1,12 +1,35 @@
 import { expect, test } from "@playwright/test";
 
+const API_URL = "http://localhost:2012";
+
 test.describe("Delete Workflow", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
 
-    await page.locator('a[href^="/issue/"]').first().click();
+  let issueId: string;
+
+  test.beforeAll(async ({ playwright }) => {
+    const request = await playwright.request.newContext({
+      baseURL: API_URL,
+      storageState: "e2e/.auth/user.json",
+    });
+
+    // Use unique high number to avoid collisions
+    const issueNumber = 90_000 + Math.floor(Math.random() * 10_000);
+    const res = await request.post(`${API_URL}/graphql`, {
+      data: {
+        query: `mutation { createIssue(title: "Issue ${issueNumber}", number: ${issueNumber}, published: false) { id } }`,
+      },
+    });
+    const json = await res.json();
+    expect(json.errors).toBeUndefined();
+    issueId = json.data?.createIssue?.id;
+    expect(issueId).toBeTruthy();
+
+    await request.dispose();
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto(`/issue/${issueId}`);
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
   });
 

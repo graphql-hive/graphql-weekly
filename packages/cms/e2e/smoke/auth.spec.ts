@@ -60,8 +60,14 @@ test.describe("Auth Gate (authenticated)", () => {
   });
 
   test("sign out clears session and redirects to login on protected page", async ({
-    page,
+    browser,
   }) => {
+    // Use dedicated signout user to avoid invalidating shared session
+    const ctx = await browser.newContext({
+      storageState: "e2e/.auth/signout-user.json",
+    });
+    const page = await ctx.newPage();
+
     await page.goto("/");
     const firstIssue = page.locator('a[href^="/issue/"]').first();
     const issueHref = await firstIssue.getAttribute("href");
@@ -74,6 +80,8 @@ test.describe("Auth Gate (authenticated)", () => {
 
     await page.goto(issueHref!);
     await expect(page).toHaveURL("/login");
+
+    await ctx.close();
   });
 });
 
