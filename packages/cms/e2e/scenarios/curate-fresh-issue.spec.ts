@@ -2,6 +2,11 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Curate Fresh Issue", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
+
+  // Dedicated issue number range for curate-fresh-issue tests: 60000-69999
+  const getTestIssueNumber = () =>
+    60_000 + Math.floor(Math.random() * 10_000);
+
   test("create issue, add link, edit metadata, save, verify persistence", async ({
     page,
   }) => {
@@ -9,6 +14,7 @@ test.describe("Curate Fresh Issue", () => {
     const testTopicName = `Featured ${timestamp}`;
     const testLinkTitle = `Test Article ${timestamp}`;
     const testLinkDesc = `Description ${timestamp}`;
+    const issueNum = getTestIssueNumber();
 
     // 1. Create new issue from index
     await page.goto("/");
@@ -17,14 +23,24 @@ test.describe("Curate Fresh Issue", () => {
     const issueLinks = page.locator('a[href^="/issue/"]');
     const initialCount = await issueLinks.count();
 
+    // Use dedicated test issue number to avoid conflicts
     const issueInput = page.getByPlaceholder("Number");
-    const issueNum = await issueInput.inputValue();
+    // Clear and fill, then verify - hydration can reset the value
+    await issueInput.clear();
+    await issueInput.fill(String(issueNum));
+    await expect(issueInput).toHaveValue(String(issueNum));
 
     const addIssueBtn = page.getByRole("button", { name: "Add Issue" });
     await expect(addIssueBtn).toBeEnabled();
 
     // Retry click until issue is created (handles hydration)
     await expect(async () => {
+      // Re-verify value before clicking (hydration may have reset it)
+      const currentValue = await issueInput.inputValue();
+      if (currentValue !== String(issueNum)) {
+        await issueInput.clear();
+        await issueInput.fill(String(issueNum));
+      }
       await addIssueBtn.click();
       const newCount = await issueLinks.count();
       expect(newCount).toBeGreaterThan(initialCount);

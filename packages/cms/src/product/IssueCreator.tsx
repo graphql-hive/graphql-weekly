@@ -100,6 +100,25 @@ export function IssueCreator({
         // Refetch to get real data
         refresh?.();
       },
+      onSuccess: (data) => {
+        // Replace temp-ID with real ID in cache immediately (don't wait for refetch)
+        const realId = data.createIssue?.id;
+        if (realId) {
+          qc.setQueriesData<AllIssuesQuery>(
+            { queryKey: ["AllIssues"] },
+            (old) => {
+              if (!old) return old;
+              return {
+                ...old,
+                allIssues:
+                  old.allIssues?.map((i) =>
+                    i.id === optimisticIssue.id ? { ...i, id: realId } : i,
+                  ) ?? null,
+              };
+            },
+          );
+        }
+      },
     });
   };
 
