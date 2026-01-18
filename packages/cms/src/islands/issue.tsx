@@ -345,12 +345,78 @@ function IssuePageContent({ id }: { id: string }) {
   const submitLink = useCallback(() => {
     if (!newLink || !/^https?:\/\/.+/.test(newLink)) return;
     const urlToAdd = newLink;
+    const tempId = `temp-link-${Date.now()}`;
+
     setNewLink("");
+
+    // Optimistic update - add link to cache immediately
+    qc.setQueryData<{ allLinks: typeof allLinks }>(["AllLinks"], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        allLinks: [
+          {
+            __typename: "Link" as const,
+            id: tempId,
+            text: null,
+            title: null,
+            topic: null,
+            url: urlToAdd,
+          },
+          ...(old.allLinks ?? []),
+        ],
+      };
+    });
+
     createLinkMutation.mutate(
       { url: urlToAdd },
-      { onSuccess: invalidateQueries },
+      {
+        onError: () => {
+          // Rollback optimistic update
+          qc.setQueryData<{ allLinks: typeof allLinks }>(["AllLinks"], (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              allLinks: old.allLinks?.filter((l) => l.id !== tempId) ?? null,
+            };
+          });
+          setNewLink(urlToAdd);
+        },
+        onSuccess: (data) => {
+          const realId = data.createLink?.id;
+          if (realId) {
+            // Migrate any edits from temp ID to real ID
+            setEditedLinks((prev) => {
+              const edits = prev.get(tempId);
+              if (!edits) return prev;
+              const next = new Map(prev);
+              next.delete(tempId);
+              next.set(realId, edits);
+              return next;
+            });
+            // Migrate any link moves from temp ID to real ID
+            setLinkMoves((prev) => {
+              const topicId = prev.get(tempId);
+              if (!topicId) return prev;
+              const next = new Map(prev);
+              next.delete(tempId);
+              next.set(realId, topicId);
+              return next;
+            });
+            // Migrate deleted link IDs
+            setDeletedLinkIds((prev) => {
+              if (!prev.has(tempId)) return prev;
+              const next = new Set(prev);
+              next.delete(tempId);
+              next.add(realId);
+              return next;
+            });
+          }
+          invalidateQueries();
+        },
+      },
     );
-  }, [createLinkMutation, newLink, invalidateQueries]);
+  }, [createLinkMutation, newLink, invalidateQueries, qc]);
 
   const handleLinkChange = useCallback((link: LinkData) => {
     setEditedLinks((prev) =>
@@ -469,7 +535,8 @@ function IssuePageContent({ id }: { id: string }) {
   const isSaving =
     updateLinkMutation.isPending ||
     deleteLinkMutation.isPending ||
-    addLinksToTopicMutation.isPending;
+    addLinksToTopicMutation.isPending ||
+    createLinkMutation.isPending;
 
   const isMutating =
     isSaving ||

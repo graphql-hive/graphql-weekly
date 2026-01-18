@@ -4,7 +4,7 @@ test.describe("Delete Workflow", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText(/\d+ issues/)).toBeVisible();
+    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
 
     await page.locator('a[href^="/issue/"]').first().click();
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
@@ -20,7 +20,7 @@ test.describe("Delete Workflow", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for link to appear (mutation + refetch can be slow)
+    // Wait for link to appear
     const linkUrlInput = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
@@ -28,7 +28,7 @@ test.describe("Delete Workflow", () => {
 
     // Find the link card containing our test URL and hover
     const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::div[@role='button']",
+      "xpath=ancestor::*[@role='button']",
     );
     await linkCard.hover();
 
@@ -38,8 +38,12 @@ test.describe("Delete Workflow", () => {
     // Verify unsaved changes appears
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
+    // Wait for Save button to be enabled (indicates createLinkMutation completed)
+    const saveBtn = page.getByRole("button", { name: "Save" });
+    await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
+
     // Save the deletion
-    await page.getByRole("button", { name: "Save" }).click();
+    await saveBtn.click();
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
       timeout: 10_000,
     });
@@ -63,7 +67,7 @@ test.describe("Delete Workflow", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for link (mutation + refetch can be slow)
+    // Wait for link to appear
     const linkUrlInput = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
@@ -71,7 +75,7 @@ test.describe("Delete Workflow", () => {
 
     // Find the link card and delete it
     const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::div[@role='button']",
+      "xpath=ancestor::*[@role='button']",
     );
     await linkCard.hover();
     await linkCard.locator('[aria-label="Delete link"]').click();

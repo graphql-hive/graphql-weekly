@@ -4,7 +4,7 @@ test.describe("Topic Organization", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText(/\d+ issues/)).toBeVisible();
+    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
 
     await page.locator('a[href^="/issue/"]').first().click();
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
@@ -181,7 +181,7 @@ test.describe("Topic Organization", () => {
 
     // Find the link card (sortable item with keyboard support)
     const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::div[@role='button']",
+      "xpath=ancestor::*[@role='button']",
     );
     await expect(linkCard).toBeVisible();
 

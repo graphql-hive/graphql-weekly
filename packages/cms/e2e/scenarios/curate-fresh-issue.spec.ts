@@ -85,8 +85,9 @@ test.describe("Curate Fresh Issue", () => {
     // Verify unsaved changes indicator
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
-    // 6. Save all changes
+    // 6. Wait for Save button to be enabled and save
     const saveBtn = page.getByRole("button", { name: "Save" });
+    await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
     await saveBtn.click();
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
       timeout: 15_000,
