@@ -162,12 +162,12 @@ const yoga = createYoga<GraphQLContext>({
 function getPreviewSubdomain(
   hostname: string,
 ): { service: 'api' | 'cms'; subdomain: string } | null {
-  const apiMatch = hostname.match(/^([a-z0-9-]+)\.api\.graphqlweekly\.com$/)
-  if (apiMatch && apiMatch[1] !== 'api') {
+  const apiMatch = hostname.match(/^([a-z0-9-]+)-api\.graphqlweekly\.com$/)
+  if (apiMatch) {
     return { service: 'api', subdomain: apiMatch[1] }
   }
-  const cmsMatch = hostname.match(/^([a-z0-9-]+)\.cms\.graphqlweekly\.com$/)
-  if (cmsMatch && cmsMatch[1] !== 'cms') {
+  const cmsMatch = hostname.match(/^([a-z0-9-]+)-cms\.graphqlweekly\.com$/)
+  if (cmsMatch) {
     return { service: 'cms', subdomain: cmsMatch[1] }
   }
   return null

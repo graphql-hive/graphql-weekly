@@ -13,11 +13,11 @@
   "routes": [
     { "pattern": "api.graphqlweekly.com/*", "zone_name": "graphqlweekly.com" },
     {
-      "pattern": "*.api.graphqlweekly.com/*",
+      "pattern": "*-api.graphqlweekly.com/*",
       "zone_name": "graphqlweekly.com",
     },
     {
-      "pattern": "*.cms.graphqlweekly.com/*",
+      "pattern": "*-cms.graphqlweekly.com/*",
       "zone_name": "graphqlweekly.com",
     },
   ],
