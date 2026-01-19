@@ -20,8 +20,10 @@ export default defineConfig({
   reporter: [["list", { printSteps: true }], ["html"]],
   retries: process.env.CI ? 2 : 1,
   testDir: "./e2e",
+  timeout: 60_000, // Allow more time for transient server issues
   use: {
     baseURL: process.env.CMS_URL || "http://localhost:2016",
+    navigationTimeout: 30_000,
     trace: "on-first-retry",
   },
   workers: process.env.CI ? 1 : 2,

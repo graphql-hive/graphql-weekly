@@ -66,6 +66,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      retry: false, // Fetcher has its own retry logic for transient errors
       staleTime: 1000 * 60,
     },
   },
@@ -185,8 +186,8 @@ function IssuePageContent({ id }: { id: string }) {
     url: string;
   } | null>(null);
 
-  const { data: linksData, isLoading: linksLoading } = useAllLinksQuery();
-  const { data: issueData, isLoading: issueLoading } = useIssueQuery({ id });
+  const { data: linksData, error: linksError, isLoading: linksLoading } = useAllLinksQuery();
+  const { data: issueData, error: issueError, isLoading: issueLoading } = useIssueQuery({ id });
 
   const createTopicMutation = useCreateTopicMutation();
   const createLinkMutation = useCreateLinkMutation();
@@ -547,9 +548,29 @@ function IssuePageContent({ id }: { id: string }) {
     setLinkMoves(new Map());
   }, []);
 
+  const queryError = linksError || issueError;
+  if (queryError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" role="alert">
+        <div className="text-center">
+          <h1 className="text-lg text-neu-900 dark:text-neu-100 mb-2">Failed to load issue</h1>
+          <p className="text-sm text-neu-600 dark:text-neu-400 mb-4">
+            {queryError instanceof Error ? queryError.message : "An unexpected error occurred"}
+          </p>
+          <button
+            className="px-4 py-2 border border-neu-300 dark:border-neu-600 hover:bg-neu-100 dark:hover:bg-neu-800"
+            onClick={() => globalThis.location.reload()}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (linksLoading || issueLoading || !issue) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div aria-busy="true" className="min-h-screen flex items-center justify-center">
         <Loading />
       </div>
     );

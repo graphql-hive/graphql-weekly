@@ -1,34 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-import { graphqlMutation } from "../helpers";
+import { gotoIssuePage, reloadIssuePage, TEST_ISSUES } from "../helpers";
 
 test.describe("Delete Workflow", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
 
-  let issueId: string;
-
-  test.beforeAll(async ({ playwright }) => {
-    const request = await playwright.request.newContext({
-      storageState: "e2e/.auth/user.json",
-    });
-
-    // Use unique high number to avoid collisions
-    const issueNumber = 90_000 + Math.floor(Math.random() * 10_000);
-    const json = await graphqlMutation(
-      request,
-      `mutation { createIssue(title: "Delete Workflow Test", number: ${issueNumber}, published: false) { id } }`,
-    );
-    expect(json.errors).toBeUndefined();
-    issueId = json.data?.createIssue?.id as string;
-    expect(issueId).toBeTruthy();
-
-    await request.dispose();
-  });
+  // Issue is created in global-setup, we just reference it by known ID
+  const issueId = TEST_ISSUES.DELETE_WORKFLOW.id;
 
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/issue/${issueId}`);
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await gotoIssuePage(page, issueId);
   });
 
   test("delete link and verify persistence", async ({ page }) => {
@@ -70,9 +51,7 @@ test.describe("Delete Workflow", () => {
     });
 
     // Refresh and verify link is gone
-    await page.reload();
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await reloadIssuePage(page);
 
     await expect(
       page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),

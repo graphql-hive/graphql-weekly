@@ -1,29 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-import { graphqlMutation } from "../helpers";
+import { gotoIssuePage, reloadIssuePage, TEST_ISSUES } from "../helpers";
 
 test.describe.serial("Curate Fresh Issue", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
 
-  let issueId: string;
-
-  test.beforeAll(async ({ playwright }) => {
-    const request = await playwright.request.newContext({
-      storageState: "e2e/.auth/user.json",
-    });
-
-    // Dedicated issue number range: 60000-69999
-    const issueNumber = 60_000 + Math.floor(Math.random() * 10_000);
-    const json = await graphqlMutation(
-      request,
-      `mutation { createIssue(title: "Curate Fresh Issue Test", number: ${issueNumber}, published: false) { id } }`,
-    );
-    expect(json.errors).toBeUndefined();
-    issueId = json.data?.createIssue?.id as string;
-    expect(issueId).toBeTruthy();
-
-    await request.dispose();
-  });
+  // Issue is created in global-setup, we just reference it by known ID
+  const issueId = TEST_ISSUES.CURATE_FRESH.id;
 
   test("add link, edit metadata, save, verify persistence", async ({
     page,
@@ -33,10 +16,8 @@ test.describe.serial("Curate Fresh Issue", () => {
     const testLinkTitle = `Test Article ${timestamp}`;
     const testLinkDesc = `Description ${timestamp}`;
 
-    // Navigate to the issue
-    await page.goto(`/issue/${issueId}`);
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    // Navigate to the issue (with retry for server startup)
+    await gotoIssuePage(page, issueId);
 
     // Add a link via URL
     const testUrl = `https://example.com/curate-test-${timestamp}`;
@@ -44,6 +25,7 @@ test.describe.serial("Curate Fresh Issue", () => {
     await linkInput.fill(testUrl);
 
     const addLinkBtn = page.getByRole("button", { exact: true, name: "Add" });
+    await expect(addLinkBtn).toBeEnabled();
     await addLinkBtn.click();
     await expect(linkInput).toHaveValue("");
 
@@ -94,9 +76,7 @@ test.describe.serial("Curate Fresh Issue", () => {
     });
 
     // 7. Refresh and verify persistence
-    await page.reload();
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await reloadIssuePage(page);
 
     // Topic should still exist
     await expect(
@@ -142,6 +122,7 @@ test.describe.serial("Curate Fresh Issue", () => {
     const addBtn = page.getByRole("button", { exact: true, name: "Add" });
 
     await linkInput.fill(`https://example.com/article-1-${timestamp}`);
+    await expect(addBtn).toBeEnabled();
     await addBtn.click();
     await expect(linkInput).toHaveValue("");
     // Wait for first link to appear in DOM
@@ -150,6 +131,7 @@ test.describe.serial("Curate Fresh Issue", () => {
     ).toHaveCount(initialLinkCount + 1, { timeout: 10_000 });
 
     await linkInput.fill(`https://example.com/article-2-${timestamp}`);
+    await expect(addBtn).toBeEnabled();
     await addBtn.click();
     await expect(linkInput).toHaveValue("");
 

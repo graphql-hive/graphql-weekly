@@ -1,33 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-import { graphqlMutation } from "../helpers";
+import { gotoIssuePage, reloadIssuePage, TEST_ISSUES } from "../helpers";
 
 test.describe("Edit and Persist", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
 
-  let issueId: string;
-
-  test.beforeAll(async ({ playwright }) => {
-    const request = await playwright.request.newContext({
-      storageState: "e2e/.auth/user.json",
-    });
-
-    const issueNumber = 80_000 + Math.floor(Math.random() * 10_000);
-    const json = await graphqlMutation(
-      request,
-      `mutation { createIssue(title: "Edit and Persist Test", number: ${issueNumber}, published: false) { id } }`,
-    );
-    expect(json.errors).toBeUndefined();
-    issueId = json.data?.createIssue?.id as string;
-    expect(issueId).toBeTruthy();
-
-    await request.dispose();
-  });
+  // Issue is created in global-setup, we just reference it by known ID
+  const issueId = TEST_ISSUES.EDIT_PERSIST.id;
 
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/issue/${issueId}`);
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await gotoIssuePage(page, issueId);
   });
 
   test("edit link metadata and verify persistence after refresh", async ({
@@ -76,9 +58,7 @@ test.describe("Edit and Persist", () => {
     });
 
     // Refresh
-    await page.reload();
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await reloadIssuePage(page);
 
     // Verify edits persisted - find by URL
     const persistedCard = page.getByRole("button").filter({

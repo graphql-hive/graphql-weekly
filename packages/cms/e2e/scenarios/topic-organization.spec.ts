@@ -1,33 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-import { graphqlMutation } from "../helpers";
+import { gotoIssuePage, reloadIssuePage, TEST_ISSUES } from "../helpers";
 
 test.describe("Topic Organization", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
 
-  let issueId: string;
-
-  test.beforeAll(async ({ playwright }) => {
-    const request = await playwright.request.newContext({
-      storageState: "e2e/.auth/user.json",
-    });
-
-    const issueNumber = 70_000 + Math.floor(Math.random() * 10_000);
-    const json = await graphqlMutation(
-      request,
-      `mutation { createIssue(title: "Topic Organization Test", number: ${issueNumber}, published: false) { id } }`,
-    );
-    expect(json.errors).toBeUndefined();
-    issueId = json.data?.createIssue?.id as string;
-    expect(issueId).toBeTruthy();
-
-    await request.dispose();
-  });
+  // Issue is created in global-setup, we just reference it by known ID
+  const issueId = TEST_ISSUES.TOPIC_ORG.id;
 
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/issue/${issueId}`);
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await gotoIssuePage(page, issueId);
   });
 
   test("create topic and verify it persists", async ({ page }) => {
@@ -47,9 +29,7 @@ test.describe("Topic Organization", () => {
     });
 
     // Refresh and verify persistence
-    await page.reload();
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await reloadIssuePage(page);
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
   });
 
@@ -117,9 +97,7 @@ test.describe("Topic Organization", () => {
     }).toPass({ timeout: 10_000 });
 
     // Refresh and verify persistence
-    await page.reload();
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await reloadIssuePage(page);
 
     const persistedTopic1Box = await topic1Header.boundingBox();
     const persistedTopic2Box = await topic2Header.boundingBox();
@@ -165,9 +143,7 @@ test.describe("Topic Organization", () => {
     });
 
     // Refresh and verify it's still gone
-    await page.reload();
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await reloadIssuePage(page);
     await expect(
       page.getByRole("heading", { name: topicName }),
     ).not.toBeVisible();
@@ -239,8 +215,7 @@ test.describe("Topic Organization", () => {
     });
 
     // Refresh and verify persistence
-    await page.reload();
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await reloadIssuePage(page);
 
     // Verify link is still in topic
     const persistedTopicSection = page.locator("section").filter({

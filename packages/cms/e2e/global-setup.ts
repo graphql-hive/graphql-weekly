@@ -270,3 +270,43 @@ setup("create signout user session", async ({ playwright }) => {
   });
   console.log("✅ Signout user auth state saved");
 });
+
+// Create all test issues before tests run (avoids SQLITE_BUSY during parallel tests)
+setup("create test issues", async () => {
+  const { setupTestIssue, TEST_ISSUES } = await import("./helpers");
+
+  // Create all test issues sequentially with fresh state
+  for (const config of Object.values(TEST_ISSUES)) {
+    setupTestIssue(config);
+  }
+  console.log(`✅ Created ${Object.keys(TEST_ISSUES).length} test issues`);
+});
+
+// Warmup: Make concurrent requests to ensure worker handles parallel load
+setup("warmup worker for parallel tests", async ({ playwright }) => {
+  const request = await playwright.request.newContext({
+    baseURL: API_URL,
+    extraHTTPHeaders: { Origin: "http://localhost:2016" },
+    storageState: "e2e/.auth/user.json",
+  });
+
+  // Warmup with health checks and GraphQL queries
+  const warmupRounds = 5;
+  for (let round = 0; round < warmupRounds; round++) {
+    const warmupPromises = [
+      request.get(`${API_URL}/health`),
+      request.get(`${API_URL}/health`),
+      request.post(`${API_URL}/graphql`, { data: { query: "{ allIssues { id } }" } }),
+      request.post(`${API_URL}/graphql`, { data: { query: "{ allLinks { id } }" } }),
+    ];
+    const responses = await Promise.all(warmupPromises);
+    const allOk = responses.every((r) => r.ok());
+    if (!allOk) {
+      console.log(`⚠️ Warmup round ${round + 1}: some requests failed, retrying...`);
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
+
+  console.log("✅ Worker warmed up for parallel tests");
+  await request.dispose();
+});

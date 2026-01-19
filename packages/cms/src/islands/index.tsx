@@ -18,6 +18,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      retry: false, // Fetcher has its own retry logic for transient errors
       staleTime: 1000 * 60,
     },
   },
