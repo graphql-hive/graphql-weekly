@@ -47,5 +47,8 @@ export function useSession() {
 }
 
 export function logIn() {
-  signIn.social({ provider: "github" });
+  signIn.social({
+    callbackURL: globalThis.location.origin,
+    provider: "github",
+  });
 }
