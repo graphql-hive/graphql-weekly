@@ -888,6 +888,7 @@ function IssuePageContent({ id }: { id: string }) {
                   </span>
                   <div className="ml-auto flex items-center gap-1 opacity-0 group-hover/topic:opacity-100">
                     <button
+                      aria-label="Move up"
                       className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
                       disabled={isFirst || updateTopicMutation.isPending}
                       onClick={() => handleTopicMove(topicIndex, "up")}
@@ -908,6 +909,7 @@ function IssuePageContent({ id }: { id: string }) {
                       </svg>
                     </button>
                     <button
+                      aria-label="Move down"
                       className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
                       disabled={isLast || updateTopicMutation.isPending}
                       onClick={() => handleTopicMove(topicIndex, "down")}
@@ -928,6 +930,7 @@ function IssuePageContent({ id }: { id: string }) {
                       </svg>
                     </button>
                     <button
+                      aria-label="Remove topic from issue"
                       className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors hover:duration-0 disabled:opacity-50"
                       disabled={removeTopicMutation.isPending}
                       onClick={() => handleTopicRemove(topic.id!, topic.title!)}

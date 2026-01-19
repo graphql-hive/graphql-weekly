@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const API_URL = "http://localhost:2012";
+import { graphqlMutation } from "../helpers";
 
 test.describe("Topic Organization", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
@@ -9,19 +9,16 @@ test.describe("Topic Organization", () => {
 
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext({
-      baseURL: API_URL,
       storageState: "e2e/.auth/user.json",
     });
 
     const issueNumber = 70_000 + Math.floor(Math.random() * 10_000);
-    const res = await request.post(`${API_URL}/graphql`, {
-      data: {
-        query: `mutation { createIssue(title: "Topic Organization Test", number: ${issueNumber}, published: false) { id } }`,
-      },
-    });
-    const json = await res.json();
+    const json = await graphqlMutation(
+      request,
+      `mutation { createIssue(title: "Topic Organization Test", number: ${issueNumber}, published: false) { id } }`,
+    );
     expect(json.errors).toBeUndefined();
-    issueId = json.data?.createIssue?.id;
+    issueId = json.data?.createIssue?.id as string;
     expect(issueId).toBeTruthy();
 
     await request.dispose();
@@ -29,6 +26,7 @@ test.describe("Topic Organization", () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto(`/issue/${issueId}`);
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
   });
 
@@ -50,6 +48,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify persistence
     await page.reload();
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
   });
@@ -100,7 +99,7 @@ test.describe("Topic Organization", () => {
     await firstHeader.hover();
 
     // Wait for move button to be visible and enabled
-    const moveDownBtn = firstHeader.locator('[title="Move down"]');
+    const moveDownBtn = firstHeader.getByLabel("Move down");
     await expect(moveDownBtn).toBeVisible();
     await expect(moveDownBtn).toBeEnabled();
     await moveDownBtn.click();
@@ -119,6 +118,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify persistence
     await page.reload();
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     const persistedTopic1Box = await topic1Header.boundingBox();
@@ -154,7 +154,7 @@ test.describe("Topic Organization", () => {
     await topicSection.hover();
 
     // Click remove
-    const removeBtn = topicSection.locator('[title="Remove topic from issue"]');
+    const removeBtn = topicSection.getByLabel("Remove topic from issue");
     await removeBtn.click();
 
     // Wait for topic to be removed
@@ -166,6 +166,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify it's still gone
     await page.reload();
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
     await expect(
       page.getByRole("heading", { name: topicName }),
@@ -202,7 +203,9 @@ test.describe("Topic Organization", () => {
     await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
 
     // Find the link card (sortable item with keyboard support)
-    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
+    const linkCard = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
+    });
     await expect(linkCard).toBeVisible();
 
     // Find the topic section (drop target)

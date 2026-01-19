@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const API_URL = "http://localhost:2012";
+import { graphqlMutation } from "../helpers";
 
 test.describe("Delete Workflow", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
@@ -9,20 +9,17 @@ test.describe("Delete Workflow", () => {
 
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext({
-      baseURL: API_URL,
       storageState: "e2e/.auth/user.json",
     });
 
     // Use unique high number to avoid collisions
     const issueNumber = 90_000 + Math.floor(Math.random() * 10_000);
-    const res = await request.post(`${API_URL}/graphql`, {
-      data: {
-        query: `mutation { createIssue(title: "Delete Workflow Test", number: ${issueNumber}, published: false) { id } }`,
-      },
-    });
-    const json = await res.json();
+    const json = await graphqlMutation(
+      request,
+      `mutation { createIssue(title: "Delete Workflow Test", number: ${issueNumber}, published: false) { id } }`,
+    );
     expect(json.errors).toBeUndefined();
-    issueId = json.data?.createIssue?.id;
+    issueId = json.data?.createIssue?.id as string;
     expect(issueId).toBeTruthy();
 
     await request.dispose();
@@ -30,6 +27,7 @@ test.describe("Delete Workflow", () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto(`/issue/${issueId}`);
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
   });
 
@@ -50,7 +48,9 @@ test.describe("Delete Workflow", () => {
     await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card containing our test URL and hover
-    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
+    const linkCard = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
+    });
     await linkCard.hover();
 
     // Click delete button within this card
@@ -96,7 +96,9 @@ test.describe("Delete Workflow", () => {
     await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card and delete it
-    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
+    const linkCard = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
+    });
     await linkCard.hover();
     await linkCard.locator('[aria-label="Delete link"]').click();
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();

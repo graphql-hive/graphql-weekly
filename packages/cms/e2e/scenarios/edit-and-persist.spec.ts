@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const API_URL = "http://localhost:2012";
+import { graphqlMutation } from "../helpers";
 
 test.describe("Edit and Persist", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
@@ -9,19 +9,16 @@ test.describe("Edit and Persist", () => {
 
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext({
-      baseURL: API_URL,
       storageState: "e2e/.auth/user.json",
     });
 
     const issueNumber = 80_000 + Math.floor(Math.random() * 10_000);
-    const res = await request.post(`${API_URL}/graphql`, {
-      data: {
-        query: `mutation { createIssue(title: "Edit and Persist Test", number: ${issueNumber}, published: false) { id } }`,
-      },
-    });
-    const json = await res.json();
+    const json = await graphqlMutation(
+      request,
+      `mutation { createIssue(title: "Edit and Persist Test", number: ${issueNumber}, published: false) { id } }`,
+    );
     expect(json.errors).toBeUndefined();
-    issueId = json.data?.createIssue?.id;
+    issueId = json.data?.createIssue?.id as string;
     expect(issueId).toBeTruthy();
 
     await request.dispose();
@@ -29,6 +26,7 @@ test.describe("Edit and Persist", () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto(`/issue/${issueId}`);
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
   });
 
@@ -46,15 +44,11 @@ test.describe("Edit and Persist", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for network to settle (mutation + refetch complete) before editing
-    // This ensures the link has a real ID from the server, not a temp optimistic ID
-
-    const ourLinkUrl = page.locator(
-      `[aria-label="Link URL"][value="${testUrl}"]`,
-    );
-    await expect(ourLinkUrl).toBeVisible({ timeout: 5000 });
-
-    const linkCard = ourLinkUrl.locator("xpath=ancestor::*[@role='button']");
+    // Wait for link to appear, then find card by URL
+    const linkCard = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
+    });
+    await expect(linkCard).toBeVisible({ timeout: 5000 });
 
     // Edit the title
     const titleInput = linkCard.locator('[aria-label="Link title"]');
@@ -83,17 +77,14 @@ test.describe("Edit and Persist", () => {
 
     // Refresh
     await page.reload();
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
 
     // Verify edits persisted - find by URL
-    const persistedLinkUrl = page.locator(
-      `[aria-label="Link URL"][value="${testUrl}"]`,
-    );
-    await expect(persistedLinkUrl).toBeVisible({ timeout: 10_000 });
-
-    const persistedCard = persistedLinkUrl.locator(
-      "xpath=ancestor::*[@role='button']",
-    );
+    const persistedCard = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
+    });
+    await expect(persistedCard).toBeVisible({ timeout: 10_000 });
     await expect(
       persistedCard.locator('[aria-label="Link title"]'),
     ).toHaveValue(newTitle);
@@ -112,14 +103,11 @@ test.describe("Edit and Persist", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for network to settle (mutation + refetch complete)
-
-    const ourLinkUrl = page.locator(
-      `[aria-label="Link URL"][value="${testUrl}"]`,
-    );
-    await expect(ourLinkUrl).toBeVisible({ timeout: 5000 });
-
-    const linkCard = ourLinkUrl.locator("xpath=ancestor::*[@role='button']");
+    // Wait for link to appear, then find card by URL
+    const linkCard = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
+    });
+    await expect(linkCard).toBeVisible({ timeout: 5000 });
     const titleInput = linkCard.locator('[aria-label="Link title"]');
 
     const originalTitle = await titleInput.inputValue();
@@ -157,15 +145,15 @@ test.describe("Edit and Persist", () => {
 
     // Wait for network to settle (both mutations + refetch complete)
 
-    // Wait for both specific links to appear
-    const link1Url = page.locator(`[aria-label="Link URL"][value="${url1}"]`);
-    const link2Url = page.locator(`[aria-label="Link URL"][value="${url2}"]`);
-    await expect(link1Url).toBeVisible({ timeout: 5000 });
-    await expect(link2Url).toBeVisible({ timeout: 5000 });
-
-    // Get link cards
-    const link1Card = link1Url.locator("xpath=ancestor::*[@role='button']");
-    const link2Card = link2Url.locator("xpath=ancestor::*[@role='button']");
+    // Wait for both specific links to appear - find cards by URL
+    const link1Card = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${url1}"]`),
+    });
+    const link2Card = page.getByRole("button").filter({
+      has: page.locator(`[aria-label="Link URL"][value="${url2}"]`),
+    });
+    await expect(link1Card).toBeVisible({ timeout: 5000 });
+    await expect(link2Card).toBeVisible({ timeout: 5000 });
 
     // Edit first link
     await link1Card.locator('[aria-label="Link title"]').fill("Edit 1");
