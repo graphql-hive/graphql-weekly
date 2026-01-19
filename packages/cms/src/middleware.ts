@@ -1,8 +1,8 @@
 import { defineMiddleware } from "astro:middleware";
 
 const API_URL = import.meta.env.DEV
-  ? "http://localhost:2012"
-  : import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com";
+  ? "http://localhost:2012/graphql"
+  : import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com/graphql";
 
 interface MeResponse {
   data: {
@@ -19,7 +19,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  const response = await fetch(`${API_URL}/graphql`, {
+  const response = await fetch(API_URL, {
     body: JSON.stringify({
       query: "{ me { isCollaborator } }",
     }),
