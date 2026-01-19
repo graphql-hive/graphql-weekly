@@ -5,7 +5,7 @@ import { cn } from "../cn";
 
 const variantClasses = {
   danger:
-    "bg-red-500 text-white border-red-500 hover:bg-red-600 hover:border-red-600",
+    "bg-transparent text-red-500 border-red-500/50 hover:bg-red-500 hover:text-white hover:border-red-500",
   primary: "bg-primary text-neu-900 border-primary hover:bg-primary/80",
   secondary:
     "bg-transparent text-neu-600 dark:text-neu-300 border-neu-300 dark:border-neu-600 hover:bg-neu-100 dark:hover:bg-neu-800",
@@ -14,8 +14,9 @@ const variantClasses = {
 export type ButtonVariant = keyof typeof variantClasses;
 
 const sizeClasses = {
-  md: "py-3 px-4 text-sm",
-  sm: "py-1.5 px-3 text-xs",
+  md: "h-10 py-3 px-4 text-sm [&.Button--square]:p-0",
+  sm: "h-7 py-1.5 px-3 text-xs [&.Button--square]:p-0",
+  xs: "h-5 py-0.5 px-1.5 text-[10px] [&.Button--square]:p-0",
 } satisfies Record<string, string>;
 
 export type ButtonSize = keyof typeof sizeClasses;
@@ -27,6 +28,7 @@ interface ButtonBaseProps {
   className?: string;
   disabled?: boolean;
   size?: ButtonSize;
+  square?: boolean;
   variant?: ButtonVariant;
 }
 
@@ -64,6 +66,7 @@ export function Button(props: ButtonProps) {
     variantClasses[props.variant ?? "primary"],
     props.disabled && "opacity-30 pointer-events-none",
     props.className,
+    props.square && "Button--square aspect-square",
   );
 
   if ("href" in props && typeof props.href === "string") {
