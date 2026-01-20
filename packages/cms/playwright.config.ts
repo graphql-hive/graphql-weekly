@@ -23,7 +23,8 @@ export default defineConfig({
     baseURL: process.env.CMS_URL || "http://localhost:2016",
     trace: "on-first-retry",
   },
-  workers: process.env.CI ? 1 : 2,
+  // Surprising limitation in our sqlite/wrangler setup, but not worth delving deep into
+  workers: 1,
   // Start mock GitHub API, API server, and CMS before tests
   webServer: [
     {

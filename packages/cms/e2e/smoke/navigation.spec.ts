@@ -21,7 +21,7 @@ test.describe("Navigation (authenticated)", () => {
 
     const firstIssue = page.locator('a[href^="/issue/"]').first();
     await firstIssue.click();
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
 
     await expect(
       page.getByRole("heading", { name: "Unassigned" }),

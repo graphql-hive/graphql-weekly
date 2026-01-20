@@ -7,7 +7,7 @@ test.describe("Delete Workflow", () => {
     await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
 
     await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
   });
 
   test("delete link and verify persistence", async ({ page }) => {
@@ -48,7 +48,7 @@ test.describe("Delete Workflow", () => {
 
     // Refresh and verify link is gone
     await page.reload();
-    await expect(page.getByText(/Issue #\d+/)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
 
     await expect(
       page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
