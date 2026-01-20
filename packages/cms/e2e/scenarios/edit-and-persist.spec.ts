@@ -1,19 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+import { createFreshIssue } from "../util";
+
 test.describe("Edit and Persist", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
-  test.beforeEach(async ({ page }) => {
-    // Navigate to first issue
-    await page.goto("/");
-    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
-
-    await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
-  });
 
   test("edit link metadata and verify persistence after refresh", async ({
     page,
   }) => {
+    await createFreshIssue(page);
+
     const timestamp = Date.now();
     const testUrl = `https://example.com/edit-test-${timestamp}`;
     const newTitle = `Edited Title ${timestamp}`;
@@ -62,7 +58,9 @@ test.describe("Edit and Persist", () => {
 
     // Refresh
     await page.reload();
-    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
 
     // Verify edits persisted - find by URL
     const persistedLinkUrl = page.locator(
@@ -82,6 +80,8 @@ test.describe("Edit and Persist", () => {
   });
 
   test("discard reverts all changes", async ({ page }) => {
+    await createFreshIssue(page);
+
     const timestamp = Date.now();
     const testUrl = `https://example.com/discard-test-${timestamp}`;
 
@@ -118,6 +118,8 @@ test.describe("Edit and Persist", () => {
   });
 
   test("multiple edits accumulate in unsaved count", async ({ page }) => {
+    await createFreshIssue(page);
+
     const timestamp = Date.now();
     const url1 = `https://example.com/multi-1-${timestamp}`;
     const url2 = `https://example.com/multi-2-${timestamp}`;

@@ -40,7 +40,9 @@ test.describe("Curate Fresh Issue", () => {
       expect(href).not.toContain("temp-");
     }).toPass({ timeout: 10_000 });
     await newIssueLink.click();
-    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
 
     // 3. Add a link via URL
     const testUrl = `https://example.com/curate-test-${timestamp}`;
@@ -95,7 +97,9 @@ test.describe("Curate Fresh Issue", () => {
 
     // 7. Refresh and verify persistence
     await page.reload();
-    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
 
     // Topic should still exist
     await expect(
@@ -126,7 +130,9 @@ test.describe("Curate Fresh Issue", () => {
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
 
     const unassignedSection = page.locator("section").filter({
       has: page.getByRole("heading", { name: "Unassigned" }),

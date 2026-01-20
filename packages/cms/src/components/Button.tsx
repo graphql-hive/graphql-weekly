@@ -91,7 +91,14 @@ export function Button(props: ButtonProps) {
   }
 
   if (props.as) {
-    const { as, className: _1, size: _2, square: _4, variant: _3, ...rest } = props;
+    const {
+      as,
+      className: _1,
+      size: _2,
+      square: _4,
+      variant: _3,
+      ...rest
+    } = props;
     const Root = as as "span";
     return <Root {...rest} className={className} />;
   }

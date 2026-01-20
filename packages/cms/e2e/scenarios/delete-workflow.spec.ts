@@ -1,16 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+import { createFreshIssue } from "../util";
+
 test.describe("Delete Workflow", () => {
   test.use({ storageState: "e2e/.auth/user.json" });
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
-
-    await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
-  });
 
   test("delete link and verify persistence", async ({ page }) => {
+    await createFreshIssue(page);
+
     const timestamp = Date.now();
     const testUrl = `https://example.com/delete-${timestamp}`;
 
@@ -48,7 +45,9 @@ test.describe("Delete Workflow", () => {
 
     // Refresh and verify link is gone
     await page.reload();
-    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
 
     await expect(
       page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
@@ -56,6 +55,8 @@ test.describe("Delete Workflow", () => {
   });
 
   test("can cancel deletion via discard", async ({ page }) => {
+    await createFreshIssue(page);
+
     const timestamp = Date.now();
     const testUrl = `https://example.com/discard-${timestamp}`;
 
