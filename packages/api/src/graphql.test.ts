@@ -8,53 +8,39 @@ describe('GraphQL API', () => {
     expect(await response.text()).toBe('OK')
   })
 
-  it('should return empty issues list', async () => {
+  it('should return issues list', async () => {
     const response = await SELF.fetch('http://localhost/graphql', {
       body: JSON.stringify({ query: '{ allIssues { id title } }' }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
     })
-    const data = await response.json()
-    expect(data).toEqual({ data: { allIssues: [] } })
+    const data = (await response.json()) as { data: { allIssues: unknown[] } }
+    expect(data.data.allIssues).toBeDefined()
+    expect(Array.isArray(data.data.allIssues)).toBe(true)
   })
 
-  it('should create and query an issue', async () => {
-    // Create issue
-    const createResponse = await SELF.fetch('http://localhost/graphql', {
+  it('should return null for me when not authenticated', async () => {
+    const response = await SELF.fetch('http://localhost/graphql', {
+      body: JSON.stringify({ query: '{ me { id isCollaborator } }' }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+    })
+    const data = (await response.json()) as { data: { me: null } }
+    expect(data.data.me).toBeNull()
+  })
+
+  it('should reject mutations when not authenticated', async () => {
+    const response = await SELF.fetch('http://localhost/graphql', {
       body: JSON.stringify({
-        query: `mutation {
-          createIssue(title: "Test Issue", number: 1, published: false) {
-            id title number published
-          }
-        }`,
+        query: `mutation { createIssue(title: "Test", number: 1, published: false) { id } }`,
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
     })
-    const createData = (await createResponse.json()) as {
-      data: {
-        createIssue: {
-          id: string
-          number: number
-          published: boolean
-          title: string
-        }
-      }
+    const data = (await response.json()) as {
+      errors?: { extensions?: { code: string }; message: string }[]
     }
-    expect(createData.data.createIssue.title).toBe('Test Issue')
-    expect(createData.data.createIssue.number).toBe(1)
-    expect(createData.data.createIssue.published).toBe(false)
-
-    // Query issues
-    const queryResponse = await SELF.fetch('http://localhost/graphql', {
-      body: JSON.stringify({ query: '{ allIssues { id title number } }' }),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-    })
-    const queryData = (await queryResponse.json()) as {
-      data: { allIssues: { title: string }[] }
-    }
-    expect(queryData.data.allIssues).toHaveLength(1)
-    expect(queryData.data.allIssues[0].title).toBe('Test Issue')
+    expect(data.errors).toBeDefined()
+    expect(data.errors?.[0]?.extensions?.code).toBe('UNAUTHENTICATED')
   })
 })

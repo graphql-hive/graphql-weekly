@@ -5,11 +5,11 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
   adapter: cloudflare({
+    imageService: "compile",
     platformProxy: {
       enabled: true,
     },
   }),
-  base: "/admin",
   integrations: [react()],
   output: "server",
   server: { port: 2016 },

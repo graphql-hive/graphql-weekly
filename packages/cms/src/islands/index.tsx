@@ -6,7 +6,9 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { cn } from "../cn";
+import { Button } from "../components/Button";
 import { Navbar } from "../components/Navbar";
+import { Tag } from "../components/Tag";
 import {
   type AllIssuesQuery,
   useAllIssuesQuery,
@@ -22,8 +24,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-const BASE_PATH = import.meta.env.BASE_URL || "/admin";
 
 type Issue = NonNullable<AllIssuesQuery["allIssues"]>[number];
 
@@ -114,7 +114,7 @@ function IndexPageContent({ initialIssues }: Props) {
         case "Enter":
           e.preventDefault();
           if (issues[selectedIndex]?.id) {
-            globalThis.location.href = `${BASE_PATH}/issue/${issues[selectedIndex].id}`;
+            globalThis.location.href = `/issue/${issues[selectedIndex].id}`;
           }
           break;
         case "g":
@@ -215,7 +215,7 @@ function IndexPageContent({ initialIssues }: Props) {
                         ? "bg-neu-100 dark:bg-neu-800"
                         : "hover:bg-neu-50 dark:hover:bg-neu-800/50"
                     }`}
-                    href={`${BASE_PATH}/issue/${issue.id}`}
+                    href={`/issue/${issue.id}`}
                   >
                     <span
                       className={`font-mono text-sm tabular-nums ${
@@ -233,25 +233,25 @@ function IndexPageContent({ initialIssues }: Props) {
                         </span>
                       )}
                       {issue.published ? (
-                        <span className="text-xs uppercase text-neu-500 dark:text-neu-400 px-1.5 py-0.5 border border-neu-200 dark:border-neu-700 bg-neu-100 dark:bg-neu-800">
-                          published
-                        </span>
+                        <Tag variant="live">live</Tag>
                       ) : (
-                        <span className="text-xs uppercase text-amber-600 dark:text-amber-400 px-1.5 py-0.5 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 group-hover:invisible">
+                        <Tag className="group-hover:invisible" variant="draft">
                           draft
-                        </span>
+                        </Tag>
                       )}
                     </div>
                   </a>
                   {!issue.published && (
-                    <button
+                    <Button
                       aria-label="Delete issue"
-                      className="absolute right-4 top-1/2 -translate-y-1/2 invisible group-hover:visible text-base leading-none text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 px-1.5 py-0.5 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 invisible group-hover:visible text-base"
                       onClick={(e) => handleDelete(issue, e)}
-                      type="button"
+                      size="xs"
+                      square
+                      variant="danger"
                     >
                       ×
-                    </button>
+                    </Button>
                   )}
                 </div>
               );

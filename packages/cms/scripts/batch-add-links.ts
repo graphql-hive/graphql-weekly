@@ -6,7 +6,12 @@ import { readFileSync } from "node:fs";
 
 const endpoint =
   "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
-const token = "JWT_TOKEN_REDACTED";
+const token = process.env.OLD_JWT_TOKEN;
+
+if (!token) {
+  console.error("OLD_JWT_TOKEN not set. Run: direnv allow");
+  process.exit(1);
+}
 
 const client = new GraphQLClient(endpoint, {
   headers: { Authorization: token },
@@ -101,6 +106,9 @@ function parseTSV(filePath: string): Link[] {
 
   return rows.map((row) => {
     const [url, title, description, tag] = row.split("\t");
+    if (!url || !title || !description || !tag) {
+      throw new Error(`Invalid row: ${row}`);
+    }
     return { description, tag, title, url };
   });
 }
@@ -151,8 +159,8 @@ async function addLinkToTopic(topicId: string, linkId: string): Promise<void> {
 }
 
 async function main() {
-  const issueNumber = Number.parseInt(process.argv[2], 10);
-  const tsvPath = process.argv[3];
+  const issueNumber = Number.parseInt(process.argv[2]!, 10);
+  const tsvPath = process.argv[3]!;
 
   if (!issueNumber || Number.isNaN(issueNumber) || !tsvPath) {
     console.error("Usage: bun run batch-add-links <issue-number> <tsv-path>");

@@ -8,6 +8,14 @@ export default [
     },
   },
   {
+    files: ["**/*.ts", "**/*.tsx", "**/*.mjs"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+    },
+  },
+  {
     ignores: [
       ".cache/",
       ".localflare/",
@@ -26,6 +34,8 @@ export default [
       "generated/",
       "**/generated/",
       "**/data-dump/",
+      "*.config.mjs",
+      "*.config.mts",
     ],
   },
   {

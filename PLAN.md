@@ -1,37 +1,5 @@
-# GraphQL Weekly Monorepo Migration Plan
+## Error in prod
 
-## Remaining Work
-
-### API: Auth with Better Auth
-
-Using Better Auth + `better-auth-cloudflare` package instead of CF Access.
-
-**Auth method (decide):**
-
-- [ ] Option A: GitHub OAuth — ties to repo collaborators, simple
-- [ ] Option B: Passkeys for invited emails — modern, explicit invite model
-
-**Implementation:**
-
-- [ ] Install `better-auth`, `better-auth-cloudflare`
-- [ ] Create auth schema migration (user, session, account, verification tables)
-- [ ] Integrate Better Auth with Kysely (or run Drizzle alongside for auth only)
-- [ ] Mount auth handler at `/auth/*` in API worker
-- [ ] Add auth client to CMS
-- [ ] Add `BETTER_AUTH_SECRET` to worker secrets
-- [ ] Link User to Author (every Author requires a User; User optionally has Author profile)
-- [ ] Add audit fields (`createdBy`, `updatedBy`) to mutations
-
-### CMS
-
-- [ ] Add topic name autocomplete in editor
-- [x] Add Playwright E2E tests against local API + CMS (see `packages/cms/e2e/TEST_PLAN.md`)
-
-### Deploy
-
-- [ ] Set up CF Worker secrets (MAILCHIMP_API_KEY)
-- [x] Configure GitHub Actions CI/CD (with PR previews)
-- [ ] Add `CF_API_TOKEN` secret to GitHub
-- [ ] Update Stellate origin to new Worker URL
-- [ ] DNS: point api subdomain to CF Worker
-- [ ] Delete old Netlify sites
+- client.n-qD7hcj.js:24 Uncaught Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+- Issue #400 is not visible in the CMS on prod. Why?
+- HTTP 503 on /graphql in deploy previews

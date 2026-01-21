@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/no-process-exit */
 /* eslint-disable no-console */
+// @ts-expect-error - prisma not installed, script for legacy db dump
 import { PrismaClient } from '@prisma/client'
 import { mkdirSync, writeFileSync } from 'node:fs'
 

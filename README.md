@@ -10,6 +10,20 @@ Archive website for the GraphQL Weekly newsletter at [graphqlweekly.com](https:/
 - **Bun** — package manager and runtime
 - **Cloudflare Workers + D1** — API and database
 
+## Domains
+
+| Service | Local                 | Production                    |
+| ------- | --------------------- | ----------------------------- |
+| API     | http://localhost:2012 | https://api.graphqlweekly.com |
+| CMS     | http://localhost:2016 | https://cms.graphqlweekly.com |
+| Website | -                     | https://graphqlweekly.com     |
+
+### API Endpoints
+
+- `/graphql` - GraphQL API
+- `/auth/*` - Better Auth (GitHub OAuth)
+- `/health` - Health check
+
 ## Monorepo Structure
 
 ```
@@ -82,6 +96,12 @@ GraphQL API running on Cloudflare Workers with D1 database. Handles mutations at
 Internal tool for curating newsletter issues at `packages/cms`.
 
 **Stack:** Astro + React, TanStack Query, Tailwind CSS, Cloudflare Workers
+
+### Access Control
+
+CMS requires GitHub authentication. Access is granted to users with **Triage**, **Write**, **Maintain**, or **Admin** permissions on the `graphql-hive/graphql-weekly` repository.
+
+To grant someone CMS access, add them as a collaborator to the repo with at least Triage permissions.
 
 **Scripts:**
 

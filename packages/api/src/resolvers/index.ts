@@ -1,12 +1,40 @@
+import { GraphQLError } from 'graphql'
 import { DateTimeResolver } from 'graphql-scalars'
 
 import type { NewsletterTopic } from '../email'
 import type { Resolvers } from '../generated/graphql'
+import type { GraphQLContext, User } from '../worker'
 
+import { GITHUB_REPO_NAME, GITHUB_REPO_OWNER } from '../auth'
 import { createEmailCampaign } from '../services/mailchimp'
 
 function generateId(): string {
   return crypto.randomUUID().replaceAll('-', '').slice(0, 25)
+}
+
+type AuthenticatedContext = GraphQLContext & { user: User }
+type CollaboratorContext = GraphQLContext & {
+  user: User & { isCollaborator: true }
+}
+
+function requireAuth(ctx: GraphQLContext): asserts ctx is AuthenticatedContext {
+  if (!ctx.user) {
+    throw new GraphQLError('Not authenticated', {
+      extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
+    })
+  }
+}
+
+function requireCollaborator(
+  ctx: GraphQLContext,
+): asserts ctx is CollaboratorContext {
+  requireAuth(ctx)
+  if (!ctx.user.isCollaborator) {
+    throw new GraphQLError(
+      `Access denied: you must be a collaborator on ${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
+      { extensions: { code: 'FORBIDDEN', http: { status: 403 } } },
+    )
+  }
 }
 
 export const resolvers: Resolvers = {
@@ -14,9 +42,14 @@ export const resolvers: Resolvers = {
 
   Mutation: {
     addLinksToTopic: async (_parent, { linkId, topicId }, ctx) => {
+      requireCollaborator(ctx)
       await ctx.db
         .updateTable('Link')
-        .set({ topicId })
+        .set({
+          topicId,
+          updatedAt: new Date().toISOString(),
+          updatedBy: ctx.user.id,
+        })
         .where('id', '=', linkId)
         .execute()
       const topic = await ctx.db
@@ -27,16 +60,22 @@ export const resolvers: Resolvers = {
       return topic ?? null
     },
     createIssue: async (_parent, { date, number, published, title }, ctx) => {
+      requireCollaborator(ctx)
       const id = generateId()
       const dateStr = date ? date.toISOString() : new Date().toISOString()
+      const now = new Date().toISOString()
       await ctx.db
         .insertInto('Issue')
         .values({
+          createdAt: now,
+          createdBy: ctx.user.id,
           date: dateStr,
           id,
           number,
           published: published ? 1 : 0,
           title,
+          updatedAt: now,
+          updatedBy: ctx.user.id,
           versionCount: 0,
         })
         .execute()
@@ -48,8 +87,20 @@ export const resolvers: Resolvers = {
       return issue ?? null
     },
     createLink: async (_parent, { url }, ctx) => {
+      requireCollaborator(ctx)
       const id = generateId()
-      await ctx.db.insertInto('Link').values({ id, url }).execute()
+      const now = new Date().toISOString()
+      await ctx.db
+        .insertInto('Link')
+        .values({
+          createdAt: now,
+          createdBy: ctx.user.id,
+          id,
+          updatedAt: now,
+          updatedBy: ctx.user.id,
+          url,
+        })
+        .execute()
       const link = await ctx.db
         .selectFrom('Link')
         .selectAll()
@@ -93,10 +144,21 @@ export const resolvers: Resolvers = {
       return { email, id, name }
     },
     createTopic: async (_parent, { issue_comment, issueId, title }, ctx) => {
+      requireCollaborator(ctx)
       const id = generateId()
+      const now = new Date().toISOString()
       await ctx.db
         .insertInto('Topic')
-        .values({ id, issue_comment, issueId, title })
+        .values({
+          createdAt: now,
+          createdBy: ctx.user.id,
+          id,
+          issue_comment,
+          issueId,
+          title,
+          updatedAt: now,
+          updatedBy: ctx.user.id,
+        })
         .execute()
       const topic = await ctx.db
         .selectFrom('Topic')
@@ -106,6 +168,7 @@ export const resolvers: Resolvers = {
       return topic ?? null
     },
     deleteIssue: async (_parent, { id }, ctx) => {
+      requireCollaborator(ctx)
       const issue = await ctx.db
         .selectFrom('Issue')
         .selectAll()
@@ -117,6 +180,7 @@ export const resolvers: Resolvers = {
       return issue ?? null
     },
     deleteLink: async (_parent, { id }, ctx) => {
+      requireCollaborator(ctx)
       const link = await ctx.db
         .selectFrom('Link')
         .selectAll()
@@ -132,6 +196,7 @@ export const resolvers: Resolvers = {
       { id, isFoundation, versionCount },
       ctx,
     ) => {
+      requireCollaborator(ctx)
       if (versionCount !== null && versionCount !== undefined) {
         await ctx.db
           .updateTable('Issue')
@@ -181,7 +246,10 @@ export const resolvers: Resolvers = {
       if (ctx.env.MAILCHIMP_API_KEY && issue.published) {
         try {
           await createEmailCampaign(
-            { apiKey: ctx.env.MAILCHIMP_API_KEY },
+            {
+              apiKey: ctx.env.MAILCHIMP_API_KEY,
+              serverPrefix: ctx.env.MAILCHIMP_SERVER_PREFIX,
+            },
             issue.title,
             topicsWithLinks,
             issue.versionCount,
@@ -193,7 +261,7 @@ export const resolvers: Resolvers = {
           throw new Error('Failed to create Mailchimp campaign')
         }
       } else if (issue.published) {
-        if (ctx.env.LOCAL_DEV) {
+        if (ctx.env.LOCAL_DEV || ctx.env.E2E_TEST) {
           const [{ render }, { Newsletter }] = await Promise.all([
             import('@react-email/components'),
             import('../email'),
@@ -222,7 +290,11 @@ export const resolvers: Resolvers = {
       { id, previewImage, published, versionCount },
       ctx,
     ) => {
-      const updates: Record<string, unknown> = {}
+      requireCollaborator(ctx)
+      const updates: Record<string, unknown> = {
+        updatedAt: new Date().toISOString(),
+        updatedBy: ctx.user.id,
+      }
       if (published !== null && published !== undefined)
         updates.published = published ? 1 : 0
       if (versionCount !== null && versionCount !== undefined)
@@ -230,13 +302,11 @@ export const resolvers: Resolvers = {
       if (previewImage !== null && previewImage !== undefined)
         updates.previewImage = previewImage
 
-      if (Object.keys(updates).length > 0) {
-        await ctx.db
-          .updateTable('Issue')
-          .set(updates)
-          .where('id', '=', id)
-          .execute()
-      }
+      await ctx.db
+        .updateTable('Issue')
+        .set(updates)
+        .where('id', '=', id)
+        .execute()
       const issue = await ctx.db
         .selectFrom('Issue')
         .selectAll()
@@ -245,10 +315,13 @@ export const resolvers: Resolvers = {
       return issue ?? null
     },
     updateLink: async (_parent, { id, text, title, url }, ctx) => {
+      requireCollaborator(ctx)
       await ctx.db
         .updateTable('Link')
         .set({
           title,
+          updatedAt: new Date().toISOString(),
+          updatedBy: ctx.user.id,
           ...(text !== null && text !== undefined ? { text } : {}),
           ...(url !== null && url !== undefined ? { url } : {}),
         })
@@ -262,13 +335,19 @@ export const resolvers: Resolvers = {
       return link ?? null
     },
     updateTopic: async (_parent, { id, position }, ctx) => {
-      if (position !== null && position !== undefined) {
-        await ctx.db
-          .updateTable('Topic')
-          .set({ position })
-          .where('id', '=', id)
-          .execute()
+      requireCollaborator(ctx)
+      const updates: Record<string, unknown> = {
+        updatedAt: new Date().toISOString(),
+        updatedBy: ctx.user.id,
       }
+      if (position !== null && position !== undefined) {
+        updates.position = position
+      }
+      await ctx.db
+        .updateTable('Topic')
+        .set(updates)
+        .where('id', '=', id)
+        .execute()
       const topic = await ctx.db
         .selectFrom('Topic')
         .selectAll()
@@ -277,6 +356,7 @@ export const resolvers: Resolvers = {
       return topic ?? null
     },
     updateTopicWhenIssueDeleted: async (_parent, { id }, ctx) => {
+      requireCollaborator(ctx)
       await ctx.db
         .updateTable('Topic')
         .set({ issueId: null })
@@ -301,10 +381,12 @@ export const resolvers: Resolvers = {
       return issues
     },
     allLinks: async (_parent, _args, ctx) => {
+      requireCollaborator(ctx)
       const links = await ctx.db.selectFrom('Link').selectAll().execute()
       return links
     },
     allLinkSubmissions: async (_parent, _args, ctx) => {
+      requireCollaborator(ctx)
       const submissions = await ctx.db
         .selectFrom('LinkSubmission')
         .selectAll()
@@ -313,6 +395,7 @@ export const resolvers: Resolvers = {
       return submissions
     },
     allSubscribers: async (_parent, _args, ctx) => {
+      requireCollaborator(ctx)
       const subscribers = await ctx.db
         .selectFrom('Subscriber')
         .selectAll()
@@ -330,6 +413,17 @@ export const resolvers: Resolvers = {
         .where('id', '=', id)
         .executeTakeFirst()
       return issue ?? null
+    },
+    me: (_parent, _args, ctx) => {
+      if (!ctx.user) return null
+      return {
+        email: ctx.user.email,
+        id: ctx.user.id,
+        image: ctx.user.image,
+        isCollaborator: ctx.user.isCollaborator,
+        name: ctx.user.name,
+        repositoryUrl: `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
+      }
     },
   },
 

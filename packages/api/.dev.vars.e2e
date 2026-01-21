@@ -1,0 +1,5 @@
+E2E_TEST=1
+BETTER_AUTH_SECRET=e2e-test-secret-at-least-32-chars
+GITHUB_CLIENT_ID=test
+GITHUB_CLIENT_SECRET=test
+GITHUB_API_URL=http://localhost:2099

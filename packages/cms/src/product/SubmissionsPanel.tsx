@@ -88,11 +88,11 @@ function DraggableSubmission({
 
 export function SubmissionsPanel() {
   const [position, setPosition] = useState(() => ({
-    x: globalThis.window === undefined ? 20 : window.innerWidth - 340,
-    y: 100,
+    x: 20,
+    y: globalThis.window === undefined ? 20 : window.innerHeight - 60,
   }));
   const [size, setSize] = useState({ height: 384, width: 320 });
-  const [minimized, setMinimized] = useState(false);
+  const [minimized, setMinimized] = useState(true);
   const [consumed, setConsumed] = useState<string[]>(getConsumedSubmissions);
   const dragRef = useRef<HTMLDivElement>(null);
 
@@ -145,7 +145,7 @@ export function SubmissionsPanel() {
 
   return createPortal(
     <div
-      className="fixed z-50 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-sm"
+      className="fixed z-10 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-sm"
       style={{
         height: minimized ? "auto" : size.height,
         left: position.x,

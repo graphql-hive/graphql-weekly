@@ -1,15 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Delete Workflow", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/admin");
-    await expect(page.getByText(/\d+ issues/)).toBeVisible();
+import { createFreshIssue } from "../util";
 
-    await page.locator('a[href^="/admin/issue/"]').first().click();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
-  });
+test.describe("Delete Workflow", () => {
+  test.use({ storageState: "e2e/.auth/user.json" });
 
   test("delete link and verify persistence", async ({ page }) => {
+    await createFreshIssue(page);
+
     const timestamp = Date.now();
     const testUrl = `https://example.com/delete-${timestamp}`;
 
@@ -23,12 +21,10 @@ test.describe("Delete Workflow", () => {
     const linkUrlInput = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
-    await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
+    await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card containing our test URL and hover
-    const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::div[@role='button']",
-    );
+    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
     await linkCard.hover();
 
     // Click delete button within this card
@@ -37,15 +33,21 @@ test.describe("Delete Workflow", () => {
     // Verify unsaved changes appears
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
+    // Wait for Save button to be enabled (indicates createLinkMutation completed)
+    const saveBtn = page.getByRole("button", { name: "Save" });
+    await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
+
     // Save the deletion
-    await page.getByRole("button", { name: "Save" }).click();
+    await saveBtn.click();
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
       timeout: 10_000,
     });
 
     // Refresh and verify link is gone
     await page.reload();
-    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
 
     await expect(
       page.locator(`[aria-label="Link URL"][value="${testUrl}"]`),
@@ -53,6 +55,8 @@ test.describe("Delete Workflow", () => {
   });
 
   test("can cancel deletion via discard", async ({ page }) => {
+    await createFreshIssue(page);
+
     const timestamp = Date.now();
     const testUrl = `https://example.com/discard-${timestamp}`;
 
@@ -62,16 +66,14 @@ test.describe("Delete Workflow", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    // Wait for link
+    // Wait for link to appear
     const linkUrlInput = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
-    await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
+    await expect(linkUrlInput).toBeVisible({ timeout: 10_000 });
 
     // Find the link card and delete it
-    const linkCard = linkUrlInput.locator(
-      "xpath=ancestor::div[@role='button']",
-    );
+    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
     await linkCard.hover();
     await linkCard.locator('[aria-label="Delete link"]').click();
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
