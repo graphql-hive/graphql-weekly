@@ -1,29 +1,7 @@
+import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
-export interface User {
-  createdAt: Date;
-  email: string;
-  emailVerified: boolean;
-  handle: string;
-  id: string;
-  image?: string | null;
-  name: string;
-  updatedAt: Date;
-}
-
-export interface Session {
-  session: {
-    createdAt: Date;
-    expiresAt: Date;
-    id: string;
-    ipAddress?: string | null;
-    token: string;
-    updatedAt: Date;
-    userAgent?: string | null;
-    userId: string;
-  };
-  user: User;
-}
+type ServerAuth = ReturnType<typeof import("../../../api/src/auth").createAuth>
 
 const baseURL = import.meta.env.DEV
   ? "http://localhost:2012"
@@ -35,16 +13,12 @@ const authClient = createAuthClient({
   fetchOptions: {
     credentials: "include",
   },
+  plugins: [
+    inferAdditionalFields<ServerAuth>()
+  ]
 });
 
-export const { signIn, signOut } = authClient;
-
-const _useSession = authClient.useSession;
-export function useSession() {
-  return _useSession() as ReturnType<typeof _useSession> & {
-    data: Session | null;
-  };
-}
+export const { signIn, signOut, useSession } = authClient;
 
 export function logIn() {
   signIn.social({
@@ -52,3 +26,8 @@ export function logIn() {
     provider: "github",
   });
 }
+
+
+export type Session = typeof authClient.$Infer.Session.session
+export type User = typeof authClient.$Infer.Session.user
+
