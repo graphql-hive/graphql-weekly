@@ -334,92 +334,29 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Other handlers
   const submitTopic = useCallback(() => {
-    const topicTitle = newTopic;
-    setNewTopic("");
     createTopicMutation.mutate(
-      { issue_comment: " ", issueId: id, title: topicTitle },
-      { onSuccess: invalidateQueries },
+      { issue_comment: " ", issueId: id, title: newTopic },
+      {
+        onSuccess: () => {
+          setNewTopic("");
+          invalidateQueries();
+        },
+      },
     );
   }, [createTopicMutation, newTopic, id, invalidateQueries]);
 
   const submitLink = useCallback(() => {
     if (!newLink || !/^https?:\/\/.+/.test(newLink)) return;
-    const urlToAdd = newLink;
-    const tempId = `temp-link-${Date.now()}`;
-
-    setNewLink("");
-
-    // Optimistic update - add link to cache immediately
-    qc.setQueryData<{ allLinks: typeof allLinks }>(["AllLinks"], (old) => {
-      if (!old) return old;
-      return {
-        ...old,
-        allLinks: [
-          {
-            __typename: "Link" as const,
-            id: tempId,
-            text: null,
-            title: null,
-            topic: null,
-            url: urlToAdd,
-          },
-          ...(old.allLinks ?? []),
-        ],
-      };
-    });
-
     createLinkMutation.mutate(
-      { url: urlToAdd },
+      { url: newLink },
       {
-        onError: () => {
-          // Rollback optimistic update
-          qc.setQueryData<{ allLinks: typeof allLinks }>(
-            ["AllLinks"],
-            (old) => {
-              if (!old) return old;
-              return {
-                ...old,
-                allLinks: old.allLinks?.filter((l) => l.id !== tempId) ?? null,
-              };
-            },
-          );
-          setNewLink(urlToAdd);
-        },
-        onSuccess: (data) => {
-          const realId = data.createLink?.id;
-          if (realId) {
-            // Migrate any edits from temp ID to real ID
-            setEditedLinks((prev) => {
-              const edits = prev.get(tempId);
-              if (!edits) return prev;
-              const next = new Map(prev);
-              next.delete(tempId);
-              next.set(realId, edits);
-              return next;
-            });
-            // Migrate any link moves from temp ID to real ID
-            setLinkMoves((prev) => {
-              const topicId = prev.get(tempId);
-              if (!topicId) return prev;
-              const next = new Map(prev);
-              next.delete(tempId);
-              next.set(realId, topicId);
-              return next;
-            });
-            // Migrate deleted link IDs
-            setDeletedLinkIds((prev) => {
-              if (!prev.has(tempId)) return prev;
-              const next = new Set(prev);
-              next.delete(tempId);
-              next.add(realId);
-              return next;
-            });
-          }
+        onSuccess: () => {
+          setNewLink("");
           invalidateQueries();
         },
       },
     );
-  }, [createLinkMutation, newLink, invalidateQueries, qc]);
+  }, [createLinkMutation, newLink, invalidateQueries]);
 
   const handleLinkChange = useCallback((link: LinkData) => {
     setEditedLinks((prev) =>
@@ -538,8 +475,7 @@ function IssuePageContent({ id }: { id: string }) {
   const isSaving =
     updateLinkMutation.isPending ||
     deleteLinkMutation.isPending ||
-    addLinksToTopicMutation.isPending ||
-    createLinkMutation.isPending;
+    addLinksToTopicMutation.isPending;
 
   const isMutating =
     isSaving ||
@@ -557,8 +493,9 @@ function IssuePageContent({ id }: { id: string }) {
         isMutating && "cursor-progress",
       )}
     >
-      <Navbar />
-      <PageHeader {...issue} topics={topics} />
+      <Navbar>
+        <PageHeader {...issue} topics={topics} />
+      </Navbar>
 
       <main className="max-w-4xl mx-auto px-4 py-6">
         <div className="mb-6 flex gap-2">

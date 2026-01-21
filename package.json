@@ -33,7 +33,6 @@
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260113.0",
     "@hasparus/eslint-config": "2.0.13",
-    "@playwright/test": "^1.57.0",
     "eslint": "9.39.2",
     "prettier": "3.7.4",
     "prettier-plugin-astro": "0.14.1",

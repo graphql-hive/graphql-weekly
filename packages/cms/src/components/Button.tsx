@@ -5,7 +5,7 @@ import { cn } from "../cn";
 
 const variantClasses = {
   danger:
-    "bg-transparent text-red-500 border-red-500/50 hover:bg-red-500 hover:text-white hover:border-red-500",
+    "bg-red-500 text-white border-red-500 hover:bg-red-600 hover:border-red-600",
   primary: "bg-primary text-neu-900 border-primary hover:bg-primary/80",
   secondary:
     "bg-transparent text-neu-600 dark:text-neu-300 border-neu-300 dark:border-neu-600 hover:bg-neu-100 dark:hover:bg-neu-800",
@@ -13,22 +13,13 @@ const variantClasses = {
 
 export type ButtonVariant = keyof typeof variantClasses;
 
-const sizeClasses = {
-  md: "h-10 py-3 px-4 text-sm [&.Button--square]:p-0",
-  sm: "h-7 py-1.5 px-3 text-xs [&.Button--square]:p-0",
-  xs: "h-5 py-0.5 px-1.5 text-[10px] [&.Button--square]:p-0",
-} satisfies Record<string, string>;
-
-export type ButtonSize = keyof typeof sizeClasses;
-
 const baseClasses =
-  "border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5";
+  "py-3 px-4 border box-border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 uppercase leading-none text-sm disabled:opacity-30 disabled:cursor-not-allowed";
 
 interface ButtonBaseProps {
+  block?: boolean;
   className?: string;
   disabled?: boolean;
-  size?: ButtonSize;
-  square?: boolean;
   variant?: ButtonVariant;
 }
 
@@ -62,20 +53,19 @@ export type ButtonProps =
 export function Button(props: ButtonProps) {
   const className = cn(
     baseClasses,
-    sizeClasses[props.size ?? "md"],
     variantClasses[props.variant ?? "primary"],
+    props.block ? "block w-full" : "inline-block",
     props.disabled && "opacity-30 pointer-events-none",
     props.className,
-    props.square && "Button--square aspect-square",
   );
 
   if ("href" in props && typeof props.href === "string") {
     const {
       as: ___,
+      block: __,
       className: ____,
       disabled,
       href,
-      size: _____,
       variant: _,
       ...rest
     } = props;
@@ -91,19 +81,12 @@ export function Button(props: ButtonProps) {
   }
 
   if (props.as) {
-    const {
-      as,
-      className: _1,
-      size: _2,
-      square: _4,
-      variant: _3,
-      ...rest
-    } = props;
+    const { as, block: __, className: ___, variant: _, ...rest } = props;
     const Root = as as "span";
     return <Root {...rest} className={className} />;
   }
 
-  const { className: _1, size: _2, square: _4, variant: _3, ...rest } = props;
+  const { block: __, className: ___, variant: _, ...rest } = props;
   return <button {...rest} className={className} />;
 }
 

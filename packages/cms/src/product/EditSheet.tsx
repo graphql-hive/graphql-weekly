@@ -76,7 +76,7 @@ export function EditSheet({
       )}
       {hasDelete && (
         <section style={{ marginTop: "16px" }}>
-          <Button onClick={handlers.onDelete} variant="danger">
+          <Button block onClick={handlers.onDelete} variant="danger">
             Delete
           </Button>
         </section>

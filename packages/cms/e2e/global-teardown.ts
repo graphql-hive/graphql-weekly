@@ -1,7 +1,5 @@
-/* eslint-disable no-console */
 import { cleanupAll } from "./cleanup";
 
-// eslint-disable-next-line import/no-default-export
 export default async function globalTeardown() {
   try {
     const { issues, links } = await cleanupAll();

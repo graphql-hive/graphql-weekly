@@ -1,15 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Topic Organization", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
+    await page.goto("/admin");
+    await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
-    await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await page.locator('a[href^="/admin/issue/"]').first().click();
+    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
   });
 
   test("create topic and verify it persists", async ({ page }) => {
@@ -18,21 +15,16 @@ test.describe("Topic Organization", () => {
 
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
-    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
 
     const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
     await addTopicBtn.click();
 
     await expect(topicInput).toHaveValue("");
-    await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
 
     // Refresh and verify persistence
     await page.reload();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
   });
 
@@ -46,20 +38,12 @@ test.describe("Topic Organization", () => {
     const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
 
     await topicInput.fill(topic1);
-    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await addTopicBtn.click();
-    await expect(topicInput).toHaveValue("");
-    await expect(page.getByRole("heading", { name: topic1 })).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(page.getByRole("heading", { name: topic1 })).toBeVisible();
 
     await topicInput.fill(topic2);
-    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await addTopicBtn.click();
-    await expect(topicInput).toHaveValue("");
-    await expect(page.getByRole("heading", { name: topic2 })).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(page.getByRole("heading", { name: topic2 })).toBeVisible();
 
     // Get topic header divs (role="group") for position checking
     const topic1Header = page.locator('[role="group"]').filter({
@@ -101,9 +85,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify persistence
     await page.reload();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
 
     const persistedTopic1Box = await topic1Header.boundingBox();
     const persistedTopic2Box = await topic2Header.boundingBox();
@@ -121,12 +103,8 @@ test.describe("Topic Organization", () => {
     // Create a topic
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
-    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await page.getByRole("button", { name: "Add Topic" }).click();
-    await expect(topicInput).toHaveValue("");
-    await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
 
     // Set up dialog handler BEFORE clicking
     page.once("dialog", (dialog) => dialog.accept());
@@ -150,9 +128,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify it's still gone
     await page.reload();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
     await expect(
       page.getByRole("heading", { name: topicName }),
     ).not.toBeVisible();
@@ -168,12 +144,8 @@ test.describe("Topic Organization", () => {
     // Create a topic
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
-    await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
     await page.getByRole("button", { name: "Add Topic" }).click();
-    await expect(topicInput).toHaveValue("");
-    await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(page.getByRole("heading", { name: topicName })).toBeVisible();
 
     // Add a link to Unassigned
     const linkInput = page.getByPlaceholder("Paste URL to add link...");
@@ -188,7 +160,9 @@ test.describe("Topic Organization", () => {
     await expect(linkUrlInput).toBeVisible({ timeout: 5000 });
 
     // Find the link card (sortable item with keyboard support)
-    const linkCard = linkUrlInput.locator("xpath=ancestor::*[@role='button']");
+    const linkCard = linkUrlInput.locator(
+      "xpath=ancestor::div[@role='button']",
+    );
     await expect(linkCard).toBeVisible();
 
     // Find the topic section (drop target)
@@ -223,9 +197,7 @@ test.describe("Topic Organization", () => {
 
     // Refresh and verify persistence
     await page.reload();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(page.getByText("Curating:")).toBeVisible({ timeout: 15_000 });
 
     // Verify link is still in topic
     const persistedTopicSection = page.locator("section").filter({

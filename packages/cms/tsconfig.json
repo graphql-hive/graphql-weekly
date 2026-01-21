@@ -9,13 +9,9 @@
   },
   "include": [
     "src",
-    "e2e",
-    "scripts",
-    ".astro/types.d.ts",
+    ".astro",
     "astro.config.mjs",
     "codegen.ts",
-    "graphql-codegen.ts",
-    "playwright.config.ts",
-    "vite.config.ts"
+    "graphql-codegen.ts"
   ]
 }

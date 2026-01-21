@@ -6,45 +6,31 @@ export default defineConfig({
   globalTeardown: "./e2e/global-teardown.ts",
   projects: [
     {
-      fullyParallel: false, // D1 commands need sequential execution to avoid SQLITE_BUSY
-      name: "setup",
-      testMatch: /global-setup\.ts/,
-    },
-    {
-      dependencies: ["setup"],
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  reporter: [["list", { printSteps: true }], ["html"]],
+  reporter: "html",
   retries: process.env.CI ? 2 : 1,
   testDir: "./e2e",
   use: {
     baseURL: process.env.CMS_URL || "http://localhost:2016",
     trace: "on-first-retry",
   },
-  // Surprising limitation in our sqlite/wrangler setup, but not worth delving deep into
-  workers: 1,
-  // Start mock GitHub API, API server, and CMS before tests
+  workers: process.env.CI ? 1 : 2,
+  // Start both API and CMS servers before tests
   webServer: [
     {
-      command: "bun run e2e/github-mock-server.ts",
-      reuseExistingServer: false,
-      timeout: 10_000,
-      url: "http://localhost:2099/user/emails",
-    },
-    {
-      command:
-        "cd ../api && bun run migrate:up && bunx wrangler dev --env-file .dev.vars.e2e",
-      reuseExistingServer: false,
+      command: "cd ../api && bun run dev",
+      reuseExistingServer: !process.env.CI,
       timeout: 60_000,
       url: "http://localhost:2012/health",
     },
     {
       command: "bun run dev",
-      reuseExistingServer: false,
+      reuseExistingServer: !process.env.CI,
       timeout: 60_000,
-      url: "http://localhost:2016",
+      url: "http://localhost:2016/admin",
     },
   ],
 });

@@ -1,9 +1,0 @@
-**/generated/
-**/dist/
-**/node_modules/
-**/.wrangler/
-**/.turbo/
-**/.cache/
-**/playwright-report/
-**/test-results/
-.wrangler

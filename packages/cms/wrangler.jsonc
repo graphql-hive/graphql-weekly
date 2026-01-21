@@ -4,15 +4,12 @@
   "compatibility_date": "2026-01-07",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "preview_urls": true,
-  "workers_dev": true,
+  // Astro Cloudflare adapter outputs to dist/_worker.js
   "main": "dist/_worker.js/index.js",
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist",
   },
-  "routes": [
-    { "pattern": "cms.graphqlweekly.com/*", "zone_name": "graphqlweekly.com" },
-  ],
   "observability": {
     "enabled": true,
   },
