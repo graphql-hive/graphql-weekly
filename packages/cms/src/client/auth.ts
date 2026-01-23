@@ -1,7 +1,9 @@
 import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
-type ServerAuth = ReturnType<typeof import("@gqlweekly/api/src/auth").createAuth>
+type ServerAuth = ReturnType<
+  typeof import("@gqlweekly/api/src/auth").createAuth
+>;
 
 const baseURL = import.meta.env.DEV
   ? "http://localhost:2012"
@@ -13,9 +15,7 @@ const authClient = createAuthClient({
   fetchOptions: {
     credentials: "include",
   },
-  plugins: [
-    inferAdditionalFields<ServerAuth>()
-  ]
+  plugins: [inferAdditionalFields<ServerAuth>()],
 });
 
 export const { signIn, signOut, useSession } = authClient;
@@ -27,7 +27,5 @@ export function logIn() {
   });
 }
 
-
-export type Session = typeof authClient.$Infer.Session.session
-export type User = typeof authClient.$Infer.Session.user
-
+export type Session = typeof authClient.$Infer.Session.session;
+export type User = typeof authClient.$Infer.Session.user;
