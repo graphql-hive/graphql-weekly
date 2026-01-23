@@ -61,7 +61,7 @@ jobs:
           echo "branch-slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
           echo "preview-url=https://${BRANCH_SLUG}-api.graphqlweekly.com" >> $GITHUB_OUTPUT
 
-      - name: Build Preview
+      - name: Build
         run: bun turbo build
         env:
           PUBLIC_API_URL: ${{ steps.url.outputs.preview-url }}/graphql
