@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "deploy": "wrangler deploy",
     "wrangler:dev": "wrangler dev",
     "localflare": "bunx localflare",
     "format": "prettier src --write",
