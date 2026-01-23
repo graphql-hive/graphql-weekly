@@ -1,7 +1,7 @@
 import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
-type ServerAuth = ReturnType<typeof import("../../../api/src/auth").createAuth>
+type ServerAuth = ReturnType<typeof import("@gqlweekly/api/src/auth").createAuth>
 
 const baseURL = import.meta.env.DEV
   ? "http://localhost:2012"

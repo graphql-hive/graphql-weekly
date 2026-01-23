@@ -38,6 +38,7 @@
     "vite": "7.3.1"
   },
   "dependencies": {
+    "@gqlweekly/api": "workspace:*",
     "@astrojs/cloudflare": "12.6.12",
     "@astrojs/react": "4.4.2",
     "@dnd-kit/core": "6.3.1",
