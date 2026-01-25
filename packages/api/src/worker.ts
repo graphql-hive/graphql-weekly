@@ -213,7 +213,24 @@ export default {
     const { hostname } = url
     const preview = getPreviewSubdomain(hostname)
 
+    const origin = request.headers.get('Origin')
+    const corsOrigin = origin && isAllowedOrigin(origin) ? origin : null
+
     if (preview && env.WORKERS_DEV_SUBDOMAIN) {
+      // Handle CORS preflight for preview proxies
+      if (request.method === 'OPTIONS') {
+        return new Response(null, {
+          headers: corsOrigin
+            ? {
+                'Access-Control-Allow-Credentials': 'true',
+                'Access-Control-Allow-Headers': 'Content-Type, Cookie',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Origin': corsOrigin,
+              }
+            : {},
+        })
+      }
+
       const workerName =
         preview.service === 'api' ? 'graphqlweekly-api' : 'graphqlweekly-cms'
       const previewUrl = `https://${preview.subdomain}-${workerName}.${env.WORKERS_DEV_SUBDOMAIN}.workers.dev${url.pathname}${url.search}`
@@ -222,11 +239,9 @@ export default {
         headers: request.headers,
         method: request.method,
       })
-      return fetch(proxyRequest)
+      const response = await fetch(proxyRequest)
+      return addCorsHeaders(response, corsOrigin)
     }
-
-    const origin = request.headers.get('Origin')
-    const corsOrigin = origin && isAllowedOrigin(origin) ? origin : null
 
     if (request.method === 'OPTIONS') {
       return new Response(null, {

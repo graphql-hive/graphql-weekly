@@ -9,6 +9,7 @@
     - [x] Retry logic with exponential backoff (cms/client/fetcher.ts)
     - [x] N+1 optimization: allIssues now fetches all data in 3 parallel queries instead of 500+
     - [x] Issue.topics prefetches links; Topic.links uses prefetched data
+    - [x] Preview proxy now returns CORS headers (was missing for `polish-api.graphqlweekly.com` etc)
   - **Deploy needed** to verify fix works in production
 - We're getting a spinner when we move a tag, bad UX
   - We're getting a spinner on most actions on prod, what's super weird.
