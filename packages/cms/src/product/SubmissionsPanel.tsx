@@ -109,10 +109,9 @@ export function SubmissionsPanel() {
 
   const { data, isLoading } = useLinkSubmissionsQuery();
   const totalCount = data?.linkSubmissions.totalCount ?? 0;
-  const allSubmissions = data?.linkSubmissions.items ?? [];
   const submissions = useMemo(
-    () => allSubmissions.filter((s) => s.id && !consumed.includes(s.id)),
-    [allSubmissions, consumed],
+    () => data?.linkSubmissions.items.filter((s) => s.id && !consumed.includes(s.id)) ?? [],
+    [data, consumed],
   );
 
   const bind = useDrag(
