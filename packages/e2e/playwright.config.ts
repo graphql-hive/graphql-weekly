@@ -5,6 +5,7 @@ import { API_URL, CMS_URL, GITHUB_MOCK_URL, WEB_URL } from "./src/urls";
 export default defineConfig({
   forbidOnly: !!process.env.CI,
   fullyParallel: false,
+  globalSetup: "./global-setup.ts",
   globalTeardown: "./src/global-teardown.ts",
   projects: [
     {

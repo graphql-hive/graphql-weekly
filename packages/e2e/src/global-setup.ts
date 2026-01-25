@@ -22,33 +22,7 @@ const NON_COLLABORATOR_USER = {
   password: "test-password-456",
 };
 
-setup("seed test data", async () => {
-  // Insert directly into D1 (migrations run before playwright via pretest script)
-  const issueId = "seed-issue-999";
-  const topicId = "seed-topic-001";
-  const linkId = "seed-link-001";
-  const now = new Date().toISOString();
-
-  // Create published issue (Issue has: id, title, number, published, date)
-  execSync(
-    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Issue (id, title, number, published, date) VALUES ('${issueId}', 'E2E Test Issue', 999, 1, '${now}')"`,
-    { stdio: "inherit" },
-  );
-
-  // Create topic (Topic has: id, title, issue_comment, position, issueId)
-  execSync(
-    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Topic (id, title, issue_comment, position, issueId) VALUES ('${topicId}', 'Articles', '', 0, '${issueId}')"`,
-    { stdio: "inherit" },
-  );
-
-  // Create link (Link has: id, position, text, title, topicId, url)
-  execSync(
-    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Link (id, position, text, title, topicId, url) VALUES ('${linkId}', 0, 'A test article for e2e', 'Test Article', '${topicId}', 'https://example.com/test-article')"`,
-    { stdio: "inherit" },
-  );
-
-  console.log("✅ Seeded test issue #999");
-});
+// Seed data (issue #999, AllowedEmail) created by globalSetup BEFORE webServers start
 
 setup("create authenticated session", async ({ playwright }) => {
   // Use fresh request context with Origin header for Better Auth
@@ -57,13 +31,7 @@ setup("create authenticated session", async ({ playwright }) => {
     extraHTTPHeaders: { Origin: CMS_URL },
   });
 
-  // Add test email to AllowedEmail so mock GitHub API grants collaborator access
-  execSync(
-    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO AllowedEmail (email) VALUES ('test@e2e.local')"`,
-    { stdio: "inherit" },
-  );
-
-  // Create test account for GitHub collaborator check (will be linked after user creation)
+  // Clean up any existing test account (will be re-created after user creation)
   execSync(
     `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'test-account-id'"`,
     { stdio: "inherit" },
