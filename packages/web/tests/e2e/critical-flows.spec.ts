@@ -77,6 +77,7 @@ test.describe("GraphQL Weekly", () => {
     // Find and click on an issue link in sidebar
     const issueLink = page.getByRole("link", { name: /issue #\d+/i }).first();
     const issueText = await issueLink.textContent();
+    expect(issueText).toBeTruthy();
     await issueLink.click();
 
     // Should navigate to issue page
@@ -84,7 +85,7 @@ test.describe("GraphQL Weekly", () => {
 
     // Issue content visible
     await expect(
-      page.getByRole("heading", { name: new RegExp(issueText || "", "i") }),
+      page.getByRole("heading", { name: new RegExp(issueText!, "i") }),
     ).toBeVisible();
   });
 });

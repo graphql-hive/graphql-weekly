@@ -1,28 +1,28 @@
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: "./tests/e2e",
-  fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 1,
+  fullyParallel: true,
   reporter: [["list", { printSteps: true }], ["html"]],
+  retries: process.env.CI ? 2 : 1,
+  testDir: "./tests/e2e",
   // SQLite/wrangler limitation — same as CMS
-  workers: 1,
-  use: {
-    baseURL: "http://localhost:2015",
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
-  },
   projects: [
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
   ],
+  use: {
+    baseURL: "http://localhost:2015",
+    screenshot: "only-on-failure",
+    trace: "on-first-retry",
+  },
   webServer: {
     command: "./scripts/start-api.sh",
+    port: 2015,
     reuseExistingServer: false,
     timeout: 120_000,
-    url: "http://localhost:2015",
   },
+  workers: 1,
 });
