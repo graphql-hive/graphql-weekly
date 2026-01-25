@@ -40,3 +40,6 @@ export function seedDatabase() {
 
   console.log("✅ Seeded test data");
 }
+
+// Run when executed directly
+seedDatabase();

@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "bun run --cwd ../api migrate:up && CI=true playwright test",
-    "test:dev": "bun run --cwd ../api migrate:up && playwright test",
-    "test:ui": "bun run --cwd ../api migrate:up && playwright test --ui"
+    "seed": "bun run src/seed-database.ts",
+    "test": "bun run --cwd ../api migrate:up && bun run seed && CI=true playwright test",
+    "test:dev": "bun run --cwd ../api migrate:up && bun run seed && playwright test",
+    "test:ui": "bun run --cwd ../api migrate:up && bun run seed && playwright test --ui"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",
