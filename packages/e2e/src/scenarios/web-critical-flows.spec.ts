@@ -13,7 +13,7 @@ test.describe("GraphQL Weekly", () => {
 
     // Issue content loaded (topics section)
     await expect(
-      page.getByRole("link", { name: "Articles", exact: true }),
+      page.getByRole("link", { exact: true, name: "Articles" }),
     ).toBeVisible();
   });
 

@@ -19,7 +19,9 @@ test.describe("Cross-App: Web to CMS", () => {
       page.getByRole("heading", { level: 1, name: /newsletter/i }),
     ).toBeVisible({ timeout: 15_000 });
 
-    const submitBtn = page.getByRole("button", { name: /submit link/i }).first();
+    const submitBtn = page
+      .getByRole("button", { name: /submit link/i })
+      .first();
     await expect(submitBtn).toBeEnabled({ timeout: 10_000 });
     await submitBtn.click();
     const dialog = page.getByRole("dialog");

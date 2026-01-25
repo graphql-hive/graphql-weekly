@@ -41,7 +41,8 @@ test.describe("Edit and Persist", () => {
       const body = await res.json().catch(() => null);
       const allLinks = body?.data?.allLinks;
       return (
-        Array.isArray(allLinks) && allLinks.some((l: { id: string }) => l.id === createdLinkId)
+        Array.isArray(allLinks) &&
+        allLinks.some((l: { id: string }) => l.id === createdLinkId)
       );
     });
 
@@ -87,7 +88,7 @@ test.describe("Edit and Persist", () => {
 
     // Verify no error shown and unsaved indicator disappears
     await expect(page.getByText(/Save failed/i)).not.toBeVisible({
-      timeout: 5_000,
+      timeout: 5000,
     });
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
       timeout: 10_000,

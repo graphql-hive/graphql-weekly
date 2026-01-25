@@ -385,8 +385,16 @@ export const resolvers: Resolvers = {
       // Fetch all data in parallel to avoid N+1
       const [issues, allTopics, allLinks] = await Promise.all([
         ctx.db.selectFrom('Issue').selectAll().execute(),
-        ctx.db.selectFrom('Topic').selectAll().orderBy('position', 'asc').execute(),
-        ctx.db.selectFrom('Link').selectAll().orderBy('position', 'asc').execute(),
+        ctx.db
+          .selectFrom('Topic')
+          .selectAll()
+          .orderBy('position', 'asc')
+          .execute(),
+        ctx.db
+          .selectFrom('Link')
+          .selectAll()
+          .orderBy('position', 'asc')
+          .execute(),
       ])
 
       // Group links by topicId
@@ -399,7 +407,10 @@ export const resolvers: Resolvers = {
       }
 
       // Group topics by issueId, with prefetched links
-      const topicsByIssue = new Map<string, (typeof allTopics[0] & { _prefetchedLinks: typeof allLinks })[]>()
+      const topicsByIssue = new Map<
+        string,
+        ((typeof allTopics)[0] & { _prefetchedLinks: typeof allLinks })[]
+      >()
       for (const topic of allTopics) {
         if (!topic.issueId) continue
         const existing = topicsByIssue.get(topic.issueId) ?? []

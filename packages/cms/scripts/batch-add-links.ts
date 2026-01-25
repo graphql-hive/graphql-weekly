@@ -4,8 +4,7 @@
 import { gql, GraphQLClient } from "graphql-request";
 import { readFileSync } from "node:fs";
 
-const endpoint =
-  process.env.API_URL || "https://api.graphqlweekly.com/graphql";
+const endpoint = process.env.API_URL || "https://api.graphqlweekly.com/graphql";
 const cookie = process.env.SESSION_COOKIE;
 
 if (!cookie) {

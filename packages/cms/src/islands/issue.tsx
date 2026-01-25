@@ -525,9 +525,9 @@ function IssuePageContent({ id }: { id: string }) {
       setDeletedLinkIds(new Set());
       setLinkMoves(new Map());
       invalidateQueries();
-    } catch (err) {
+    } catch (error) {
       const message =
-        err instanceof Error ? err.message : "Failed to save changes";
+        error instanceof Error ? error.message : "Failed to save changes";
       setSaveError(message);
     }
   }, [

@@ -264,8 +264,9 @@ export default {
               email: session.user.email,
               id: session.user.id,
               image: session.user.image,
-              isCollaborator: !!(session.session as { isCollaborator?: boolean })
-                .isCollaborator,
+              isCollaborator: !!(
+                session.session as { isCollaborator?: boolean }
+              ).isCollaborator,
               name: session.user.name,
             }
           }
@@ -295,10 +296,10 @@ export default {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Worker error:', error)
-      const errorResponse = new Response(
-        JSON.stringify({
+      const errorResponse = Response.json(
+        {
           errors: [{ message: 'Internal server error' }],
-        }),
+        },
         {
           headers: { 'Content-Type': 'application/json' },
           status: 500,
