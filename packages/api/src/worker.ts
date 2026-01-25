@@ -266,7 +266,18 @@ export default {
         // No session or invalid session
       }
 
-      return yoga.fetch(request, { db, env, user })
+      const response = await yoga.fetch(request, { db, env, user })
+      if (corsOrigin) {
+        const headers = new Headers(response.headers)
+        headers.set('Access-Control-Allow-Origin', corsOrigin)
+        headers.set('Access-Control-Allow-Credentials', 'true')
+        return new Response(response.body, {
+          headers,
+          status: response.status,
+          statusText: response.statusText,
+        })
+      }
+      return response
     }
 
     // Health check

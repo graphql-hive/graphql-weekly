@@ -25,11 +25,6 @@ const queriesList: { query: string; title: string }[] = [
     published
     number
     date
-    author {
-      avatarUrl
-      description
-      name
-    }
   }
 }
     `,
