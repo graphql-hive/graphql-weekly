@@ -32,7 +32,13 @@ export function fetcher<TData, TVariables extends Record<string, unknown>>(
   variables?: TVariables,
   _headers?: RequestInit["headers"],
 ): () => Promise<TData> {
+  // Extract operation name for debugging
+  const opMatch = query.match(/(?:query|mutation)\s+(\w+)/);
+  const opName = opMatch?.[1] ?? "unknown";
+
   return async () => {
+    // eslint-disable-next-line no-console
+    console.log(`[fetcher] ${opName} request at`, new Date().toISOString());
     try {
       return await graphqlClient.request<TData>(query, variables);
     } catch (error) {
