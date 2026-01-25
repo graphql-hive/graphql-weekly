@@ -177,6 +177,8 @@ function IssuePageContent({ id }: { id: string }) {
   // Track moves for saving (linkId -> newContainerId)
   const [linkMoves, setLinkMoves] = useState<Map<string, string>>(new Map());
   const [deletedLinkIds, setDeletedLinkIds] = useState<Set<string>>(new Set());
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const tempToRealIdRef = useRef<Map<string, string>>(new Map());
   const [activeSubmission, setActiveSubmission] = useState<{
     description: string;
     title: string;
@@ -388,6 +390,9 @@ function IssuePageContent({ id }: { id: string }) {
         onSuccess: (data) => {
           const realId = data.createLink?.id;
           if (realId) {
+            // Store mapping so future edits to temp ID are redirected to real ID
+            tempToRealIdRef.current.set(tempId, realId);
+
             // Migrate any edits from temp ID to real ID
             setEditedLinks((prev) => {
               const edits = prev.get(tempId);
@@ -422,8 +427,13 @@ function IssuePageContent({ id }: { id: string }) {
   }, [createLinkMutation, newLink, invalidateQueries, qc]);
 
   const handleLinkChange = useCallback((link: LinkData) => {
+    const linkId = link.id!;
+    // Resolve temp ID to real ID if the mapping exists (handles race condition
+    // where user edits after mutation completes but before React re-renders)
+    const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+
     setEditedLinks((prev) =>
-      new Map(prev).set(link.id!, {
+      new Map(prev).set(resolvedId, {
         text: link.text ?? null,
         title: link.title ?? null,
         url: link.url ?? null,
@@ -432,7 +442,8 @@ function IssuePageContent({ id }: { id: string }) {
   }, []);
 
   const handleLinkDelete = useCallback((linkId: string) => {
-    setDeletedLinkIds((prev) => new Set(prev).add(linkId));
+    const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+    setDeletedLinkIds((prev) => new Set(prev).add(resolvedId));
   }, []);
 
   const handleTopicRemove = useCallback(
@@ -484,33 +495,41 @@ function IssuePageContent({ id }: { id: string }) {
   const changesCount = editedLinks.size + deletedLinkIds.size + linkMoves.size;
 
   const saveAll = useCallback(async () => {
-    const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
-      updateLinkMutation.mutateAsync({
-        id: lid,
-        text: changes.text!,
-        title: changes.title!,
-        url: changes.url!,
-      }),
-    );
+    setSaveError(null);
 
-    const deletePromises = [...deletedLinkIds].map((lid) =>
-      deleteLinkMutation.mutateAsync({ id: lid }),
-    );
+    try {
+      const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
+        updateLinkMutation.mutateAsync({
+          id: lid,
+          text: changes.text!,
+          title: changes.title!,
+          url: changes.url!,
+        }),
+      );
 
-    const movePromises = [...linkMoves.entries()].map(([linkId, topicId]) => {
-      if (topicId === UNASSIGNED_ID) {
-        // TODO: Need a mutation to unassign link from topic
-        return Promise.resolve();
-      }
-      return addLinksToTopicMutation.mutateAsync({ linkId, topicId });
-    });
+      const deletePromises = [...deletedLinkIds].map((lid) =>
+        deleteLinkMutation.mutateAsync({ id: lid }),
+      );
 
-    await Promise.all([...linkPromises, ...deletePromises, ...movePromises]);
+      const movePromises = [...linkMoves.entries()].map(([linkId, topicId]) => {
+        if (topicId === UNASSIGNED_ID) {
+          // TODO: Need a mutation to unassign link from topic
+          return Promise.resolve();
+        }
+        return addLinksToTopicMutation.mutateAsync({ linkId, topicId });
+      });
 
-    setEditedLinks(new Map());
-    setDeletedLinkIds(new Set());
-    setLinkMoves(new Map());
-    invalidateQueries();
+      await Promise.all([...linkPromises, ...deletePromises, ...movePromises]);
+
+      setEditedLinks(new Map());
+      setDeletedLinkIds(new Set());
+      setLinkMoves(new Map());
+      invalidateQueries();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to save changes";
+      setSaveError(message);
+    }
   }, [
     editedLinks,
     deletedLinkIds,
@@ -525,6 +544,7 @@ function IssuePageContent({ id }: { id: string }) {
     setEditedLinks(new Map());
     setDeletedLinkIds(new Set());
     setLinkMoves(new Map());
+    setSaveError(null);
   }, []);
 
   if (linksLoading || issueLoading || !issue) {
@@ -683,7 +703,9 @@ function IssuePageContent({ id }: { id: string }) {
                   [activeContainer]: container.filter((id) => id !== active.id),
                 };
               });
-              setDeletedLinkIds((prev) => new Set(prev).add(String(active.id)));
+              const linkId = String(active.id);
+              const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+              setDeletedLinkIds((prev) => new Set(prev).add(resolvedId));
               setActiveId(null);
               setActiveSubmission(null);
               return;
@@ -713,8 +735,11 @@ function IssuePageContent({ id }: { id: string }) {
 
               // Track move if container changed
               if (activeContainer !== overContainer) {
+                const linkId = String(active.id);
+                const resolvedId =
+                  tempToRealIdRef.current.get(linkId) ?? linkId;
                 setLinkMoves((prev) =>
-                  new Map(prev).set(String(active.id), String(overContainer)),
+                  new Map(prev).set(resolvedId, String(overContainer)),
                 );
               }
             }
@@ -1018,16 +1043,31 @@ function IssuePageContent({ id }: { id: string }) {
         </div>
       </main>
 
-      {hasUnsavedChanges && (
+      {(hasUnsavedChanges || saveError) && (
         <>
           <div className="h-20" />
-          <div className="fixed bottom-0 inset-x-0 bg-white dark:bg-neu-900 border-t border-neu-200 dark:border-neu-700 shadow-lg dark:shadow-neu-950/50">
-            <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-              <span className="text-sm text-neu-600 dark:text-neu-400">
-                {changesCount} unsaved{" "}
-                {changesCount === 1 ? "change" : "changes"}
-              </span>
-              <div className="flex gap-2">
+          <div
+            className={cn(
+              "fixed bottom-0 inset-x-0 border-t shadow-lg",
+              saveError
+                ? "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800"
+                : "bg-white dark:bg-neu-900 border-neu-200 dark:border-neu-700 dark:shadow-neu-950/50",
+            )}
+          >
+            <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                {saveError ? (
+                  <span className="text-sm text-red-600 dark:text-red-400">
+                    Save failed: {saveError}
+                  </span>
+                ) : (
+                  <span className="text-sm text-neu-600 dark:text-neu-400">
+                    {changesCount} unsaved{" "}
+                    {changesCount === 1 ? "change" : "changes"}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2 shrink-0">
                 <Button
                   disabled={isSaving}
                   onClick={discardAll}
@@ -1036,7 +1076,7 @@ function IssuePageContent({ id }: { id: string }) {
                   Discard
                 </Button>
                 <Button disabled={isSaving} onClick={saveAll} variant="primary">
-                  {isSaving ? "Saving..." : "Save"}
+                  {isSaving ? "Saving..." : saveError ? "Retry" : "Save"}
                 </Button>
               </div>
             </div>

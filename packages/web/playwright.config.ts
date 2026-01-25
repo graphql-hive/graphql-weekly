@@ -6,7 +6,6 @@ export default defineConfig({
   reporter: [["list", { printSteps: true }], ["html"]],
   retries: process.env.CI ? 2 : 1,
   testDir: "./tests/e2e",
-  // SQLite/wrangler limitation — same as CMS
   projects: [
     {
       name: "chromium",
@@ -18,11 +17,20 @@ export default defineConfig({
     screenshot: "only-on-failure",
     trace: "on-first-retry",
   },
-  webServer: {
-    command: "./scripts/start-api.sh",
-    port: 2015,
-    reuseExistingServer: false,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command:
+        "cd ../api && bun run migrate:up && bunx wrangler dev --port 2013 --env-file .dev.vars.e2e",
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+      url: "http://localhost:2013/health",
+    },
+    {
+      command: "bun run dev",
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+      url: "http://localhost:2015",
+    },
+  ],
   workers: 1,
 });
