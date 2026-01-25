@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
+import { MUTATION_ENDPOINT } from "../../../lib/api";
 import { AlertCircle } from "../../vectors/AlertCircle";
 import { Check } from "../../vectors/Check";
 import { PrimaryButton, SecondaryButton } from "../Buttons/Index";
@@ -205,16 +206,13 @@ const linkSubmission = async ({
 
   const variables = { description, email, name, title, url };
 
-  return fetch(
-    "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql",
-    {
-      body: JSON.stringify({
-        operationName: "createSubmissionLink",
-        query,
-        variables,
-      }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    },
-  ).then((res) => res.json());
+  return fetch(MUTATION_ENDPOINT, {
+    body: JSON.stringify({
+      operationName: "createSubmissionLink",
+      query,
+      variables,
+    }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  }).then((res) => res.json());
 };

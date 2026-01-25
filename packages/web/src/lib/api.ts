@@ -4,6 +4,11 @@ const GRAPHQL_ENDPOINT = import.meta.env.DEV
   ? "http://localhost:2012"
   : "https://graphql-weekly.graphcdn.app";
 
+// Mutations need direct API access (CDN is read-only)
+export const MUTATION_ENDPOINT = import.meta.env.DEV
+  ? "http://localhost:2012"
+  : "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
+
 export async function fetchGraphQL<T>({
   query,
 }: {

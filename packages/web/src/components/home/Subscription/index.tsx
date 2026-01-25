@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 
 import { Component } from "react";
 
+import { MUTATION_ENDPOINT } from "../../../lib/api";
 import { PrimaryButton } from "../../shared/Buttons/Index";
 import { Input } from "../../shared/Input/Input";
 import { AlertCircle } from "../../vectors/AlertCircle";
@@ -121,12 +122,9 @@ const subscribeUser = async ({
   const variables = { email, name };
   const operationName = "createSubscriber";
 
-  return fetch(
-    "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql",
-    {
-      body: JSON.stringify({ operationName, query, variables }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    },
-  ).then((res) => res.json());
+  return fetch(MUTATION_ENDPOINT, {
+    body: JSON.stringify({ operationName, query, variables }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  }).then((res) => res.json());
 };
