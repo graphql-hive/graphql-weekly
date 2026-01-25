@@ -70,27 +70,43 @@ export const resolvers: Resolvers = {
       const id = generateId()
       const dateStr = date ? date.toISOString() : new Date().toISOString()
       const now = new Date().toISOString()
-      await ctx.db
-        .insertInto('Issue')
-        .values({
-          createdAt: now,
-          createdBy: ctx.user.id,
-          date: dateStr,
-          id,
-          number,
-          published: published ? 1 : 0,
-          title,
-          updatedAt: now,
-          updatedBy: ctx.user.id,
-          versionCount: 0,
-        })
-        .execute()
-      const issue = await ctx.db
-        .selectFrom('Issue')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
-      return issue ?? null
+      try {
+        await ctx.db
+          .insertInto('Issue')
+          .values({
+            createdAt: now,
+            createdBy: ctx.user.id,
+            date: dateStr,
+            id,
+            number,
+            published: published ? 1 : 0,
+            title,
+            updatedAt: now,
+            updatedBy: ctx.user.id,
+            versionCount: 0,
+          })
+          .execute()
+        const issue = await ctx.db
+          .selectFrom('Issue')
+          .selectAll()
+          .where('id', '=', id)
+          .executeTakeFirst()
+        return issue ?? null
+      } catch (error) {
+        // Handle UNIQUE constraint on number - return existing issue (idempotent)
+        if (
+          error instanceof Error &&
+          error.message.includes('UNIQUE constraint')
+        ) {
+          const existing = await ctx.db
+            .selectFrom('Issue')
+            .selectAll()
+            .where('number', '=', number)
+            .executeTakeFirst()
+          if (existing) return existing
+        }
+        throw error
+      }
     },
     createLink: async (_parent, { url }, ctx) => {
       requireCollaborator(ctx)
