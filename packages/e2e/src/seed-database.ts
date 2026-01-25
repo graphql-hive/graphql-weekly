@@ -14,9 +14,9 @@ export function seedDatabase() {
   const linkId = "seed-link-001";
   const now = new Date().toISOString();
 
-  // Create published issue #1 (low number so CMS suggests higher numbers for new issues)
+  // Create published issue #1 (title must be "Issue N" format for CMS to calculate next number)
   execSync(
-    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Issue (id, title, number, published, date) VALUES ('${issueId}', 'E2E Seed Issue', 1, 1, '${now}')"`,
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Issue (id, title, number, published, date) VALUES ('${issueId}', 'Issue 1', 1, 1, '${now}')"`,
     { stdio: "inherit" },
   );
 
