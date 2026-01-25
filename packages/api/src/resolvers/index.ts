@@ -12,6 +12,7 @@ import { createEmailCampaign } from '../services/mailchimp'
 // Extended types with prefetched data for N+1 optimization
 type TopicWithLinks = TopicRow & { _prefetchedLinks?: LinkRow[] }
 type IssueWithTopics = { _prefetchedTopics?: TopicWithLinks[] }
+type LinkWithTopic = LinkRow & { _prefetchedTopic?: TopicRow | null }
 
 function generateId(): string {
   return crypto.randomUUID().replaceAll('-', '').slice(0, 25)
@@ -429,8 +430,17 @@ export const resolvers: Resolvers = {
     },
     allLinks: async (_parent, _args, ctx) => {
       requireCollaborator(ctx)
-      const links = await ctx.db.selectFrom('Link').selectAll().execute()
-      return links
+      const [links, topics] = await Promise.all([
+        ctx.db.selectFrom('Link').selectAll().execute(),
+        ctx.db.selectFrom('Topic').selectAll().execute(),
+      ])
+      const topicsById = new Map(topics.map((t) => [t.id, t]))
+      return links.map((link) => ({
+        ...link,
+        _prefetchedTopic: link.topicId
+          ? (topicsById.get(link.topicId) ?? null)
+          : null,
+      }))
     },
     allSubscribers: async (_parent, _args, ctx) => {
       requireCollaborator(ctx)
@@ -559,7 +569,11 @@ export const resolvers: Resolvers = {
   },
 
   Link: {
-    topic: async (parent, _args, ctx) => {
+    topic: async (parent, _args, ctx): Promise<TopicRow | null> => {
+      // Use prefetched topic if available (from Query.allLinks)
+      const prefetched = (parent as LinkWithTopic)._prefetchedTopic
+      if (prefetched !== undefined) return prefetched
+
       if (!parent.topicId) return null
       const topic = await ctx.db
         .selectFrom('Topic')
