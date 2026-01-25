@@ -65,13 +65,13 @@ No environment variables required.
 └─────────────────────────────────────────────────────────────┘
           │                               │
           │ read                          │ write
-          ▼                              ▼
-┌───────────────────────────────┐    ┌─────────────────────────────┐
+          ▼                               ▼
+┌────────────────────────────────┐    ┌──────────────────────────────┐
 │  graphql-weekly.graphqcdn.app |    │  graphqlweekly.com/graphql  │
 │                               │    │                             │
 │  (Stellate)                   │    |  (GraphQL Yoga, Workers)    │
 │  Issues, Topics, Links        │    │  Subscriptions, Submissions │
-└───────────────────────────────┘    └─────────────────────────────┘
+└────────────────────────────────┘    └──────────────────────────────┘
 ```
 
 ### Read API — `https://graphql-weekly.graphcdn.app`
