@@ -1,6 +1,7 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "graphqlweekly-v2",
+  "dev": { "port": 2014 },
   "compatibility_date": "2026-01-07",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "main": "dist/_worker.js/index.js",

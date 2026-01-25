@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+import { CMS_URL } from "../urls.ts";
+
 test.describe("Topic Organization", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
     await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
 
     await page.locator('a[href^="/issue/"]').first().click();

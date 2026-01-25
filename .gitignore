@@ -6,6 +6,7 @@ dist
 .astro
 playwright-report
 test-results
+.auth
 .localflare/
 .wrangler
 .turbo

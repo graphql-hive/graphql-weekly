@@ -26,6 +26,7 @@ function normalizePossiblyUnauthedGraphQLError(err: unknown): unknown {
   return err;
 }
 
+// React Query handles retries (3 attempts with exponential backoff by default)
 export function fetcher<TData, TVariables extends Record<string, unknown>>(
   query: string,
   variables?: TVariables,
@@ -40,19 +41,40 @@ export function fetcher<TData, TVariables extends Record<string, unknown>>(
   };
 }
 
-// Server-side fetcher for Astro SSR
 const serverEndpoint = import.meta.env.DEV
   ? "http://localhost:2012/graphql"
   : import.meta.env.PUBLIC_API_URL || "https://api.graphqlweekly.com/graphql";
 
 const serverClient = new GraphQLClient(serverEndpoint);
 
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries = 2,
+  baseDelay = 200,
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt === maxRetries) throw error;
+      const anyErr = error as { response?: { status?: number } };
+      const status = anyErr?.response?.status;
+      // Only retry on 5xx
+      if (status === undefined || status < 500 || status >= 600) throw error;
+      await new Promise((r) => setTimeout(r, baseDelay * 2 ** attempt));
+    }
+  }
+  throw lastError;
+}
+
 export async function serverFetch<TData>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<TData> {
   try {
-    return await serverClient.request<TData>(query, variables);
+    return await withRetry(() => serverClient.request<TData>(query, variables));
   } catch (error) {
     throw normalizePossiblyUnauthedGraphQLError(error);
   }

@@ -1,12 +1,17 @@
 import { GraphQLError } from 'graphql'
 import { DateTimeResolver } from 'graphql-scalars'
 
+import type { LinkRow, TopicRow } from '../db/types'
 import type { NewsletterTopic } from '../email'
 import type { Resolvers } from '../generated/graphql'
 import type { GraphQLContext, User } from '../worker'
 
 import { GITHUB_REPO_NAME, GITHUB_REPO_OWNER } from '../auth'
 import { createEmailCampaign } from '../services/mailchimp'
+
+// Extended types with prefetched data for N+1 optimization
+type TopicWithLinks = TopicRow & { _prefetchedLinks?: LinkRow[] }
+type IssueWithTopics = { _prefetchedTopics?: TopicWithLinks[] }
 
 function generateId(): string {
   return crypto.randomUUID().replaceAll('-', '').slice(0, 25)
@@ -377,8 +382,39 @@ export const resolvers: Resolvers = {
       return authors
     },
     allIssues: async (_parent, _args, ctx) => {
-      const issues = await ctx.db.selectFrom('Issue').selectAll().execute()
-      return issues
+      // Fetch all data in parallel to avoid N+1
+      const [issues, allTopics, allLinks] = await Promise.all([
+        ctx.db.selectFrom('Issue').selectAll().execute(),
+        ctx.db.selectFrom('Topic').selectAll().orderBy('position', 'asc').execute(),
+        ctx.db.selectFrom('Link').selectAll().orderBy('position', 'asc').execute(),
+      ])
+
+      // Group links by topicId
+      const linksByTopic = new Map<string, typeof allLinks>()
+      for (const link of allLinks) {
+        if (!link.topicId) continue
+        const existing = linksByTopic.get(link.topicId) ?? []
+        existing.push(link)
+        linksByTopic.set(link.topicId, existing)
+      }
+
+      // Group topics by issueId, with prefetched links
+      const topicsByIssue = new Map<string, (typeof allTopics[0] & { _prefetchedLinks: typeof allLinks })[]>()
+      for (const topic of allTopics) {
+        if (!topic.issueId) continue
+        const existing = topicsByIssue.get(topic.issueId) ?? []
+        existing.push({
+          ...topic,
+          _prefetchedLinks: linksByTopic.get(topic.id) ?? [],
+        })
+        topicsByIssue.set(topic.issueId, existing)
+      }
+
+      // Attach prefetched topics to issues
+      return issues.map((issue) => ({
+        ...issue,
+        _prefetchedTopics: topicsByIssue.get(issue.id) ?? [],
+      }))
     },
     allLinks: async (_parent, _args, ctx) => {
       requireCollaborator(ctx)
@@ -455,14 +491,44 @@ export const resolvers: Resolvers = {
     },
     date: (parent) => (parent.date ? new Date(parent.date) : null),
     published: (parent) => !!parent.published,
-    topics: async (parent, _args, ctx) => {
+    topics: async (parent, _args, ctx): Promise<TopicRow[]> => {
+      // Use prefetched topics if available (from Query.allIssues)
+      const prefetched = (parent as IssueWithTopics)._prefetchedTopics
+      if (prefetched) return prefetched
+
+      // Fallback: batch fetch topics with their links in one query to avoid N+1
       const topics = await ctx.db
         .selectFrom('Topic')
         .selectAll()
         .where('issueId', '=', parent.id)
         .orderBy('position', 'asc')
         .execute()
-      return topics
+
+      if (topics.length === 0) return topics
+
+      // Prefetch all links for these topics in one query
+      const topicIds = topics.map((t) => t.id)
+      const allLinks = await ctx.db
+        .selectFrom('Link')
+        .selectAll()
+        .where('topicId', 'in', topicIds)
+        .orderBy('position', 'asc')
+        .execute()
+
+      // Group links by topicId and attach to topics
+      const linksByTopic = new Map<string, LinkRow[]>()
+      for (const link of allLinks) {
+        if (!link.topicId) continue
+        const existing = linksByTopic.get(link.topicId) ?? []
+        existing.push(link)
+        linksByTopic.set(link.topicId, existing)
+      }
+
+      // Attach prefetched links to avoid N+1 in Topic.links resolver
+      return topics.map((topic) => ({
+        ...topic,
+        _prefetchedLinks: linksByTopic.get(topic.id) ?? [],
+      }))
     },
   },
 
@@ -495,13 +561,17 @@ export const resolvers: Resolvers = {
         .executeTakeFirst()
       return issue ?? null
     },
-    links: async (parent, _args, ctx) => {
-      const links = await ctx.db
+    links: async (parent, _args, ctx): Promise<LinkRow[]> => {
+      // Use prefetched links if available (from Issue.topics resolver)
+      const prefetched = (parent as TopicWithLinks)._prefetchedLinks
+      if (prefetched) return prefetched
+
+      // Fallback to individual query if not prefetched
+      return ctx.db
         .selectFrom('Link')
         .selectAll()
         .where('topicId', '=', parent.id)
         .execute()
-      return links
     },
   },
 }

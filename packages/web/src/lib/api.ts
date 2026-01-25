@@ -1,12 +1,12 @@
 import type { IssueType, TopicLinksType } from "../types";
 
 const GRAPHQL_ENDPOINT = import.meta.env.DEV
-  ? "http://localhost:2012"
+  ? "http://localhost:2012/graphql"
   : "https://graphql-weekly.graphcdn.app";
 
 // Mutations need direct API access (CDN is read-only)
 export const MUTATION_ENDPOINT = import.meta.env.DEV
-  ? "http://localhost:2012"
+  ? "http://localhost:2012/graphql"
   : "https://api.graphqlweekly.com/graphql";
 
 export async function fetchGraphQL<T>({

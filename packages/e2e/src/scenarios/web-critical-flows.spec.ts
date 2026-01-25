@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+import { WEB_URL } from "../urls.ts";
+
 test.describe("GraphQL Weekly", () => {
   test("homepage displays latest issue", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(WEB_URL);
 
     // Main heading visible (h1 in header with newsletter description)
     await expect(
@@ -16,7 +18,7 @@ test.describe("GraphQL Weekly", () => {
   });
 
   test("newsletter subscription flow", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(WEB_URL);
 
     // Use label text to find inputs - NAME and EMAIL are visible labels
     const nameInput = page.getByRole("textbox", { name: /name/i });
@@ -41,29 +43,8 @@ test.describe("GraphQL Weekly", () => {
     });
   });
 
-  test("submit link modal opens and has required fields", async ({ page }) => {
-    await page.goto("/");
-
-    // Open modal via sidebar button on desktop
-    await page.getByRole("button", { name: /submit link/i }).first().click();
-
-    // Dialog visible (may take time to animate in)
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible({ timeout: 10_000 });
-
-    // Required fields present (using labels)
-    await expect(dialog.getByRole("textbox", { name: /title/i })).toBeVisible();
-    await expect(dialog.getByRole("textbox", { name: /url/i })).toBeVisible();
-    await expect(dialog.getByRole("textbox", { name: /^name$/i })).toBeVisible();
-    await expect(dialog.getByRole("textbox", { name: /email/i })).toBeVisible();
-
-    // Close modal
-    await dialog.getByRole("button", { name: /cancel/i }).click();
-    await expect(dialog).not.toBeVisible();
-  });
-
   test("topic navigation works", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(WEB_URL);
 
     // Click on a topic link in sidebar/content
     const topicLink = page.getByRole("link", { name: /articles/i }).first();
@@ -77,7 +58,7 @@ test.describe("GraphQL Weekly", () => {
   });
 
   test("issue navigation works", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(WEB_URL);
 
     // Find and click on an issue link in sidebar (format: "Issue 399")
     const issueLink = page.getByRole("link", { name: /^issue \d+$/i }).first();

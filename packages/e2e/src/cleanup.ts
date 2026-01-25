@@ -1,7 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
-const API_URL = "http://localhost:2012/graphql";
-const AUTH_FILE = "e2e/.auth/user.json";
+import { API_URL } from "./urls.ts";
+
+const GRAPHQL_URL = `${API_URL}/graphql`;
+const AUTH_FILE = resolve(import.meta.dirname, ".auth/user.json");
 
 function getAuthCookies(): string {
   if (!existsSync(AUTH_FILE)) return "";
@@ -20,7 +23,7 @@ async function gql<T>(
   variables?: Record<string, unknown>,
 ): Promise<T> {
   const cookies = getAuthCookies();
-  const res = await fetch(API_URL, {
+  const res = await fetch(GRAPHQL_URL, {
     body: JSON.stringify({ query, variables }),
     headers: {
       "Content-Type": "application/json",

@@ -1,8 +1,12 @@
 /* eslint-disable no-console */
 import { test as setup } from "@playwright/test";
 import { execSync } from "node:child_process";
+import { resolve } from "node:path";
 
-const API_URL = "http://localhost:2012";
+import { API_URL, CMS_URL } from "./urls.ts";
+
+const API_DIR = resolve(import.meta.dirname, "../../api");
+const AUTH_DIR = resolve(import.meta.dirname, ".auth");
 
 const TEST_USER = {
   email: "test@e2e.local",
@@ -22,18 +26,18 @@ setup("create authenticated session", async ({ playwright }) => {
   // Use fresh request context with Origin header for Better Auth
   const request = await playwright.request.newContext({
     baseURL: API_URL,
-    extraHTTPHeaders: { Origin: "http://localhost:2016" },
+    extraHTTPHeaders: { Origin: CMS_URL },
   });
 
   // Add test email to AllowedEmail so mock GitHub API grants collaborator access
   execSync(
-    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO AllowedEmail (email) VALUES ('test@e2e.local')"`,
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO AllowedEmail (email) VALUES ('test@e2e.local')"`,
     { stdio: "inherit" },
   );
 
   // Create test account for GitHub collaborator check (will be linked after user creation)
   execSync(
-    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'test-account-id'"`,
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'test-account-id'"`,
     { stdio: "inherit" },
   );
 
@@ -82,7 +86,7 @@ setup("create authenticated session", async ({ playwright }) => {
 
   // Link GitHub account with collaborator-token BEFORE the final sign-in
   execSync(
-    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('test-account-id', '${userId}', '12345', 'github', 'collaborator-token', datetime('now'), datetime('now'))"`,
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('test-account-id', '${userId}', '12345', 'github', 'collaborator-token', datetime('now'), datetime('now'))"`,
     { stdio: "inherit" },
   );
   console.log("✅ Linked GitHub account for collaborator check");
@@ -107,7 +111,7 @@ setup("create authenticated session", async ({ playwright }) => {
   }
 
   // Save the storage state with the new session (has isCollaborator=true)
-  await request.storageState({ path: "e2e/.auth/user.json" });
+  await request.storageState({ path: `${AUTH_DIR}/user.json` });
   console.log("✅ Auth state saved with collaborator session");
 });
 
@@ -115,12 +119,12 @@ setup("create non-collaborator session", async ({ playwright }) => {
   // Need a fresh request context to avoid cookie conflicts
   const requestContext = await playwright.request.newContext({
     baseURL: API_URL,
-    extraHTTPHeaders: { Origin: "http://localhost:2016" },
+    extraHTTPHeaders: { Origin: CMS_URL },
   });
 
   // Clean up any existing non-collaborator account
   execSync(
-    `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'non-collaborator-account-id'"`,
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "DELETE FROM account WHERE id = 'non-collaborator-account-id'"`,
     { stdio: "inherit" },
   );
 
@@ -161,7 +165,7 @@ setup("create non-collaborator session", async ({ playwright }) => {
 
   // Save to separate auth file
   await requestContext.storageState({
-    path: "e2e/.auth/non-collaborator.json",
+    path: `${AUTH_DIR}/non-collaborator.json`,
   });
   console.log("✅ Non-collaborator auth state saved");
 
@@ -178,7 +182,7 @@ setup("create non-collaborator session", async ({ playwright }) => {
   if (userId) {
     // Link account with non-collaborator token
     execSync(
-      `cd ../api && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('non-collaborator-account-id', '${userId}', '99999', 'github', 'non-collaborator-token', datetime('now'), datetime('now'))"`,
+      `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR REPLACE INTO account (id, userId, accountId, providerId, accessToken, createdAt, updatedAt) VALUES ('non-collaborator-account-id', '${userId}', '99999', 'github', 'non-collaborator-token', datetime('now'), datetime('now'))"`,
       { stdio: "inherit" },
     );
     console.log("✅ Linked non-collaborator GitHub account");

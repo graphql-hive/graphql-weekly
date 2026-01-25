@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { createFreshIssue } from "../util";
 
 test.describe("Edit and Persist", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
 
   test("edit link metadata and verify persistence after refresh", async ({
     page,

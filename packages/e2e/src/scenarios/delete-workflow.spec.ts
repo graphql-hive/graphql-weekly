@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { createFreshIssue } from "../util";
 
 test.describe("Delete Workflow", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
 
   test("delete link and verify persistence", async ({ page }) => {
     await createFreshIssue(page);

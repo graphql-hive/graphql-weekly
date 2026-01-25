@@ -53,7 +53,7 @@ export const SubmitForm = forwardRef<SubmitFormHandle>(
           url,
         });
 
-        if (res?.data?.createLinkSubmission?.title === title) {
+        if (res?.data?.createSubmissionLink?.title === title) {
           setIsDone(true);
           setTitle("");
           setUrl("");

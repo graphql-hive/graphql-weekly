@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "wrangler dev",
-    "dev:e2e": "wrangler dev --env-file .dev.vars.e2e",
+    "dev:e2e": "wrangler dev --port 2013 --env-file .dev.vars.e2e",
     "migrate:up": "wrangler d1 migrations apply graphqlweekly --local",
     "codegen": "graphql-codegen",
     "typecheck": "tsc --noEmit",

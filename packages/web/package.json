@@ -17,10 +17,7 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
-    "test": "bun test:e2e",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/cloudflare": "12.6.12",
@@ -41,7 +38,6 @@
     "tailwind-merge": "3.4.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.57.0",
     "@types/react": "19.2.8",
     "@types/react-dom": "19.2.3",
     "@types/react-syntax-highlighter": "15.5.13",

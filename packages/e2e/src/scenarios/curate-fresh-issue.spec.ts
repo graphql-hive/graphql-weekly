@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { CMS_URL } from "../urls.ts";
+
 test.describe("Curate Fresh Issue", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
   test("create issue, add link, edit metadata, save, verify persistence", async ({
     page,
   }) => {
@@ -11,7 +13,7 @@ test.describe("Curate Fresh Issue", () => {
     const testLinkDesc = `Description ${timestamp}`;
 
     // 1. Create new issue from index
-    await page.goto("/");
+    await page.goto(CMS_URL);
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     const issueLinks = page.locator('a[href^="/issue/"]');
@@ -161,7 +163,7 @@ test.describe("Curate Fresh Issue", () => {
   test("can add multiple links", async ({ page }) => {
     const timestamp = Date.now();
 
-    await page.goto("/");
+    await page.goto(CMS_URL);
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     await page.locator('a[href^="/issue/"]').first().click();

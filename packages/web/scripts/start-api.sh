@@ -16,7 +16,7 @@ bun run dev:e2e &
 API_PID=$!
 
 echo "=== Waiting for API (PID: $API_PID) ==="
-while ! curl -s http://localhost:2012/health > /dev/null 2>&1; do
+while ! curl -s http://localhost:2013/health > /dev/null 2>&1; do
   sleep 1
 done
 echo "=== API ready ==="
