@@ -16,7 +16,7 @@ Archive website for the GraphQL Weekly newsletter at [graphqlweekly.com](https:/
 | ------- | --------------------- | ----------------------------- |
 | API     | http://localhost:2012 | https://api.graphqlweekly.com |
 | CMS     | http://localhost:2016 | https://cms.graphqlweekly.com |
-| Website | -                     | https://graphqlweekly.com     |
+| Website | http://localhost:2015 | https://graphqlweekly.com     |
 
 ### API Endpoints
 
