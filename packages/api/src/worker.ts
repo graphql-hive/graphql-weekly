@@ -187,7 +187,8 @@ function isAllowedOrigin(origin: string): boolean {
     return (
       url.hostname === 'graphqlweekly.com' ||
       url.hostname === 'cms.graphqlweekly.com' ||
-      url.hostname.endsWith('.graphqlweekly.com')
+      url.hostname.endsWith('.graphqlweekly.com') ||
+      url.hostname.endsWith('.workers.dev')
     )
   } catch {
     return false
