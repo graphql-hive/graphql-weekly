@@ -79,6 +79,11 @@ const typeDefs = /* GraphQL */ `
     url: String
   }
 
+  type LinkSubmissionsResult {
+    items: [LinkSubmission!]!
+    totalCount: Int!
+  }
+
   type Topic {
     id: String
     issue: Issue
@@ -111,7 +116,7 @@ const typeDefs = /* GraphQL */ `
     allAuthors: [Author!]
     allLinks: [Link!]
     allSubscribers: [Subscriber!]
-    allLinkSubmissions: [LinkSubmission!]
+    linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
     issue(id: String!): Issue
   }
 

@@ -432,15 +432,6 @@ export const resolvers: Resolvers = {
       const links = await ctx.db.selectFrom('Link').selectAll().execute()
       return links
     },
-    allLinkSubmissions: async (_parent, _args, ctx) => {
-      requireCollaborator(ctx)
-      const submissions = await ctx.db
-        .selectFrom('LinkSubmission')
-        .selectAll()
-        .orderBy('createdAt', 'desc')
-        .execute()
-      return submissions
-    },
     allSubscribers: async (_parent, _args, ctx) => {
       requireCollaborator(ctx)
       const subscribers = await ctx.db
@@ -460,6 +451,30 @@ export const resolvers: Resolvers = {
         .where('id', '=', id)
         .executeTakeFirst()
       return issue ?? null
+    },
+    linkSubmissions: async (_parent, { limit, skip }, ctx) => {
+      requireCollaborator(ctx)
+      const effectiveLimit = Math.min(limit ?? 100, 100)
+      const effectiveSkip = skip ?? 0
+
+      const [items, countResult] = await Promise.all([
+        ctx.db
+          .selectFrom('LinkSubmission')
+          .selectAll()
+          .orderBy('createdAt', 'desc')
+          .offset(effectiveSkip)
+          .limit(effectiveLimit)
+          .execute(),
+        ctx.db
+          .selectFrom('LinkSubmission')
+          .select((eb) => eb.fn.countAll().as('count'))
+          .executeTakeFirstOrThrow(),
+      ])
+
+      return {
+        items,
+        totalCount: Number(countResult.count),
+      }
     },
     me: (_parent, _args, ctx) => {
       if (!ctx.user) return null

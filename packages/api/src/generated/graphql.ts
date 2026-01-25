@@ -8,6 +8,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -68,6 +69,12 @@ export type LinkSubmission = {
   title?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   url?: Maybe<Scalars['String']['output']>;
+};
+
+export type LinkSubmissionsResult = {
+  __typename?: 'LinkSubmissionsResult';
+  items: Array<LinkSubmission>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Me = {
@@ -186,17 +193,23 @@ export type Query = {
   __typename?: 'Query';
   allAuthors?: Maybe<Array<Author>>;
   allIssues?: Maybe<Array<Issue>>;
-  allLinkSubmissions?: Maybe<Array<LinkSubmission>>;
   allLinks?: Maybe<Array<Link>>;
   allSubscribers?: Maybe<Array<Subscriber>>;
   allTopics?: Maybe<Array<Topic>>;
   issue?: Maybe<Issue>;
+  linkSubmissions: LinkSubmissionsResult;
   me?: Maybe<Me>;
 };
 
 
 export type QueryIssueArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryLinkSubmissionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Subscriber = {
@@ -297,6 +310,7 @@ export type ResolversTypes = {
   Issue: ResolverTypeWrapper<IssueRow>;
   Link: ResolverTypeWrapper<LinkRow>;
   LinkSubmission: ResolverTypeWrapper<LinkSubmissionRow>;
+  LinkSubmissionsResult: ResolverTypeWrapper<Omit<LinkSubmissionsResult, 'items'> & { items: Array<ResolversTypes['LinkSubmission']> }>;
   Me: ResolverTypeWrapper<Me>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
@@ -314,6 +328,7 @@ export type ResolversParentTypes = {
   Issue: IssueRow;
   Link: LinkRow;
   LinkSubmission: LinkSubmissionRow;
+  LinkSubmissionsResult: Omit<LinkSubmissionsResult, 'items'> & { items: Array<ResolversParentTypes['LinkSubmission']> };
   Me: Me;
   Mutation: Record<PropertyKey, never>;
   Query: Record<PropertyKey, never>;
@@ -373,6 +388,11 @@ export type LinkSubmissionResolvers<ContextType = GraphQLContext, ParentType ext
   url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
+export type LinkSubmissionsResultResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LinkSubmissionsResult'] = ResolversParentTypes['LinkSubmissionsResult']> = {
+  items?: Resolver<Array<ResolversTypes['LinkSubmission']>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
 export type MeResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Me'] = ResolversParentTypes['Me']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -401,11 +421,11 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   allAuthors?: Resolver<Maybe<Array<ResolversTypes['Author']>>, ParentType, ContextType>;
   allIssues?: Resolver<Maybe<Array<ResolversTypes['Issue']>>, ParentType, ContextType>;
-  allLinkSubmissions?: Resolver<Maybe<Array<ResolversTypes['LinkSubmission']>>, ParentType, ContextType>;
   allLinks?: Resolver<Maybe<Array<ResolversTypes['Link']>>, ParentType, ContextType>;
   allSubscribers?: Resolver<Maybe<Array<ResolversTypes['Subscriber']>>, ParentType, ContextType>;
   allTopics?: Resolver<Maybe<Array<ResolversTypes['Topic']>>, ParentType, ContextType>;
   issue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType, RequireFields<QueryIssueArgs, 'id'>>;
+  linkSubmissions?: Resolver<ResolversTypes['LinkSubmissionsResult'], ParentType, ContextType, Partial<QueryLinkSubmissionsArgs>>;
   me?: Resolver<Maybe<ResolversTypes['Me']>, ParentType, ContextType>;
 };
 
@@ -431,6 +451,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Issue?: IssueResolvers<ContextType>;
   Link?: LinkResolvers<ContextType>;
   LinkSubmission?: LinkSubmissionResolvers<ContextType>;
+  LinkSubmissionsResult?: LinkSubmissionsResultResolvers<ContextType>;
   Me?: MeResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
