@@ -22,6 +22,34 @@ const NON_COLLABORATOR_USER = {
   password: "test-password-456",
 };
 
+setup("seed test data", async () => {
+  // Insert directly into D1 to avoid auth requirements
+  const issueId = "seed-issue-999";
+  const topicId = "seed-topic-001";
+  const linkId = "seed-link-001";
+  const now = new Date().toISOString();
+
+  // Create published issue (Issue has: id, title, number, published, date)
+  execSync(
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Issue (id, title, number, published, date) VALUES ('${issueId}', 'E2E Test Issue', 999, 1, '${now}')"`,
+    { stdio: "inherit" },
+  );
+
+  // Create topic (Topic has: id, title, issue_comment, position, issueId)
+  execSync(
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Topic (id, title, issue_comment, position, issueId) VALUES ('${topicId}', 'Articles', '', 0, '${issueId}')"`,
+    { stdio: "inherit" },
+  );
+
+  // Create link (Link has: id, position, text, title, topicId, url)
+  execSync(
+    `cd ${API_DIR} && bunx wrangler d1 execute graphqlweekly --local --command "INSERT OR IGNORE INTO Link (id, position, text, title, topicId, url) VALUES ('${linkId}', 0, 'A test article for e2e', 'Test Article', '${topicId}', 'https://example.com/test-article')"`,
+    { stdio: "inherit" },
+  );
+
+  console.log("✅ Seeded test issue #999");
+});
+
 setup("create authenticated session", async ({ playwright }) => {
   // Use fresh request context with Origin header for Better Auth
   const request = await playwright.request.newContext({

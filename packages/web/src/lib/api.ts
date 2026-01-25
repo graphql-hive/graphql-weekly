@@ -60,12 +60,12 @@ export async function getAllIssues(): Promise<AllIssuesData> {
 
   const { data } = await fetchGraphQL<AllIssuesResponse>({ query });
 
-  const allIssues = data.allIssues
+  const allIssues = (data?.allIssues ?? [])
     .filter((issue) => issue.published && issue.date && issue.number)
     .sort((a, b) => Number(b.number) - Number(a.number));
 
   const lastIssue = allIssues[0];
-  const firstIssueNumber = allIssues.at(-1)!.number;
+  const firstIssueNumber = allIssues.at(-1)?.number ?? 0;
 
   // get all topics with links: { [title]: [ { ...link } ] }
   let topicsList: Record<string, TopicLinksType[]> = {};
