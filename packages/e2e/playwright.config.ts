@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-import { API_URL, CMS_URL, GITHUB_MOCK_URL, WEB_URL } from "./src/urls.ts";
+import { API_URL, CMS_URL, GITHUB_MOCK_URL, WEB_URL } from "./src/urls";
 
 export default defineConfig({
   forbidOnly: !!process.env.CI,
@@ -36,8 +36,7 @@ export default defineConfig({
       url: `${GITHUB_MOCK_URL}/user/emails`,
     },
     {
-      command:
-        "cd ../api && bun run migrate:up && bunx wrangler dev --env-file .dev.vars.e2e",
+      command: "cd ../api && bunx wrangler dev --env-file .dev.vars.e2e",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
       url: `${API_URL}/health`,

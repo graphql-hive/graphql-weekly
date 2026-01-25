@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "CI=true playwright test",
-    "test:dev": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test": "bun run --cwd ../api migrate:up && CI=true playwright test",
+    "test:dev": "bun run --cwd ../api migrate:up && playwright test",
+    "test:ui": "bun run --cwd ../api migrate:up && playwright test --ui"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",

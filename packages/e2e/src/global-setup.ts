@@ -3,7 +3,7 @@ import { test as setup } from "@playwright/test";
 import { execSync } from "node:child_process";
 import { resolve } from "node:path";
 
-import { API_URL, CMS_URL } from "./urls.ts";
+import { API_URL, CMS_URL } from "./urls";
 
 const API_DIR = resolve(import.meta.dirname, "../../api");
 const AUTH_DIR = resolve(import.meta.dirname, ".auth");
@@ -23,7 +23,7 @@ const NON_COLLABORATOR_USER = {
 };
 
 setup("seed test data", async () => {
-  // Insert directly into D1 to avoid auth requirements
+  // Insert directly into D1 (migrations run before playwright via pretest script)
   const issueId = "seed-issue-999";
   const topicId = "seed-topic-001";
   const linkId = "seed-link-001";
