@@ -67,15 +67,15 @@ test.describe("Curate Fresh Issue", () => {
     await addLinkBtn.click();
     await createLinkResponse;
 
-    // Wait for AllLinks refetch to include our new link with real ID
+    // Wait for UnassignedLinks refetch to include our new link with real ID
     await page.waitForResponse(async (res) => {
       if (!res.url().includes("/graphql")) return false;
       if (res.request().method() !== "POST") return false;
       const body = await res.json().catch(() => null);
-      const allLinks = body?.data?.allLinks;
+      const unassignedLinks = body?.data?.unassignedLinks;
       return (
-        Array.isArray(allLinks) &&
-        allLinks.some((l: { id: string }) => l.id === createdLinkId)
+        Array.isArray(unassignedLinks) &&
+        unassignedLinks.some((l: { id: string }) => l.id === createdLinkId)
       );
     });
     await expect(linkInput).toHaveValue("");

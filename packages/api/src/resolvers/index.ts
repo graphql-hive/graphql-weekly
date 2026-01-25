@@ -497,6 +497,14 @@ export const resolvers: Resolvers = {
         repositoryUrl: `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
       }
     },
+    unassignedLinks: async (_parent, _args, ctx) => {
+      requireCollaborator(ctx)
+      return ctx.db
+        .selectFrom('Link')
+        .selectAll()
+        .where('topicId', 'is', null)
+        .execute()
+    },
   },
 
   // Type resolvers for relationships

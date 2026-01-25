@@ -199,6 +199,7 @@ export type Query = {
   issue?: Maybe<Issue>;
   linkSubmissions: LinkSubmissionsResult;
   me?: Maybe<Me>;
+  unassignedLinks: Array<Link>;
 };
 
 
@@ -427,6 +428,7 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   issue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType, RequireFields<QueryIssueArgs, 'id'>>;
   linkSubmissions?: Resolver<ResolversTypes['LinkSubmissionsResult'], ParentType, ContextType, Partial<QueryLinkSubmissionsArgs>>;
   me?: Resolver<Maybe<ResolversTypes['Me']>, ParentType, ContextType>;
+  unassignedLinks?: Resolver<Array<ResolversTypes['Link']>, ParentType, ContextType>;
 };
 
 export type SubscriberResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Subscriber'] = ResolversParentTypes['Subscriber']> = {

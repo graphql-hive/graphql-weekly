@@ -115,6 +115,7 @@ const typeDefs = /* GraphQL */ `
     allTopics: [Topic!]
     allAuthors: [Author!]
     allLinks: [Link!]
+    unassignedLinks: [Link!]!
     allSubscribers: [Subscriber!]
     linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
     issue(id: String!): Issue

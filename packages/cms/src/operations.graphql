@@ -9,16 +9,12 @@ query Me {
   }
 }
 
-query AllLinks {
-  allLinks {
+query UnassignedLinks {
+  unassignedLinks {
     id
     url
     text
     title
-    topic {
-      id
-      position
-    }
   }
 }
 

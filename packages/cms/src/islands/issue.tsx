@@ -43,11 +43,11 @@ import { Navbar } from "../components/Navbar";
 import {
   type IssueQuery,
   useAddLinksToTopicMutation,
-  useAllLinksQuery,
   useCreateLinkMutation,
   useCreateTopicMutation,
   useDeleteLinkMutation,
   useIssueQuery,
+  useUnassignedLinksQuery,
   useUpdateLinkMutation,
   useUpdateTopicMutation,
   useUpdateTopicWhenIssueDeletedMutation,
@@ -185,7 +185,8 @@ function IssuePageContent({ id }: { id: string }) {
     url: string;
   } | null>(null);
 
-  const { data: linksData, isLoading: linksLoading } = useAllLinksQuery();
+  const { data: linksData, isLoading: linksLoading } =
+    useUnassignedLinksQuery();
   const { data: issueData, isLoading: issueLoading } = useIssueQuery({ id });
 
   const createTopicMutation = useCreateTopicMutation();
@@ -197,17 +198,20 @@ function IssuePageContent({ id }: { id: string }) {
   const addLinksToTopicMutation = useAddLinksToTopicMutation();
 
   const invalidateQueries = useCallback(() => {
-    qc.invalidateQueries({ queryKey: ["AllLinks"] });
+    qc.invalidateQueries({ queryKey: ["UnassignedLinks"] });
     qc.invalidateQueries({ queryKey: ["Issue", { id }] });
   }, [qc, id]);
 
   const issue = issueData?.issue;
   const topics = useMemo(() => issue?.topics ?? [], [issue]);
-  const allLinks = useMemo(() => linksData?.allLinks ?? [], [linksData]);
+  const unassignedLinks = useMemo(
+    () => linksData?.unassignedLinks ?? [],
+    [linksData],
+  );
 
   const linkMap = useMemo(() => {
     const map = new Map<string, LinkData>();
-    for (const link of allLinks) {
+    for (const link of unassignedLinks) {
       if (link.id) map.set(link.id, link as LinkData);
     }
     for (const topic of topics) {
@@ -216,36 +220,32 @@ function IssuePageContent({ id }: { id: string }) {
       }
     }
     return map;
-  }, [allLinks, topics]);
+  }, [unassignedLinks, topics]);
 
   // Initialize items from data (only when server data changes, not on moves)
   useEffect(() => {
     if (!issue) return;
 
-    const newItems: Items = {};
-
-    // Unassigned links
-    const unassigned = allLinks
-      .filter(
-        (link) =>
-          link.topic === null && link.id && !deletedLinkIds.has(link.id),
-      )
+    // Unassigned links (already filtered server-side)
+    const unassigned = unassignedLinks
+      .filter((link) => link.id && !deletedLinkIds.has(link.id))
       .map((link) => link.id!);
-    newItems[UNASSIGNED_ID] = unassigned;
 
     // Topic links
-    for (const topic of topics) {
-      if (topic.id) {
-        const topicLinks = (topic.links ?? [])
-          .filter((link) => link.id && !deletedLinkIds.has(link.id))
-          .map((link) => link.id!);
-        newItems[topic.id] = topicLinks;
-      }
-    }
+    const topicItems = Object.fromEntries(
+      topics
+        .filter((topic) => topic.id)
+        .map((topic) => [
+          topic.id,
+          (topic.links ?? [])
+            .filter((link) => link.id && !deletedLinkIds.has(link.id))
+            .map((link) => link.id!),
+        ]),
+    );
 
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from server data
-    setItems(newItems);
-  }, [issue, allLinks, topics, deletedLinkIds]);
+    setItems({ [UNASSIGNED_ID]: unassigned, ...topicItems });
+  }, [issue, unassignedLinks, topics, deletedLinkIds]);
 
   // Containers list (for iteration)
   const containers = useMemo(
@@ -352,36 +352,39 @@ function IssuePageContent({ id }: { id: string }) {
     setNewLink("");
 
     // Optimistic update - add link to cache immediately
-    qc.setQueryData<{ allLinks: typeof allLinks }>(["AllLinks"], (old) => {
-      if (!old) return old;
-      return {
-        ...old,
-        allLinks: [
-          {
-            __typename: "Link" as const,
-            id: tempId,
-            text: null,
-            title: null,
-            topic: null,
-            url: urlToAdd,
-          },
-          ...(old.allLinks ?? []),
-        ],
-      };
-    });
+    qc.setQueryData<{ unassignedLinks: typeof unassignedLinks }>(
+      ["UnassignedLinks"],
+      (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          unassignedLinks: [
+            {
+              __typename: "Link" as const,
+              id: tempId,
+              text: null,
+              title: null,
+              url: urlToAdd,
+            },
+            ...(old.unassignedLinks ?? []),
+          ],
+        };
+      },
+    );
 
     createLinkMutation.mutate(
       { url: urlToAdd },
       {
         onError: () => {
           // Rollback optimistic update
-          qc.setQueryData<{ allLinks: typeof allLinks }>(
-            ["AllLinks"],
+          qc.setQueryData<{ unassignedLinks: typeof unassignedLinks }>(
+            ["UnassignedLinks"],
             (old) => {
               if (!old) return old;
               return {
                 ...old,
-                allLinks: old.allLinks?.filter((l) => l.id !== tempId) ?? null,
+                unassignedLinks:
+                  old.unassignedLinks?.filter((l) => l.id !== tempId) ?? [],
               };
             },
           );
