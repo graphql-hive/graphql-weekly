@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 
-import { InputWithButton } from "../components/InputWithButton";
+import { Button } from "../components/Button";
+import { Input } from "../components/Input";
 import { useUpdateIssuePreviewImageMutation } from "../generated/graphql";
 
 interface PreviewImageUpdateProps {
@@ -66,16 +67,18 @@ export function PreviewImageUpdate({
         </p>
       )}
 
-      <InputWithButton
-        buttonDisabled={isAddButtonDisabled}
-        buttonLabel="Update Preview Image"
-        disabled={updatePreviewMutation.isPending}
-        errorText={linkError}
-        onChange={handleChange}
-        onClick={submitChange}
-        placeholder="Preview Image"
-        value={link}
-      />
+      <div className="flex items-center gap-2.5">
+        <Input
+          disabled={updatePreviewMutation.isPending}
+          error={linkError}
+          onChange={handleChange}
+          placeholder="Preview Image"
+          value={link}
+        />
+        <Button disabled={isAddButtonDisabled} onClick={submitChange}>
+          Update Preview Image
+        </Button>
+      </div>
     </section>
   );
 }
