@@ -680,7 +680,13 @@ function IssuePageContent({ id }: { id: string }) {
               return;
             }
 
-            const activeContainer = findContainer(active.id);
+            // Use clonedItems (from onDragStart) to find original container
+            // because onDragOver already moved the item in items state
+            const activeContainer = clonedItems
+              ? Object.keys(clonedItems).find((key) =>
+                  clonedItems[key]?.includes(active.id),
+                )
+              : findContainer(active.id);
 
             if (!activeContainer) {
               setActiveId(null);
