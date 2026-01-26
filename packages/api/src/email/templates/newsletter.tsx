@@ -186,16 +186,19 @@ export function Newsletter({
   return (
     <Html>
       <Head>
-        <Font
-          fallbackFontFamily={['Helvetica', 'Arial', 'sans-serif']}
-          fontFamily="Rubik"
-          fontStyle="normal"
-          fontWeight={400}
-          webFont={{
-            format: 'woff2',
-            url: 'https://fonts.googleapis.com/css?family=Rubik:400,500,700',
-          }}
-        />
+        {[400, 500, 600].map((weight) => (
+          <Font
+            fallbackFontFamily={['Helvetica', 'Arial', 'sans-serif']}
+            fontFamily="Rubik"
+            fontStyle="normal"
+            fontWeight={weight}
+            key={weight}
+            webFont={{
+              format: 'woff2',
+              url: 'https://fonts.gstatic.com/s/rubik/v31/iJWKBXyIfDnIV7nBrXw.woff2',
+            }}
+          />
+        ))}
       </Head>
       <Preview>{`GraphQL Weekly - Issue ${issueNumber}`}</Preview>
       <Body style={styles.body}>
@@ -415,11 +418,12 @@ const styles = {
       '"Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     margin: 0,
     padding: 0,
+    WebkitFontSmoothing: 'antialiased',
   },
   bodyText: {
     color: '#081146',
     fontSize: '16px',
-    fontWeight: 300,
+    fontWeight: 400,
     lineHeight: '1.75',
     margin: '0 0 16px 0',
   },
@@ -492,7 +496,7 @@ const styles = {
   linkText: {
     color: '#081146',
     fontSize: '16px',
-    fontWeight: 300,
+    fontWeight: 400,
     lineHeight: '1.75',
     margin: '24px 0 0 0',
   },
@@ -507,7 +511,7 @@ const styles = {
   logoSubtitle: {
     color: '#ffffff',
     fontSize: '25px',
-    fontWeight: 'bold' as const,
+    fontWeight: 600,
     letterSpacing: '-0.02em',
     lineHeight: '25px',
     margin: 0,
