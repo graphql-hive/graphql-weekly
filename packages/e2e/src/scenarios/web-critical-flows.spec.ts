@@ -20,27 +20,26 @@ test.describe("GraphQL Weekly", () => {
   test("newsletter subscription flow", async ({ page }) => {
     await page.goto(WEB_URL);
 
-    // Use label text to find inputs - NAME and EMAIL are visible labels
     const nameInput = page.getByRole("textbox", { name: /name/i });
     const emailInput = page.getByRole("textbox", { name: /email/i });
 
     await expect(nameInput).toBeVisible();
     await expect(emailInput).toBeVisible();
 
-    // Fill form (clear first to ensure clean state)
     const timestamp = Date.now();
-    await nameInput.clear();
     await nameInput.fill(`Test User ${timestamp}`);
-    await emailInput.clear();
     await emailInput.fill(`test+${timestamp}@example.com`);
 
-    // Submit
     await page.getByRole("button", { name: /subscribe/i }).click();
 
-    // Wait for success message (API can be slow)
-    await expect(page.getByText(/successfully added/i)).toBeVisible({
+    const successMessage = page.getByText(/successfully added/i);
+    const errorMessage = page.getByText(/error/i);
+
+    await expect(successMessage.or(errorMessage)).toBeVisible({
       timeout: 15_000,
     });
+
+    await expect(successMessage).toBeVisible();
   });
 
   test("topic navigation works", async ({ page }) => {

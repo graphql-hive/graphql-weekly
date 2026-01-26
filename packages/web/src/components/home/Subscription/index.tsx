@@ -1,6 +1,4 @@
-import type { FormEvent } from "react";
-
-import { Component } from "react";
+import { useRef, useState } from "react";
 
 import { MUTATION_ENDPOINT } from "../../../lib/api";
 import { PrimaryButton } from "../../shared/Buttons/Index";
@@ -9,99 +7,79 @@ import { AlertCircle } from "../../vectors/AlertCircle";
 import { Check } from "../../vectors/Check";
 import { Subscribe } from "../../vectors/Subscribe";
 
-type Props = {};
-type State = { email: string; loading: boolean; message: string; name: string };
+export function Subscription() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-export class Subscription extends Component<Props, State> {
-  state = {
-    email: "",
-    loading: false,
-    message: "",
-    name: "",
+  const showMessage = (msg: string) => {
+    setMessage(msg);
+    setTimeout(() => setMessage(""), 5000);
   };
 
-  subscribeSubmited = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (
-      this.state.name !== "" &&
-      this.state.email !== "" &&
-      this.state.loading === false
-    ) {
-      this.setState({ loading: true });
+    if (loading) return;
 
-      const res = await subscribeUser({
-        email: this.state.email,
-        name: this.state.name,
-      });
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
 
-      if (res && res.data.createSubscriber.email === this.state.email) {
-        this.showMessage("You are successfully added 🎉");
-        this.setState({ email: "", loading: false, name: "" });
-      } else {
-        this.setState({ loading: false });
-        this.showMessage("Error!");
-      }
-    } else {
-      this.showMessage("Empty values!");
+    if (!name || !email) {
+      showMessage("Empty values!");
+      return;
     }
 
-    return false;
+    setLoading(true);
+
+    try {
+      const res = await subscribeUser({ email, name });
+
+      if (res?.data?.createSubscriber?.email === email) {
+        showMessage("You are successfully added 🎉");
+        formRef.current?.reset();
+      } else {
+        showMessage("Error!");
+      }
+    } catch {
+      showMessage("Error!");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  showMessage = (message: string) => {
-    this.setState({ message });
+  return (
+    <form
+      ref={formRef}
+      className="relative max-w-[783px] min-h-[88px] mx-auto p-6 pl-8 md:pl-8 flex items-stretch md:flex-row flex-col md:items-stretch items-stretch bg-white shadow-[0px_4px_16px_rgba(8,17,70,0.1)] rounded-large"
+      onSubmit={handleSubmit}
+    >
+      <Input label="NAME" name="name" placeholder="Bob Loblaw" />
+      <div className="w-auto h-px my-1 md:w-px md:h-10 md:my-0 md:mx-6 bg-gray-border" />
+      <Input label="EMAIL" name="email" placeholder="bob@example.com" />
+      <div className="shrink-0 h-5 md:h-0" />
+      <PrimaryButton
+        disabled={loading}
+        icon={<Subscribe />}
+        text="Subscribe"
+        type="submit"
+      />
 
-    setTimeout(() => {
-      this.setState({ message: "" });
-    }, 5000);
-  };
-
-  render() {
-    return (
-      <form
-        className="relative max-w-[783px] min-h-[88px] mx-auto p-6 pl-8 md:pl-8 flex items-stretch md:flex-row flex-col md:items-stretch items-stretch bg-white shadow-[0px_4px_16px_rgba(8,17,70,0.1)] rounded-large"
-        onSubmit={this.subscribeSubmited}
-      >
-        <Input
-          label="NAME"
-          onChange={(e) => this.setState({ name: e.target.value })}
-          placeholder="Bob Loblaw"
-          value={this.state.name}
-        />
-        <div className="w-auto h-px my-1 md:w-px md:h-10 md:my-0 md:mx-6 bg-gray-border" />
-        <Input
-          label="EMAIL"
-          onChange={(e) => this.setState({ email: e.target.value })}
-          placeholder="bob@example.com"
-          value={this.state.email}
-        />
-        <div className="shrink-0 h-5 md:h-0" />
-        <PrimaryButton
-          disabled={this.state.loading}
-          icon={<Subscribe />}
-          text="Subscribe"
-          type="submit"
-        />
-
-        {this.state.message && (
-          <div
-            className="absolute px-[10px] py-[5px] right-[25px] bottom-[-15px] bg-body-bg rounded-sm text-[#424242] text-sm flex items-center gap-1.5"
-            role="status"
-          >
-            {this.state.message.includes("successfully") ? (
-              <Check
-                aria-hidden="true"
-                className="shrink-0 [&_path]:stroke-green-600 [&_path]:opacity-100"
-              />
-            ) : (
-              <AlertCircle aria-hidden="true" className="shrink-0" />
-            )}
-            {this.state.message}
-          </div>
-        )}
-      </form>
-    );
-  }
+      {message && (
+        <output className="absolute px-[10px] py-[5px] right-[25px] bottom-[-15px] bg-body-bg rounded-sm text-[#424242] text-sm flex items-center gap-1.5">
+          {message.includes("successfully") ? (
+            <Check
+              aria-hidden="true"
+              className="shrink-0 [&_path]:stroke-green-600 [&_path]:opacity-100"
+            />
+          ) : (
+            <AlertCircle aria-hidden="true" className="shrink-0" />
+          )}
+          {message}
+        </output>
+      )}
+    </form>
+  );
 }
 
 const subscribeUser = async ({
