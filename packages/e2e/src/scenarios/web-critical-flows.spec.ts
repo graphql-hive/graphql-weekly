@@ -18,7 +18,7 @@ test.describe("GraphQL Weekly", () => {
   });
 
   test("newsletter subscription flow", async ({ page }) => {
-    await page.goto(WEB_URL);
+    await page.goto(WEB_URL, { waitUntil: "networkidle" });
 
     const nameInput = page.getByRole("textbox", { name: /name/i });
     const emailInput = page.getByRole("textbox", { name: /email/i });
