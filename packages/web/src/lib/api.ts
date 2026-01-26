@@ -1,8 +1,10 @@
 import type { IssueType, TopicLinksType } from "../types";
 
+// TODO: Restore Stellate CDN once we have access to purge cache
+// const STELLATE_ENDPOINT = "https://graphql-weekly.graphcdn.app";
 const GRAPHQL_ENDPOINT = import.meta.env.DEV
   ? "http://localhost:2012/graphql"
-  : "https://graphql-weekly.graphcdn.app";
+  : "https://api.graphqlweekly.com/graphql";
 
 // Mutations need direct API access (CDN is read-only)
 export const MUTATION_ENDPOINT = import.meta.env.DEV
