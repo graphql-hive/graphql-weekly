@@ -1,7 +1,8 @@
 import type { NewsletterProps } from './newsletter'
 
 export const issue399: NewsletterProps = {
-  issueTitle: 'Issue 399',
+  issueDate: 'Jan 18, 2026',
+  issueNumber: 399,
   topics: [
     {
       links: [

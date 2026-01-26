@@ -267,12 +267,20 @@ export const resolvers: Resolvers = {
       // Create Mailchimp campaign if API key is configured
       if (ctx.env.MAILCHIMP_API_KEY && issue.published) {
         try {
+          const issueDate = issue.date
+            ? new Date(issue.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })
+            : undefined
           await createEmailCampaign(
             {
               apiKey: ctx.env.MAILCHIMP_API_KEY,
               serverPrefix: ctx.env.MAILCHIMP_SERVER_PREFIX,
             },
-            issue.title,
+            issue.number,
+            issueDate,
             topicsWithLinks,
             issue.versionCount,
             isFoundation ?? false,
@@ -288,10 +296,18 @@ export const resolvers: Resolvers = {
             import('@react-email/components'),
             import('../email'),
           ])
+          const devIssueDate = issue.date
+            ? new Date(issue.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })
+            : undefined
           const emailHtml = await render(
             Newsletter({
               isFoundationEdition: isFoundation ?? false,
-              issueTitle: issue.title,
+              issueDate: devIssueDate,
+              issueNumber: issue.number,
               topics: topicsWithLinks,
             }),
           )

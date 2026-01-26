@@ -11,7 +11,8 @@ interface MailchimpConfig {
 
 export async function createEmailCampaign(
   config: MailchimpConfig,
-  issueTitle: string,
+  issueNumber: number,
+  issueDate: string | undefined,
   topics: NewsletterTopic[],
   versionCount: number,
   isFoundationEdition: boolean,
@@ -30,8 +31,8 @@ export async function createEmailCampaign(
         from_name: 'GraphQL Weekly',
         inline_css: true,
         reply_to: 'hello@graphqlweekly.com',
-        subject_line: `GraphQL Weekly - ${issueTitle}`,
-        title: `GraphQL Weekly - ${issueTitle} (version ${versionCount})`,
+        subject_line: `GraphQL Weekly - Issue ${issueNumber}`,
+        title: `GraphQL Weekly - Issue ${issueNumber} (version ${versionCount})`,
       },
       type: 'regular',
     }),
@@ -52,7 +53,7 @@ export async function createEmailCampaign(
 
   // Render email HTML
   const emailHtml = await render(
-    Newsletter({ isFoundationEdition, issueTitle, topics }),
+    Newsletter({ isFoundationEdition, issueDate, issueNumber, topics }),
   )
 
   // Set campaign content

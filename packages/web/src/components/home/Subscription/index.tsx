@@ -50,9 +50,9 @@ export function Subscription() {
 
   return (
     <form
-      ref={formRef}
       className="relative max-w-[783px] min-h-[88px] mx-auto p-6 pl-8 md:pl-8 flex items-stretch md:flex-row flex-col md:items-stretch items-stretch bg-white shadow-[0px_4px_16px_rgba(8,17,70,0.1)] rounded-large"
       onSubmit={handleSubmit}
+      ref={formRef}
     >
       <Input label="NAME" name="name" placeholder="Bob Loblaw" />
       <div className="w-auto h-px my-1 md:w-px md:h-10 md:my-0 md:mx-6 bg-gray-border" />

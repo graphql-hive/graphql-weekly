@@ -44,7 +44,10 @@ export interface NewsletterTopic {
 
 export interface NewsletterProps {
   isFoundationEdition?: boolean
-  issueTitle: string
+  issueDate?: string
+  issueNumber: number
+  /** @deprecated Use issueNumber instead */
+  issueTitle?: string
   topics: NewsletterTopic[]
 }
 
@@ -170,7 +173,8 @@ function FoundationFooter() {
 
 export function Newsletter({
   isFoundationEdition = false,
-  issueTitle,
+  issueDate,
+  issueNumber,
   topics = [],
 }: NewsletterProps) {
   const firstTopic = topics[0]
@@ -193,61 +197,100 @@ export function Newsletter({
           }}
         />
       </Head>
-      <Preview>GraphQL Weekly - {issueTitle}</Preview>
+      <Preview>{`GraphQL Weekly - Issue ${issueNumber}`}</Preview>
       <Body style={styles.body}>
-        <Container style={styles.container}>
-          {/* Header */}
-          <Section style={styles.header}>
-            <Row>
-              <Column>
-                <Row>
-                  <Column width={55}>
-                    <Img
-                      alt="GraphQL Weekly"
-                      height={55}
-                      src="https://graphqlweekly.com/assets/WeeklyLogo.png"
-                      width={55}
-                    />
-                  </Column>
-                  <Column style={{ paddingLeft: '6px' }}>
-                    <Text style={styles.logoTitle}>GraphQL</Text>
-                    <Text style={styles.logoSubtitle}>Weekly</Text>
-                  </Column>
-                </Row>
-              </Column>
-              <Column align="right">
-                {/* Mailchimp merge tag, replaced at send time */}
-                <Link href="*|LIST:URL|*" style={styles.viewLink}>
-                  <Text style={styles.viewLinkText}>View in browser</Text>
-                </Link>
-              </Column>
-            </Row>
-          </Section>
+        {/* Full-width pink header area */}
+        <Section style={styles.pinkWrapper}>
+          <Container style={styles.container}>
+            {/* Header */}
+            <Section style={styles.header}>
+              <Row>
+                <Column>
+                  <Row>
+                    <Column width={55}>
+                      <Img
+                        alt="GraphQL Weekly"
+                        height={55}
+                        src="https://graphqlweekly.com/assets/WeeklyLogo.png"
+                        width={55}
+                      />
+                    </Column>
+                    <Column style={{ paddingLeft: '6px' }}>
+                      <Text style={styles.logoTitle}>GraphQL</Text>
+                      <Text style={styles.logoSubtitle}>Weekly</Text>
+                    </Column>
+                  </Row>
+                </Column>
+                <Column align="right">
+                  {/* Mailchimp merge tag, replaced at send time */}
+                  <Link href="*|LIST:URL|*" style={styles.viewLink}>
+                    <Text style={styles.viewLinkText}>
+                      View in browser
+                      <svg
+                        fill="none"
+                        height="16"
+                        style={{
+                          marginLeft: '8px',
+                          marginRight: '-4px',
+                          marginTop: '2px',
+                          verticalAlign: 'middle',
+                        }}
+                        width="16"
+                      >
+                        <g
+                          opacity="0.66"
+                          stroke="#fff"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                        >
+                          <path d="M1 9l8-8M1 1h8v8" />
+                        </g>
+                      </svg>
+                    </Text>
+                  </Link>
+                </Column>
+              </Row>
+            </Section>
 
+            {/* Badge */}
+            <Section style={styles.badgeSection}>
+              <Row>
+                <Column style={{ textAlign: 'center' as const }}>
+                  <Text style={styles.issueTag}>
+                    Issue {issueNumber}
+                    {issueDate && (
+                      <span style={{ marginLeft: '4px', opacity: 0.66 }}>
+                        • {issueDate}
+                      </span>
+                    )}
+                  </Text>
+                </Column>
+              </Row>
+            </Section>
+          </Container>
+        </Section>
+
+        <Container style={{ ...styles.container, marginTop: '-240px' }}>
           {/* First Topic Box */}
           {firstTopic && (
-            <Section
-              style={{ ...styles.articleBox, borderRadius: '0 0 9px 9px' }}
-            >
+            <Section style={styles.firstTopicBox}>
               <Row>
                 <Column
                   style={{
                     backgroundColor: firstTopicColor,
-                    borderRadius: '8px 0 0 8px',
+                    borderRadius: '9px 0 0 9px',
                   }}
                   width={8}
                 />
                 <Column
-                  style={{ ...styles.articleBoxContent, paddingTop: '32px' }}
+                  style={{
+                    ...styles.articleBoxContent,
+                    backgroundColor: '#f6f6f7',
+                    borderRadius: '0 9px 9px 0',
+                    boxShadow: '0px 4px 16px rgba(8, 17, 70, 0.05)',
+                  }}
                 >
-                  <Section
-                    style={{ marginBottom: '32px', textAlign: 'center' }}
-                  >
-                    <Text style={styles.issueTag}>
-                      GraphQL Weekly - {issueTitle}
-                    </Text>
-                  </Section>
-
                   {isFoundationEdition && <FoundationHeader />}
 
                   <Text
@@ -355,6 +398,10 @@ const styles = {
     margin: '0 0 32px 0',
     textTransform: 'uppercase' as const,
   },
+  badgeSection: {
+    marginBottom: '-16px',
+    textAlign: 'center' as const,
+  },
   bannerBox: {
     backgroundColor: '#f6f6f7',
     borderRadius: '8px',
@@ -380,6 +427,7 @@ const styles = {
     margin: '0 auto',
     maxWidth: '680px',
   },
+  firstTopicBox: {},
   footerLink: {
     color: '#081146',
     display: 'inline-block',
@@ -416,9 +464,7 @@ const styles = {
     margin: '8px 0',
   },
   header: {
-    backgroundColor: '#D60690',
-    marginBottom: '16px',
-    padding: '40px 20px 25px',
+    padding: '40px 20px 32px',
   },
   hr: {
     borderTop: '1px solid rgb(197, 200, 220)',
@@ -427,13 +473,16 @@ const styles = {
   issueTag: {
     backgroundColor: '#6560e2',
     borderRadius: '32px',
+    boxShadow: '0px 4px 10px rgba(23, 43, 58, 0.25)',
+    boxSizing: 'border-box' as const,
     color: '#ffffff',
     display: 'inline-block',
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: '16px',
+    height: '32px',
+    lineHeight: '32px',
     margin: 0,
-    padding: '9px 12px',
+    padding: '0 17px',
     textTransform: 'uppercase' as const,
   },
   link: {
@@ -469,6 +518,14 @@ const styles = {
     fontWeight: 500,
     lineHeight: '15px',
     margin: 0,
+  },
+  pinkWrapper: {
+    backgroundColor: '#D60690',
+    backgroundImage: 'url(https://www.graphqlweekly.com/header-bg.svg)',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    paddingBottom: '240px',
   },
   viewLink: {
     textDecoration: 'none',
