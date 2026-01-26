@@ -57,10 +57,10 @@ export class Nav extends Component<Props, State> {
 
           <div
             className={cn(
-              "flex justify-end h-13 overflow-hidden items-center w-full md:w-auto flex-col md:flex-row md:h-13 md:pt-0 md:pb-0 md:border-0 gap-6",
+              "flex justify-end overflow-hidden md:overflow-visible items-center w-full md:w-auto flex-col md:flex-row md:h-13 md:pt-0 md:pb-0 md:border-0 gap-6",
               isOpened
                 ? "h-auto pt-7 pb-5 border-b border-white/50"
-                : "h-0 pt-0",
+                : "h-0 max-md:overflow-hidden",
             )}
             id="nav-menu"
           >

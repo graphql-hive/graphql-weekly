@@ -23,9 +23,14 @@ test.describe("Cross-App: Web to CMS", () => {
       .getByRole("button", { name: /submit link/i })
       .first();
     await expect(submitBtn).toBeEnabled({ timeout: 10_000 });
-    await submitBtn.click();
+
+    // Wait for React hydration - the dialog element exists but React needs to
+    // attach the onClick handler. Retry clicking until dialog appears.
     const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible({ timeout: 10_000 });
+    await expect(async () => {
+      await submitBtn.click();
+      await expect(dialog).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 10_000 });
 
     await dialog.getByRole("textbox", { name: /title/i }).fill(testTitle);
     await dialog.getByRole("textbox", { name: /url/i }).fill(testUrl);
