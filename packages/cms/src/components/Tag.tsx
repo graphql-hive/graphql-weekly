@@ -4,7 +4,7 @@ import { cn } from "../cn";
 
 const variantClasses = {
   draft: "text-neu-500 dark:text-neu-400 border-neu-300 dark:border-neu-700",
-  live: "text-primary border-primary/30 bg-primary/10",
+  live: "text-lime-800 border-lime-500 bg-lime-100 dark:text-primary dark:border-primary/30 dark:bg-primary/10",
   published:
     "text-neu-500 dark:text-neu-400 border-neu-200 dark:border-neu-700 bg-neu-100 dark:bg-neu-800",
   warning:
