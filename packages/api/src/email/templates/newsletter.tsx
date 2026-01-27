@@ -466,7 +466,13 @@ export function Newsletter({
           </tbody>
         </table>
 
-        <Container style={styles.container}>
+        <Container
+          style={{
+            margin: '0 auto',
+            maxWidth: '700px',
+            padding: '0 10px',
+          }}
+        >
           {/* Rest of Topics */}
           <Section style={{ paddingTop: '16px' }}>
             {restTopics.map((topic, index) => (
@@ -571,10 +577,6 @@ const styles = {
     fontWeight: 400,
     lineHeight: '1.75',
     margin: '0 0 16px 0',
-  },
-  container: {
-    margin: '0 auto',
-    maxWidth: '680px',
   },
   footerLink: {
     color: '#081146',
