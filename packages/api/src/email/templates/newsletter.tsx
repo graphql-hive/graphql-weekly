@@ -62,16 +62,19 @@ function TopicSection({ topic }: { topic: NewsletterTopic }) {
           width={8}
         />
         <Column
+          className="article-box-content"
           style={{
             ...styles.articleBoxContent,
             backgroundColor: '#f6f6f7',
             borderRadius: '0 8px 8px 0',
           }}
         >
-          <Text style={{ ...styles.articleTitle, color }}>{topic.title}</Text>
+          <Text className="topic" style={{ ...styles.articleTitle, color }}>
+            {topic.title}
+          </Text>
           {topic.links.map((link, index) => (
             <Fragment key={index}>
-              {index > 0 && <div style={styles.hr} />}
+              {index > 0 && <hr style={styles.hr} />}
               <Link
                 href={link.url}
                 style={{ ...styles.linkTitle, display: 'block' }}
@@ -199,6 +202,21 @@ export function Newsletter({
             }}
           />
         ))}
+        <style>{`
+          @media only screen and (max-width: 600px) {
+            .article-box-content {
+              padding: 32px 32px 32px 24px !important;
+            }
+            .topic {
+              font-size: 16px !important;
+              line-height: 1.5 !important;
+              margin-bottom: 16px !important;
+            }
+            hr {
+              margin: 24px 0 !important;
+            }
+          }
+        `}</style>
       </Head>
       <Preview>{`GraphQL Weekly - Issue ${issueNumber}`}</Preview>
       <Body style={styles.body}>
@@ -394,12 +412,14 @@ export function Newsletter({
                                   width={8}
                                 />
                                 <td
+                                  className="article-box-content"
                                   style={styles.articleBoxContent}
                                   valign="top"
                                 >
                                   {isFoundationEdition && <FoundationHeader />}
 
                                   <Text
+                                    className="topic"
                                     style={{
                                       ...styles.articleTitle,
                                       color: firstTopicColor,
@@ -409,7 +429,7 @@ export function Newsletter({
                                   </Text>
                                   {firstTopic.links.map((link, index) => (
                                     <Fragment key={index}>
-                                      {index > 0 && <div style={styles.hr} />}
+                                      {index > 0 && <hr style={styles.hr} />}
                                       <Link
                                         href={link.url}
                                         style={{
@@ -592,7 +612,8 @@ const styles = {
     margin: '8px 0',
   },
   hr: {
-    borderTop: '1px solid rgb(197, 200, 220)',
+    border: 'none',
+    borderTop: '1px solid rgb(197, 200, 220, 0.75)',
     margin: '40px 0',
   },
   issueTag: {
