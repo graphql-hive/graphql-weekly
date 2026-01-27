@@ -294,7 +294,7 @@ export function Newsletter({
                       └────────┴─────────────────────────────────────────┴────────┘
 
                       - Left cell (8px): pink top, topic color bottom with top-left radius
-                      - Center cell: linear-gradient pink→white, badge vertically centered
+                      - Center cell: 1x2px PNG (pink/white) stretched as background, badge centered
                       - Right cell (8px): pink top, white bottom with top-right radius
                     */}
                     <tr>
@@ -323,12 +323,13 @@ export function Newsletter({
                                   }}
                                 />
                               </td>
-                              {/* Center cell: pink/white gradient background, badge centered */}
+                              {/* Center cell: pink/white background image, badge centered */}
                               <td
                                 align="center"
                                 style={{
-                                  background:
-                                    'linear-gradient(to bottom, #D60690 50%, #f6f6f7 50%)',
+                                  backgroundImage:
+                                    'url(https://graphqlweekly.com/assets/badge-bg.png)',
+                                  backgroundSize: '100% 100%',
                                   height: '32px',
                                   verticalAlign: 'middle',
                                 }}
