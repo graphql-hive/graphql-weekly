@@ -74,9 +74,9 @@ function TopicSection({ topic }: { topic: NewsletterTopic }) {
               {index > 0 && <div style={styles.hr} />}
               <Link
                 href={link.url}
-                style={{ color: '#081146', textDecoration: 'none' }}
+                style={{ ...styles.linkTitle, display: 'block' }}
               >
-                <Text style={styles.linkTitle}>{link.title}</Text>
+                {link.title}
               </Link>
               <Text style={styles.linkText}>{link.text}</Text>
             </Fragment>
@@ -202,122 +202,231 @@ export function Newsletter({
       </Head>
       <Preview>{`GraphQL Weekly - Issue ${issueNumber}`}</Preview>
       <Body style={styles.body}>
-        {/* Full-width pink header area */}
-        <Section style={styles.pinkWrapper}>
-          <Container style={styles.container}>
-            {/* Header */}
-            <Section style={styles.header}>
-              <Row>
-                <Column>
-                  <Row>
-                    <Column width={55}>
-                      <Img
-                        alt="GraphQL Weekly"
-                        height={55}
-                        src="https://graphqlweekly.com/assets/WeeklyLogo.png"
-                        width={55}
-                      />
-                    </Column>
-                    <Column style={{ paddingLeft: '6px' }}>
-                      <Text style={styles.logoTitle}>GraphQL</Text>
-                      <Text style={styles.logoSubtitle}>Weekly</Text>
-                    </Column>
-                  </Row>
-                </Column>
-                <Column align="right">
-                  {/* Mailchimp merge tag, replaced at send time */}
-                  <Link href="*|LIST:URL|*" style={styles.viewLink}>
-                    <Text style={styles.viewLinkText}>
-                      View in browser
-                      <svg
-                        fill="none"
-                        height="16"
-                        style={{
-                          marginLeft: '8px',
-                          marginRight: '-4px',
-                          marginTop: '2px',
-                          verticalAlign: 'middle',
-                        }}
-                        width="16"
-                      >
-                        <g
-                          opacity="0.66"
-                          stroke="#fff"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                        >
-                          <path d="M1 9l8-8M1 1h8v8" />
-                        </g>
-                      </svg>
-                    </Text>
-                  </Link>
-                </Column>
-              </Row>
-            </Section>
-
-            {/* Badge */}
-            <Section style={styles.badgeSection}>
-              <Row>
-                <Column style={{ textAlign: 'center' as const }}>
-                  <Text style={styles.issueTag}>
-                    Issue {issueNumber}
-                    {issueDate && (
-                      <span style={{ marginLeft: '4px', opacity: 0.66 }}>
-                        • {issueDate}
-                      </span>
-                    )}
-                  </Text>
-                </Column>
-              </Row>
-            </Section>
-          </Container>
-        </Section>
-
-        <Container style={{ ...styles.container, marginTop: '-240px' }}>
-          {/* First Topic Box */}
-          {firstTopic && (
-            <Section style={styles.firstTopicBox}>
-              <Row>
-                <Column
-                  style={{
-                    backgroundColor: firstTopicColor,
-                    borderRadius: '9px 0 0 9px',
-                  }}
-                  width={8}
-                />
-                <Column
-                  style={{
-                    ...styles.articleBoxContent,
-                    backgroundColor: '#f6f6f7',
-                    borderRadius: '0 9px 9px 0',
-                    boxShadow: '0px 4px 16px rgba(8, 17, 70, 0.05)',
-                  }}
+        {/* 3-column table with rowspan for Gmail-compatible overlap */}
+        <table
+          border={0}
+          cellPadding={0}
+          cellSpacing={0}
+          style={{ borderCollapse: 'collapse' }}
+          width="100%"
+        >
+          <tbody>
+            {/* Row 1: Pink header height - side cells set the pink bg width */}
+            <tr style={{ height: '284px' }}>
+              <td style={{ backgroundColor: '#D60690', minWidth: '10px' }}>
+                &nbsp;
+              </td>
+              <td
+                rowSpan={2}
+                style={{
+                  backgroundColor: '#D60690',
+                  borderRadius: '0 0 9px 9px',
+                  maxWidth: '680px',
+                  width: '680px',
+                }}
+                valign="top"
+              >
+                {/* Header content */}
+                <table
+                  border={0}
+                  cellPadding={0}
+                  cellSpacing={0}
+                  style={{ width: '100%' }}
                 >
-                  {isFoundationEdition && <FoundationHeader />}
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '40px 0 25px' }}>
+                        <table border={0} cellPadding={0} cellSpacing={0}>
+                          <tbody>
+                            <tr>
+                              <td style={{ verticalAlign: 'top' }}>
+                                <Img
+                                  alt="GraphQL Weekly"
+                                  height={55}
+                                  src="https://graphqlweekly.com/assets/WeeklyLogo.png"
+                                  width={55}
+                                />
+                              </td>
+                              <td style={{ paddingLeft: '6px' }}>
+                                <Text style={styles.logoTitle}>GraphQL</Text>
+                                <Text style={styles.logoSubtitle}>Weekly</Text>
+                              </td>
+                              <td style={{ width: '100%' }}>&nbsp;</td>
+                              <td style={{ verticalAlign: 'middle' }}>
+                                <Link
+                                  href="*|LIST:URL|*"
+                                  style={styles.viewLink}
+                                >
+                                  View in browser
+                                  <Img
+                                    alt=""
+                                    height={12}
+                                    src="https://graphqlweekly.com/assets/Arrow.png"
+                                    style={{
+                                      display: 'inline-block',
+                                      marginBottom: '2px',
+                                      marginLeft: '10px',
+                                      verticalAlign: 'middle',
+                                    }}
+                                    width={12}
+                                  />
+                                </Link>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    {/* Badge row - 3 cells with split pink/white backgrounds */}
+                    <tr>
+                      <td>
+                        <table
+                          border={0}
+                          cellPadding={0}
+                          cellSpacing={0}
+                          style={{ width: '100%' }}
+                        >
+                          <tbody>
+                            <tr>
+                              {/* Left cell: pink top, topic color bottom (the colored border) */}
+                              <td style={{ verticalAlign: 'top' }} width={8}>
+                                <div
+                                  style={{
+                                    backgroundColor: '#D60690',
+                                    height: '16px',
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    backgroundColor: firstTopicColor,
+                                    borderRadius: '8px 0 0 0',
+                                    height: '16px',
+                                  }}
+                                />
+                              </td>
+                              {/* Center cell: pink/white gradient background, badge centered */}
+                              <td
+                                align="center"
+                                style={{
+                                  background:
+                                    'linear-gradient(to bottom, #D60690 50%, #f6f6f7 50%)',
+                                  height: '32px',
+                                  verticalAlign: 'middle',
+                                }}
+                              >
+                                <Text style={styles.issueTag}>
+                                  Issue {issueNumber}
+                                  {issueDate && (
+                                    <span
+                                      style={{
+                                        marginLeft: '4px',
+                                        opacity: 0.66,
+                                      }}
+                                    >
+                                      • {issueDate}
+                                    </span>
+                                  )}
+                                </Text>
+                              </td>
+                              {/* Right cell: pink top, white bottom with rounded corner */}
+                              <td style={{ verticalAlign: 'top' }} width={8}>
+                                <div
+                                  style={{
+                                    backgroundColor: '#D60690',
+                                    height: '16px',
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    backgroundColor: '#f6f6f7',
+                                    borderRadius: '0 8px 0 0',
+                                    height: '16px',
+                                  }}
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    {/* First Topic Box content (no badge, no negative margin) */}
+                    {firstTopic && (
+                      <tr>
+                        <td>
+                          <table
+                            border={0}
+                            cellPadding={0}
+                            cellSpacing={0}
+                            style={{
+                              backgroundColor: '#f6f6f7',
+                              borderRadius: '0 0 8px 8px',
+                              boxShadow: '0px 4px 16px rgba(8, 17, 70, 0.05)',
+                              width: '100%',
+                            }}
+                          >
+                            <tbody>
+                              <tr>
+                                <td
+                                  style={{
+                                    backgroundColor: firstTopicColor,
+                                    borderRadius: '0 0 0 8px',
+                                  }}
+                                  width={8}
+                                />
+                                <td
+                                  style={styles.articleBoxContent}
+                                  valign="top"
+                                >
+                                  {isFoundationEdition && <FoundationHeader />}
 
-                  <Text
-                    style={{ ...styles.articleTitle, color: firstTopicColor }}
-                  >
-                    {firstTopic.title}
-                  </Text>
-                  {firstTopic.links.map((link, index) => (
-                    <Fragment key={index}>
-                      {index > 0 && <div style={styles.hr} />}
-                      <Link
-                        href={link.url}
-                        style={{ color: '#081146', textDecoration: 'none' }}
-                      >
-                        <Text style={styles.linkTitle}>{link.title}</Text>
-                      </Link>
-                      <Text style={styles.linkText}>{link.text}</Text>
-                    </Fragment>
-                  ))}
-                </Column>
-              </Row>
-            </Section>
-          )}
+                                  <Text
+                                    style={{
+                                      ...styles.articleTitle,
+                                      color: firstTopicColor,
+                                    }}
+                                  >
+                                    {firstTopic.title}
+                                  </Text>
+                                  {firstTopic.links.map((link, index) => (
+                                    <Fragment key={index}>
+                                      {index > 0 && <div style={styles.hr} />}
+                                      <Link
+                                        href={link.url}
+                                        style={{
+                                          ...styles.linkTitle,
+                                          display: 'block',
+                                        }}
+                                      >
+                                        {link.title}
+                                      </Link>
+                                      <Text style={styles.linkText}>
+                                        {link.text}
+                                      </Text>
+                                    </Fragment>
+                                  ))}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </td>
+              <td style={{ backgroundColor: '#D60690', minWidth: '10px' }}>
+                &nbsp;
+              </td>
+            </tr>
+            {/* Row 2: Below pink header - middle cell spanned from row 1 */}
+            <tr>
+              <td style={{ minWidth: '10px' }}>&nbsp;</td>
+              <td style={{ minWidth: '10px' }}>&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
 
+        <Container style={styles.container}>
           {/* Rest of Topics */}
           <Section style={{ paddingTop: '16px' }}>
             {restTopics.map((topic, index) => (
@@ -401,10 +510,6 @@ const styles = {
     margin: '0 0 32px 0',
     textTransform: 'uppercase' as const,
   },
-  badgeSection: {
-    marginBottom: '-16px',
-    textAlign: 'center' as const,
-  },
   bannerBox: {
     backgroundColor: '#f6f6f7',
     borderRadius: '8px',
@@ -431,7 +536,6 @@ const styles = {
     margin: '0 auto',
     maxWidth: '680px',
   },
-  firstTopicBox: {},
   footerLink: {
     color: '#081146',
     display: 'inline-block',
@@ -466,9 +570,6 @@ const styles = {
     fontSize: '14px',
     lineHeight: '1.6',
     margin: '8px 0',
-  },
-  header: {
-    padding: '40px 20px 32px',
   },
   hr: {
     borderTop: '1px solid rgb(197, 200, 220)',
@@ -523,22 +624,13 @@ const styles = {
     lineHeight: '15px',
     margin: 0,
   },
-  pinkWrapper: {
-    backgroundColor: '#D60690',
-    backgroundImage: 'url(https://www.graphqlweekly.com/header-bg.svg)',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    paddingBottom: '240px',
-  },
   viewLink: {
-    textDecoration: 'none',
-  },
-  viewLinkText: {
     color: '#ffffff',
     fontSize: '18px',
     fontWeight: 500,
     margin: 0,
+    textDecoration: 'none',
+    whiteSpace: 'nowrap',
   },
 } as const
 

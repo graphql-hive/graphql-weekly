@@ -12,6 +12,7 @@
     "deploy": "wrangler deploy",
     "test": "vitest",
     "email": "email dev --dir src/email/templates",
+    "email:test": "bun run scripts/send-test-email.ts",
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -27,7 +28,8 @@
     "kysely": "0.28.9",
     "kysely-d1": "0.4.0",
     "react": "19.2.3",
-    "react-email": "5.2.3"
+    "react-email": "5.2.3",
+    "resend": "^6.8.0"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "0.12.3",
