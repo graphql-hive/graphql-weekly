@@ -277,7 +277,26 @@ export function Newsletter({
                         </table>
                       </td>
                     </tr>
-                    {/* Badge row - 3 cells with split pink/white backgrounds */}
+                    {/*
+                      Badge row - simulates overlap without negative margins
+
+                      Gmail and many email clients don't support negative margins,
+                      so we can't use `margin-top: -16px` to make the badge overlap
+                      the pink header and white content box.
+
+                      Instead, we create a row with 3 cells that have split backgrounds:
+
+                      ┌────────┬─────────────────────────────────────────┬────────┐
+                      │ pink   │    ┌─────────────────────────────┐      │ pink   │
+                      │────────│    │     ISSUE 399 • JAN 18      │      │────────│
+                      │ topic  │    └─────────────────────────────┘      │ white  │
+                      │ color  │        pink to white background         │ corner │
+                      └────────┴─────────────────────────────────────────┴────────┘
+
+                      - Left cell (8px): pink top, topic color bottom with top-left radius
+                      - Center cell: linear-gradient pink→white, badge vertically centered
+                      - Right cell (8px): pink top, white bottom with top-right radius
+                    */}
                     <tr>
                       <td>
                         <table
