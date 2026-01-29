@@ -4,17 +4,23 @@
 import { gql, GraphQLClient } from "graphql-request";
 import { readFileSync } from "node:fs";
 
-const endpoint =
-  "https://graphqlweekly-api.netlify.app/.netlify/functions/graphql";
-const token = process.env.OLD_JWT_TOKEN;
+const endpoint = process.env.API_URL || "https://api.graphqlweekly.com/graphql";
+const cookie = process.env.SESSION_COOKIE;
 
-if (!token) {
-  console.error("OLD_JWT_TOKEN not set. Run: direnv allow");
+if (!cookie) {
+  console.error(
+    "SESSION_COOKIE not set. Get it from browser DevTools (Application > Cookies > better-auth.session_token)",
+  );
   process.exit(1);
 }
 
+const decodedCookie = decodeURIComponent(cookie);
+// Production uses __Secure- prefix, local dev doesn't
+const cookieName = endpoint.includes("localhost")
+  ? "better-auth.session_token"
+  : "__Secure-better-auth.session_token";
 const client = new GraphQLClient(endpoint, {
-  headers: { Authorization: token },
+  headers: { Cookie: `${cookieName}=${decodedCookie}` },
 });
 
 interface Issue {

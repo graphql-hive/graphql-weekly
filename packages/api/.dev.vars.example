@@ -13,3 +13,8 @@ GITHUB_CLIENT_SECRET=a94082fb410b25adf62df6e734de5a79a46042d6
 
 # Mailchimp -- can be left empty for local development
 # MAILCHIMP_API_KEY=your-mailchimp-api-key
+
+# Resend -- for sending test emails (https://resend.com/api-keys)
+# Without domain verification, can only send to your Resend account email
+# RESEND_API_KEY=re_xxx
+# RESEND_TEST_EMAIL=your-resend-account@example.com

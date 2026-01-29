@@ -1,0 +1,16 @@
+{
+  "name": "@gqlweekly/e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "bun run src/seed-database.ts",
+    "test": "bun run --cwd ../api migrate:up && bun run seed && CI=true playwright test",
+    "test:dev": "bun run --cwd ../api migrate:up && bun run seed && playwright test",
+    "test:ui": "bun run --cwd ../api migrate:up && bun run seed && playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.57.0",
+    "@types/bun": "^1.3.6"
+  }
+}

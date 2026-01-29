@@ -73,12 +73,7 @@ export function PageHeader({
   const issueNumber = title?.match(/\d+/)?.[0];
 
   return (
-    <header
-      className={cn(
-        "sticky top-12 z-10 bg-neu-50 dark:bg-neu-950 border-b border-neu-200 dark:border-neu-800",
-        isMutating && "opacity-50 pointer-events-none",
-      )}
-    >
+    <header className="sticky top-12 z-10 bg-neu-50 dark:bg-neu-950 border-b border-neu-200 dark:border-neu-800">
       <div className="max-w-4xl mx-auto px-4 py-2">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           {/* System status line */}
@@ -138,7 +133,7 @@ export function PageHeader({
                 size="sm"
                 variant="primary"
               >
-                Publish
+                {publishIssueMutation.isPending ? "Publishing" : "Publish"}
               </Button>
               <Button
                 disabled={isMutating}
@@ -146,7 +141,7 @@ export function PageHeader({
                 size="sm"
                 variant="secondary"
               >
-                Email
+                {publishEmailDraftMutation.isPending ? "Emailing" : "Email"}
               </Button>
               {!published && (
                 <Button

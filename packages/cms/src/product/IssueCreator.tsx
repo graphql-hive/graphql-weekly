@@ -1,7 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
 
-import { InputWithButton } from "../components/InputWithButton";
+import { Button } from "../components/Button";
+import { Input } from "../components/Input";
 import {
   type AllIssuesQuery,
   useCreateIssueMutation,
@@ -109,17 +110,19 @@ export function IssueCreator({
     Number.isNaN(Number(number));
 
   return (
-    <InputWithButton
-      buttonDisabled={isAddButtonDisabled}
-      buttonLabel="Add Issue"
-      disabled={createIssueMutation.isPending}
-      errorText={numberError}
-      inputRef={inputRef}
-      label="issue number"
-      onChange={handleNumberChange}
-      onClick={submitIssueChange}
-      placeholder="Number"
-      value={number}
-    />
+    <div className="flex items-center gap-2.5">
+      <Input
+        disabled={createIssueMutation.isPending}
+        error={numberError}
+        label="issue number"
+        onChange={handleNumberChange}
+        placeholder="Number"
+        ref={inputRef}
+        value={number}
+      />
+      <Button disabled={isAddButtonDisabled} onClick={submitIssueChange}>
+        Add Issue
+      </Button>
+    </div>
   );
 }

@@ -7,6 +7,10 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   adapter: cloudflare({
     imageService: "compile",
+    platformProxy: {
+      configPath: "./wrangler.jsonc",
+      enabled: true,
+    },
   }),
   integrations: [react(), sitemap()],
   server: { port: 2015 },

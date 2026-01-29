@@ -9,16 +9,12 @@ query Me {
   }
 }
 
-query AllLinks {
-  allLinks {
+query UnassignedLinks {
+  unassignedLinks {
     id
     url
     text
     title
-    topic {
-      id
-      position
-    }
   }
 }
 
@@ -158,14 +154,17 @@ mutation UpdateIssuePreviewImage($id: String!, $previewImage: String!) {
   }
 }
 
-query AllLinkSubmissions {
-  allLinkSubmissions {
-    id
-    title
-    description
-    url
-    email
-    name
-    createdAt
+query LinkSubmissions($skip: Int, $limit: Int) {
+  linkSubmissions(skip: $skip, limit: $limit) {
+    items {
+      id
+      title
+      description
+      url
+      email
+      name
+      createdAt
+    }
+    totalCount
   }
 }

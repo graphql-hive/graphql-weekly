@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { createFreshIssue } from "../util";
 
 test.describe("Edit and Persist", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
 
   test("edit link metadata and verify persistence after refresh", async ({
     page,
@@ -18,12 +18,37 @@ test.describe("Edit and Persist", () => {
     // First, add a fresh link to ensure we have something to edit
     const linkInput = page.getByPlaceholder("Paste URL to add link...");
     await linkInput.fill(testUrl);
+
+    // Wait for createLink mutation response AND the subsequent refetch
+    let createdLinkId: string | null = null;
+    const createLinkResponse = page.waitForResponse(async (res) => {
+      if (!res.url().includes("/graphql")) return false;
+      if (res.request().method() !== "POST") return false;
+      const body = await res.json().catch(() => null);
+      if (body?.data?.createLink?.id) {
+        createdLinkId = body.data.createLink.id;
+        return true;
+      }
+      return false;
+    });
     await page.getByRole("button", { exact: true, name: "Add" }).click();
+    await createLinkResponse;
+
+    // Wait for UnassignedLinks refetch to include our new link with real ID
+    await page.waitForResponse(async (res) => {
+      if (!res.url().includes("/graphql")) return false;
+      if (res.request().method() !== "POST") return false;
+      const body = await res.json().catch(() => null);
+      const unassignedLinks = body?.data?.unassignedLinks;
+      return (
+        Array.isArray(unassignedLinks) &&
+        unassignedLinks.some((l: { id: string }) => l.id === createdLinkId)
+      );
+    });
+
     await expect(linkInput).toHaveValue("");
 
-    // Wait for network to settle (mutation + refetch complete) before editing
-    // This ensures the link has a real ID from the server, not a temp optimistic ID
-
+    // Wait for link to be visible with real ID from server (not temp)
     const ourLinkUrl = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
@@ -50,8 +75,21 @@ test.describe("Edit and Persist", () => {
     const saveBtn = page.getByRole("button", { name: "Save" });
     await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
 
-    // Save
+    // Save and wait for successful GraphQL response (no errors)
+    const saveResponsePromise = page.waitForResponse(async (res) => {
+      if (!res.url().includes("/graphql")) return false;
+      if (res.request().method() !== "POST") return false;
+      if (res.status() !== 200) return false;
+      const body = await res.json().catch(() => null);
+      return body?.data && !body?.errors;
+    });
     await saveBtn.click();
+    await saveResponsePromise;
+
+    // Verify no error shown and unsaved indicator disappears
+    await expect(page.getByText(/Save failed/i)).not.toBeVisible({
+      timeout: 5000,
+    });
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
       timeout: 10_000,
     });

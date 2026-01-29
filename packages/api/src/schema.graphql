@@ -47,6 +47,11 @@ type LinkSubmission {
   url: String
 }
 
+type LinkSubmissionsResult {
+  items: [LinkSubmission!]!
+  totalCount: Int!
+}
+
 type Topic {
   id: String
   issue: Issue
@@ -78,8 +83,9 @@ type Query {
   allTopics: [Topic!]
   allAuthors: [Author!]
   allLinks: [Link!]
+  unassignedLinks: [Link!]!
   allSubscribers: [Subscriber!]
-  allLinkSubmissions: [LinkSubmission!]
+  linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
   issue(id: String!): Issue
 }
 

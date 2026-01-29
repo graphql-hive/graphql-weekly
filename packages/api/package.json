@@ -5,12 +5,14 @@
   "license": "MIT",
   "scripts": {
     "dev": "wrangler dev",
+    "dev:e2e": "wrangler dev --port 2013 --env-file .dev.vars.e2e",
     "migrate:up": "wrangler d1 migrations apply graphqlweekly --local",
     "codegen": "graphql-codegen",
     "typecheck": "tsc --noEmit",
     "deploy": "wrangler deploy",
     "test": "vitest",
     "email": "email dev --dir src/email/templates",
+    "email:test": "bun run scripts/send-test-email.ts",
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -26,10 +28,12 @@
     "kysely": "0.28.9",
     "kysely-d1": "0.4.0",
     "react": "19.2.3",
-    "react-email": "5.2.3"
+    "react-email": "5.2.3",
+    "resend": "^6.8.0"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "0.12.3",
+    "@cloudflare/workers-types": "^4.20260124.0",
     "@graphql-codegen/cli": "6.1.1",
     "@graphql-codegen/typescript": "5.0.7",
     "@graphql-codegen/typescript-resolvers": "5.1.5",

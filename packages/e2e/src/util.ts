@@ -1,11 +1,13 @@
 import { expect, type Page } from "@playwright/test";
 
+import { CMS_URL } from "./urls.ts";
+
 /**
  * Creates a fresh issue and navigates to it.
  * Provides test isolation - each test gets its own clean issue.
  */
 export async function createFreshIssue(page: Page): Promise<string> {
-  await page.goto("/");
+  await page.goto(CMS_URL);
   await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
 
   const issueLinks = page.locator('a[href^="/issue/"]');

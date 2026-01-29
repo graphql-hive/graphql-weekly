@@ -4,7 +4,7 @@ import { useDrag } from "@use-gesture/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { useAllLinkSubmissionsQuery } from "../generated/graphql";
+import { useLinkSubmissionsQuery } from "../generated/graphql";
 
 export const SUBMISSION_PREFIX = "submission:";
 const CONSUMED_KEY = "consumedSubmissions";
@@ -107,13 +107,14 @@ export function SubmissionsPanel() {
     };
   }, []);
 
-  const { data, isLoading } = useAllLinkSubmissionsQuery();
-  // TODO: add pagination to the backend
-  const totalCount = data?.allLinkSubmissions?.length ?? 0;
-  const allSubmissions = (data?.allLinkSubmissions ?? []).slice(0, 100);
+  const { data, isLoading } = useLinkSubmissionsQuery();
+  const totalCount = data?.linkSubmissions.totalCount ?? 0;
   const submissions = useMemo(
-    () => allSubmissions.filter((s) => s.id && !consumed.includes(s.id)),
-    [allSubmissions, consumed],
+    () =>
+      data?.linkSubmissions.items.filter(
+        (s) => s.id && !consumed.includes(s.id),
+      ) ?? [],
+    [data, consumed],
   );
 
   const bind = useDrag(

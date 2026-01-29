@@ -1,8 +1,15 @@
 import type { IssueType, TopicLinksType } from "../types";
 
+// TODO: Restore Stellate CDN once we have access to purge cache
+// const STELLATE_ENDPOINT = "https://graphql-weekly.graphcdn.app";
 const GRAPHQL_ENDPOINT = import.meta.env.DEV
-  ? "http://localhost:2012"
-  : "https://graphql-weekly.graphcdn.app";
+  ? "http://localhost:2012/graphql"
+  : "https://api.graphqlweekly.com/graphql";
+
+// Mutations need direct API access (CDN is read-only)
+export const MUTATION_ENDPOINT = import.meta.env.DEV
+  ? "http://localhost:2012/graphql"
+  : "https://api.graphqlweekly.com/graphql";
 
 export async function fetchGraphQL<T>({
   query,
@@ -55,12 +62,12 @@ export async function getAllIssues(): Promise<AllIssuesData> {
 
   const { data } = await fetchGraphQL<AllIssuesResponse>({ query });
 
-  const allIssues = data.allIssues
+  const allIssues = (data?.allIssues ?? [])
     .filter((issue) => issue.published && issue.date && issue.number)
     .sort((a, b) => Number(b.number) - Number(a.number));
 
   const lastIssue = allIssues[0];
-  const firstIssueNumber = allIssues.at(-1)!.number;
+  const firstIssueNumber = allIssues.at(-1)?.number ?? 0;
 
   // get all topics with links: { [title]: [ { ...link } ] }
   let topicsList: Record<string, TopicLinksType[]> = {};

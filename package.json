@@ -16,7 +16,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev --ui tui",
+    "dev": "turbo dev",
     "build": "turbo build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

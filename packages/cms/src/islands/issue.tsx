@@ -43,11 +43,11 @@ import { Navbar } from "../components/Navbar";
 import {
   type IssueQuery,
   useAddLinksToTopicMutation,
-  useAllLinksQuery,
   useCreateLinkMutation,
   useCreateTopicMutation,
   useDeleteLinkMutation,
   useIssueQuery,
+  useUnassignedLinksQuery,
   useUpdateLinkMutation,
   useUpdateTopicMutation,
   useUpdateTopicWhenIssueDeletedMutation,
@@ -177,13 +177,16 @@ function IssuePageContent({ id }: { id: string }) {
   // Track moves for saving (linkId -> newContainerId)
   const [linkMoves, setLinkMoves] = useState<Map<string, string>>(new Map());
   const [deletedLinkIds, setDeletedLinkIds] = useState<Set<string>>(new Set());
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const tempToRealIdRef = useRef<Map<string, string>>(new Map());
   const [activeSubmission, setActiveSubmission] = useState<{
     description: string;
     title: string;
     url: string;
   } | null>(null);
 
-  const { data: linksData, isLoading: linksLoading } = useAllLinksQuery();
+  const { data: linksData, isLoading: linksLoading } =
+    useUnassignedLinksQuery();
   const { data: issueData, isLoading: issueLoading } = useIssueQuery({ id });
 
   const createTopicMutation = useCreateTopicMutation();
@@ -195,17 +198,20 @@ function IssuePageContent({ id }: { id: string }) {
   const addLinksToTopicMutation = useAddLinksToTopicMutation();
 
   const invalidateQueries = useCallback(() => {
-    qc.invalidateQueries({ queryKey: ["AllLinks"] });
+    qc.invalidateQueries({ queryKey: ["UnassignedLinks"] });
     qc.invalidateQueries({ queryKey: ["Issue", { id }] });
   }, [qc, id]);
 
   const issue = issueData?.issue;
   const topics = useMemo(() => issue?.topics ?? [], [issue]);
-  const allLinks = useMemo(() => linksData?.allLinks ?? [], [linksData]);
+  const unassignedLinks = useMemo(
+    () => linksData?.unassignedLinks ?? [],
+    [linksData],
+  );
 
   const linkMap = useMemo(() => {
     const map = new Map<string, LinkData>();
-    for (const link of allLinks) {
+    for (const link of unassignedLinks) {
       if (link.id) map.set(link.id, link as LinkData);
     }
     for (const topic of topics) {
@@ -214,36 +220,32 @@ function IssuePageContent({ id }: { id: string }) {
       }
     }
     return map;
-  }, [allLinks, topics]);
+  }, [unassignedLinks, topics]);
 
   // Initialize items from data (only when server data changes, not on moves)
   useEffect(() => {
     if (!issue) return;
 
-    const newItems: Items = {};
-
-    // Unassigned links
-    const unassigned = allLinks
-      .filter(
-        (link) =>
-          link.topic === null && link.id && !deletedLinkIds.has(link.id),
-      )
+    // Unassigned links (already filtered server-side)
+    const unassigned = unassignedLinks
+      .filter((link) => link.id && !deletedLinkIds.has(link.id))
       .map((link) => link.id!);
-    newItems[UNASSIGNED_ID] = unassigned;
 
     // Topic links
-    for (const topic of topics) {
-      if (topic.id) {
-        const topicLinks = (topic.links ?? [])
-          .filter((link) => link.id && !deletedLinkIds.has(link.id))
-          .map((link) => link.id!);
-        newItems[topic.id] = topicLinks;
-      }
-    }
+    const topicItems = Object.fromEntries(
+      topics
+        .filter((topic) => topic.id)
+        .map((topic) => [
+          topic.id,
+          (topic.links ?? [])
+            .filter((link) => link.id && !deletedLinkIds.has(link.id))
+            .map((link) => link.id!),
+        ]),
+    );
 
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from server data
-    setItems(newItems);
-  }, [issue, allLinks, topics, deletedLinkIds]);
+    setItems({ [UNASSIGNED_ID]: unassigned, ...topicItems });
+  }, [issue, unassignedLinks, topics, deletedLinkIds]);
 
   // Containers list (for iteration)
   const containers = useMemo(
@@ -350,36 +352,39 @@ function IssuePageContent({ id }: { id: string }) {
     setNewLink("");
 
     // Optimistic update - add link to cache immediately
-    qc.setQueryData<{ allLinks: typeof allLinks }>(["AllLinks"], (old) => {
-      if (!old) return old;
-      return {
-        ...old,
-        allLinks: [
-          {
-            __typename: "Link" as const,
-            id: tempId,
-            text: null,
-            title: null,
-            topic: null,
-            url: urlToAdd,
-          },
-          ...(old.allLinks ?? []),
-        ],
-      };
-    });
+    qc.setQueryData<{ unassignedLinks: typeof unassignedLinks }>(
+      ["UnassignedLinks"],
+      (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          unassignedLinks: [
+            {
+              __typename: "Link" as const,
+              id: tempId,
+              text: null,
+              title: null,
+              url: urlToAdd,
+            },
+            ...(old.unassignedLinks ?? []),
+          ],
+        };
+      },
+    );
 
     createLinkMutation.mutate(
       { url: urlToAdd },
       {
         onError: () => {
           // Rollback optimistic update
-          qc.setQueryData<{ allLinks: typeof allLinks }>(
-            ["AllLinks"],
+          qc.setQueryData<{ unassignedLinks: typeof unassignedLinks }>(
+            ["UnassignedLinks"],
             (old) => {
               if (!old) return old;
               return {
                 ...old,
-                allLinks: old.allLinks?.filter((l) => l.id !== tempId) ?? null,
+                unassignedLinks:
+                  old.unassignedLinks?.filter((l) => l.id !== tempId) ?? [],
               };
             },
           );
@@ -388,6 +393,9 @@ function IssuePageContent({ id }: { id: string }) {
         onSuccess: (data) => {
           const realId = data.createLink?.id;
           if (realId) {
+            // Store mapping so future edits to temp ID are redirected to real ID
+            tempToRealIdRef.current.set(tempId, realId);
+
             // Migrate any edits from temp ID to real ID
             setEditedLinks((prev) => {
               const edits = prev.get(tempId);
@@ -422,8 +430,13 @@ function IssuePageContent({ id }: { id: string }) {
   }, [createLinkMutation, newLink, invalidateQueries, qc]);
 
   const handleLinkChange = useCallback((link: LinkData) => {
+    const linkId = link.id!;
+    // Resolve temp ID to real ID if the mapping exists (handles race condition
+    // where user edits after mutation completes but before React re-renders)
+    const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+
     setEditedLinks((prev) =>
-      new Map(prev).set(link.id!, {
+      new Map(prev).set(resolvedId, {
         text: link.text ?? null,
         title: link.title ?? null,
         url: link.url ?? null,
@@ -432,7 +445,8 @@ function IssuePageContent({ id }: { id: string }) {
   }, []);
 
   const handleLinkDelete = useCallback((linkId: string) => {
-    setDeletedLinkIds((prev) => new Set(prev).add(linkId));
+    const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+    setDeletedLinkIds((prev) => new Set(prev).add(resolvedId));
   }, []);
 
   const handleTopicRemove = useCallback(
@@ -484,33 +498,41 @@ function IssuePageContent({ id }: { id: string }) {
   const changesCount = editedLinks.size + deletedLinkIds.size + linkMoves.size;
 
   const saveAll = useCallback(async () => {
-    const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
-      updateLinkMutation.mutateAsync({
-        id: lid,
-        text: changes.text!,
-        title: changes.title!,
-        url: changes.url!,
-      }),
-    );
+    setSaveError(null);
 
-    const deletePromises = [...deletedLinkIds].map((lid) =>
-      deleteLinkMutation.mutateAsync({ id: lid }),
-    );
+    try {
+      const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
+        updateLinkMutation.mutateAsync({
+          id: lid,
+          text: changes.text!,
+          title: changes.title!,
+          url: changes.url!,
+        }),
+      );
 
-    const movePromises = [...linkMoves.entries()].map(([linkId, topicId]) => {
-      if (topicId === UNASSIGNED_ID) {
-        // TODO: Need a mutation to unassign link from topic
-        return Promise.resolve();
-      }
-      return addLinksToTopicMutation.mutateAsync({ linkId, topicId });
-    });
+      const deletePromises = [...deletedLinkIds].map((lid) =>
+        deleteLinkMutation.mutateAsync({ id: lid }),
+      );
 
-    await Promise.all([...linkPromises, ...deletePromises, ...movePromises]);
+      const movePromises = [...linkMoves.entries()].map(([linkId, topicId]) => {
+        if (topicId === UNASSIGNED_ID) {
+          // TODO: Need a mutation to unassign link from topic
+          return Promise.resolve();
+        }
+        return addLinksToTopicMutation.mutateAsync({ linkId, topicId });
+      });
 
-    setEditedLinks(new Map());
-    setDeletedLinkIds(new Set());
-    setLinkMoves(new Map());
-    invalidateQueries();
+      await Promise.all([...linkPromises, ...deletePromises, ...movePromises]);
+
+      setEditedLinks(new Map());
+      setDeletedLinkIds(new Set());
+      setLinkMoves(new Map());
+      invalidateQueries();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to save changes";
+      setSaveError(message);
+    }
   }, [
     editedLinks,
     deletedLinkIds,
@@ -525,6 +547,7 @@ function IssuePageContent({ id }: { id: string }) {
     setEditedLinks(new Map());
     setDeletedLinkIds(new Set());
     setLinkMoves(new Map());
+    setSaveError(null);
   }, []);
 
   if (linksLoading || issueLoading || !issue) {
@@ -657,7 +680,13 @@ function IssuePageContent({ id }: { id: string }) {
               return;
             }
 
-            const activeContainer = findContainer(active.id);
+            // Use clonedItems (from onDragStart) to find original container
+            // because onDragOver already moved the item in items state
+            const activeContainer = clonedItems
+              ? Object.keys(clonedItems).find((key) =>
+                  clonedItems[key]?.includes(active.id),
+                )
+              : findContainer(active.id);
 
             if (!activeContainer) {
               setActiveId(null);
@@ -683,7 +712,9 @@ function IssuePageContent({ id }: { id: string }) {
                   [activeContainer]: container.filter((id) => id !== active.id),
                 };
               });
-              setDeletedLinkIds((prev) => new Set(prev).add(String(active.id)));
+              const linkId = String(active.id);
+              const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+              setDeletedLinkIds((prev) => new Set(prev).add(resolvedId));
               setActiveId(null);
               setActiveSubmission(null);
               return;
@@ -713,8 +744,11 @@ function IssuePageContent({ id }: { id: string }) {
 
               // Track move if container changed
               if (activeContainer !== overContainer) {
+                const linkId = String(active.id);
+                const resolvedId =
+                  tempToRealIdRef.current.get(linkId) ?? linkId;
                 setLinkMoves((prev) =>
-                  new Map(prev).set(String(active.id), String(overContainer)),
+                  new Map(prev).set(resolvedId, String(overContainer)),
                 );
               }
             }
@@ -1018,16 +1052,31 @@ function IssuePageContent({ id }: { id: string }) {
         </div>
       </main>
 
-      {hasUnsavedChanges && (
+      {(hasUnsavedChanges || saveError) && (
         <>
           <div className="h-20" />
-          <div className="fixed bottom-0 inset-x-0 bg-white dark:bg-neu-900 border-t border-neu-200 dark:border-neu-700 shadow-lg dark:shadow-neu-950/50">
-            <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-              <span className="text-sm text-neu-600 dark:text-neu-400">
-                {changesCount} unsaved{" "}
-                {changesCount === 1 ? "change" : "changes"}
-              </span>
-              <div className="flex gap-2">
+          <div
+            className={cn(
+              "fixed bottom-0 inset-x-0 border-t shadow-lg",
+              saveError
+                ? "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800"
+                : "bg-white dark:bg-neu-900 border-neu-200 dark:border-neu-700 dark:shadow-neu-950/50",
+            )}
+          >
+            <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                {saveError ? (
+                  <span className="text-sm text-red-600 dark:text-red-400">
+                    Save failed: {saveError}
+                  </span>
+                ) : (
+                  <span className="text-sm text-neu-600 dark:text-neu-400">
+                    {changesCount} unsaved{" "}
+                    {changesCount === 1 ? "change" : "changes"}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2 shrink-0">
                 <Button
                   disabled={isSaving}
                   onClick={discardAll}
@@ -1036,7 +1085,7 @@ function IssuePageContent({ id }: { id: string }) {
                   Discard
                 </Button>
                 <Button disabled={isSaving} onClick={saveAll} variant="primary">
-                  {isSaving ? "Saving..." : "Save"}
+                  {isSaving ? "Saving..." : saveError ? "Retry" : "Save"}
                 </Button>
               </div>
             </div>

@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+import { CMS_URL } from "../urls.ts";
+
 test.describe("Navigation Smoke Tests", () => {
   test("index page loads with issue list (public)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
 
     await expect(page.getByText("GraphQL Weekly")).toBeVisible();
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
@@ -13,10 +15,10 @@ test.describe("Navigation Smoke Tests", () => {
 });
 
 test.describe("Navigation (authenticated)", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
 
   test("can navigate to issue detail and back", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     const firstIssue = page.locator('a[href^="/issue/"]').first();

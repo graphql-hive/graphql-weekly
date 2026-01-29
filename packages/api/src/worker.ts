@@ -79,6 +79,11 @@ const typeDefs = /* GraphQL */ `
     url: String
   }
 
+  type LinkSubmissionsResult {
+    items: [LinkSubmission!]!
+    totalCount: Int!
+  }
+
   type Topic {
     id: String
     issue: Issue
@@ -110,8 +115,9 @@ const typeDefs = /* GraphQL */ `
     allTopics: [Topic!]
     allAuthors: [Author!]
     allLinks: [Link!]
+    unassignedLinks: [Link!]!
     allSubscribers: [Subscriber!]
-    allLinkSubmissions: [LinkSubmission!]
+    linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
     issue(id: String!): Issue
   }
 
@@ -181,11 +187,27 @@ function isAllowedOrigin(origin: string): boolean {
     return (
       url.hostname === 'graphqlweekly.com' ||
       url.hostname === 'cms.graphqlweekly.com' ||
-      url.hostname.endsWith('.graphqlweekly.com')
+      url.hostname.endsWith('.graphqlweekly.com') ||
+      url.hostname.endsWith('.workers.dev')
     )
   } catch {
     return false
   }
+}
+
+function addCorsHeaders(
+  response: Response,
+  corsOrigin: string | null,
+): Response {
+  if (!corsOrigin) return response
+  const headers = new Headers(response.headers)
+  headers.set('Access-Control-Allow-Origin', corsOrigin)
+  headers.set('Access-Control-Allow-Credentials', 'true')
+  return new Response(response.body, {
+    headers,
+    status: response.status,
+    statusText: response.statusText,
+  })
 }
 
 export default {
@@ -198,7 +220,24 @@ export default {
     const { hostname } = url
     const preview = getPreviewSubdomain(hostname)
 
+    const origin = request.headers.get('Origin')
+    const corsOrigin = origin && isAllowedOrigin(origin) ? origin : null
+
     if (preview && env.WORKERS_DEV_SUBDOMAIN) {
+      // Handle CORS preflight for preview proxies
+      if (request.method === 'OPTIONS') {
+        return new Response(null, {
+          headers: corsOrigin
+            ? {
+                'Access-Control-Allow-Credentials': 'true',
+                'Access-Control-Allow-Headers': 'Content-Type, Cookie',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Origin': corsOrigin,
+              }
+            : {},
+        })
+      }
+
       const workerName =
         preview.service === 'api' ? 'graphqlweekly-api' : 'graphqlweekly-cms'
       const previewUrl = `https://${preview.subdomain}-${workerName}.${env.WORKERS_DEV_SUBDOMAIN}.workers.dev${url.pathname}${url.search}`
@@ -207,11 +246,9 @@ export default {
         headers: request.headers,
         method: request.method,
       })
-      return fetch(proxyRequest)
+      const response = await fetch(proxyRequest)
+      return addCorsHeaders(response, corsOrigin)
     }
-
-    const origin = request.headers.get('Origin')
-    const corsOrigin = origin && isAllowedOrigin(origin) ? origin : null
 
     if (request.method === 'OPTIONS') {
       return new Response(null, {
@@ -226,63 +263,71 @@ export default {
       })
     }
 
-    // Better Auth handler
-    if (url.pathname.startsWith('/auth')) {
-      const auth = createAuth(env)
-      const response = await auth.handler(request)
-      if (corsOrigin) {
-        const headers = new Headers(response.headers)
-        headers.set('Access-Control-Allow-Origin', corsOrigin)
-        headers.set('Access-Control-Allow-Credentials', 'true')
-        return new Response(response.body, {
-          headers,
-          status: response.status,
-          statusText: response.statusText,
-        })
+    // Wrap everything in try-catch to ensure CORS headers on error responses
+    try {
+      // Better Auth handler
+      if (url.pathname.startsWith('/auth')) {
+        const auth = createAuth(env)
+        const response = await auth.handler(request)
+        return addCorsHeaders(response, corsOrigin)
       }
-      return response
-    }
 
-    if (url.pathname === '/graphql' || url.pathname === '/graphql/') {
-      const db = createDb(env.graphqlweekly)
-      const auth = createAuth(env)
+      if (url.pathname === '/graphql' || url.pathname === '/graphql/') {
+        const db = createDb(env.graphqlweekly)
+        const auth = createAuth(env)
 
-      let user: GraphQLContext['user'] = null
-      try {
-        const session = await auth.api.getSession({
-          headers: request.headers,
-        })
-        if (session?.user) {
-          user = {
-            email: session.user.email,
-            id: session.user.id,
-            image: session.user.image,
-            isCollaborator: !!(session.session as { isCollaborator?: boolean })
-              .isCollaborator,
-            name: session.user.name,
+        let user: GraphQLContext['user'] = null
+        try {
+          const session = await auth.api.getSession({
+            headers: request.headers,
+          })
+          if (session?.user) {
+            user = {
+              email: session.user.email,
+              id: session.user.id,
+              image: session.user.image,
+              isCollaborator: !!(
+                session.session as { isCollaborator?: boolean }
+              ).isCollaborator,
+              name: session.user.name,
+            }
           }
+        } catch {
+          // No session or invalid session
         }
-      } catch {
-        // No session or invalid session
+
+        const response = await yoga.fetch(request, { db, env, user })
+        return addCorsHeaders(response, corsOrigin)
       }
 
-      return yoga.fetch(request, { db, env, user })
-    }
+      // Health check
+      if (url.pathname === '/health') {
+        return new Response('OK', { status: 200 })
+      }
 
-    // Health check
-    if (url.pathname === '/health') {
-      return new Response('OK', { status: 200 })
-    }
+      // Redirect root to CMS (Better Auth defaults to '/' after OAuth)
+      if (url.pathname === '/' || url.pathname === '') {
+        const cmsUrl =
+          env.LOCAL_DEV || env.E2E_TEST
+            ? 'http://localhost:2016'
+            : 'https://cms.graphqlweekly.com'
+        return Response.redirect(cmsUrl, 302)
+      }
 
-    // Redirect root to CMS (Better Auth defaults to '/' after OAuth)
-    if (url.pathname === '/' || url.pathname === '') {
-      const cmsUrl =
-        env.LOCAL_DEV || env.E2E_TEST
-          ? 'http://localhost:2016'
-          : 'https://cms.graphqlweekly.com'
-      return Response.redirect(cmsUrl, 302)
+      return new Response('Not Found', { status: 404 })
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Worker error:', error)
+      const errorResponse = Response.json(
+        {
+          errors: [{ message: 'Internal server error' }],
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          status: 500,
+        },
+      )
+      return addCorsHeaders(errorResponse, corsOrigin)
     }
-
-    return new Response('Not Found', { status: 404 })
   },
 }

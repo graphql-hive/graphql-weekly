@@ -44,7 +44,10 @@ export interface NewsletterTopic {
 
 export interface NewsletterProps {
   isFoundationEdition?: boolean
-  issueTitle: string
+  issueDate?: string
+  issueNumber: number
+  /** @deprecated Use issueNumber instead */
+  issueTitle?: string
   topics: NewsletterTopic[]
 }
 
@@ -59,21 +62,24 @@ function TopicSection({ topic }: { topic: NewsletterTopic }) {
           width={8}
         />
         <Column
+          className="article-box-content"
           style={{
             ...styles.articleBoxContent,
             backgroundColor: '#f6f6f7',
             borderRadius: '0 8px 8px 0',
           }}
         >
-          <Text style={{ ...styles.articleTitle, color }}>{topic.title}</Text>
+          <Text className="topic" style={{ ...styles.articleTitle, color }}>
+            {topic.title}
+          </Text>
           {topic.links.map((link, index) => (
             <Fragment key={index}>
-              {index > 0 && <div style={styles.hr} />}
+              {index > 0 && <hr style={styles.hr} />}
               <Link
                 href={link.url}
-                style={{ color: '#081146', textDecoration: 'none' }}
+                style={{ ...styles.linkTitle, display: 'block' }}
               >
-                <Text style={styles.linkTitle}>{link.title}</Text>
+                {link.title}
               </Link>
               <Text style={styles.linkText}>{link.text}</Text>
             </Fragment>
@@ -170,7 +176,8 @@ function FoundationFooter() {
 
 export function Newsletter({
   isFoundationEdition = false,
-  issueTitle,
+  issueDate,
+  issueNumber,
   topics = [],
 }: NewsletterProps) {
   const firstTopic = topics[0]
@@ -182,96 +189,290 @@ export function Newsletter({
   return (
     <Html>
       <Head>
-        <Font
-          fallbackFontFamily={['Helvetica', 'Arial', 'sans-serif']}
-          fontFamily="Rubik"
-          fontStyle="normal"
-          fontWeight={400}
-          webFont={{
-            format: 'woff2',
-            url: 'https://fonts.googleapis.com/css?family=Rubik:400,500,700',
-          }}
-        />
+        {[400, 500, 600].map((weight) => (
+          <Font
+            fallbackFontFamily={['Helvetica', 'Arial', 'sans-serif']}
+            fontFamily="Rubik"
+            fontStyle="normal"
+            fontWeight={weight}
+            key={weight}
+            webFont={{
+              format: 'woff2',
+              url: 'https://fonts.gstatic.com/s/rubik/v31/iJWKBXyIfDnIV7nBrXw.woff2',
+            }}
+          />
+        ))}
+        <style>{`
+          @media only screen and (max-width: 600px) {
+            .article-box-content {
+              padding: 32px 32px 32px 24px !important;
+            }
+            .topic {
+              font-size: 16px !important;
+              line-height: 1.5 !important;
+              margin-bottom: 16px !important;
+            }
+            hr {
+              margin: 24px 0 !important;
+            }
+          }
+        `}</style>
       </Head>
-      <Preview>GraphQL Weekly - {issueTitle}</Preview>
+      <Preview>{`GraphQL Weekly - Issue ${issueNumber}`}</Preview>
       <Body style={styles.body}>
-        <Container style={styles.container}>
-          {/* Header */}
-          <Section style={styles.header}>
-            <Row>
-              <Column>
-                <Row>
-                  <Column width={55}>
-                    <Img
-                      alt="GraphQL Weekly"
-                      height={55}
-                      src="https://graphqlweekly.com/assets/WeeklyLogo.png"
-                      width={55}
-                    />
-                  </Column>
-                  <Column style={{ paddingLeft: '6px' }}>
-                    <Text style={styles.logoTitle}>GraphQL</Text>
-                    <Text style={styles.logoSubtitle}>Weekly</Text>
-                  </Column>
-                </Row>
-              </Column>
-              <Column align="right">
-                {/* Mailchimp merge tag, replaced at send time */}
-                <Link href="*|LIST:URL|*" style={styles.viewLink}>
-                  <Text style={styles.viewLinkText}>View in browser</Text>
-                </Link>
-              </Column>
-            </Row>
-          </Section>
-
-          {/* First Topic Box */}
-          {firstTopic && (
-            <Section
-              style={{ ...styles.articleBox, borderRadius: '0 0 9px 9px' }}
-            >
-              <Row>
-                <Column
-                  style={{
-                    backgroundColor: firstTopicColor,
-                    borderRadius: '8px 0 0 8px',
-                  }}
-                  width={8}
-                />
-                <Column
-                  style={{ ...styles.articleBoxContent, paddingTop: '32px' }}
+        {/* 3-column table with rowspan for Gmail-compatible overlap */}
+        <table
+          border={0}
+          cellPadding={0}
+          cellSpacing={0}
+          style={{ borderCollapse: 'collapse' }}
+          width="100%"
+        >
+          <tbody>
+            {/* Row 1: Pink header height - side cells set the pink bg width */}
+            <tr style={{ height: '284px' }}>
+              <td style={{ backgroundColor: '#D60690', minWidth: '10px' }}>
+                &nbsp;
+              </td>
+              <td
+                rowSpan={2}
+                style={{
+                  backgroundColor: '#D60690',
+                  borderRadius: '0 0 9px 9px',
+                  maxWidth: '680px',
+                  width: '680px',
+                }}
+                valign="top"
+              >
+                {/* Header content */}
+                <table
+                  border={0}
+                  cellPadding={0}
+                  cellSpacing={0}
+                  style={{ width: '100%' }}
                 >
-                  <Section
-                    style={{ marginBottom: '32px', textAlign: 'center' }}
-                  >
-                    <Text style={styles.issueTag}>
-                      GraphQL Weekly - {issueTitle}
-                    </Text>
-                  </Section>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '40px 0 25px' }}>
+                        <table border={0} cellPadding={0} cellSpacing={0}>
+                          <tbody>
+                            <tr>
+                              <td style={{ verticalAlign: 'top' }}>
+                                <Img
+                                  alt="GraphQL Weekly"
+                                  height={55}
+                                  src="https://graphqlweekly.com/assets/WeeklyLogo.png"
+                                  width={55}
+                                />
+                              </td>
+                              <td style={{ paddingLeft: '6px' }}>
+                                <Text style={styles.logoTitle}>GraphQL</Text>
+                                <Text style={styles.logoSubtitle}>Weekly</Text>
+                              </td>
+                              <td style={{ width: '100%' }}>&nbsp;</td>
+                              <td style={{ verticalAlign: 'middle' }}>
+                                <Link
+                                  href="*|LIST:URL|*"
+                                  style={styles.viewLink}
+                                >
+                                  View in browser
+                                  <Img
+                                    alt=""
+                                    height={12}
+                                    src="https://graphqlweekly.com/assets/Arrow.png"
+                                    style={{
+                                      display: 'inline-block',
+                                      marginBottom: '2px',
+                                      marginLeft: '10px',
+                                      verticalAlign: 'middle',
+                                    }}
+                                    width={12}
+                                  />
+                                </Link>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    {/*
+                      Badge row - simulates overlap without negative margins
 
-                  {isFoundationEdition && <FoundationHeader />}
+                      Gmail and many email clients don't support negative margins,
+                      so we can't use `margin-top: -16px` to make the badge overlap
+                      the pink header and white content box.
 
-                  <Text
-                    style={{ ...styles.articleTitle, color: firstTopicColor }}
-                  >
-                    {firstTopic.title}
-                  </Text>
-                  {firstTopic.links.map((link, index) => (
-                    <Fragment key={index}>
-                      {index > 0 && <div style={styles.hr} />}
-                      <Link
-                        href={link.url}
-                        style={{ color: '#081146', textDecoration: 'none' }}
-                      >
-                        <Text style={styles.linkTitle}>{link.title}</Text>
-                      </Link>
-                      <Text style={styles.linkText}>{link.text}</Text>
-                    </Fragment>
-                  ))}
-                </Column>
-              </Row>
-            </Section>
-          )}
+                      Instead, we create a row with 3 cells that have split backgrounds:
 
+                      ┌────────┬─────────────────────────────────────────┬────────┐
+                      │ pink   │    ┌─────────────────────────────┐      │ pink   │
+                      │────────│    │     ISSUE 399 • JAN 18      │      │────────│
+                      │ topic  │    └─────────────────────────────┘      │ white  │
+                      │ color  │        pink to white background         │ corner │
+                      └────────┴─────────────────────────────────────────┴────────┘
+
+                      - Left cell (8px): pink top, topic color bottom with top-left radius
+                      - Center cell: 1x2px PNG (pink/white) stretched as background, badge centered
+                      - Right cell (8px): pink top, white bottom with top-right radius
+                    */}
+                    <tr>
+                      <td>
+                        <table
+                          border={0}
+                          cellPadding={0}
+                          cellSpacing={0}
+                          style={{ width: '100%' }}
+                        >
+                          <tbody>
+                            <tr>
+                              {/* Left cell: pink top, topic color bottom (the colored border) */}
+                              <td style={{ verticalAlign: 'top' }} width={8}>
+                                <div
+                                  style={{
+                                    backgroundColor: '#D60690',
+                                    height: '16px',
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    backgroundColor: firstTopicColor,
+                                    borderRadius: '8px 0 0 0',
+                                    height: '16px',
+                                  }}
+                                />
+                              </td>
+                              {/* Center cell: pink/white background image, badge centered */}
+                              <td
+                                align="center"
+                                style={{
+                                  backgroundImage:
+                                    'url(https://graphqlweekly.com/assets/badge-bg.png)',
+                                  backgroundSize: '100% 100%',
+                                  height: '32px',
+                                  verticalAlign: 'middle',
+                                }}
+                              >
+                                <Text style={styles.issueTag}>
+                                  Issue {issueNumber}
+                                  {issueDate && (
+                                    <span
+                                      style={{
+                                        marginLeft: '4px',
+                                        opacity: 0.66,
+                                      }}
+                                    >
+                                      • {issueDate}
+                                    </span>
+                                  )}
+                                </Text>
+                              </td>
+                              {/* Right cell: pink top, white bottom with rounded corner */}
+                              <td style={{ verticalAlign: 'top' }} width={8}>
+                                <div
+                                  style={{
+                                    backgroundColor: '#D60690',
+                                    height: '16px',
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    backgroundColor: '#f6f6f7',
+                                    borderRadius: '0 8px 0 0',
+                                    height: '16px',
+                                  }}
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    {/* First Topic Box content (no badge, no negative margin) */}
+                    {firstTopic && (
+                      <tr>
+                        <td>
+                          <table
+                            border={0}
+                            cellPadding={0}
+                            cellSpacing={0}
+                            style={{
+                              backgroundColor: '#f6f6f7',
+                              borderRadius: '0 0 8px 8px',
+                              boxShadow: '0px 4px 16px rgba(8, 17, 70, 0.05)',
+                              width: '100%',
+                            }}
+                          >
+                            <tbody>
+                              <tr>
+                                <td
+                                  style={{
+                                    backgroundColor: firstTopicColor,
+                                    borderRadius: '0 0 0 8px',
+                                  }}
+                                  width={8}
+                                />
+                                <td
+                                  className="article-box-content"
+                                  style={styles.articleBoxContent}
+                                  valign="top"
+                                >
+                                  {isFoundationEdition && <FoundationHeader />}
+
+                                  <Text
+                                    className="topic"
+                                    style={{
+                                      ...styles.articleTitle,
+                                      color: firstTopicColor,
+                                    }}
+                                  >
+                                    {firstTopic.title}
+                                  </Text>
+                                  {firstTopic.links.map((link, index) => (
+                                    <Fragment key={index}>
+                                      {index > 0 && <hr style={styles.hr} />}
+                                      <Link
+                                        href={link.url}
+                                        style={{
+                                          ...styles.linkTitle,
+                                          display: 'block',
+                                        }}
+                                      >
+                                        {link.title}
+                                      </Link>
+                                      <Text style={styles.linkText}>
+                                        {link.text}
+                                      </Text>
+                                    </Fragment>
+                                  ))}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </td>
+              <td style={{ backgroundColor: '#D60690', minWidth: '10px' }}>
+                &nbsp;
+              </td>
+            </tr>
+            {/* Row 2: Below pink header - middle cell spanned from row 1 */}
+            <tr>
+              <td style={{ minWidth: '10px' }}>&nbsp;</td>
+              <td style={{ minWidth: '10px' }}>&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <Container
+          style={{
+            margin: '0 auto',
+            maxWidth: '700px',
+            padding: '0 10px',
+          }}
+        >
           {/* Rest of Topics */}
           <Section style={{ paddingTop: '16px' }}>
             {restTopics.map((topic, index) => (
@@ -368,17 +569,14 @@ const styles = {
       '"Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     margin: 0,
     padding: 0,
+    WebkitFontSmoothing: 'antialiased',
   },
   bodyText: {
     color: '#081146',
     fontSize: '16px',
-    fontWeight: 300,
+    fontWeight: 400,
     lineHeight: '1.75',
     margin: '0 0 16px 0',
-  },
-  container: {
-    margin: '0 auto',
-    maxWidth: '680px',
   },
   footerLink: {
     color: '#081146',
@@ -415,25 +613,24 @@ const styles = {
     lineHeight: '1.6',
     margin: '8px 0',
   },
-  header: {
-    backgroundColor: '#D60690',
-    marginBottom: '16px',
-    padding: '40px 20px 25px',
-  },
   hr: {
-    borderTop: '1px solid rgb(197, 200, 220)',
+    border: 'none',
+    borderTop: '1px solid rgb(197, 200, 220, 0.75)',
     margin: '40px 0',
   },
   issueTag: {
     backgroundColor: '#6560e2',
     borderRadius: '32px',
+    boxShadow: '0px 4px 10px rgba(23, 43, 58, 0.25)',
+    boxSizing: 'border-box' as const,
     color: '#ffffff',
     display: 'inline-block',
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: '16px',
+    height: '32px',
+    lineHeight: '32px',
     margin: 0,
-    padding: '9px 12px',
+    padding: '0 17px',
     textTransform: 'uppercase' as const,
   },
   link: {
@@ -443,7 +640,7 @@ const styles = {
   linkText: {
     color: '#081146',
     fontSize: '16px',
-    fontWeight: 300,
+    fontWeight: 400,
     lineHeight: '1.75',
     margin: '24px 0 0 0',
   },
@@ -458,7 +655,7 @@ const styles = {
   logoSubtitle: {
     color: '#ffffff',
     fontSize: '25px',
-    fontWeight: 'bold' as const,
+    fontWeight: 600,
     letterSpacing: '-0.02em',
     lineHeight: '25px',
     margin: 0,
@@ -471,13 +668,12 @@ const styles = {
     margin: 0,
   },
   viewLink: {
-    textDecoration: 'none',
-  },
-  viewLinkText: {
     color: '#ffffff',
     fontSize: '18px',
     fontWeight: 500,
     margin: 0,
+    textDecoration: 'none',
+    whiteSpace: 'nowrap',
   },
 } as const
 

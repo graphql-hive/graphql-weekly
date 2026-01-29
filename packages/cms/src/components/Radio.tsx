@@ -1,8 +1,5 @@
 import { ReactNode, useId } from "react";
 
-import { Flex } from "./Flex";
-import { FlexCell } from "./FlexCell";
-
 interface RadioInputProps {
   children: ReactNode;
   onClick: (value: string) => void;
@@ -20,8 +17,8 @@ export function RadioInput({
   const id = useId();
 
   return (
-    <Flex margin="0 0 16px">
-      <FlexCell align="center" basis="auto" grow="0">
+    <div className="flex mb-4">
+      <div className="self-center flex-none">
         <label className="cursor-pointer flex items-center" htmlFor={id}>
           <input
             checked={isActive}
@@ -59,15 +56,15 @@ export function RadioInput({
             )}
           </div>
         </label>
-      </FlexCell>
-      <FlexCell>
+      </div>
+      <div className="flex-1">
         <label
           className="m-0 text-base cursor-pointer dark:text-neu-100"
           htmlFor={id}
         >
           {children}
         </label>
-      </FlexCell>
-    </Flex>
+      </div>
+    </div>
   );
 }

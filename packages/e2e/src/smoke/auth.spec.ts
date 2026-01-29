@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+import { CMS_URL } from "../urls.ts";
+
 test.describe("Auth Gate (unauthenticated)", () => {
   test("index page is public (no auth required)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
 
     await expect(page.getByText("GraphQL Weekly")).toBeVisible();
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
@@ -11,13 +13,13 @@ test.describe("Auth Gate (unauthenticated)", () => {
   test("issue page redirects to login when not authenticated", async ({
     page,
   }) => {
-    await page.goto("/issue/test-id");
+    await page.goto(`${CMS_URL}/issue/test-id`);
 
-    await expect(page).toHaveURL("/login");
+    await expect(page).toHaveURL(`${CMS_URL}/login`);
   });
 
   test("login page is accessible", async ({ page }) => {
-    await page.goto("/login");
+    await page.goto(`${CMS_URL}/login`);
 
     await expect(page.getByText("GraphQL Weekly CMS")).toBeVisible();
     await expect(
@@ -26,7 +28,7 @@ test.describe("Auth Gate (unauthenticated)", () => {
   });
 
   test("access-denied page is accessible", async ({ page }) => {
-    await page.goto("/access-denied");
+    await page.goto(`${CMS_URL}/access-denied`);
 
     await expect(
       page.getByRole("heading", { name: "Access Required" }),
@@ -35,23 +37,23 @@ test.describe("Auth Gate (unauthenticated)", () => {
 });
 
 test.describe("Auth Gate (authenticated)", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
 
   test("authenticated user can access issue pages", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
     const firstIssue = page.locator('a[href^="/issue/"]').first();
     const href = await firstIssue.getAttribute("href");
 
-    await page.goto(href!);
+    await page.goto(`${CMS_URL}${href}`);
 
-    await expect(page).not.toHaveURL("/login");
+    await expect(page).not.toHaveURL(`${CMS_URL}/login`);
     await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
       timeout: 15_000,
     });
   });
 
   test("user menu shows handle and sign out button", async ({ page }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
 
     const userMenu = page.getByRole("button", { name: "User menu" });
     await expect(userMenu).toBeVisible();
@@ -64,36 +66,36 @@ test.describe("Auth Gate (authenticated)", () => {
   test("sign out clears session and redirects to login on protected page", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
     const firstIssue = page.locator('a[href^="/issue/"]').first();
     const issueHref = await firstIssue.getAttribute("href");
-    await page.goto(issueHref!);
+    await page.goto(`${CMS_URL}${issueHref}`);
     await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
       timeout: 15_000,
     });
 
     await page.getByRole("button", { name: "User menu" }).click();
     await page.getByRole("menuitem", { name: "Log out" }).click();
-    await page.waitForURL("/login");
+    await page.waitForURL(`${CMS_URL}/login`);
 
-    await page.goto(issueHref!);
-    await expect(page).toHaveURL("/login");
+    await page.goto(`${CMS_URL}${issueHref}`);
+    await expect(page).toHaveURL(`${CMS_URL}/login`);
   });
 });
 
 test.describe("Auth Gate (non-collaborator)", () => {
-  test.use({ storageState: "e2e/.auth/non-collaborator.json" });
+  test.use({ storageState: "src/.auth/non-collaborator.json" });
 
   test("non-collaborator is redirected to access-denied on protected page", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(CMS_URL);
     const firstIssue = page.locator('a[href^="/issue/"]').first();
     const href = await firstIssue.getAttribute("href");
 
-    await page.goto(href!);
+    await page.goto(`${CMS_URL}${href}`);
 
-    await expect(page).toHaveURL("/access-denied");
+    await expect(page).toHaveURL(`${CMS_URL}/access-denied`);
     await expect(
       page.getByRole("heading", { name: "Access Required" }),
     ).toBeVisible();

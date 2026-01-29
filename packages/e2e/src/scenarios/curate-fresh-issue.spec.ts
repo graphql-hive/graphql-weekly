@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { CMS_URL } from "../urls.ts";
+
 test.describe("Curate Fresh Issue", () => {
-  test.use({ storageState: "e2e/.auth/user.json" });
+  test.use({ storageState: "src/.auth/user.json" });
   test("create issue, add link, edit metadata, save, verify persistence", async ({
     page,
   }) => {
@@ -11,7 +13,7 @@ test.describe("Curate Fresh Issue", () => {
     const testLinkDesc = `Description ${timestamp}`;
 
     // 1. Create new issue from index
-    await page.goto("/");
+    await page.goto(CMS_URL);
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     const issueLinks = page.locator('a[href^="/issue/"]');
@@ -49,8 +51,33 @@ test.describe("Curate Fresh Issue", () => {
     const linkInput = page.getByPlaceholder("Paste URL to add link...");
     await linkInput.fill(testUrl);
 
+    // Wait for createLink mutation AND the refetch to complete
+    let createdLinkId: string | null = null;
+    const createLinkResponse = page.waitForResponse(async (res) => {
+      if (!res.url().includes("/graphql")) return false;
+      if (res.request().method() !== "POST") return false;
+      const body = await res.json().catch(() => null);
+      if (body?.data?.createLink?.id) {
+        createdLinkId = body.data.createLink.id;
+        return true;
+      }
+      return false;
+    });
     const addLinkBtn = page.getByRole("button", { exact: true, name: "Add" });
     await addLinkBtn.click();
+    await createLinkResponse;
+
+    // Wait for UnassignedLinks refetch to include our new link with real ID
+    await page.waitForResponse(async (res) => {
+      if (!res.url().includes("/graphql")) return false;
+      if (res.request().method() !== "POST") return false;
+      const body = await res.json().catch(() => null);
+      const unassignedLinks = body?.data?.unassignedLinks;
+      return (
+        Array.isArray(unassignedLinks) &&
+        unassignedLinks.some((l: { id: string }) => l.id === createdLinkId)
+      );
+    });
     await expect(linkInput).toHaveValue("");
 
     // Wait for our specific link to appear in Unassigned
@@ -90,7 +117,17 @@ test.describe("Curate Fresh Issue", () => {
     // 6. Wait for Save button to be enabled and save
     const saveBtn = page.getByRole("button", { name: "Save" });
     await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
+
+    // Save and wait for successful GraphQL response (no errors)
+    const saveResponsePromise = page.waitForResponse(async (res) => {
+      if (!res.url().includes("/graphql")) return false;
+      if (res.request().method() !== "POST") return false;
+      if (res.status() !== 200) return false;
+      const body = await res.json().catch(() => null);
+      return body?.data && !body?.errors;
+    });
     await saveBtn.click();
+    await saveResponsePromise;
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
       timeout: 15_000,
     });
@@ -126,7 +163,7 @@ test.describe("Curate Fresh Issue", () => {
   test("can add multiple links", async ({ page }) => {
     const timestamp = Date.now();
 
-    await page.goto("/");
+    await page.goto(CMS_URL);
     await expect(page.getByText(/\d+ issues/)).toBeVisible();
 
     await page.locator('a[href^="/issue/"]').first().click();
