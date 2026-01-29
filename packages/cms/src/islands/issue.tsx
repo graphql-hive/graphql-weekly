@@ -59,6 +59,7 @@ import {
   SUBMISSION_PREFIX,
   SubmissionsPanel,
 } from "../product/SubmissionsPanel";
+import { TopicAutocomplete } from "../product/TopicAutocomplete";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -1035,11 +1036,10 @@ function IssuePageContent({ id }: { id: string }) {
         </DndContext>
 
         <div className="flex gap-2">
-          <input
-            className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
-            onChange={(e) => setNewTopic(e.target.value)}
-            placeholder="New topic name..."
-            type="text"
+          <TopicAutocomplete
+            disabled={createTopicMutation.isPending}
+            onSubmit={submitTopic}
+            onValueChange={setNewTopic}
             value={newTopic}
           />
           <Button
