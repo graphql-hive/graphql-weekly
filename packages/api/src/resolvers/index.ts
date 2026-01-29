@@ -410,13 +410,13 @@ export const resolvers: Resolvers = {
   },
 
   Query: {
-    allAuthors: async (_parent, { skip, limit }, ctx) => {
+    allAuthors: async (_parent, { limit, skip }, ctx) => {
       let query = ctx.db.selectFrom('Author').selectAll()
       if (skip != null) query = query.offset(skip)
       query = query.limit(limit ?? 1000)
       return query.execute()
     },
-    allIssues: async (_parent, { skip, limit }, ctx) => {
+    allIssues: async (_parent, { limit, skip }, ctx) => {
       // Fetch issues with pagination, prefetch all topics/links to avoid N+1
       let issueQuery = ctx.db.selectFrom('Issue').selectAll()
       if (skip != null) issueQuery = issueQuery.offset(skip)
@@ -466,7 +466,7 @@ export const resolvers: Resolvers = {
         _prefetchedTopics: topicsByIssue.get(issue.id) ?? [],
       }))
     },
-    allLinks: async (_parent, { skip, limit }, ctx) => {
+    allLinks: async (_parent, { limit, skip }, ctx) => {
       requireCollaborator(ctx)
       let linkQuery = ctx.db.selectFrom('Link').selectAll()
       if (skip != null) linkQuery = linkQuery.offset(skip)
@@ -484,14 +484,14 @@ export const resolvers: Resolvers = {
           : null,
       }))
     },
-    allSubscribers: async (_parent, { skip, limit }, ctx) => {
+    allSubscribers: async (_parent, { limit, skip }, ctx) => {
       requireCollaborator(ctx)
       let query = ctx.db.selectFrom('Subscriber').selectAll()
       if (skip != null) query = query.offset(skip)
       query = query.limit(limit ?? 1000)
       return query.execute()
     },
-    allTopics: async (_parent, { skip, limit, orderBy }, ctx) => {
+    allTopics: async (_parent, { limit, orderBy, skip }, ctx) => {
       if (orderBy === 'ISSUE_COUNT') {
         // Get distinct titles ordered by how many issues use them
         let titleQuery = ctx.db
