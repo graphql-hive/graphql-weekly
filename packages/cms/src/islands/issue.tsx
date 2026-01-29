@@ -57,6 +57,7 @@ import { PageHeader } from "../product/PageHeader";
 import {
   markSubmissionConsumed,
   SUBMISSION_PREFIX,
+  SUBMISSIONS_PANEL_ID,
   SubmissionsPanel,
 } from "../product/SubmissionsPanel";
 import { TopicAutocomplete } from "../product/TopicAutocomplete";
@@ -607,6 +608,7 @@ function IssuePageContent({ id }: { id: string }) {
           measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
           onDragCancel={onDragCancel}
           onDragEnd={({ active, over }) => {
+            if (active.id === SUBMISSIONS_PANEL_ID) return;
             const activeIdStr = String(active.id);
             const isSubmission = activeIdStr.startsWith(SUBMISSION_PREFIX);
 
@@ -758,6 +760,7 @@ function IssuePageContent({ id }: { id: string }) {
             setActiveSubmission(null);
           }}
           onDragOver={({ active, over }) => {
+            if (active.id === SUBMISSIONS_PANEL_ID) return;
             const overId = over?.id;
             if (overId == null || overId === TRASH_ID || active.id in items)
               return;
@@ -814,6 +817,7 @@ function IssuePageContent({ id }: { id: string }) {
             });
           }}
           onDragStart={({ active }) => {
+            if (active.id === SUBMISSIONS_PANEL_ID) return;
             setActiveId(active.id);
             setClonedItems(items);
 
