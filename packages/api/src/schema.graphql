@@ -77,10 +77,14 @@ type Me {
   repositoryUrl: String!
 }
 
+enum TopicOrderBy {
+  ISSUE_COUNT
+}
+
 type Query {
   me: Me
   allIssues: [Issue!]
-  allTopics: [Topic!]
+  allTopics(skip: Int, limit: Int, orderBy: TopicOrderBy): [Topic!]
   allAuthors: [Author!]
   allLinks: [Link!]
   unassignedLinks: [Link!]!

@@ -20,6 +20,9 @@ const config: CodegenConfig = {
       ],
     },
   },
+  hooks: {
+    afterAllFileWrite: ["prettier --write"],
+  },
   schema: "../api/src/schema.graphql",
 };
 

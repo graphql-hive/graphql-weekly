@@ -1,16 +1,9 @@
 import { Autocomplete } from "@base-ui/react/autocomplete";
+import { useMemo } from "react";
 
-/**
- * Canonical topic names that the website deduplicates to.
- * @see packages/web/src/lib/api.ts — unifySimilarTopics
- */
-const CANONICAL_TOPICS = [
-  "Articles",
-  "Community & Events",
-  "Tools & Open Source",
-  "Tutorials",
-  "Videos",
-];
+import { useTopTopicTitlesQuery } from "../generated/graphql";
+
+const TOP_TOPICS_LIMIT = 5;
 
 export function TopicAutocomplete({
   disabled,
@@ -23,9 +16,19 @@ export function TopicAutocomplete({
   onValueChange: (value: string) => void;
   value: string;
 }) {
+  const { data } = useTopTopicTitlesQuery({ limit: TOP_TOPICS_LIMIT });
+
+  const suggestions = useMemo(
+    () =>
+      (data?.allTopics ?? [])
+        .map((t) => t.title)
+        .filter((t): t is string => t != null),
+    [data],
+  );
+
   return (
     <Autocomplete.Root
-      items={CANONICAL_TOPICS}
+      items={suggestions}
       onValueChange={(v) => onValueChange(v)}
       value={value}
     >

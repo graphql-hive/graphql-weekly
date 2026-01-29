@@ -482,9 +482,48 @@ export const resolvers: Resolvers = {
         .execute()
       return subscribers
     },
-    allTopics: async (_parent, _args, ctx) => {
-      const topics = await ctx.db.selectFrom('Topic').selectAll().execute()
-      return topics
+    allTopics: async (_parent, { skip, limit, orderBy }, ctx) => {
+      if (orderBy === 'ISSUE_COUNT') {
+        // Get distinct titles ordered by how many issues use them
+        let titleQuery = ctx.db
+          .selectFrom('Topic')
+          .select('title')
+          .select((eb) => eb.fn.countAll().as('issue_count'))
+          .where('issueId', 'is not', null)
+          .where('title', 'is not', null)
+          .groupBy('title')
+          .orderBy('issue_count', 'desc')
+        if (skip != null) titleQuery = titleQuery.offset(skip)
+        if (limit != null) titleQuery = titleQuery.limit(limit)
+
+        const titleRows = await titleQuery.execute()
+
+        const titles = titleRows
+          .map((r) => r.title)
+          .filter((t): t is string => t != null)
+        if (titles.length === 0) return []
+
+        // Fetch one representative TopicRow per title
+        const allMatching = await ctx.db
+          .selectFrom('Topic')
+          .selectAll()
+          .where('title', 'in', titles)
+          .execute()
+
+        const byTitle = new Map<string, (typeof allMatching)[0]>()
+        for (const topic of allMatching) {
+          if (topic.title && !byTitle.has(topic.title)) {
+            byTitle.set(topic.title, topic)
+          }
+        }
+
+        return titles.map((t) => byTitle.get(t)!).filter(Boolean)
+      }
+
+      let query = ctx.db.selectFrom('Topic').selectAll()
+      if (skip != null) query = query.offset(skip)
+      if (limit != null) query = query.limit(limit)
+      return query.execute()
     },
     issue: async (_parent, { id }, ctx) => {
       const issue = await ctx.db

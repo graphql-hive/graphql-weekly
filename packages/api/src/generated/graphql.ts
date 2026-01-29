@@ -215,6 +215,12 @@ export type Query = {
   unassignedLinks: Array<Link>
 }
 
+export type QueryAllTopicsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>
+  orderBy?: InputMaybe<TopicOrderBy>
+  skip?: InputMaybe<Scalars['Int']['input']>
+}
+
 export type QueryIssueArgs = {
   id: Scalars['String']['input']
 }
@@ -240,6 +246,10 @@ export type Topic = {
   links?: Maybe<Array<Link>>
   position?: Maybe<Scalars['Int']['output']>
   title?: Maybe<Scalars['String']['output']>
+}
+
+export enum TopicOrderBy {
+  IssueCount = 'ISSUE_COUNT',
 }
 
 export type ResolverTypeWrapper<T> = Promise<T> | T
@@ -379,6 +389,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>
   Subscriber: ResolverTypeWrapper<SubscriberRow>
   Topic: ResolverTypeWrapper<TopicRow>
+  TopicOrderBy: TopicOrderBy
 }
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -663,7 +674,8 @@ export type QueryResolvers<
   allTopics?: Resolver<
     Maybe<Array<ResolversTypes['Topic']>>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<QueryAllTopicsArgs>
   >
   issue?: Resolver<
     Maybe<ResolversTypes['Issue']>,

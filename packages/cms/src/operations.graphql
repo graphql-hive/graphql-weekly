@@ -52,6 +52,12 @@ query AllIssues {
   }
 }
 
+query TopTopicTitles($limit: Int) {
+  allTopics(limit: $limit, orderBy: ISSUE_COUNT) {
+    title
+  }
+}
+
 mutation CreateLink($url: String!) {
   createLink(url: $url) {
     id
