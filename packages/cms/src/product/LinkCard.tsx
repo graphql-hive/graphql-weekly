@@ -1,11 +1,11 @@
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 interface Link {
-  id?: string | null;
+  id: string;
   text?: string | null;
   title?: string | null;
-  topic?: { id?: string | null; position?: number | null } | null;
-  url?: string | null;
+  topic?: { id: string; position?: number | null } | null;
+  url: string;
 }
 
 interface LinkCardProps {

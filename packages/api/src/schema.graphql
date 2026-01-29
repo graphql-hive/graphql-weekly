@@ -1,50 +1,51 @@
 scalar DateTime
 
 type Author {
-  avatarUrl: String
-  createdAt: DateTime
-  description: String
-  id: String
+  avatarUrl: String!
+  createdAt: DateTime!
+  description: String!
+  id: String!
   issues: [Issue!]
-  name: String
-  updatedAt: DateTime
+  name: String!
+  updatedAt: DateTime!
+  userId: String
 }
 
 type Issue {
   author: Author
   authorId: String
   comment: String
-  date: DateTime
+  date: DateTime!
   description: String
-  id: String
-  number: Int
+  id: String!
+  number: Int!
   previewImage: String
-  published: Boolean
+  published: Boolean!
   specialPerk: String
-  title: String
+  title: String!
   topics: [Topic!]
-  versionCount: Int
+  versionCount: Int!
 }
 
 type Link {
-  id: String
+  id: String!
   position: Int
   text: String
   title: String
   topic: Topic
   topicId: String
-  url: String
+  url: String!
 }
 
 type LinkSubmission {
-  createdAt: DateTime
-  description: String
-  email: String
-  id: String
-  name: String
-  title: String
-  updatedAt: DateTime
-  url: String
+  createdAt: DateTime!
+  description: String!
+  email: String!
+  id: String!
+  name: String!
+  title: String!
+  updatedAt: DateTime!
+  url: String!
 }
 
 type LinkSubmissionsResult {
@@ -53,19 +54,19 @@ type LinkSubmissionsResult {
 }
 
 type Topic {
-  id: String
+  id: String!
   issue: Issue
   issueId: String
-  issue_comment: String
+  issue_comment: String!
   links: [Link!]
   position: Int
-  title: String
+  title: String!
 }
 
 type Subscriber {
-  email: String
-  id: String
-  name: String
+  email: String!
+  id: String!
+  name: String!
 }
 
 type Me {
@@ -83,12 +84,12 @@ enum TopicOrderBy {
 
 type Query {
   me: Me
-  allIssues: [Issue!]
-  allTopics(skip: Int, limit: Int, orderBy: TopicOrderBy): [Topic!]
-  allAuthors: [Author!]
-  allLinks: [Link!]
+  allIssues(skip: Int, limit: Int): [Issue!]!
+  allTopics(skip: Int, limit: Int, orderBy: TopicOrderBy): [Topic!]!
+  allAuthors(skip: Int, limit: Int): [Author!]!
+  allLinks(skip: Int, limit: Int): [Link!]!
   unassignedLinks: [Link!]!
-  allSubscribers: [Subscriber!]
+  allSubscribers(skip: Int, limit: Int): [Subscriber!]!
   linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
   issue(id: String!): Issue
 }

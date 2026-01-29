@@ -410,14 +410,20 @@ export const resolvers: Resolvers = {
   },
 
   Query: {
-    allAuthors: async (_parent, _args, ctx) => {
-      const authors = await ctx.db.selectFrom('Author').selectAll().execute()
-      return authors
+    allAuthors: async (_parent, { skip, limit }, ctx) => {
+      let query = ctx.db.selectFrom('Author').selectAll()
+      if (skip != null) query = query.offset(skip)
+      query = query.limit(limit ?? 1000)
+      return query.execute()
     },
-    allIssues: async (_parent, _args, ctx) => {
-      // Fetch all data in parallel to avoid N+1
+    allIssues: async (_parent, { skip, limit }, ctx) => {
+      // Fetch issues with pagination, prefetch all topics/links to avoid N+1
+      let issueQuery = ctx.db.selectFrom('Issue').selectAll()
+      if (skip != null) issueQuery = issueQuery.offset(skip)
+      issueQuery = issueQuery.limit(limit ?? 1000)
+
       const [issues, allTopics, allLinks] = await Promise.all([
-        ctx.db.selectFrom('Issue').selectAll().execute(),
+        issueQuery.execute(),
         ctx.db
           .selectFrom('Topic')
           .selectAll()
@@ -460,10 +466,14 @@ export const resolvers: Resolvers = {
         _prefetchedTopics: topicsByIssue.get(issue.id) ?? [],
       }))
     },
-    allLinks: async (_parent, _args, ctx) => {
+    allLinks: async (_parent, { skip, limit }, ctx) => {
       requireCollaborator(ctx)
+      let linkQuery = ctx.db.selectFrom('Link').selectAll()
+      if (skip != null) linkQuery = linkQuery.offset(skip)
+      linkQuery = linkQuery.limit(limit ?? 1000)
+
       const [links, topics] = await Promise.all([
-        ctx.db.selectFrom('Link').selectAll().execute(),
+        linkQuery.execute(),
         ctx.db.selectFrom('Topic').selectAll().execute(),
       ])
       const topicsById = new Map(topics.map((t) => [t.id, t]))
@@ -474,13 +484,12 @@ export const resolvers: Resolvers = {
           : null,
       }))
     },
-    allSubscribers: async (_parent, _args, ctx) => {
+    allSubscribers: async (_parent, { skip, limit }, ctx) => {
       requireCollaborator(ctx)
-      const subscribers = await ctx.db
-        .selectFrom('Subscriber')
-        .selectAll()
-        .execute()
-      return subscribers
+      let query = ctx.db.selectFrom('Subscriber').selectAll()
+      if (skip != null) query = query.offset(skip)
+      query = query.limit(limit ?? 1000)
+      return query.execute()
     },
     allTopics: async (_parent, { skip, limit, orderBy }, ctx) => {
       if (orderBy === 'ISSUE_COUNT') {
@@ -494,7 +503,7 @@ export const resolvers: Resolvers = {
           .groupBy('title')
           .orderBy('issue_count', 'desc')
         if (skip != null) titleQuery = titleQuery.offset(skip)
-        if (limit != null) titleQuery = titleQuery.limit(limit)
+        titleQuery = titleQuery.limit(limit ?? 1000)
 
         const titleRows = await titleQuery.execute()
 
@@ -522,7 +531,7 @@ export const resolvers: Resolvers = {
 
       let query = ctx.db.selectFrom('Topic').selectAll()
       if (skip != null) query = query.offset(skip)
-      if (limit != null) query = query.limit(limit)
+      query = query.limit(limit ?? 1000)
       return query.execute()
     },
     issue: async (_parent, { id }, ctx) => {
@@ -580,8 +589,7 @@ export const resolvers: Resolvers = {
 
   // Type resolvers for relationships
   Author: {
-    createdAt: (parent) =>
-      parent.createdAt ? new Date(parent.createdAt) : null,
+    createdAt: (parent) => new Date(parent.createdAt),
     issues: async (parent, _args, ctx) => {
       const issues = await ctx.db
         .selectFrom('Issue')
@@ -590,8 +598,7 @@ export const resolvers: Resolvers = {
         .execute()
       return issues
     },
-    updatedAt: (parent) =>
-      parent.updatedAt ? new Date(parent.updatedAt) : null,
+    updatedAt: (parent) => new Date(parent.updatedAt),
   },
 
   Issue: {
@@ -604,7 +611,7 @@ export const resolvers: Resolvers = {
         .executeTakeFirst()
       return author ?? null
     },
-    date: (parent) => (parent.date ? new Date(parent.date) : null),
+    date: (parent) => new Date(parent.date),
     published: (parent) => !!parent.published,
     topics: async (parent, _args, ctx): Promise<TopicRow[]> => {
       // Use prefetched topics if available (from Query.allIssues)
@@ -664,10 +671,8 @@ export const resolvers: Resolvers = {
   },
 
   LinkSubmission: {
-    createdAt: (parent) =>
-      parent.createdAt ? new Date(parent.createdAt) : null,
-    updatedAt: (parent) =>
-      parent.updatedAt ? new Date(parent.updatedAt) : null,
+    createdAt: (parent) => new Date(parent.createdAt),
+    updatedAt: (parent) => new Date(parent.updatedAt),
   },
 
   Topic: {
