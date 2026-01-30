@@ -52,6 +52,7 @@ import {
   useUpdateTopicMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
+import { PlusIcon } from "../icons/Plus";
 import { LinkCard } from "../product/LinkCard";
 import { PageHeader } from "../product/PageHeader";
 import {
@@ -84,13 +85,11 @@ type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 // SortableItem wraps LinkCard with drag functionality
 function SortableItem({
   id,
-  isDragOverlay,
   link,
   onChange,
   onDelete,
 }: {
   id: UniqueIdentifier;
-  isDragOverlay?: boolean;
   link: LinkData;
   onChange: (linkId: string, changes: Partial<LinkData>) => void;
   onDelete: () => void;
@@ -117,7 +116,6 @@ function SortableItem({
         onChange={(changes) => onChange(link.id!, changes)}
         onDelete={onDelete}
         {...(listeners && { dragListeners: listeners })}
-        {...(isDragOverlay && { isDragOverlay })}
       />
     </div>
   );
@@ -149,6 +147,39 @@ function Trash({ isOver }: { isOver: boolean }) {
       </svg>
       Drop to delete
     </div>
+  );
+}
+
+const tocLinkClass =
+  "flex items-center py-1 pl-4 text-sm text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-300 no-underline truncate gap-1";
+
+function TableOfContents({
+  footer,
+  items,
+  topics,
+}: {
+  footer?: React.ReactNode;
+  items: Items;
+  topics: TopicData[];
+}) {
+  return (
+    <nav className="toc sticky top-[50vh] -translate-y-1/2">
+      <a className={tocLinkClass} href="#unassigned">
+        Unassigned{" "}
+        <span className="text-neu-400 dark:text-neu-500 text-xs">
+          ({items[UNASSIGNED_ID]?.length ?? 0})
+        </span>
+      </a>
+      {topics.map((t) => (
+        <a className={tocLinkClass} href={`#topic-${t.id}`} key={t.id}>
+          {t.title}{" "}
+          <span className="text-neu-400 dark:text-neu-500 text-xs">
+            ({items[t.id!]?.length ?? 0})
+          </span>
+        </a>
+      ))}
+      {footer}
+    </nav>
   );
 }
 
@@ -1038,8 +1069,6 @@ function IssuePageContent({ id }: { id: string }) {
                       <LinkCard
                         isDragOverlay
                         link={getMergedLink(activeLink)}
-                        onChange={() => {}}
-                        onDelete={() => {}}
                       />
                     </div>
                   ) : activeId && activeSubmission ? (
@@ -1098,29 +1127,23 @@ function IssuePageContent({ id }: { id: string }) {
         </main>
 
         <aside className="hidden xl:block w-44 shrink-0 py-6">
-          <nav className="toc sticky top-[50vh] -translate-y-1/2">
-            <a
-              className="flex items-center py-1 pl-4 text-sm text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-300 no-underline truncate gap-1"
-              href="#unassigned"
-            >
-              Unassigned{" "}
-              <span className="text-neu-400 dark:text-neu-500 text-xs">
-                ({items[UNASSIGNED_ID]?.length ?? 0})
-              </span>
-            </a>
-            {topics.map((t) => (
-              <a
-                className="flex items-center py-1 pl-4 text-sm text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-300 no-underline truncate gap-1"
-                href={`#topic-${t.id}`}
-                key={t.id}
-              >
-                {t.title}{" "}
-                <span className="text-neu-400 dark:text-neu-500 text-xs">
-                  ({items[t.id!]?.length ?? 0})
-                </span>
-              </a>
-            ))}
-          </nav>
+          <TableOfContents
+            footer={
+              <>
+                <hr className="my-1 mx-3 border-neu-100 dark:border-neu-800" />
+                <button
+                  className="flex items-center gap-1 py-1 pl-4 text-sm text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-300 group"
+                  onClick={() => topicInputRef.current?.focus()}
+                  type="button"
+                >
+                  Add topic
+                  <PlusIcon className="size-4 text-neu-400 dark:text-neu-500 group-hover:text-neu-700 dark:group-hover:text-neu-300" />
+                </button>
+              </>
+            }
+            items={items}
+            topics={topics}
+          />
         </aside>
       </div>
 

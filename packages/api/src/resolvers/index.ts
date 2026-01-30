@@ -71,16 +71,12 @@ async function fetchUrlMetadata(
       })
       .on('meta[name="description"]', {
         element(el) {
-          if (!metadata.description) {
-            metadata.description = el.getAttribute('content') || undefined
-          }
+          metadata.description ||= el.getAttribute('content') || undefined;
         },
       })
       .on('meta[property="og:description"]', {
         element(el) {
-          if (!metadata.description) {
-            metadata.description = el.getAttribute('content') || undefined
-          }
+          metadata.description ||= el.getAttribute('content') || undefined;
         },
       })
       .transform(response)

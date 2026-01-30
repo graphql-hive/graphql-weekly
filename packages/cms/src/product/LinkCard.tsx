@@ -12,13 +12,21 @@ interface Link {
 
 type LinkChanges = Partial<Pick<Link, "text" | "title" | "url">>;
 
-interface LinkCardProps {
+type LinkCardProps = {
   dragListeners?: SyntheticListenerMap;
-  isDragOverlay?: boolean;
   link: Link;
-  onChange: (changes: LinkChanges) => void;
-  onDelete: () => void;
-}
+} & (
+  | {
+      isDragOverlay: true;
+      onChange?: undefined;
+      onDelete?: undefined;
+    }
+  | {
+      isDragOverlay?: false | undefined;
+      onChange: (changes: LinkChanges) => void;
+      onDelete: () => void;
+    }
+);
 
 export function LinkCard({
   dragListeners,
@@ -60,7 +68,7 @@ export function LinkCard({
         <input
           aria-label="Link title"
           className="w-full text-sm  text-neu-900 dark:text-neu-100 bg-transparent border border-transparent  px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
-          onChange={(e) => onChange({ title: e.target.value })}
+          onChange={onChange && ((e) => onChange({ title: e.target.value }))}
           placeholder="Title"
           type="text"
           value={link.title ?? ""}
@@ -68,7 +76,7 @@ export function LinkCard({
         <textarea
           aria-label="Link description"
           className="w-full text-sm text-neu-600 dark:text-neu-300 bg-transparent border border-transparent px-1 py-0.5 hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] overflow-hidden transition-colors hover:duration-0"
-          onChange={(e) => onChange({ text: e.target.value })}
+          onChange={onChange && ((e) => onChange({ text: e.target.value }))}
           onInput={(e) => autoResize(e.currentTarget)}
           placeholder="Description"
           ref={autoResize}
@@ -79,7 +87,7 @@ export function LinkCard({
           <input
             aria-label="Link URL"
             className="flex-1 text-xs text-neu-500 dark:text-neu-400 bg-transparent border border-transparent  px-1 py-0.5 font-mono hover:border-neu-200 dark:hover:border-neu-600 focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] transition-colors hover:duration-0"
-            onChange={(e) => onChange({ url: e.target.value })}
+            onChange={onChange && ((e) => onChange({ url: e.target.value }))}
             placeholder="URL"
             type="text"
             value={link.url ?? ""}
