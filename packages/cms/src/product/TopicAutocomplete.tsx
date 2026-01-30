@@ -1,3 +1,5 @@
+import type React from "react";
+
 import { Autocomplete } from "@base-ui/react/autocomplete";
 import { useMemo } from "react";
 
@@ -7,11 +9,13 @@ const TOP_TOPICS_LIMIT = 5;
 
 export function TopicAutocomplete({
   disabled,
+  inputRef,
   onSubmit,
   onValueChange,
   value,
 }: {
   disabled?: boolean;
+  inputRef?: React.Ref<HTMLInputElement>;
   onSubmit: () => void;
   onValueChange: (value: string) => void;
   value: string;
@@ -30,6 +34,7 @@ export function TopicAutocomplete({
     <Autocomplete.Root
       items={suggestions}
       onValueChange={(v) => onValueChange(v)}
+      openOnInputClick
       value={value}
     >
       <Autocomplete.Input
@@ -41,6 +46,7 @@ export function TopicAutocomplete({
           }
         }}
         placeholder="New topic name..."
+        ref={inputRef}
       />
       <Autocomplete.Portal>
         <Autocomplete.Positioner sideOffset={4}>
@@ -51,7 +57,7 @@ export function TopicAutocomplete({
             <Autocomplete.List>
               {(topic: string) => (
                 <Autocomplete.Item
-                  className="px-3 py-1.5 text-sm text-neu-900 dark:text-neu-100 cursor-default data-[highlighted]:bg-neu-100 dark:data-[highlighted]:bg-neu-700"
+                  className="px-3 py-1.5 text-sm text-neu-900 dark:text-neu-100 cursor-default data-highlighted:bg-neu-100 dark:data-highlighted:bg-neu-700"
                   key={topic}
                   value={topic}
                 >

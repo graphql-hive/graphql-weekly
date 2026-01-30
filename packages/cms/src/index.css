@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "tailwindcss-spring";
 
 @font-face {
   font-family: "CommitMono";
@@ -103,6 +104,27 @@ button {
   100% {
     transform: rotate(360deg);
   }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.toc {
+  scroll-target-group: auto;
+}
+
+.toc a:target-current {
+  anchor-name: --active;
+  @apply text-neu-900 dark:text-neu-100;
+}
+
+.toc::after {
+  @apply content-[''] absolute left-0 size-1.5 bg-primary spring-bounce-30 spring-duration-200;
+  position-anchor: --active;
+  top: anchor(center);
+  translate: 0 -50%;
+  transition-property: top;
 }
 
 @keyframes fade-right {

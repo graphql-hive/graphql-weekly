@@ -52,7 +52,8 @@
     "pixelarticons": "1.8.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "tailwind-merge": "3.4.0"
+    "tailwind-merge": "3.4.0",
+    "tailwindcss-spring": "^1.0.1"
   },
   "overrides": {
     "react": "19.0.0",
