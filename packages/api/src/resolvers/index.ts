@@ -43,6 +43,55 @@ function requireCollaborator(
   }
 }
 
+async function fetchUrlMetadata(
+  url: string,
+): Promise<{ description?: string; title?: string }> {
+  const metadata: { description?: string; title?: string } = {}
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'text/html',
+        'User-Agent': 'GraphQL-Weekly-Bot/1.0',
+      },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(5000),
+    })
+    if (
+      !response.ok ||
+      !response.headers.get('content-type')?.includes('text/html')
+    ) {
+      return metadata
+    }
+    let titleText = ''
+    await new HTMLRewriter()
+      .on('title', {
+        text(text) {
+          titleText += text.text
+        },
+      })
+      .on('meta[name="description"]', {
+        element(el) {
+          if (!metadata.description) {
+            metadata.description = el.getAttribute('content') || undefined
+          }
+        },
+      })
+      .on('meta[property="og:description"]', {
+        element(el) {
+          if (!metadata.description) {
+            metadata.description = el.getAttribute('content') || undefined
+          }
+        },
+      })
+      .transform(response)
+      .text()
+    if (titleText.trim()) metadata.title = titleText.trim()
+  } catch {
+    // Metadata fetch is best-effort
+  }
+  return metadata
+}
+
 export const resolvers: Resolvers = {
   DateTime: DateTimeResolver,
 
@@ -112,12 +161,15 @@ export const resolvers: Resolvers = {
       requireCollaborator(ctx)
       const id = generateId()
       const now = new Date().toISOString()
+      const metadata = await fetchUrlMetadata(url)
       await ctx.db
         .insertInto('Link')
         .values({
           createdAt: now,
           createdBy: ctx.user.id,
           id,
+          text: metadata.description ?? null,
+          title: metadata.title ?? null,
           updatedAt: now,
           updatedBy: ctx.user.id,
           url,

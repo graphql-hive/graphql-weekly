@@ -61,6 +61,8 @@ query TopTopicTitles($limit: Int) {
 mutation CreateLink($url: String!) {
   createLink(url: $url) {
     id
+    title
+    text
   }
 }
 
