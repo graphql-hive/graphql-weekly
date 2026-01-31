@@ -17,7 +17,7 @@ import { Fragment } from 'react'
 import { issue399 } from './newsletter.fixture'
 
 export const colorMap: Record<string, string> = {
-  announcements: '#FEB219',
+  announcements: '#fe6319',
   articles: '#f531b1',
   'community & events': '#009BE3',
   conference: '#6560E2',

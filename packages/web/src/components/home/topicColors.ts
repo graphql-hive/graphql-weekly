@@ -1,5 +1,5 @@
 export const topicColors: Record<string, string> = {
-  Announcements: "#FEB219",
+  Announcements: "#fe6319",
   Articles: "#F531B1",
 
   "Community & Events": "#009BE3",
