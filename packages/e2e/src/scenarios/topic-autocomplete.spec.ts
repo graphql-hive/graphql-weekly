@@ -136,7 +136,9 @@ test.describe("Link Metadata Prefill", () => {
 
     // After refetch, the link card should show the prefilled title
     await expect(linkInput).toHaveValue("");
-    const linkCards = page.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
+    const linkCards = page.locator(
+      `[aria-label="Link URL"][value="${testUrl}"]`,
+    );
     await expect(linkCards.first()).toBeVisible({ timeout: 10_000 });
 
     const card = linkCards.first().locator("xpath=ancestor::*[@role='button']");
@@ -153,9 +155,7 @@ test.describe("Link Metadata Prefill", () => {
 test.describe("Partial Link Updates", () => {
   test.use({ storageState: "src/.auth/user.json" });
 
-  test("editing only title preserves description on save", async ({
-    page,
-  }) => {
+  test("editing only title preserves description on save", async ({ page }) => {
     await createFreshIssue(page);
 
     const timestamp = Date.now();
@@ -310,7 +310,10 @@ test.describe("Table of Contents", () => {
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
     await page.keyboard.press("Escape"); // Dismiss autocomplete
-    await page.locator("main").getByRole("button", { exact: true, name: "Add Topic" }).click();
+    await page
+      .locator("main")
+      .getByRole("button", { exact: true, name: "Add Topic" })
+      .click();
     await expect(topicInput).toHaveValue("");
 
     // Topic should appear in ToC
@@ -369,9 +372,7 @@ test.describe("Textarea Auto-resize", () => {
     await page.getByRole("button", { exact: true, name: "Add" }).click();
     await expect(linkInput).toHaveValue("");
 
-    const ourLink = page.locator(
-      `[aria-label="Link URL"][value="${testUrl}"]`,
-    );
+    const ourLink = page.locator(`[aria-label="Link URL"][value="${testUrl}"]`);
     await expect(ourLink).toBeVisible({ timeout: 10_000 });
 
     const card = ourLink.locator("xpath=ancestor::*[@role='button']");
@@ -431,7 +432,9 @@ test.describe("Add Button Empty State", () => {
     });
 
     const topicInput = page.getByPlaceholder("New topic name...");
-    const addTopicBtn = page.locator("main").getByRole("button", { exact: true, name: "Add Topic" });
+    const addTopicBtn = page
+      .locator("main")
+      .getByRole("button", { exact: true, name: "Add Topic" });
 
     await expect(topicInput).toHaveValue("");
     await addTopicBtn.click();

@@ -33,7 +33,8 @@ export function TopicAutocomplete({
 
   // Show top 5 when dropdown opens; filter from all 20 when typing
   const suggestions = useMemo(
-    () => (value ? allSuggestions : allSuggestions.slice(0, INITIAL_DISPLAY_LIMIT)),
+    () =>
+      value ? allSuggestions : allSuggestions.slice(0, INITIAL_DISPLAY_LIMIT),
     [allSuggestions, value],
   );
 

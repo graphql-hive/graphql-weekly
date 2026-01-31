@@ -68,6 +68,9 @@ async function fetchUrlMetadata(
     let bytesRead = 0
     const reader = response.body!.getReader()
     const limitedBody = new ReadableStream({
+      cancel() {
+        reader.cancel()
+      },
       async pull(controller) {
         const { done, value } = await reader.read()
         if (done) {
@@ -82,9 +85,6 @@ async function fetchUrlMetadata(
         }
         controller.enqueue(value)
       },
-      cancel() {
-        reader.cancel()
-      },
     })
     const limitedResponse = new Response(limitedBody, response)
     let titleText = ''
@@ -96,12 +96,12 @@ async function fetchUrlMetadata(
       })
       .on('meta[name="description"]', {
         element(el) {
-          metadata.description ||= el.getAttribute('content') || undefined;
+          metadata.description ||= el.getAttribute('content') || undefined
         },
       })
       .on('meta[property="og:description"]', {
         element(el) {
-          metadata.description ||= el.getAttribute('content') || undefined;
+          metadata.description ||= el.getAttribute('content') || undefined
         },
       })
       .transform(limitedResponse)

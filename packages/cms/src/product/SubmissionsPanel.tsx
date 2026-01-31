@@ -104,10 +104,7 @@ export function SubmissionsPanel() {
   const panelHeight = minimized ? 44 : size.height;
   const clampedLeft = Math.max(
     0,
-    Math.min(
-      position.x + (transform?.x ?? 0),
-      window.innerWidth - size.width,
-    ),
+    Math.min(position.x + (transform?.x ?? 0), window.innerWidth - size.width),
   );
   const clampedTop = Math.max(
     0,
