@@ -141,7 +141,7 @@ export function PageHeader({
                 size="sm"
                 variant="secondary"
               >
-                {publishEmailDraftMutation.isPending ? "Saving" : "Save Email"}
+                {publishEmailDraftMutation.isPending ? "Drafting" : "Draft Email"}
               </Button>
               {!published && (
                 <Button
