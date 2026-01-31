@@ -23,7 +23,7 @@ export const colorMap: Record<string, string> = {
   conference: '#6560E2',
   default: '#f531b1',
   'open source': '#F0950C',
-  'podcasts and shows': '#A148D8',
+  'podcasts and shows': '#27AE60',
   'tools & open source': '#F0950C',
   tutorials: '#6560E2',
   'twitter threads': '#2A9EF2',

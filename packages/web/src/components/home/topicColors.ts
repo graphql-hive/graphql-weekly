@@ -11,7 +11,7 @@ export const topicColors: Record<string, string> = {
   "Libraries and Tools": "#F0950C",
   "Open Source": "#F0950C",
 
-  "Podcasts and Shows": "#A148D8",
+  "Podcasts and Shows": "#27AE60",
   Slides: "#27AE60",
   Talks: "#27AE60",
   "Tools & Open Source": "#F0950C",
