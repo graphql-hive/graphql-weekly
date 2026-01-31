@@ -162,6 +162,32 @@ test.describe("Curate Fresh Issue", () => {
     await expect(persistedDesc).toHaveValue(testLinkDesc);
   });
 
+  test("can draft email for an issue", async ({ page }) => {
+    await page.goto(CMS_URL);
+    await expect(page.getByText(/\d+ issues/)).toBeVisible();
+
+    // Navigate to the first issue
+    await page.locator('a[href^="/issue/"]').first().click();
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
+
+    // Click "Draft Email" and wait for publishEmailDraft mutation response
+    const draftEmailBtn = page.getByRole("button", { name: "Draft Email" });
+    await expect(draftEmailBtn).toBeVisible();
+    await expect(draftEmailBtn).toBeEnabled();
+
+    const draftResponsePromise = page.waitForResponse(async (res) => {
+      if (!res.url().includes("/graphql")) return false;
+      if (res.request().method() !== "POST") return false;
+      const body = await res.json().catch(() => null);
+      return body?.data?.publishEmailDraft && !body?.errors;
+    });
+    await draftEmailBtn.click();
+    const response = await draftResponsePromise;
+    expect(response.status()).toBe(200);
+  });
+
   test("can add multiple links", async ({ page }) => {
     const timestamp = Date.now();
 
