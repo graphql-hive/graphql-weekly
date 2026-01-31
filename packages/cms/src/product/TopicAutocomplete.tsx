@@ -5,7 +5,8 @@ import { useMemo } from "react";
 
 import { useTopTopicTitlesQuery } from "../generated/graphql";
 
-const TOP_TOPICS_LIMIT = 5;
+const FETCH_LIMIT = 20;
+const INITIAL_DISPLAY_LIMIT = 5;
 
 export function TopicAutocomplete({
   disabled,
@@ -20,14 +21,20 @@ export function TopicAutocomplete({
   onValueChange: (value: string) => void;
   value: string;
 }) {
-  const { data } = useTopTopicTitlesQuery({ limit: TOP_TOPICS_LIMIT });
+  const { data } = useTopTopicTitlesQuery({ limit: FETCH_LIMIT });
 
-  const suggestions = useMemo(
+  const allSuggestions = useMemo(
     () =>
       (data?.allTopics ?? [])
         .map((t) => t.title)
         .filter((t): t is string => t != null),
     [data],
+  );
+
+  // Show top 5 when dropdown opens; filter from all 20 when typing
+  const suggestions = useMemo(
+    () => (value ? allSuggestions : allSuggestions.slice(0, INITIAL_DISPLAY_LIMIT)),
+    [allSuggestions, value],
   );
 
   return (

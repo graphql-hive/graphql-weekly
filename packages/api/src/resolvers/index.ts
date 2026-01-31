@@ -62,12 +62,31 @@ async function fetchUrlMetadata(
     ) {
       return metadata
     }
-    // Guard against oversized responses (e.g. malicious multi-GB HTML)
-    const MAX_BODY_BYTES = 1024 * 1024 // 1 MB
-    const contentLength = response.headers.get('content-length')
-    if (contentLength && parseInt(contentLength, 10) > MAX_BODY_BYTES) {
-      return metadata
-    }
+    // Limit body to 1 MB to guard against oversized responses.
+    // Content-Length alone is insufficient (chunked encoding, spoofing).
+    const MAX_BODY_BYTES = 1024 * 1024
+    let bytesRead = 0
+    const reader = response.body!.getReader()
+    const limitedBody = new ReadableStream({
+      async pull(controller) {
+        const { done, value } = await reader.read()
+        if (done) {
+          controller.close()
+          return
+        }
+        bytesRead += value.byteLength
+        if (bytesRead > MAX_BODY_BYTES) {
+          controller.close()
+          reader.cancel()
+          return
+        }
+        controller.enqueue(value)
+      },
+      cancel() {
+        reader.cancel()
+      },
+    })
+    const limitedResponse = new Response(limitedBody, response)
     let titleText = ''
     await new HTMLRewriter()
       .on('title', {
@@ -85,7 +104,7 @@ async function fetchUrlMetadata(
           metadata.description ||= el.getAttribute('content') || undefined;
         },
       })
-      .transform(response)
+      .transform(limitedResponse)
       .text()
     if (titleText.trim()) metadata.title = titleText.trim()
   } catch {
@@ -547,10 +566,12 @@ export const resolvers: Resolvers = {
     },
     allTopics: async (_parent, { limit, orderBy, skip }, ctx) => {
       if (orderBy === 'ISSUE_COUNT') {
-        // Get distinct titles ordered by how many issues use them
+        // Single query: get representative topic IDs + counts, then
+        // join back to fetch full rows, all ordered by popularity.
         let titleQuery = ctx.db
           .selectFrom('Topic')
-          .select('title')
+          .select(['title'])
+          .select((eb) => eb.fn.min('id').as('representative_id'))
           .select((eb) => eb.fn.countAll().as('issue_count'))
           .where('issueId', 'is not', null)
           .where('title', 'is not', null)
@@ -559,30 +580,21 @@ export const resolvers: Resolvers = {
         if (skip != null) titleQuery = titleQuery.offset(skip)
         titleQuery = titleQuery.limit(limit ?? 1000)
 
-        const titleRows = await titleQuery.execute()
+        const ranked = await titleQuery.execute()
+        const ids = ranked
+          .map((r) => r.representative_id as string)
+          .filter(Boolean)
+        if (ids.length === 0) return []
 
-        const titles = titleRows
-          .map((r) => r.title)
-          .filter((t): t is string => t != null)
-        if (titles.length === 0) return []
-
-        // Fetch representative TopicRows for the matched titles.
-        // The JS-side dedup (byTitle.has) keeps only the first per title,
-        // so we don't need a correlated subquery.
-        const allMatching = await ctx.db
+        const topics = await ctx.db
           .selectFrom('Topic')
           .selectAll()
-          .where('title', 'in', titles)
+          .where('id', 'in', ids)
           .execute()
 
-        const byTitle = new Map<string, (typeof allMatching)[0]>()
-        for (const topic of allMatching) {
-          if (topic.title && !byTitle.has(topic.title)) {
-            byTitle.set(topic.title, topic)
-          }
-        }
-
-        return titles.map((t) => byTitle.get(t)!).filter(Boolean)
+        // Restore count-based ordering
+        const byId = new Map(topics.map((t) => [t.id, t]))
+        return ids.map((id) => byId.get(id)!).filter(Boolean)
       }
 
       let query = ctx.db.selectFrom('Topic').selectAll()

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { CMS_URL, WEB_URL } from "../urls.ts";
 import { createFreshIssue } from "../util";
-import { CMS_URL } from "../urls.ts";
 
 test.describe("Topic Autocomplete & New Features", () => {
   test.use({ storageState: "src/.auth/user.json" });
@@ -32,7 +32,7 @@ test.describe("Topic Autocomplete & New Features", () => {
 
     // Autocomplete popup should open
     const popup = page.locator("[role='listbox']");
-    await expect(popup).toBeVisible({ timeout: 5_000 });
+    await expect(popup).toBeVisible({ timeout: 5000 });
 
     // Should have at least one suggestion item
     const items = popup.locator("[role='option']");
@@ -67,7 +67,7 @@ test.describe("Topic Autocomplete & New Features", () => {
     await topicInput.click({ force: true });
 
     const popup = page.locator("[role='listbox']");
-    await expect(popup).toBeVisible({ timeout: 5_000 });
+    await expect(popup).toBeVisible({ timeout: 5000 });
 
     const initialCount = await popup.locator("[role='option']").count();
     expect(initialCount).toBeGreaterThan(0);
@@ -79,7 +79,7 @@ test.describe("Topic Autocomplete & New Features", () => {
     await expect(async () => {
       const filtered = await popup.locator("[role='option']").count();
       expect(filtered).toBeLessThan(initialCount);
-    }).toPass({ timeout: 3_000 });
+    }).toPass({ timeout: 3000 });
   });
 
   test("topic autocomplete submits on Enter", async ({ page }) => {
@@ -111,8 +111,9 @@ test.describe("Link Metadata Prefill", () => {
   }) => {
     await createFreshIssue(page);
 
-    // Use a well-known URL that has <title> and <meta description>
-    const testUrl = "https://graphql.org";
+    // Use the local public site (guaranteed running in e2e) instead of
+    // an external URL that could be down or slow in CI.
+    const testUrl = WEB_URL;
 
     const linkInput = page.getByPlaceholder("Paste URL to add link...");
     await linkInput.fill(testUrl);
@@ -131,7 +132,6 @@ test.describe("Link Metadata Prefill", () => {
     const createdLink = body.data.createLink;
 
     // The server should have fetched metadata — title should be non-empty
-    // (graphql.org has a <title> tag)
     expect(createdLink.title || createdLink.text).toBeTruthy();
 
     // After refetch, the link card should show the prefilled title
@@ -146,7 +146,7 @@ test.describe("Link Metadata Prefill", () => {
     await expect(async () => {
       const val = await titleInput.inputValue();
       expect(val.length).toBeGreaterThan(0);
-    }).toPass({ timeout: 5_000 });
+    }).toPass({ timeout: 5000 });
   });
 });
 
@@ -198,7 +198,7 @@ test.describe("Partial Link Updates", () => {
     const ourLinkUrl = page.locator(
       `[aria-label="Link URL"][value="${testUrl}"]`,
     );
-    await expect(ourLinkUrl).toBeVisible({ timeout: 5_000 });
+    await expect(ourLinkUrl).toBeVisible({ timeout: 5000 });
 
     const card = ourLinkUrl.locator("xpath=ancestor::*[@role='button']");
 
@@ -392,7 +392,7 @@ test.describe("Textarea Auto-resize", () => {
     await expect(async () => {
       const newBox = await descInput.boundingBox();
       expect(newBox!.height).toBeGreaterThan(initialHeight);
-    }).toPass({ timeout: 3_000 });
+    }).toPass({ timeout: 3000 });
   });
 });
 
