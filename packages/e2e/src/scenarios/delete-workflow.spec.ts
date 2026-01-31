@@ -60,7 +60,7 @@ test.describe("Delete Workflow", () => {
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
     // Wait for Save button to be enabled (indicates createLinkMutation completed)
-    const saveBtn = page.getByRole("button", { name: "Save", exact: true });
+    const saveBtn = page.getByRole("button", { exact: true, name: "Save" });
     await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
 
     // Save and wait for successful GraphQL response (no errors)
