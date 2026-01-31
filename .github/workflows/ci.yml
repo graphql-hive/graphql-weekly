@@ -76,27 +76,30 @@ jobs:
 
       - name: Upload API Preview Version
         working-directory: packages/api
-        run: bunx wrangler versions upload --preview-alias "${{ steps.url.outputs.branch-slug }}" --message "${{ github.event.pull_request.title }} | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
+        run: bunx wrangler versions upload --preview-alias "${{ steps.url.outputs.branch-slug }}" --message "$PR_TITLE | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
         if: github.event_name == 'pull_request' && steps.changes.outputs.api == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: Upload CMS Preview Version
         working-directory: packages/cms
-        run: bunx wrangler versions upload --preview-alias "${{ steps.url.outputs.branch-slug }}" --message "${{ github.event.pull_request.title }} | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
+        run: bunx wrangler versions upload --preview-alias "${{ steps.url.outputs.branch-slug }}" --message "$PR_TITLE | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
         if: github.event_name == 'pull_request' && steps.changes.outputs.cms == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: Upload Web Preview Version
         working-directory: packages/web
-        run: bunx wrangler versions upload --message "${{ github.event.pull_request.title }} | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
+        run: bunx wrangler versions upload --message "$PR_TITLE | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
         if: github.event_name == 'pull_request' && steps.changes.outputs.web == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: Deploy API, CMS, and Web to production
         run: bun turbo deploy
