@@ -218,7 +218,7 @@ test.describe("Topic Organization", () => {
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
     // Save
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save", exact: true }).click();
     await expect(page.getByText(/\d+ unsaved/)).not.toBeVisible({
       timeout: 10_000,
     });

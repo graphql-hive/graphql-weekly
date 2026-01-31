@@ -115,7 +115,7 @@ test.describe("Curate Fresh Issue", () => {
     await expect(page.getByText(/\d+ unsaved/)).toBeVisible();
 
     // 6. Wait for Save button to be enabled and save
-    const saveBtn = page.getByRole("button", { name: "Save" });
+    const saveBtn = page.getByRole("button", { name: "Save", exact: true });
     await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
 
     // Save and wait for successful GraphQL response (no errors)
