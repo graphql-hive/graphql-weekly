@@ -94,7 +94,7 @@ test.describe("Curate Fresh Issue", () => {
     await topicInput.fill(testTopicName);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
 
-    const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
+    const addTopicBtn = page.locator("main").getByRole("button", { exact: true, name: "Add Topic" });
     await addTopicBtn.click();
     await expect(topicInput).toHaveValue("");
     await expect(

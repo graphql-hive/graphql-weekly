@@ -5,3 +5,8 @@ declare module 'cloudflare:test' {
     TEST_MIGRATIONS: D1Migration[]
   }
 }
+
+declare module '*.graphql' {
+  const content: string
+  export default content
+}

@@ -50,7 +50,7 @@ export type Author = {
   __typename?: 'Author'
   avatarUrl: Scalars['String']['output']
   createdAt: Scalars['DateTime']['output']
-  description: Scalars['String']['output']
+  description?: Maybe<Scalars['String']['output']>
   id: Scalars['String']['output']
   issues?: Maybe<Array<Issue>>
   name: Scalars['String']['output']
@@ -89,7 +89,7 @@ export type Link = {
 export type LinkSubmission = {
   __typename?: 'LinkSubmission'
   createdAt: Scalars['DateTime']['output']
-  description: Scalars['String']['output']
+  description?: Maybe<Scalars['String']['output']>
   email: Scalars['String']['output']
   id: Scalars['String']['output']
   name: Scalars['String']['output']
@@ -263,7 +263,7 @@ export type Topic = {
   id: Scalars['String']['output']
   issue?: Maybe<Issue>
   issueId?: Maybe<Scalars['String']['output']>
-  issue_comment: Scalars['String']['output']
+  issue_comment?: Maybe<Scalars['String']['output']>
   links?: Maybe<Array<Link>>
   position?: Maybe<Scalars['Int']['output']>
   title: Scalars['String']['output']
@@ -440,7 +440,11 @@ export type AuthorResolvers<
 > = {
   avatarUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  description?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   issues?: Resolver<
     Maybe<Array<ResolversTypes['Issue']>>,
@@ -515,7 +519,11 @@ export type LinkSubmissionResolvers<
     ResolversParentTypes['LinkSubmission'],
 > = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  description?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
@@ -713,7 +721,11 @@ export type TopicResolvers<
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   issue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType>
   issueId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  issue_comment?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  issue_comment?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >
   links?: Resolver<
     Maybe<Array<ResolversTypes['Link']>>,
     ParentType,

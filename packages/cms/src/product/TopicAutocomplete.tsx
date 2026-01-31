@@ -33,7 +33,7 @@ export function TopicAutocomplete({
   return (
     <Autocomplete.Root
       items={suggestions}
-      onValueChange={(v) => onValueChange(v)}
+      onValueChange={(v) => onValueChange(v ?? "")}
       openOnInputClick
       value={value}
     >

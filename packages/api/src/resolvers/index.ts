@@ -62,6 +62,12 @@ async function fetchUrlMetadata(
     ) {
       return metadata
     }
+    // Guard against oversized responses (e.g. malicious multi-GB HTML)
+    const MAX_BODY_BYTES = 1024 * 1024 // 1 MB
+    const contentLength = response.headers.get('content-length')
+    if (contentLength && parseInt(contentLength, 10) > MAX_BODY_BYTES) {
+      return metadata
+    }
     let titleText = ''
     await new HTMLRewriter()
       .on('title', {
@@ -560,7 +566,9 @@ export const resolvers: Resolvers = {
           .filter((t): t is string => t != null)
         if (titles.length === 0) return []
 
-        // Fetch one representative TopicRow per title
+        // Fetch representative TopicRows for the matched titles.
+        // The JS-side dedup (byTitle.has) keeps only the first per title,
+        // so we don't need a correlated subquery.
         const allMatching = await ctx.db
           .selectFrom('Topic')
           .selectAll()

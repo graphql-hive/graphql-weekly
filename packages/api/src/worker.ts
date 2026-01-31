@@ -6,6 +6,7 @@ import { createSchema, createYoga } from 'graphql-yoga'
 import { type AuthEnv, createAuth } from './auth'
 import { createDb, type Database } from './db'
 import { resolvers } from './resolvers'
+import typeDefs from './schema.graphql'
 
 export interface Env extends AuthEnv {
   E2E_TEST?: string
@@ -28,135 +29,6 @@ export interface GraphQLContext {
   env: Env
   user: User | null
 }
-
-const typeDefs = /* GraphQL */ `
-  scalar DateTime
-
-  type Author {
-    avatarUrl: String
-    createdAt: DateTime
-    description: String
-    id: String
-    issues: [Issue!]
-    name: String
-    updatedAt: DateTime
-  }
-
-  type Issue {
-    author: Author
-    authorId: String
-    comment: String
-    date: DateTime
-    description: String
-    id: String
-    number: Int
-    previewImage: String
-    published: Boolean
-    specialPerk: String
-    title: String
-    topics: [Topic!]
-    versionCount: Int
-  }
-
-  type Link {
-    id: String
-    position: Int
-    text: String
-    title: String
-    topic: Topic
-    topicId: String
-    url: String
-  }
-
-  type LinkSubmission {
-    createdAt: DateTime
-    description: String
-    email: String
-    id: String
-    name: String
-    title: String
-    updatedAt: DateTime
-    url: String
-  }
-
-  type LinkSubmissionsResult {
-    items: [LinkSubmission!]!
-    totalCount: Int!
-  }
-
-  type Topic {
-    id: String
-    issue: Issue
-    issueId: String
-    issue_comment: String
-    links: [Link!]
-    position: Int
-    title: String
-  }
-
-  type Subscriber {
-    email: String
-    id: String
-    name: String
-  }
-
-  type Me {
-    id: String!
-    name: String!
-    email: String!
-    image: String
-    isCollaborator: Boolean!
-    repositoryUrl: String!
-  }
-
-  type Query {
-    me: Me
-    allIssues: [Issue!]
-    allTopics: [Topic!]
-    allAuthors: [Author!]
-    allLinks: [Link!]
-    unassignedLinks: [Link!]!
-    allSubscribers: [Subscriber!]
-    linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
-    issue(id: String!): Issue
-  }
-
-  type Mutation {
-    createSubscriber(email: String!, name: String!): Subscriber
-    createLink(url: String!): Link
-    createIssue(
-      title: String!
-      number: Int!
-      published: Boolean!
-      date: DateTime
-    ): Issue
-    createTopic(title: String!, issue_comment: String!, issueId: String!): Topic
-    createSubmissionLink(
-      name: String!
-      email: String!
-      description: String!
-      title: String!
-      url: String!
-    ): LinkSubmission
-    updateLink(id: String!, title: String!, text: String, url: String): Link
-    updateIssue(
-      id: String!
-      published: Boolean
-      versionCount: Int
-      previewImage: String
-    ): Issue
-    updateTopic(id: String!, position: Int): Topic
-    updateTopicWhenIssueDeleted(id: String!): Topic
-    addLinksToTopic(topicId: String!, linkId: String!): Topic
-    deleteLink(id: String!): Link
-    deleteIssue(id: String!): Issue
-    publishEmailDraft(
-      id: String!
-      versionCount: Int
-      isFoundation: Boolean
-    ): Issue
-  }
-`
 
 const schema = createSchema<GraphQLContext>({ resolvers, typeDefs })
 

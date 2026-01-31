@@ -3,7 +3,7 @@ scalar DateTime
 type Author {
   avatarUrl: String!
   createdAt: DateTime!
-  description: String!
+  description: String
   id: String!
   issues: [Issue!]
   name: String!
@@ -39,7 +39,7 @@ type Link {
 
 type LinkSubmission {
   createdAt: DateTime!
-  description: String!
+  description: String
   email: String!
   id: String!
   name: String!
@@ -57,7 +57,7 @@ type Topic {
   id: String!
   issue: Issue
   issueId: String
-  issue_comment: String!
+  issue_comment: String
   links: [Link!]
   position: Int
   title: String!

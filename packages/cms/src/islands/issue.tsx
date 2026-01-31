@@ -371,6 +371,7 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Other handlers
   const submitTopic = useCallback(() => {
+    if (!newTopic.trim()) return;
     const topicTitle = newTopic;
     setNewTopic("");
     createTopicMutation.mutate(
