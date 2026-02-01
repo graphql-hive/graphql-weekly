@@ -12,3 +12,4 @@ test-results
 .turbo
 data-dump/
 .dev.vars
+*.tsbuildinfo

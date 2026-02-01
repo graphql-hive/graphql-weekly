@@ -20,6 +20,9 @@ const config: CodegenConfig = {
       plugins: ['typescript', 'typescript-resolvers'],
     },
   },
+  hooks: {
+    afterAllFileWrite: ['prettier --write'],
+  },
   schema: './src/schema.graphql',
 }
 

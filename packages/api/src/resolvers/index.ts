@@ -43,6 +43,76 @@ function requireCollaborator(
   }
 }
 
+async function fetchUrlMetadata(
+  url: string,
+): Promise<{ description?: string; title?: string }> {
+  const metadata: { description?: string; title?: string } = {}
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'text/html',
+        'User-Agent': 'GraphQL-Weekly-Bot/1.0',
+      },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(5000),
+    })
+    if (
+      !response.ok ||
+      !response.headers.get('content-type')?.includes('text/html')
+    ) {
+      return metadata
+    }
+    // Limit body to 1 MB to guard against oversized responses.
+    // Content-Length alone is insufficient (chunked encoding, spoofing).
+    const MAX_BODY_BYTES = 1024 * 1024
+    let bytesRead = 0
+    const reader = response.body!.getReader()
+    const limitedBody = new ReadableStream({
+      cancel() {
+        reader.cancel()
+      },
+      async pull(controller) {
+        const { done, value } = await reader.read()
+        if (done) {
+          controller.close()
+          return
+        }
+        bytesRead += value.byteLength
+        if (bytesRead > MAX_BODY_BYTES) {
+          controller.close()
+          reader.cancel()
+          return
+        }
+        controller.enqueue(value)
+      },
+    })
+    const limitedResponse = new Response(limitedBody, response)
+    let titleText = ''
+    await new HTMLRewriter()
+      .on('title', {
+        text(text) {
+          titleText += text.text
+        },
+      })
+      .on('meta[name="description"]', {
+        element(el) {
+          metadata.description ||= el.getAttribute('content') || undefined
+        },
+      })
+      .on('meta[property="og:description"]', {
+        element(el) {
+          metadata.description ||= el.getAttribute('content') || undefined
+        },
+      })
+      .transform(limitedResponse)
+      .text()
+    if (titleText.trim()) metadata.title = titleText.trim()
+  } catch {
+    // Metadata fetch is best-effort
+  }
+  return metadata
+}
+
 export const resolvers: Resolvers = {
   DateTime: DateTimeResolver,
 
@@ -112,12 +182,15 @@ export const resolvers: Resolvers = {
       requireCollaborator(ctx)
       const id = generateId()
       const now = new Date().toISOString()
+      const metadata = await fetchUrlMetadata(url)
       await ctx.db
         .insertInto('Link')
         .values({
           createdAt: now,
           createdBy: ctx.user.id,
           id,
+          text: metadata.description ?? null,
+          title: metadata.title ?? null,
           updatedAt: now,
           updatedBy: ctx.user.id,
           url,
@@ -410,14 +483,20 @@ export const resolvers: Resolvers = {
   },
 
   Query: {
-    allAuthors: async (_parent, _args, ctx) => {
-      const authors = await ctx.db.selectFrom('Author').selectAll().execute()
-      return authors
+    allAuthors: async (_parent, { limit, skip }, ctx) => {
+      let query = ctx.db.selectFrom('Author').selectAll()
+      if (skip != null) query = query.offset(skip)
+      query = query.limit(limit ?? 1000)
+      return query.execute()
     },
-    allIssues: async (_parent, _args, ctx) => {
-      // Fetch all data in parallel to avoid N+1
+    allIssues: async (_parent, { limit, skip }, ctx) => {
+      // Fetch issues with pagination, prefetch all topics/links to avoid N+1
+      let issueQuery = ctx.db.selectFrom('Issue').selectAll()
+      if (skip != null) issueQuery = issueQuery.offset(skip)
+      issueQuery = issueQuery.limit(limit ?? 1000)
+
       const [issues, allTopics, allLinks] = await Promise.all([
-        ctx.db.selectFrom('Issue').selectAll().execute(),
+        issueQuery.execute(),
         ctx.db
           .selectFrom('Topic')
           .selectAll()
@@ -460,10 +539,14 @@ export const resolvers: Resolvers = {
         _prefetchedTopics: topicsByIssue.get(issue.id) ?? [],
       }))
     },
-    allLinks: async (_parent, _args, ctx) => {
+    allLinks: async (_parent, { limit, skip }, ctx) => {
       requireCollaborator(ctx)
+      let linkQuery = ctx.db.selectFrom('Link').selectAll()
+      if (skip != null) linkQuery = linkQuery.offset(skip)
+      linkQuery = linkQuery.limit(limit ?? 1000)
+
       const [links, topics] = await Promise.all([
-        ctx.db.selectFrom('Link').selectAll().execute(),
+        linkQuery.execute(),
         ctx.db.selectFrom('Topic').selectAll().execute(),
       ])
       const topicsById = new Map(topics.map((t) => [t.id, t]))
@@ -474,17 +557,50 @@ export const resolvers: Resolvers = {
           : null,
       }))
     },
-    allSubscribers: async (_parent, _args, ctx) => {
+    allSubscribers: async (_parent, { limit, skip }, ctx) => {
       requireCollaborator(ctx)
-      const subscribers = await ctx.db
-        .selectFrom('Subscriber')
-        .selectAll()
-        .execute()
-      return subscribers
+      let query = ctx.db.selectFrom('Subscriber').selectAll()
+      if (skip != null) query = query.offset(skip)
+      query = query.limit(limit ?? 1000)
+      return query.execute()
     },
-    allTopics: async (_parent, _args, ctx) => {
-      const topics = await ctx.db.selectFrom('Topic').selectAll().execute()
-      return topics
+    allTopics: async (_parent, { limit, orderBy, skip }, ctx) => {
+      if (orderBy === 'ISSUE_COUNT') {
+        // Single query: get representative topic IDs + counts, then
+        // join back to fetch full rows, all ordered by popularity.
+        let titleQuery = ctx.db
+          .selectFrom('Topic')
+          .select(['title'])
+          .select((eb) => eb.fn.min('id').as('representative_id'))
+          .select((eb) => eb.fn.countAll().as('issue_count'))
+          .where('issueId', 'is not', null)
+          .where('title', 'is not', null)
+          .groupBy('title')
+          .orderBy('issue_count', 'desc')
+        if (skip != null) titleQuery = titleQuery.offset(skip)
+        titleQuery = titleQuery.limit(limit ?? 1000)
+
+        const ranked = await titleQuery.execute()
+        const ids = ranked
+          .map((r) => r.representative_id as string)
+          .filter(Boolean)
+        if (ids.length === 0) return []
+
+        const topics = await ctx.db
+          .selectFrom('Topic')
+          .selectAll()
+          .where('id', 'in', ids)
+          .execute()
+
+        // Restore count-based ordering
+        const byId = new Map(topics.map((t) => [t.id, t]))
+        return ids.map((id) => byId.get(id)!).filter(Boolean)
+      }
+
+      let query = ctx.db.selectFrom('Topic').selectAll()
+      if (skip != null) query = query.offset(skip)
+      query = query.limit(limit ?? 1000)
+      return query.execute()
     },
     issue: async (_parent, { id }, ctx) => {
       const issue = await ctx.db
@@ -541,8 +657,7 @@ export const resolvers: Resolvers = {
 
   // Type resolvers for relationships
   Author: {
-    createdAt: (parent) =>
-      parent.createdAt ? new Date(parent.createdAt) : null,
+    createdAt: (parent) => new Date(parent.createdAt),
     issues: async (parent, _args, ctx) => {
       const issues = await ctx.db
         .selectFrom('Issue')
@@ -551,8 +666,7 @@ export const resolvers: Resolvers = {
         .execute()
       return issues
     },
-    updatedAt: (parent) =>
-      parent.updatedAt ? new Date(parent.updatedAt) : null,
+    updatedAt: (parent) => new Date(parent.updatedAt),
   },
 
   Issue: {
@@ -565,7 +679,7 @@ export const resolvers: Resolvers = {
         .executeTakeFirst()
       return author ?? null
     },
-    date: (parent) => (parent.date ? new Date(parent.date) : null),
+    date: (parent) => new Date(parent.date),
     published: (parent) => !!parent.published,
     topics: async (parent, _args, ctx): Promise<TopicRow[]> => {
       // Use prefetched topics if available (from Query.allIssues)
@@ -625,10 +739,8 @@ export const resolvers: Resolvers = {
   },
 
   LinkSubmission: {
-    createdAt: (parent) =>
-      parent.createdAt ? new Date(parent.createdAt) : null,
-    updatedAt: (parent) =>
-      parent.updatedAt ? new Date(parent.updatedAt) : null,
+    createdAt: (parent) => new Date(parent.createdAt),
+    updatedAt: (parent) => new Date(parent.updatedAt),
   },
 
   Topic: {

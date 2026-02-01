@@ -52,13 +52,16 @@ import {
   useUpdateTopicMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
+import { PlusIcon } from "../icons/Plus";
 import { LinkCard } from "../product/LinkCard";
 import { PageHeader } from "../product/PageHeader";
 import {
   markSubmissionConsumed,
   SUBMISSION_PREFIX,
+  SUBMISSIONS_PANEL_ID,
   SubmissionsPanel,
 } from "../product/SubmissionsPanel";
+import { TopicAutocomplete } from "../product/TopicAutocomplete";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -82,15 +85,13 @@ type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 // SortableItem wraps LinkCard with drag functionality
 function SortableItem({
   id,
-  isDragOverlay,
   link,
   onChange,
   onDelete,
 }: {
   id: UniqueIdentifier;
-  isDragOverlay?: boolean;
   link: LinkData;
-  onChange: (link: LinkData) => void;
+  onChange: (linkId: string, changes: Partial<LinkData>) => void;
   onDelete: () => void;
 }) {
   const {
@@ -112,10 +113,9 @@ function SortableItem({
     <div ref={setNodeRef} style={style} {...attributes}>
       <LinkCard
         link={link}
-        onChange={onChange}
+        onChange={(changes) => onChange(link.id!, changes)}
         onDelete={onDelete}
         {...(listeners && { dragListeners: listeners })}
-        {...(isDragOverlay && { isDragOverlay })}
       />
     </div>
   );
@@ -150,6 +150,39 @@ function Trash({ isOver }: { isOver: boolean }) {
   );
 }
 
+const tocLinkClass =
+  "flex items-center py-1 pl-4 text-sm text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-300 no-underline truncate gap-1";
+
+function TableOfContents({
+  footer,
+  items,
+  topics,
+}: {
+  footer?: React.ReactNode;
+  items: Items;
+  topics: TopicData[];
+}) {
+  return (
+    <nav className="toc sticky top-[50vh] -translate-y-1/2 max-h-[calc(100vh-15rem)] overflow-y-auto">
+      <a className={tocLinkClass} href="#unassigned">
+        Unassigned{" "}
+        <span className="text-neu-400 dark:text-neu-500 text-xs">
+          ({items[UNASSIGNED_ID]?.length ?? 0})
+        </span>
+      </a>
+      {topics.map((t) => (
+        <a className={tocLinkClass} href={`#topic-${t.id}`} key={t.id}>
+          {t.title}{" "}
+          <span className="text-neu-400 dark:text-neu-500 text-xs">
+            ({items[t.id!]?.length ?? 0})
+          </span>
+        </a>
+      ))}
+      {footer}
+    </nav>
+  );
+}
+
 export function IssuePage({ id }: { id: string }) {
   return (
     <QueryClientProvider client={queryClient}>
@@ -163,6 +196,8 @@ function IssuePageContent({ id }: { id: string }) {
 
   const [newTopic, setNewTopic] = useState("");
   const [newLink, setNewLink] = useState("");
+  const linkInputRef = useRef<HTMLInputElement>(null);
+  const topicInputRef = useRef<HTMLInputElement>(null);
   const [editedLinks, setEditedLinks] = useState<
     Map<string, Partial<LinkData>>
   >(new Map());
@@ -336,6 +371,7 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Other handlers
   const submitTopic = useCallback(() => {
+    if (!newTopic.trim()) return;
     const topicTitle = newTopic;
     setNewTopic("");
     createTopicMutation.mutate(
@@ -429,20 +465,19 @@ function IssuePageContent({ id }: { id: string }) {
     );
   }, [createLinkMutation, newLink, invalidateQueries, qc]);
 
-  const handleLinkChange = useCallback((link: LinkData) => {
-    const linkId = link.id!;
-    // Resolve temp ID to real ID if the mapping exists (handles race condition
-    // where user edits after mutation completes but before React re-renders)
-    const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+  const handleLinkChange = useCallback(
+    (linkId: string, changes: Partial<LinkData>) => {
+      // Resolve temp ID to real ID if the mapping exists (handles race condition
+      // where user edits after mutation completes but before React re-renders)
+      const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
 
-    setEditedLinks((prev) =>
-      new Map(prev).set(resolvedId, {
-        text: link.text ?? null,
-        title: link.title ?? null,
-        url: link.url ?? null,
-      }),
-    );
-  }, []);
+      setEditedLinks((prev) => {
+        const existing = prev.get(resolvedId) ?? {};
+        return new Map(prev).set(resolvedId, { ...existing, ...changes });
+      });
+    },
+    [],
+  );
 
   const handleLinkDelete = useCallback((linkId: string) => {
     const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
@@ -501,14 +536,24 @@ function IssuePageContent({ id }: { id: string }) {
     setSaveError(null);
 
     try {
-      const linkPromises = [...editedLinks.entries()].map(([lid, changes]) =>
-        updateLinkMutation.mutateAsync({
+      const linkPromises = [...editedLinks.entries()].map(([lid, changes]) => {
+        const current = linkMap.get(lid);
+        return updateLinkMutation.mutateAsync({
           id: lid,
-          text: changes.text!,
-          title: changes.title!,
-          url: changes.url!,
-        }),
-      );
+          text:
+            changes.text === undefined
+              ? (current?.text ?? "")
+              : (changes.text ?? ""),
+          title:
+            changes.title === undefined
+              ? (current?.title ?? "")
+              : (changes.title ?? ""),
+          url:
+            changes.url === undefined
+              ? (current?.url ?? "")
+              : (changes.url ?? ""),
+        });
+      });
 
       const deletePromises = [...deletedLinkIds].map((lid) =>
         deleteLinkMutation.mutateAsync({ id: lid }),
@@ -536,6 +581,7 @@ function IssuePageContent({ id }: { id: string }) {
   }, [
     editedLinks,
     deletedLinkIds,
+    linkMap,
     linkMoves,
     updateLinkMutation,
     deleteLinkMutation,
@@ -583,474 +629,533 @@ function IssuePageContent({ id }: { id: string }) {
       <Navbar />
       <PageHeader {...issue} topics={topics} />
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
-        <div className="mb-6 flex gap-2">
-          <input
-            className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
-            onChange={(e) => setNewLink(e.target.value)}
-            placeholder="Paste URL to add link..."
-            type="text"
-            value={newLink}
-          />
-          <Button
-            disabled={createLinkMutation.isPending || !newLink}
-            onClick={submitLink}
-            variant="secondary"
-          >
-            Add
-          </Button>
-        </div>
+      <div className="xl:grid xl:grid-cols-[1fr_864px_1fr] xl:justify-center xl:gap-6">
+        <div />
 
-        <DndContext
-          collisionDetection={collisionDetectionStrategy}
-          measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-          onDragCancel={onDragCancel}
-          onDragEnd={({ active, over }) => {
-            const activeIdStr = String(active.id);
-            const isSubmission = activeIdStr.startsWith(SUBMISSION_PREFIX);
+        <main className="max-w-4xl w-full mx-auto xl:mx-0 px-4 py-6">
+          <div className="mb-6 flex gap-2">
+            <input
+              className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
+              onChange={(e) => setNewLink(e.target.value)}
+              placeholder="Paste URL to add link..."
+              ref={linkInputRef}
+              type="text"
+              value={newLink}
+            />
+            <Button
+              className={cn(!newLink && "opacity-30")}
+              disabled={createLinkMutation.isPending}
+              onClick={() => {
+                if (!newLink) {
+                  linkInputRef.current?.focus();
+                  return;
+                }
+                submitLink();
+              }}
+              variant="secondary"
+            >
+              Add
+            </Button>
+          </div>
 
-            // Handle submission drop
-            if (isSubmission) {
+          <DndContext
+            collisionDetection={collisionDetectionStrategy}
+            measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
+            onDragCancel={onDragCancel}
+            onDragEnd={({ active, over }) => {
+              if (active.id === SUBMISSIONS_PANEL_ID) return;
+              const activeIdStr = String(active.id);
+              const isSubmission = activeIdStr.startsWith(SUBMISSION_PREFIX);
+
+              // Handle submission drop
+              if (isSubmission) {
+                const overId = over?.id;
+                if (overId == null || overId === TRASH_ID) {
+                  setActiveId(null);
+                  setActiveSubmission(null);
+                  return;
+                }
+
+                const overContainer = findContainer(overId);
+                if (!overContainer) {
+                  setActiveId(null);
+                  setActiveSubmission(null);
+                  return;
+                }
+
+                // Get submission data from active.data
+                const submissionData = active.data.current as
+                  | {
+                      description: string;
+                      id: string;
+                      title: string;
+                      type: string;
+                      url: string;
+                    }
+                  | undefined;
+
+                if (submissionData?.url) {
+                  // Create link from submission
+                  createLinkMutation.mutate(
+                    { url: submissionData.url },
+                    {
+                      onSuccess: async (data) => {
+                        const newLinkId = data.createLink?.id;
+                        if (!newLinkId) {
+                          invalidateQueries();
+                          return;
+                        }
+
+                        // Prefill link data from submission
+                        await updateLinkMutation.mutateAsync({
+                          id: newLinkId,
+                          text: submissionData.description || "",
+                          title: submissionData.title || "",
+                          url: submissionData.url,
+                        });
+
+                        // Mark submission as consumed
+                        if (submissionData.id) {
+                          markSubmissionConsumed(submissionData.id);
+                        }
+
+                        if (overContainer === UNASSIGNED_ID) {
+                          invalidateQueries();
+                        } else {
+                          // If dropped on a topic, also assign it
+                          addLinksToTopicMutation.mutate(
+                            {
+                              linkId: newLinkId,
+                              topicId: String(overContainer),
+                            },
+                            { onSuccess: invalidateQueries },
+                          );
+                        }
+                      },
+                    },
+                  );
+                }
+
+                setActiveId(null);
+                setActiveSubmission(null);
+                return;
+              }
+
+              // Use clonedItems (from onDragStart) to find original container
+              // because onDragOver already moved the item in items state
+              const activeContainer = clonedItems
+                ? Object.keys(clonedItems).find((key) =>
+                    clonedItems[key]?.includes(active.id),
+                  )
+                : findContainer(active.id);
+
+              if (!activeContainer) {
+                setActiveId(null);
+                setActiveSubmission(null);
+                return;
+              }
+
               const overId = over?.id;
-              if (overId == null || overId === TRASH_ID) {
+
+              if (overId == null) {
+                setActiveId(null);
+                setActiveSubmission(null);
+                return;
+              }
+
+              // Dropped on trash
+              if (overId === TRASH_ID) {
+                setItems((items) => {
+                  const container = items[activeContainer];
+                  if (!container) return items;
+                  return {
+                    ...items,
+                    [activeContainer]: container.filter(
+                      (id) => id !== active.id,
+                    ),
+                  };
+                });
+                const linkId = String(active.id);
+                const resolvedId =
+                  tempToRealIdRef.current.get(linkId) ?? linkId;
+                setDeletedLinkIds((prev) => new Set(prev).add(resolvedId));
                 setActiveId(null);
                 setActiveSubmission(null);
                 return;
               }
 
               const overContainer = findContainer(overId);
-              if (!overContainer) {
-                setActiveId(null);
-                setActiveSubmission(null);
+
+              if (overContainer) {
+                const activeIndex =
+                  items[activeContainer]?.indexOf(active.id) ?? -1;
+                const overIndex = items[overContainer]?.indexOf(overId) ?? -1;
+
+                if (activeIndex !== overIndex) {
+                  setItems((items) => {
+                    const container = items[overContainer];
+                    if (!container) return items;
+                    return {
+                      ...items,
+                      [overContainer]: arrayMove(
+                        container,
+                        container.indexOf(active.id),
+                        overIndex < 0 ? container.length : overIndex,
+                      ),
+                    };
+                  });
+                }
+
+                // Track move if container changed
+                if (activeContainer !== overContainer) {
+                  const linkId = String(active.id);
+                  const resolvedId =
+                    tempToRealIdRef.current.get(linkId) ?? linkId;
+                  setLinkMoves((prev) =>
+                    new Map(prev).set(resolvedId, String(overContainer)),
+                  );
+                }
+              }
+
+              setActiveId(null);
+              setActiveSubmission(null);
+            }}
+            onDragOver={({ active, over }) => {
+              if (active.id === SUBMISSIONS_PANEL_ID) return;
+              const overId = over?.id;
+              if (overId == null || overId === TRASH_ID || active.id in items)
                 return;
-              }
 
-              // Get submission data from active.data
-              const submissionData = active.data.current as
-                | {
-                    description: string;
-                    id: string;
-                    title: string;
-                    type: string;
-                    url: string;
-                  }
-                | undefined;
+              const overContainer = findContainer(overId);
+              const activeContainer = findContainer(active.id);
 
-              if (submissionData?.url) {
-                // Create link from submission
-                createLinkMutation.mutate(
-                  { url: submissionData.url },
-                  {
-                    onSuccess: async (data) => {
-                      const newLinkId = data.createLink?.id;
-                      if (!newLinkId) {
-                        invalidateQueries();
-                        return;
-                      }
+              if (
+                !overContainer ||
+                !activeContainer ||
+                activeContainer === overContainer
+              )
+                return;
 
-                      // Prefill link data from submission
-                      await updateLinkMutation.mutateAsync({
-                        id: newLinkId,
-                        text: submissionData.description || "",
-                        title: submissionData.title || "",
-                        url: submissionData.url,
-                      });
-
-                      // Mark submission as consumed
-                      if (submissionData.id) {
-                        markSubmissionConsumed(submissionData.id);
-                      }
-
-                      if (overContainer === UNASSIGNED_ID) {
-                        invalidateQueries();
-                      } else {
-                        // If dropped on a topic, also assign it
-                        addLinksToTopicMutation.mutate(
-                          { linkId: newLinkId, topicId: String(overContainer) },
-                          { onSuccess: invalidateQueries },
-                        );
-                      }
-                    },
-                  },
-                );
-              }
-
-              setActiveId(null);
-              setActiveSubmission(null);
-              return;
-            }
-
-            // Use clonedItems (from onDragStart) to find original container
-            // because onDragOver already moved the item in items state
-            const activeContainer = clonedItems
-              ? Object.keys(clonedItems).find((key) =>
-                  clonedItems[key]?.includes(active.id),
-                )
-              : findContainer(active.id);
-
-            if (!activeContainer) {
-              setActiveId(null);
-              setActiveSubmission(null);
-              return;
-            }
-
-            const overId = over?.id;
-
-            if (overId == null) {
-              setActiveId(null);
-              setActiveSubmission(null);
-              return;
-            }
-
-            // Dropped on trash
-            if (overId === TRASH_ID) {
               setItems((items) => {
-                const container = items[activeContainer];
-                if (!container) return items;
+                const activeItems = items[activeContainer];
+                const overItems = items[overContainer];
+                if (!activeItems || !overItems) return items;
+
+                const overIndex = overItems.indexOf(overId);
+                const activeIndex = activeItems.indexOf(active.id);
+                const movedItem = activeItems[activeIndex];
+                if (movedItem === undefined) return items;
+
+                let newIndex: number;
+                if (overId in items) {
+                  newIndex = overItems.length + 1;
+                } else {
+                  const isBelowOverItem =
+                    over &&
+                    active.rect.current.translated &&
+                    active.rect.current.translated.top >
+                      over.rect.top + over.rect.height;
+                  const modifier = isBelowOverItem ? 1 : 0;
+                  newIndex =
+                    overIndex === -1
+                      ? overItems.length + 1
+                      : overIndex + modifier;
+                }
+
+                recentlyMovedToNewContainer.current = true;
+
                 return {
                   ...items,
-                  [activeContainer]: container.filter((id) => id !== active.id),
+                  [activeContainer]: activeItems.filter(
+                    (item) => item !== active.id,
+                  ),
+                  [overContainer]: [
+                    ...overItems.slice(0, newIndex),
+                    movedItem,
+                    ...overItems.slice(newIndex),
+                  ],
                 };
               });
-              const linkId = String(active.id);
-              const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
-              setDeletedLinkIds((prev) => new Set(prev).add(resolvedId));
-              setActiveId(null);
-              setActiveSubmission(null);
-              return;
-            }
+            }}
+            onDragStart={({ active }) => {
+              if (active.id === SUBMISSIONS_PANEL_ID) return;
+              setActiveId(active.id);
+              setClonedItems(items);
 
-            const overContainer = findContainer(overId);
-
-            if (overContainer) {
-              const activeIndex =
-                items[activeContainer]?.indexOf(active.id) ?? -1;
-              const overIndex = items[overContainer]?.indexOf(overId) ?? -1;
-
-              if (activeIndex !== overIndex) {
-                setItems((items) => {
-                  const container = items[overContainer];
-                  if (!container) return items;
-                  return {
-                    ...items,
-                    [overContainer]: arrayMove(
-                      container,
-                      container.indexOf(active.id),
-                      overIndex < 0 ? container.length : overIndex,
-                    ),
-                  };
-                });
-              }
-
-              // Track move if container changed
-              if (activeContainer !== overContainer) {
-                const linkId = String(active.id);
-                const resolvedId =
-                  tempToRealIdRef.current.get(linkId) ?? linkId;
-                setLinkMoves((prev) =>
-                  new Map(prev).set(resolvedId, String(overContainer)),
-                );
-              }
-            }
-
-            setActiveId(null);
-            setActiveSubmission(null);
-          }}
-          onDragOver={({ active, over }) => {
-            const overId = over?.id;
-            if (overId == null || overId === TRASH_ID || active.id in items)
-              return;
-
-            const overContainer = findContainer(overId);
-            const activeContainer = findContainer(active.id);
-
-            if (
-              !overContainer ||
-              !activeContainer ||
-              activeContainer === overContainer
-            )
-              return;
-
-            setItems((items) => {
-              const activeItems = items[activeContainer];
-              const overItems = items[overContainer];
-              if (!activeItems || !overItems) return items;
-
-              const overIndex = overItems.indexOf(overId);
-              const activeIndex = activeItems.indexOf(active.id);
-              const movedItem = activeItems[activeIndex];
-              if (movedItem === undefined) return items;
-
-              let newIndex: number;
-              if (overId in items) {
-                newIndex = overItems.length + 1;
-              } else {
-                const isBelowOverItem =
-                  over &&
-                  active.rect.current.translated &&
-                  active.rect.current.translated.top >
-                    over.rect.top + over.rect.height;
-                const modifier = isBelowOverItem ? 1 : 0;
-                newIndex =
-                  overIndex === -1
-                    ? overItems.length + 1
-                    : overIndex + modifier;
-              }
-
-              recentlyMovedToNewContainer.current = true;
-
-              return {
-                ...items,
-                [activeContainer]: activeItems.filter(
-                  (item) => item !== active.id,
-                ),
-                [overContainer]: [
-                  ...overItems.slice(0, newIndex),
-                  movedItem,
-                  ...overItems.slice(newIndex),
-                ],
-              };
-            });
-          }}
-          onDragStart={({ active }) => {
-            setActiveId(active.id);
-            setClonedItems(items);
-
-            // Track submission data for overlay
-            const activeIdStr = String(active.id);
-            if (activeIdStr.startsWith(SUBMISSION_PREFIX)) {
-              const data = active.data.current as
-                | {
-                    description: string;
-                    title: string;
-                    url: string;
-                  }
-                | undefined;
-              setActiveSubmission(data ?? null);
-            } else {
-              setActiveSubmission(null);
-            }
-          }}
-          sensors={sensors}
-        >
-          {/* Unassigned section */}
-          <section className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg text-neu-900 dark:text-neu-100">
-                Unassigned
-              </h2>
-              <span className="text-sm text-neu-500 dark:text-neu-400">
-                {items[UNASSIGNED_ID]?.length ?? 0} links
-              </span>
-            </div>
-
-            <DroppableContainer
-              id={UNASSIGNED_ID}
-              items={items[UNASSIGNED_ID] ?? []}
-            >
-              {(items[UNASSIGNED_ID] ?? []).length > 0 ? (
-                (items[UNASSIGNED_ID] ?? []).map((linkId) => {
-                  const link = linkMap.get(String(linkId));
-                  if (!link) return null;
-                  return (
-                    <SortableItem
-                      id={linkId}
-                      key={linkId}
-                      link={getMergedLink(link)}
-                      onChange={handleLinkChange}
-                      onDelete={() => handleLinkDelete(link.id!)}
-                    />
-                  );
-                })
-              ) : (
-                <div className="p-8 text-center text-neu-500 dark:text-neu-400 text-sm">
-                  No unassigned links
-                </div>
-              )}
-            </DroppableContainer>
-          </section>
-
-          {/* Topic sections */}
-          {topics.map((topic, topicIndex) => {
-            const topicItems = items[topic.id!] ?? [];
-            const isFirst = topicIndex === 0;
-            const isLast = topicIndex === topics.length - 1;
-
-            return (
-              <section className="mb-8 group/topic" key={topic.id}>
-                {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- keyboard nav for reordering */}
-                <div
-                  className="flex items-center gap-3 mb-3"
-                  onKeyDown={(e) => {
-                    if (e.key === "ArrowUp" && !isFirst) {
-                      e.preventDefault();
-                      handleTopicMove(topicIndex, "up");
-                    } else if (e.key === "ArrowDown" && !isLast) {
-                      e.preventDefault();
-                      handleTopicMove(topicIndex, "down");
+              // Track submission data for overlay
+              const activeIdStr = String(active.id);
+              if (activeIdStr.startsWith(SUBMISSION_PREFIX)) {
+                const data = active.data.current as
+                  | {
+                      description: string;
+                      title: string;
+                      url: string;
                     }
-                  }}
-                  role="group"
-                  tabIndex={0}
+                  | undefined;
+                setActiveSubmission(data ?? null);
+              } else {
+                setActiveSubmission(null);
+              }
+            }}
+            sensors={sensors}
+          >
+            {/* Unassigned section */}
+            <section className="mb-8" id="unassigned">
+              <div className="flex items-center gap-1 justify-between mb-3">
+                <h2 className="text-lg text-neu-900 dark:text-neu-100">
+                  Unassigned
+                </h2>
+                <span className="text-sm text-neu-500 dark:text-neu-400">
+                  {items[UNASSIGNED_ID]?.length ?? 0} links
+                </span>
+              </div>
+
+              <DroppableContainer
+                id={UNASSIGNED_ID}
+                items={items[UNASSIGNED_ID] ?? []}
+              >
+                {(items[UNASSIGNED_ID] ?? []).length > 0 ? (
+                  (items[UNASSIGNED_ID] ?? []).map((linkId) => {
+                    const link = linkMap.get(String(linkId));
+                    if (!link) return null;
+                    return (
+                      <SortableItem
+                        id={linkId}
+                        key={linkId}
+                        link={getMergedLink(link)}
+                        onChange={handleLinkChange}
+                        onDelete={() => handleLinkDelete(link.id!)}
+                      />
+                    );
+                  })
+                ) : (
+                  <div className="p-8 text-center text-neu-500 dark:text-neu-400 text-sm">
+                    No unassigned links
+                  </div>
+                )}
+              </DroppableContainer>
+            </section>
+
+            {/* Topic sections */}
+            {topics.map((topic, topicIndex) => {
+              const topicItems = items[topic.id!] ?? [];
+              const isFirst = topicIndex === 0;
+              const isLast = topicIndex === topics.length - 1;
+
+              return (
+                <section
+                  className="mb-8 group/topic"
+                  id={`topic-${topic.id}`}
+                  key={topic.id}
                 >
-                  {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
-                  <h3 className="text-lg text-neu-900 dark:text-neu-100">
-                    {topic.title}
-                  </h3>
-                  <span className="text-sm text-neu-500 dark:text-neu-400">
-                    {topicItems.length} links
-                  </span>
-                  <div className="ml-auto flex items-center gap-1 opacity-0 group-hover/topic:opacity-100">
-                    <button
-                      className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
-                      disabled={isFirst || updateTopicMutation.isPending}
-                      onClick={() => handleTopicMove(topicIndex, "up")}
-                      title="Move up"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                  {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- keyboard nav for reordering */}
+                  <div
+                    className="flex items-center gap-3 mb-3"
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowUp" && !isFirst) {
+                        e.preventDefault();
+                        handleTopicMove(topicIndex, "up");
+                      } else if (e.key === "ArrowDown" && !isLast) {
+                        e.preventDefault();
+                        handleTopicMove(topicIndex, "down");
+                      }
+                    }}
+                    role="group"
+                    tabIndex={0}
+                  >
+                    {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
+                    <h3 className="text-lg text-neu-900 dark:text-neu-100">
+                      {topic.title}
+                    </h3>
+                    <span className="text-sm text-neu-500 dark:text-neu-400">
+                      {topicItems.length} links
+                    </span>
+                    <div className="ml-auto flex items-center gap-1 opacity-0 group-hover/topic:opacity-100">
+                      <button
+                        className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
+                        disabled={isFirst || updateTopicMutation.isPending}
+                        onClick={() => handleTopicMove(topicIndex, "up")}
+                        title="Move up"
                       >
-                        <path
-                          d="M5 15l7-7 7 7"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
-                      disabled={isLast || updateTopicMutation.isPending}
-                      onClick={() => handleTopicMove(topicIndex, "down")}
-                      title="Move down"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M5 15l7-7 7 7"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-neu-600 dark:hover:text-neu-300 hover:bg-neu-100 dark:hover:bg-neu-800 transition-colors hover:duration-0 disabled:opacity-30 disabled:cursor-not-allowed"
+                        disabled={isLast || updateTopicMutation.isPending}
+                        onClick={() => handleTopicMove(topicIndex, "down")}
+                        title="Move down"
                       >
-                        <path
-                          d="M19 9l-7 7-7-7"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors hover:duration-0 disabled:opacity-50"
-                      disabled={removeTopicMutation.isPending}
-                      onClick={() => handleTopicRemove(topic.id!, topic.title!)}
-                      title="Remove topic from issue"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M19 9l-7 7-7-7"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        className="p-1.5 text-neu-400 dark:text-neu-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors hover:duration-0 disabled:opacity-50"
+                        disabled={removeTopicMutation.isPending}
+                        onClick={() =>
+                          handleTopicRemove(topic.id!, topic.title!)
+                        }
+                        title="Remove topic from issue"
                       >
-                        <path
-                          d="M6 18L18 6M6 6l12 12"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <DroppableContainer id={topic.id!} items={topicItems}>
-                  {topicItems.length > 0 ? (
-                    topicItems.map((linkId) => {
-                      const link = linkMap.get(String(linkId));
-                      if (!link) return null;
-                      return (
-                        <SortableItem
-                          id={linkId}
-                          key={linkId}
-                          link={getMergedLink(link)}
-                          onChange={handleLinkChange}
-                          onDelete={() => handleLinkDelete(link.id!)}
-                        />
-                      );
-                    })
-                  ) : (
-                    <div className="p-6 text-center text-neu-500 dark:text-neu-400 text-sm">
-                      No links in this topic
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M6 18L18 6M6 6l12 12"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                          />
+                        </svg>
+                      </button>
                     </div>
-                  )}
-                </DroppableContainer>
-              </section>
-            );
-          })}
-
-          {/* Drag Overlay - rendered via portal to document.body */}
-          {
-            createPortal(
-              <DragOverlay>
-                {activeId && activeLink ? (
-                  <div className="shadow-lg scale-[1.02]">
-                    {/* eslint-disable @typescript-eslint/no-empty-function -- drag overlay doesn't need handlers */}
-                    <LinkCard
-                      isDragOverlay
-                      link={getMergedLink(activeLink)}
-                      onChange={() => {}}
-                      onDelete={() => {}}
-                    />
-                    {/* eslint-enable @typescript-eslint/no-empty-function */}
                   </div>
-                ) : activeId && activeSubmission ? (
-                  <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
-                    <div className="text-sm text-neu-900 dark:text-neu-100 truncate">
-                      {activeSubmission.title || "Untitled"}
-                    </div>
-                    {activeSubmission.description && (
-                      <div className="text-xs text-neu-500 dark:text-neu-400 truncate mt-0.5">
-                        {activeSubmission.description}
+
+                  <DroppableContainer id={topic.id!} items={topicItems}>
+                    {topicItems.length > 0 ? (
+                      topicItems.map((linkId) => {
+                        const link = linkMap.get(String(linkId));
+                        if (!link) return null;
+                        return (
+                          <SortableItem
+                            id={linkId}
+                            key={linkId}
+                            link={getMergedLink(link)}
+                            onChange={handleLinkChange}
+                            onDelete={() => handleLinkDelete(link.id!)}
+                          />
+                        );
+                      })
+                    ) : (
+                      <div className="p-6 text-center text-neu-500 dark:text-neu-400 text-sm">
+                        No links in this topic
                       </div>
                     )}
-                    <div className="text-xs text-neu-400 dark:text-neu-500 truncate mt-1 font-mono">
-                      {activeSubmission.url}
+                  </DroppableContainer>
+                </section>
+              );
+            })}
+
+            {/* Drag Overlay - rendered via portal to document.body */}
+            {
+              createPortal(
+                <DragOverlay>
+                  {activeId && activeLink ? (
+                    <div className="shadow-lg scale-[1.02]">
+                      <LinkCard
+                        isDragOverlay
+                        link={getMergedLink(activeLink)}
+                      />
                     </div>
-                  </div>
-                ) : null}
-              </DragOverlay>,
-              document.body,
-              // React 19's ReactPortal type differs from dnd-kit's expected ReactNode
-            ) as unknown as React.JSX.Element
-          }
+                  ) : activeId && activeSubmission ? (
+                    <div className="w-80 p-2 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-lg">
+                      <div className="text-sm text-neu-900 dark:text-neu-100 truncate">
+                        {activeSubmission.title || "Untitled"}
+                      </div>
+                      {activeSubmission.description && (
+                        <div className="text-xs text-neu-500 dark:text-neu-400 truncate mt-0.5">
+                          {activeSubmission.description}
+                        </div>
+                      )}
+                      <div className="text-xs text-neu-400 dark:text-neu-500 truncate mt-1 font-mono">
+                        {activeSubmission.url}
+                      </div>
+                    </div>
+                  ) : null}
+                </DragOverlay>,
+                document.body,
+                // React 19's ReactPortal type differs from dnd-kit's expected ReactNode
+              ) as unknown as React.JSX.Element
+            }
 
-          {/* Trash zone - shown when dragging */}
-          {activeId && !containers.includes(String(activeId)) && (
-            <Trash isOver={false} />
-          )}
+            {/* Trash zone - shown when dragging */}
+            {activeId && !containers.includes(String(activeId)) && (
+              <Trash isOver={false} />
+            )}
 
-          {/* Submissions panel */}
-          <SubmissionsPanel />
-        </DndContext>
+            {/* Submissions panel */}
+            <SubmissionsPanel />
+          </DndContext>
 
-        <div className="flex gap-2">
-          <input
-            className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
-            onChange={(e) => setNewTopic(e.target.value)}
-            placeholder="New topic name..."
-            type="text"
-            value={newTopic}
+          <div className="flex gap-2">
+            <TopicAutocomplete
+              disabled={createTopicMutation.isPending}
+              inputRef={topicInputRef}
+              onSubmit={submitTopic}
+              onValueChange={setNewTopic}
+              value={newTopic}
+            />
+            <Button
+              className={cn(!newTopic && "opacity-30")}
+              disabled={createTopicMutation.isPending}
+              onClick={() => {
+                if (!newTopic) {
+                  topicInputRef.current?.focus();
+                  return;
+                }
+                submitTopic();
+              }}
+              variant="secondary"
+            >
+              Add Topic
+            </Button>
+          </div>
+        </main>
+
+        <aside className="hidden xl:block shrink-0 py-6">
+          <TableOfContents
+            footer={
+              <>
+                <hr className="my-1 mx-3 border-neu-100 dark:border-neu-800" />
+                <button
+                  className="flex items-center gap-1 py-1 pl-4 text-sm text-neu-500 dark:text-neu-400 hover:text-neu-700 dark:hover:text-neu-300 group"
+                  onClick={() => topicInputRef.current?.focus()}
+                  type="button"
+                >
+                  Add topic
+                  <PlusIcon className="size-4 text-neu-400 dark:text-neu-500 group-hover:text-neu-700 dark:group-hover:text-neu-300" />
+                </button>
+              </>
+            }
+            items={items}
+            topics={topics}
           />
-          <Button
-            disabled={createTopicMutation.isPending || !newTopic}
-            onClick={submitTopic}
-            variant="secondary"
-          >
-            Add Topic
-          </Button>
-        </div>
-      </main>
+        </aside>
+      </div>
+
+      <footer
+        className="h-64 opacity-20"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, currentColor 0.5px, transparent 0.5px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
 
       {(hasUnsavedChanges || saveError) && (
         <>

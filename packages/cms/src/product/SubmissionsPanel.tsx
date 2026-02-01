@@ -1,12 +1,13 @@
-import { useDraggable } from "@dnd-kit/core";
+import { useDndMonitor, useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { useDrag } from "@use-gesture/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useLinkSubmissionsQuery } from "../generated/graphql";
 
 export const SUBMISSION_PREFIX = "submission:";
+export const SUBMISSIONS_PANEL_ID = "submissions-panel";
 const CONSUMED_KEY = "consumedSubmissions";
 
 export function getConsumedSubmissions(): string[] {
@@ -94,7 +95,40 @@ export function SubmissionsPanel() {
   const [size, setSize] = useState({ height: 384, width: 320 });
   const [minimized, setMinimized] = useState(true);
   const [consumed, setConsumed] = useState<string[]>(getConsumedSubmissions);
-  const dragRef = useRef<HTMLDivElement>(null);
+
+  // Panel drag via dnd-kit
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: SUBMISSIONS_PANEL_ID,
+  });
+
+  const panelHeight = minimized ? 44 : size.height;
+  const clampedLeft = Math.max(
+    0,
+    Math.min(position.x + (transform?.x ?? 0), window.innerWidth - size.width),
+  );
+  const clampedTop = Math.max(
+    0,
+    Math.min(
+      position.y + (transform?.y ?? 0),
+      window.innerHeight - panelHeight,
+    ),
+  );
+
+  useDndMonitor({
+    onDragEnd(event) {
+      if (event.active.id !== SUBMISSIONS_PANEL_ID) return;
+      setPosition((p) => ({
+        x: Math.max(
+          0,
+          Math.min(p.x + event.delta.x, window.innerWidth - size.width),
+        ),
+        y: Math.max(
+          0,
+          Math.min(p.y + event.delta.y, window.innerHeight - panelHeight),
+        ),
+      }));
+    },
+  });
 
   // Listen for consumed changes
   useEffect(() => {
@@ -117,21 +151,6 @@ export function SubmissionsPanel() {
     [data, consumed],
   );
 
-  const bind = useDrag(
-    ({ offset: [x, y] }) => {
-      setPosition({ x, y });
-    },
-    {
-      bounds: {
-        bottom: window.innerHeight - 60,
-        left: 0,
-        right: window.innerWidth - size.width,
-        top: 0,
-      },
-      from: () => [position.x, position.y],
-    },
-  );
-
   const bindResize = useDrag(
     ({ offset: [x, y] }) => {
       setSize({
@@ -149,14 +168,15 @@ export function SubmissionsPanel() {
       className="fixed z-10 bg-white dark:bg-neu-900 border border-neu-300 dark:border-neu-600 shadow-sm"
       style={{
         height: minimized ? "auto" : size.height,
-        left: position.x,
-        top: position.y,
+        left: clampedLeft,
+        top: clampedTop,
         width: size.width,
       }}
     >
       <div
-        ref={dragRef}
-        {...bind()}
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
         className="flex items-center justify-between px-3 py-2 bg-neu-100 dark:bg-neu-800 cursor-move select-none touch-none"
       >
         <span className="text-sm text-neu-700 dark:text-neu-200">

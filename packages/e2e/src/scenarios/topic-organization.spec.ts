@@ -22,7 +22,9 @@ test.describe("Topic Organization", () => {
     await topicInput.fill(topicName);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
 
-    const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
+    const addTopicBtn = page
+      .locator("main")
+      .getByRole("button", { exact: true, name: "Add Topic" });
     await addTopicBtn.click();
 
     await expect(topicInput).toHaveValue("");
@@ -45,7 +47,9 @@ test.describe("Topic Organization", () => {
 
     // Create two topics
     const topicInput = page.getByPlaceholder("New topic name...");
-    const addTopicBtn = page.getByRole("button", { name: "Add Topic" });
+    const addTopicBtn = page
+      .locator("main")
+      .getByRole("button", { exact: true, name: "Add Topic" });
 
     await topicInput.fill(topic1);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
@@ -124,7 +128,10 @@ test.describe("Topic Organization", () => {
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
-    await page.getByRole("button", { name: "Add Topic" }).click();
+    await page
+      .locator("main")
+      .getByRole("button", { exact: true, name: "Add Topic" })
+      .click();
     await expect(topicInput).toHaveValue("");
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
       timeout: 10_000,
@@ -171,7 +178,10 @@ test.describe("Topic Organization", () => {
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.fill(topicName);
     await page.keyboard.press("Escape"); // Dismiss autocomplete dropdown
-    await page.getByRole("button", { name: "Add Topic" }).click();
+    await page
+      .locator("main")
+      .getByRole("button", { exact: true, name: "Add Topic" })
+      .click();
     await expect(topicInput).toHaveValue("");
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
       timeout: 10_000,

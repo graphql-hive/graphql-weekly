@@ -48,13 +48,14 @@ export type Scalars = {
 
 export type Author = {
   __typename?: 'Author'
-  avatarUrl?: Maybe<Scalars['String']['output']>
-  createdAt?: Maybe<Scalars['DateTime']['output']>
+  avatarUrl: Scalars['String']['output']
+  createdAt: Scalars['DateTime']['output']
   description?: Maybe<Scalars['String']['output']>
-  id?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
   issues?: Maybe<Array<Issue>>
-  name?: Maybe<Scalars['String']['output']>
-  updatedAt?: Maybe<Scalars['DateTime']['output']>
+  name: Scalars['String']['output']
+  updatedAt: Scalars['DateTime']['output']
+  userId?: Maybe<Scalars['String']['output']>
 }
 
 export type Issue = {
@@ -62,39 +63,39 @@ export type Issue = {
   author?: Maybe<Author>
   authorId?: Maybe<Scalars['String']['output']>
   comment?: Maybe<Scalars['String']['output']>
-  date?: Maybe<Scalars['DateTime']['output']>
+  date: Scalars['DateTime']['output']
   description?: Maybe<Scalars['String']['output']>
-  id?: Maybe<Scalars['String']['output']>
-  number?: Maybe<Scalars['Int']['output']>
+  id: Scalars['String']['output']
+  number: Scalars['Int']['output']
   previewImage?: Maybe<Scalars['String']['output']>
-  published?: Maybe<Scalars['Boolean']['output']>
+  published: Scalars['Boolean']['output']
   specialPerk?: Maybe<Scalars['String']['output']>
-  title?: Maybe<Scalars['String']['output']>
+  title: Scalars['String']['output']
   topics?: Maybe<Array<Topic>>
-  versionCount?: Maybe<Scalars['Int']['output']>
+  versionCount: Scalars['Int']['output']
 }
 
 export type Link = {
   __typename?: 'Link'
-  id?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
   position?: Maybe<Scalars['Int']['output']>
   text?: Maybe<Scalars['String']['output']>
   title?: Maybe<Scalars['String']['output']>
   topic?: Maybe<Topic>
   topicId?: Maybe<Scalars['String']['output']>
-  url?: Maybe<Scalars['String']['output']>
+  url: Scalars['String']['output']
 }
 
 export type LinkSubmission = {
   __typename?: 'LinkSubmission'
-  createdAt?: Maybe<Scalars['DateTime']['output']>
+  createdAt: Scalars['DateTime']['output']
   description?: Maybe<Scalars['String']['output']>
-  email?: Maybe<Scalars['String']['output']>
-  id?: Maybe<Scalars['String']['output']>
-  name?: Maybe<Scalars['String']['output']>
-  title?: Maybe<Scalars['String']['output']>
-  updatedAt?: Maybe<Scalars['DateTime']['output']>
-  url?: Maybe<Scalars['String']['output']>
+  email: Scalars['String']['output']
+  id: Scalars['String']['output']
+  name: Scalars['String']['output']
+  title: Scalars['String']['output']
+  updatedAt: Scalars['DateTime']['output']
+  url: Scalars['String']['output']
 }
 
 export type LinkSubmissionsResult = {
@@ -204,15 +205,41 @@ export type MutationUpdateTopicWhenIssueDeletedArgs = {
 
 export type Query = {
   __typename?: 'Query'
-  allAuthors?: Maybe<Array<Author>>
-  allIssues?: Maybe<Array<Issue>>
-  allLinks?: Maybe<Array<Link>>
-  allSubscribers?: Maybe<Array<Subscriber>>
-  allTopics?: Maybe<Array<Topic>>
+  allAuthors: Array<Author>
+  allIssues: Array<Issue>
+  allLinks: Array<Link>
+  allSubscribers: Array<Subscriber>
+  allTopics: Array<Topic>
   issue?: Maybe<Issue>
   linkSubmissions: LinkSubmissionsResult
   me?: Maybe<Me>
   unassignedLinks: Array<Link>
+}
+
+export type QueryAllAuthorsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+}
+
+export type QueryAllIssuesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+}
+
+export type QueryAllLinksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+}
+
+export type QueryAllSubscribersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+}
+
+export type QueryAllTopicsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>
+  orderBy?: InputMaybe<TopicOrderBy>
+  skip?: InputMaybe<Scalars['Int']['input']>
 }
 
 export type QueryIssueArgs = {
@@ -226,20 +253,24 @@ export type QueryLinkSubmissionsArgs = {
 
 export type Subscriber = {
   __typename?: 'Subscriber'
-  email?: Maybe<Scalars['String']['output']>
-  id?: Maybe<Scalars['String']['output']>
-  name?: Maybe<Scalars['String']['output']>
+  email: Scalars['String']['output']
+  id: Scalars['String']['output']
+  name: Scalars['String']['output']
 }
 
 export type Topic = {
   __typename?: 'Topic'
-  id?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
   issue?: Maybe<Issue>
   issueId?: Maybe<Scalars['String']['output']>
   issue_comment?: Maybe<Scalars['String']['output']>
   links?: Maybe<Array<Link>>
   position?: Maybe<Scalars['Int']['output']>
-  title?: Maybe<Scalars['String']['output']>
+  title: Scalars['String']['output']
+}
+
+export enum TopicOrderBy {
+  IssueCount = 'ISSUE_COUNT',
 }
 
 export type ResolverTypeWrapper<T> = Promise<T> | T
@@ -379,6 +410,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>
   Subscriber: ResolverTypeWrapper<SubscriberRow>
   Topic: ResolverTypeWrapper<TopicRow>
+  TopicOrderBy: TopicOrderBy
 }
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -406,29 +438,22 @@ export type AuthorResolvers<
   ParentType extends ResolversParentTypes['Author'] =
     ResolversParentTypes['Author'],
 > = {
-  avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  createdAt?: Resolver<
-    Maybe<ResolversTypes['DateTime']>,
-    ParentType,
-    ContextType
-  >
+  avatarUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   description?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   issues?: Resolver<
     Maybe<Array<ResolversTypes['Issue']>>,
     ParentType,
     ContextType
   >
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  updatedAt?: Resolver<
-    Maybe<ResolversTypes['DateTime']>,
-    ParentType,
-    ContextType
-  >
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
+  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
 }
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<
@@ -446,36 +471,32 @@ export type IssueResolvers<
   author?: Resolver<Maybe<ResolversTypes['Author']>, ParentType, ContextType>
   authorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  date?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   description?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   previewImage?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >
-  published?: Resolver<
-    Maybe<ResolversTypes['Boolean']>,
-    ParentType,
-    ContextType
-  >
+  published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   specialPerk?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   topics?: Resolver<
     Maybe<Array<ResolversTypes['Topic']>>,
     ParentType,
     ContextType
   >
-  versionCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  versionCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
 }
 
 export type LinkResolvers<
@@ -483,13 +504,13 @@ export type LinkResolvers<
   ParentType extends ResolversParentTypes['Link'] =
     ResolversParentTypes['Link'],
 > = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   position?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   text?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   topic?: Resolver<Maybe<ResolversTypes['Topic']>, ParentType, ContextType>
   topicId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>
 }
 
 export type LinkSubmissionResolvers<
@@ -497,26 +518,18 @@ export type LinkSubmissionResolvers<
   ParentType extends ResolversParentTypes['LinkSubmission'] =
     ResolversParentTypes['LinkSubmission'],
 > = {
-  createdAt?: Resolver<
-    Maybe<ResolversTypes['DateTime']>,
-    ParentType,
-    ContextType
-  >
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   description?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  updatedAt?: Resolver<
-    Maybe<ResolversTypes['DateTime']>,
-    ParentType,
-    ContextType
-  >
-  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>
 }
 
 export type LinkSubmissionsResultResolvers<
@@ -641,29 +654,34 @@ export type QueryResolvers<
     ResolversParentTypes['Query'],
 > = {
   allAuthors?: Resolver<
-    Maybe<Array<ResolversTypes['Author']>>,
+    Array<ResolversTypes['Author']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<QueryAllAuthorsArgs>
   >
   allIssues?: Resolver<
-    Maybe<Array<ResolversTypes['Issue']>>,
+    Array<ResolversTypes['Issue']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<QueryAllIssuesArgs>
   >
   allLinks?: Resolver<
-    Maybe<Array<ResolversTypes['Link']>>,
+    Array<ResolversTypes['Link']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<QueryAllLinksArgs>
   >
   allSubscribers?: Resolver<
-    Maybe<Array<ResolversTypes['Subscriber']>>,
+    Array<ResolversTypes['Subscriber']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<QueryAllSubscribersArgs>
   >
   allTopics?: Resolver<
-    Maybe<Array<ResolversTypes['Topic']>>,
+    Array<ResolversTypes['Topic']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<QueryAllTopicsArgs>
   >
   issue?: Resolver<
     Maybe<ResolversTypes['Issue']>,
@@ -690,9 +708,9 @@ export type SubscriberResolvers<
   ParentType extends ResolversParentTypes['Subscriber'] =
     ResolversParentTypes['Subscriber'],
 > = {
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
 }
 
 export type TopicResolvers<
@@ -700,7 +718,7 @@ export type TopicResolvers<
   ParentType extends ResolversParentTypes['Topic'] =
     ResolversParentTypes['Topic'],
 > = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   issue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType>
   issueId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   issue_comment?: Resolver<
@@ -714,7 +732,7 @@ export type TopicResolvers<
     ContextType
   >
   position?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
 }
 
 export type Resolvers<ContextType = GraphQLContext> = {

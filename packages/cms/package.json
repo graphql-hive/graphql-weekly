@@ -36,6 +36,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "12.6.12",
     "@astrojs/react": "4.4.2",
+    "@base-ui/react": "^1.1.0",
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
@@ -51,7 +52,8 @@
     "pixelarticons": "1.8.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "tailwind-merge": "3.4.0"
+    "tailwind-merge": "3.4.0",
+    "tailwindcss-spring": "^1.0.1"
   },
   "overrides": {
     "react": "19.0.0",

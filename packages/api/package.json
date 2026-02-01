@@ -7,7 +7,7 @@
     "dev": "wrangler dev",
     "dev:e2e": "wrangler dev --port 2013 --env-file .dev.vars.e2e",
     "migrate:up": "wrangler d1 migrations apply graphqlweekly --local",
-    "codegen": "graphql-codegen",
+    "codegen": "graphql-codegen --config ./graphql-codegen.ts",
     "typecheck": "tsc --noEmit",
     "deploy": "wrangler deploy",
     "test": "vitest",
