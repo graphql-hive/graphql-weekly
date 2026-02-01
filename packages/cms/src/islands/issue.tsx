@@ -163,7 +163,7 @@ function TableOfContents({
   topics: TopicData[];
 }) {
   return (
-    <nav className="toc sticky top-[50vh] -translate-y-1/2">
+    <nav className="toc sticky top-[50vh] -translate-y-1/2 max-h-[calc(100vh-15rem)] overflow-y-auto">
       <a className={tocLinkClass} href="#unassigned">
         Unassigned{" "}
         <span className="text-neu-400 dark:text-neu-500 text-xs">
@@ -1127,7 +1127,7 @@ function IssuePageContent({ id }: { id: string }) {
           </div>
         </main>
 
-        <aside className="hidden xl:block w-44 shrink-0 py-6">
+        <aside className="hidden xl:block shrink-0 py-6">
           <TableOfContents
             footer={
               <>
