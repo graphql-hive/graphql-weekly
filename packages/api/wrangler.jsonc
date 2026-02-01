@@ -7,7 +7,7 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "preview_urls": true,
   "workers_dev": true,
-  "rules": [{ "type": "Text", "globs": ["**/*.graphql"] }],
+  "rules": [{ "type": "Text", "globs": ["**/*.graphql"], "fallthrough": true }],
   "observability": {
     "enabled": true,
   },

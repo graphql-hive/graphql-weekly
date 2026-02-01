@@ -57,9 +57,9 @@ export function TopicAutocomplete({
         ref={inputRef}
       />
       <Autocomplete.Portal>
-        <Autocomplete.Positioner sideOffset={4}>
-          <Autocomplete.Popup className="z-50 bg-white dark:bg-neu-800 border border-neu-200 dark:border-neu-700 shadow-lg py-1">
-            <Autocomplete.Empty className="px-3 py-2 text-sm text-neu-500 dark:text-neu-400">
+        <Autocomplete.Positioner side="top" sideOffset={4}>
+          <Autocomplete.Popup className="z-50 min-w-[var(--anchor-width)] bg-white dark:bg-neu-800 border border-neu-200 dark:border-neu-700 shadow-lg">
+            <Autocomplete.Empty className="empty:hidden px-3 py-2 text-sm text-neu-500 dark:text-neu-400">
               No matching topics
             </Autocomplete.Empty>
             <Autocomplete.List>

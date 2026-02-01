@@ -1148,6 +1148,15 @@ function IssuePageContent({ id }: { id: string }) {
         </aside>
       </div>
 
+      <footer
+        className="h-64 opacity-20"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, currentColor 0.5px, transparent 0.5px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
       {(hasUnsavedChanges || saveError) && (
         <>
           <div className="h-20" />
