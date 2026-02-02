@@ -31,7 +31,7 @@
     "@types/react": "19.2.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260113.0",
+    "@cloudflare/workers-types": "^4.20260124.0",
     "@hasparus/eslint-config": "2.0.13",
     "@playwright/test": "^1.57.0",
     "eslint": "9.39.2",
