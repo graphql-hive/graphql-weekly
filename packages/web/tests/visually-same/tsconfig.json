@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "composite": true,
+    "outDir": "dist",
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
