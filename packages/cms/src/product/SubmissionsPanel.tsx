@@ -1,4 +1,4 @@
-import { useDndMonitor, useDraggable } from "@dnd-kit/core";
+import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { useDrag } from "@use-gesture/react";
 import { useEffect, useMemo, useState } from "react";
@@ -7,7 +7,6 @@ import { createPortal } from "react-dom";
 import { useLinkSubmissionsQuery } from "../generated/graphql";
 
 export const SUBMISSION_PREFIX = "submission:";
-export const SUBMISSIONS_PANEL_ID = "submissions-panel";
 const CONSUMED_KEY = "consumedSubmissions";
 
 export function getConsumedSubmissions(): string[] {
@@ -96,39 +95,26 @@ export function SubmissionsPanel() {
   const [minimized, setMinimized] = useState(true);
   const [consumed, setConsumed] = useState<string[]>(getConsumedSubmissions);
 
-  // Panel drag via dnd-kit
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: SUBMISSIONS_PANEL_ID,
-  });
-
   const panelHeight = minimized ? 44 : size.height;
+  const minTop = 48; // clear the navbar (h-12)
   const clampedLeft = Math.max(
     0,
-    Math.min(position.x + (transform?.x ?? 0), window.innerWidth - size.width),
+    Math.min(position.x, window.innerWidth - size.width),
   );
   const clampedTop = Math.max(
-    0,
-    Math.min(
-      position.y + (transform?.y ?? 0),
-      window.innerHeight - panelHeight,
-    ),
+    minTop,
+    Math.min(position.y, window.innerHeight - panelHeight),
   );
 
-  useDndMonitor({
-    onDragEnd(event) {
-      if (event.active.id !== SUBMISSIONS_PANEL_ID) return;
-      setPosition((p) => ({
-        x: Math.max(
-          0,
-          Math.min(p.x + event.delta.x, window.innerWidth - size.width),
-        ),
-        y: Math.max(
-          0,
-          Math.min(p.y + event.delta.y, window.innerHeight - panelHeight),
-        ),
-      }));
+  const bindPanelDrag = useDrag(
+    ({ offset: [x, y] }) => {
+      setPosition({
+        x: Math.max(0, Math.min(x, window.innerWidth - size.width)),
+        y: Math.max(minTop, Math.min(y, window.innerHeight - panelHeight)),
+      });
     },
-  });
+    { from: () => [position.x, position.y] },
+  );
 
   // Listen for consumed changes
   useEffect(() => {
@@ -174,9 +160,7 @@ export function SubmissionsPanel() {
       }}
     >
       <div
-        ref={setNodeRef}
-        {...listeners}
-        {...attributes}
+        {...bindPanelDrag()}
         className="flex items-center justify-between px-3 py-2 bg-neu-100 dark:bg-neu-800 cursor-move select-none touch-none"
       >
         <span className="text-sm text-neu-700 dark:text-neu-200">
