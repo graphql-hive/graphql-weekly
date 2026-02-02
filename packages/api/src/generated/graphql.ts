@@ -243,7 +243,8 @@ export type QueryAllTopicsArgs = {
 }
 
 export type QueryIssueArgs = {
-  id: Scalars['String']['input']
+  id?: InputMaybe<Scalars['String']['input']>
+  number?: InputMaybe<Scalars['Int']['input']>
 }
 
 export type QueryLinkSubmissionsArgs = {
@@ -687,7 +688,7 @@ export type QueryResolvers<
     Maybe<ResolversTypes['Issue']>,
     ParentType,
     ContextType,
-    RequireFields<QueryIssueArgs, 'id'>
+    Partial<QueryIssueArgs>
   >
   linkSubmissions?: Resolver<
     ResolversTypes['LinkSubmissionsResult'],

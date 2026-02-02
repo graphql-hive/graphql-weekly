@@ -91,7 +91,7 @@ type Query {
   unassignedLinks: [Link!]!
   allSubscribers(skip: Int, limit: Int): [Subscriber!]!
   linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
-  issue(id: String!): Issue
+  issue(id: String, number: Int): Issue
 }
 
 type Mutation {
