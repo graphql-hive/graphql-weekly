@@ -1,3 +1,5 @@
+/// <reference types="@cloudflare/workers-types" />
+/// <reference types="@cloudflare/vitest-pool-workers" />
 import type { Env } from './worker'
 
 declare module 'cloudflare:test' {

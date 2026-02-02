@@ -28,9 +28,7 @@ function hasField(info: GraphQLResolveInfo, name: string): boolean {
       )
     }
   }
-  return selections.some(
-    (s) => s.kind === Kind.FIELD && s.name.value === name,
-  )
+  return selections.some((s) => s.kind === Kind.FIELD && s.name.value === name)
 }
 
 type AuthenticatedContext = GraphQLContext & { user: User }
@@ -653,8 +651,11 @@ export const resolvers: Resolvers = {
     issue: async (_parent, { by }, ctx) => {
       let query = ctx.db.selectFrom('Issue').selectAll()
       if (by.id) query = query.where('id', '=', by.id)
-      else if (by.number != null) query = query.where('number', '=', by.number)
-      else return null
+      else if (by.number == null) {
+        return null
+      } else {
+        query = query.where('number', '=', by.number)
+      }
       const issue = await query.executeTakeFirst()
       return issue ?? null
     },

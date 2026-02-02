@@ -14,8 +14,7 @@ test.describe("Playground", () => {
 
     // Set up response listener before scrolling triggers the auto-run
     const responsePromise = page.waitForResponse(
-      (r) =>
-        r.url().includes("/graphql") && r.request().method() === "POST",
+      (r) => r.url().includes("/graphql") && r.request().method() === "POST",
     );
 
     const runButton = page.getByRole("button", { name: /run query/i });
@@ -44,8 +43,7 @@ test.describe("Playground", () => {
 
       // Listen for the GraphQL response before clicking
       const responsePromise = page.waitForResponse(
-        (r) =>
-          r.url().includes("/graphql") && r.request().method() === "POST",
+        (r) => r.url().includes("/graphql") && r.request().method() === "POST",
       );
       await runButton.click();
       const response = await responsePromise;
