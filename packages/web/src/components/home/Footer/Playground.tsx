@@ -19,7 +19,7 @@ const queriesList: { query: string; title: string }[] = [
   {
     query: `
 {
-  allIssues {
+  allIssues(limit: 50) {
     id
     title
     published
@@ -33,14 +33,15 @@ const queriesList: { query: string; title: string }[] = [
   {
     query: `
 {
-  allTopics {
+  allTopics(limit: 50) {
     title
+    issue {
+      number
+    }
     links {
       url
       text
-      position
       title
-      url
     }
   }
 }
@@ -120,7 +121,7 @@ export class Playground extends Component<Props, State> {
     const { selectedQuery } = this.state;
     return (
       <div
-        className="flex justify-between overflow-hidden max-h-[1084px] relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-10 after:content-[''] after:bg-linear-to-b after:from-transparent after:to-footer-dark"
+        className="flex justify-between overflow-hidden max-h-[1084px] pb-16 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-16 after:content-[''] after:bg-linear-to-b after:from-transparent after:to-footer-dark"
         ref={this.containerRef}
       >
         <div className="flex-[0_0_400px] mr-16">
