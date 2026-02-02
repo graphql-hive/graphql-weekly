@@ -86,7 +86,7 @@ function DraggableSubmission({
   );
 }
 
-export function SubmissionsPanel(): React.ReactNode {
+export function SubmissionsPanel() {
   const [position, setPosition] = useState(() => ({
     x: 20,
     y: globalThis.window === undefined ? 20 : window.innerHeight - 60,
