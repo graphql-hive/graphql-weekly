@@ -622,7 +622,7 @@ export const resolvers: Resolvers = {
       // Prefetch links for these topics to avoid N+1.
       // Batch to stay under SQLite's max variable limit.
       const topicIds = topics.map((t) => t.id)
-      const BATCH = 500
+      const BATCH = 100 // D1's SQLITE_MAX_VARIABLE_NUMBER is 100
       const allLinks: LinkRow[] = []
       for (let i = 0; i < topicIds.length; i += BATCH) {
         const batch = topicIds.slice(i, i + BATCH)
