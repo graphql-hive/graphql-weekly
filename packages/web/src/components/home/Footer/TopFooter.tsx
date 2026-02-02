@@ -3,14 +3,14 @@ import { ArrowLink } from "../../shared/ArrowLink";
 export const TopFooter = () => {
   return (
     <div className="flex w-full justify-between">
-      <div className="max-w-[376px] font-normal leading-6 text-lg text-[rgba(255,255,255,0.33)]">
-        Feeling nerdy? Query issues of GraphQL Weekly, with GraphQL itself!
+      <div className="font-normal leading-6 text-lg text-white/50">
+        Feeling nerdy? Query issues of GraphQL Weekly with actual GraphQL.
       </div>
-      <div className="font-normal leading-6 text-lg text-[rgba(255,255,255,0.33)] **:text-[rgba(255,255,255,0.33)] **:font-normal [&_a]:underline [&_svg]:opacity-30">
-        Powered by the{" "}
+      <div className="font-normal leading-6 text-lg text-white/50 **:font-normal [&_svg]:opacity-30">
         <ArrowLink
+          className="hover:text-white text-white/33 underline"
           href="https://graphql-weekly.graphcdn.app/"
-          text="GraphQL Playground"
+          text="Open GraphiQL"
         />
       </div>
     </div>
