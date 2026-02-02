@@ -7,7 +7,8 @@
     "seed": "bun run src/seed-database.ts",
     "test": "bun run --cwd ../api migrate:up && bun run seed && CI=true playwright test",
     "test:dev": "bun run --cwd ../api migrate:up && bun run seed && playwright test",
-    "test:ui": "bun run --cwd ../api migrate:up && bun run seed && playwright test --ui"
+    "test:ui": "bun run --cwd ../api migrate:up && bun run seed && playwright test --ui",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",

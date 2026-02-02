@@ -19,7 +19,7 @@ query UnassignedLinks {
 }
 
 query Issue($id: String!) {
-  issue(id: $id) {
+  issue(by: { id: $id }) {
     id
     title
     published

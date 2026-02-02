@@ -13,7 +13,8 @@
     "node": ">=24.1.0"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/web/tests/visually-same"
   ],
   "scripts": {
     "dev": "turbo dev",

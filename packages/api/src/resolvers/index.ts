@@ -21,6 +21,13 @@ function generateId(): string {
 function hasField(info: GraphQLResolveInfo, name: string): boolean {
   const selections = info.fieldNodes[0]?.selectionSet?.selections
   if (!selections) return false
+  for (const s of selections) {
+    if (s.kind === Kind.FRAGMENT_SPREAD || s.kind === Kind.INLINE_FRAGMENT) {
+      throw new GraphQLError(
+        `hasField cannot resolve fragments — rewrite query to use plain field selections`,
+      )
+    }
+  }
   return selections.some(
     (s) => s.kind === Kind.FIELD && s.name.value === name,
   )
@@ -614,12 +621,21 @@ export const resolvers: Resolvers = {
 
       if (!hasField(info, 'links') || topics.length === 0) return topics
 
-      // Prefetch all links in one query to avoid N+1
-      const allLinks = await ctx.db
-        .selectFrom('Link')
-        .selectAll()
-        .orderBy('position', 'asc')
-        .execute()
+      // Prefetch links for these topics to avoid N+1.
+      // Batch to stay under SQLite's max variable limit.
+      const topicIds = topics.map((t) => t.id)
+      const BATCH = 500
+      const allLinks: LinkRow[] = []
+      for (let i = 0; i < topicIds.length; i += BATCH) {
+        const batch = topicIds.slice(i, i + BATCH)
+        const rows = await ctx.db
+          .selectFrom('Link')
+          .selectAll()
+          .where('topicId', 'in', batch)
+          .orderBy('position', 'asc')
+          .execute()
+        allLinks.push(...rows)
+      }
 
       const linksByTopic = new Map<string, LinkRow[]>()
       for (const link of allLinks) {
@@ -634,11 +650,11 @@ export const resolvers: Resolvers = {
         _prefetchedLinks: linksByTopic.get(topic.id) ?? [],
       }))
     },
-    issue: async (_parent, { id, number }, ctx) => {
-      if (!id && number == null) return null
+    issue: async (_parent, { by }, ctx) => {
       let query = ctx.db.selectFrom('Issue').selectAll()
-      if (id) query = query.where('id', '=', id)
-      else query = query.where('number', '=', number!)
+      if (by.id) query = query.where('id', '=', by.id)
+      else if (by.number != null) query = query.where('number', '=', by.number)
+      else return null
       const issue = await query.executeTakeFirst()
       return issue ?? null
     },
