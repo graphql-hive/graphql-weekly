@@ -15,6 +15,12 @@
       ]
     },
     "codegen": {
+      "dependsOn": ["^codegen"],
+      "inputs": [
+        "src/schema.graphql",
+        "src/**/*.graphql",
+        "graphql-codegen.ts"
+      ],
       "outputs": ["src/generated/**"]
     },
     "dev": {
