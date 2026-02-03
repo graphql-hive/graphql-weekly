@@ -31,17 +31,15 @@
       "dependsOn": ["codegen"],
       "inputs": [
         "src/**/*.ts",
-        "src/**/*.test.ts",
+        "src/**/*.tsx",
         "vitest.config.ts",
         "wrangler.jsonc",
         "migrations/**",
         "$TURBO_DEFAULT$"
-      ],
-      "outputs": ["coverage/**"]
+      ]
     },
-    "test:e2e": {
-      "cache": false,
-      "dependsOn": ["build"]
+    "@gqlweekly/e2e#test": {
+      "cache": false
     },
     "typecheck": {
       "dependsOn": ["codegen"],
