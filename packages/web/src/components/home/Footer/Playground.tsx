@@ -51,7 +51,7 @@ const queriesList: { query: string; title: string }[] = [
   {
     query: `
 {
-  issue(by: { number: 1 }) {
+  issue(by: { number: 7 }) {
     id
     number
     title
