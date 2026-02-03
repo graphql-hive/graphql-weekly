@@ -82,6 +82,11 @@ enum TopicOrderBy {
   ISSUE_COUNT
 }
 
+input IssueBy @oneOf {
+  id: String
+  number: Int
+}
+
 type Query {
   me: Me
   allIssues(skip: Int, limit: Int): [Issue!]!
@@ -91,7 +96,7 @@ type Query {
   unassignedLinks: [Link!]!
   allSubscribers(skip: Int, limit: Int): [Subscriber!]!
   linkSubmissions(skip: Int, limit: Int): LinkSubmissionsResult!
-  issue(id: String!): Issue
+  issue(by: IssueBy!): Issue
 }
 
 type Mutation {

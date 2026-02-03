@@ -1,4 +1,4 @@
-import { GraphQLError } from 'graphql'
+import { GraphQLError, type GraphQLResolveInfo, Kind } from 'graphql'
 import { DateTimeResolver } from 'graphql-scalars'
 
 import type { LinkRow, TopicRow } from '../db/types'
@@ -16,6 +16,19 @@ type LinkWithTopic = LinkRow & { _prefetchedTopic?: TopicRow | null }
 
 function generateId(): string {
   return crypto.randomUUID().replaceAll('-', '').slice(0, 25)
+}
+
+function hasField(info: GraphQLResolveInfo, name: string): boolean {
+  const selections = info.fieldNodes[0]?.selectionSet?.selections
+  if (!selections) return false
+  for (const s of selections) {
+    if (s.kind === Kind.FRAGMENT_SPREAD || s.kind === Kind.INLINE_FRAGMENT) {
+      throw new GraphQLError(
+        `hasField cannot resolve fragments — rewrite query to use plain field selections`,
+      )
+    }
+  }
+  return selections.some((s) => s.kind === Kind.FIELD && s.name.value === name)
 }
 
 type AuthenticatedContext = GraphQLContext & { user: User }
@@ -564,7 +577,9 @@ export const resolvers: Resolvers = {
       query = query.limit(limit ?? 1000)
       return query.execute()
     },
-    allTopics: async (_parent, { limit, orderBy, skip }, ctx) => {
+    allTopics: async (_parent, { limit, orderBy, skip }, ctx, info) => {
+      let topics: TopicRow[]
+
       if (orderBy === 'ISSUE_COUNT') {
         // Single query: get representative topic IDs + counts, then
         // join back to fetch full rows, all ordered by popularity.
@@ -586,28 +601,62 @@ export const resolvers: Resolvers = {
           .filter(Boolean)
         if (ids.length === 0) return []
 
-        const topics = await ctx.db
+        const rows = await ctx.db
           .selectFrom('Topic')
           .selectAll()
           .where('id', 'in', ids)
           .execute()
 
         // Restore count-based ordering
-        const byId = new Map(topics.map((t) => [t.id, t]))
-        return ids.map((id) => byId.get(id)!).filter(Boolean)
+        const byId = new Map(rows.map((t) => [t.id, t]))
+        topics = ids.map((id) => byId.get(id)!).filter(Boolean)
+      } else {
+        let query = ctx.db.selectFrom('Topic').selectAll()
+        if (skip != null) query = query.offset(skip)
+        query = query.limit(limit ?? 1000)
+        topics = await query.execute()
       }
 
-      let query = ctx.db.selectFrom('Topic').selectAll()
-      if (skip != null) query = query.offset(skip)
-      query = query.limit(limit ?? 1000)
-      return query.execute()
+      if (!hasField(info, 'links') || topics.length === 0) return topics
+
+      // Prefetch links for these topics to avoid N+1.
+      // Batch to stay under SQLite's max variable limit.
+      const topicIds = topics.map((t) => t.id)
+      const BATCH = 100 // D1's SQLITE_MAX_VARIABLE_NUMBER is 100
+      const allLinks: LinkRow[] = []
+      for (let i = 0; i < topicIds.length; i += BATCH) {
+        const batch = topicIds.slice(i, i + BATCH)
+        const rows = await ctx.db
+          .selectFrom('Link')
+          .selectAll()
+          .where('topicId', 'in', batch)
+          .orderBy('position', 'asc')
+          .execute()
+        allLinks.push(...rows)
+      }
+
+      const linksByTopic = new Map<string, LinkRow[]>()
+      for (const link of allLinks) {
+        if (!link.topicId) continue
+        const existing = linksByTopic.get(link.topicId) ?? []
+        existing.push(link)
+        linksByTopic.set(link.topicId, existing)
+      }
+
+      return topics.map((topic) => ({
+        ...topic,
+        _prefetchedLinks: linksByTopic.get(topic.id) ?? [],
+      }))
     },
-    issue: async (_parent, { id }, ctx) => {
-      const issue = await ctx.db
-        .selectFrom('Issue')
-        .selectAll()
-        .where('id', '=', id)
-        .executeTakeFirst()
+    issue: async (_parent, { by }, ctx) => {
+      let query = ctx.db.selectFrom('Issue').selectAll()
+      if (by.id) query = query.where('id', '=', by.id)
+      else if (by.number == null) {
+        return null
+      } else {
+        query = query.where('number', '=', by.number)
+      }
+      const issue = await query.executeTakeFirst()
       return issue ?? null
     },
     linkSubmissions: async (_parent, { limit, skip }, ctx) => {

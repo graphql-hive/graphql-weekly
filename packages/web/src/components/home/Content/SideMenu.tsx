@@ -33,7 +33,7 @@ export const SideMenu = ({ heading, isExpanded, items }: Props) => {
               <Link
                 className={cn(
                   "flex items-center w-full no-underline font-medium leading-[18px] text-lg align-middle text-footer-dark",
-                  "-ml-2 pl-2 -mr-2 pr-2 py-1 rounded-sm hover:bg-[#8683d40c] transition-colors",
+                  "-ml-2 pl-2 -mr-2 pr-2 py-1 rounded-sm hover:bg-[#8683d40c] transition-colors focus-visible:outline-2 focus-visible:outline-purple focus-visible:outline-offset-0",
                   e.extraTop ? "mt-5" : "mt-3",
                 )}
                 href={e.href}

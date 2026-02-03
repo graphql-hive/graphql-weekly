@@ -75,6 +75,10 @@ export type Issue = {
   versionCount: Scalars['Int']['output']
 }
 
+export type IssueBy =
+  | { id: Scalars['String']['input']; number?: never }
+  | { id?: never; number: Scalars['Int']['input'] }
+
 export type Link = {
   __typename?: 'Link'
   id: Scalars['String']['output']
@@ -243,7 +247,7 @@ export type QueryAllTopicsArgs = {
 }
 
 export type QueryIssueArgs = {
-  id: Scalars['String']['input']
+  by: IssueBy
 }
 
 export type QueryLinkSubmissionsArgs = {
@@ -397,6 +401,7 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>
   Int: ResolverTypeWrapper<Scalars['Int']['output']>
   Issue: ResolverTypeWrapper<IssueRow>
+  IssueBy: IssueBy
   Link: ResolverTypeWrapper<LinkRow>
   LinkSubmission: ResolverTypeWrapper<LinkSubmissionRow>
   LinkSubmissionsResult: ResolverTypeWrapper<
@@ -420,6 +425,7 @@ export type ResolversParentTypes = {
   DateTime: Scalars['DateTime']['output']
   Int: Scalars['Int']['output']
   Issue: IssueRow
+  IssueBy: IssueBy
   Link: LinkRow
   LinkSubmission: LinkSubmissionRow
   LinkSubmissionsResult: Omit<LinkSubmissionsResult, 'items'> & {
@@ -687,7 +693,7 @@ export type QueryResolvers<
     Maybe<ResolversTypes['Issue']>,
     ParentType,
     ContextType,
-    RequireFields<QueryIssueArgs, 'id'>
+    RequireFields<QueryIssueArgs, 'by'>
   >
   linkSubmissions?: Resolver<
     ResolversTypes['LinkSubmissionsResult'],

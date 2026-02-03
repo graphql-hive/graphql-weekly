@@ -29,6 +29,19 @@ describe('GraphQL API', () => {
     expect(data.data.me).toBeNull()
   })
 
+  it('should reject issue(by: {}) with validation error', async () => {
+    const response = await SELF.fetch('http://localhost/graphql', {
+      body: JSON.stringify({ query: '{ issue(by: {}) { id } }' }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+    })
+    const data = (await response.json()) as {
+      errors?: { message: string }[]
+    }
+    expect(data.errors).toBeDefined()
+    expect(data.errors!.length).toBeGreaterThan(0)
+  })
+
   it('should reject mutations when not authenticated', async () => {
     const response = await SELF.fetch('http://localhost/graphql', {
       body: JSON.stringify({

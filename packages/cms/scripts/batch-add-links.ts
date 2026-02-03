@@ -49,7 +49,7 @@ const ALL_ISSUES = gql`
 
 const ISSUE_WITH_TOPICS = gql`
   query Issue($id: String!) {
-    issue(id: $id) {
+    issue(by: { id: $id }) {
       id
       title
       topics {

@@ -20,7 +20,7 @@ export function ArrowLink({
   return (
     <a
       className={cn(
-        "focus-visible:outline-2 focus-visible:outline-purple focus-visible:outline-offset-2",
+        "focus-visible:outline-2 focus-visible:outline-purple focus-visible:outline-offset-2 hover:no-underline",
         className,
       )}
       href={href}

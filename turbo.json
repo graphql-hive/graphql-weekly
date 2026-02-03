@@ -15,6 +15,12 @@
       ]
     },
     "codegen": {
+      "dependsOn": ["^codegen"],
+      "inputs": [
+        "src/schema.graphql",
+        "src/**/*.graphql",
+        "graphql-codegen.ts"
+      ],
       "outputs": ["src/generated/**"]
     },
     "dev": {
@@ -22,12 +28,43 @@
       "persistent": true
     },
     "test": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.test.ts",
+        "vitest.config.ts",
+        "wrangler.jsonc",
+        "migrations/**",
+        "$TURBO_DEFAULT$"
+      ],
+      "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "cache": false,
+      "dependsOn": ["build"]
     },
     "typecheck": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "tsconfig.json",
+        "$TURBO_DEFAULT$"
+      ]
     },
-    "lint": {},
-    "lint:fix": {}
+    "lint": {
+      "inputs": [
+        "src/**/*.{ts,tsx,mjs}",
+        "../../eslint.config.mjs",
+        "$TURBO_DEFAULT$"
+      ]
+    },
+    "lint:fix": {
+      "inputs": [
+        "src/**/*.{ts,tsx,mjs}",
+        "../../eslint.config.mjs",
+        "$TURBO_DEFAULT$"
+      ]
+    }
   }
 }
