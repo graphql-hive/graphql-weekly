@@ -16,6 +16,7 @@ Archive website for the GraphQL Weekly newsletter at [graphqlweekly.com](https:/
 - **React** — interactive components (sidebar, playground)
 - **Tailwind CSS** — styling
 - **Bun** — package manager and runtime
+- **Turbo** — monorepo task orchestration and caching
 - **Cloudflare Workers + D1** — API and database
 
 ## Monorepo Structure
@@ -24,7 +25,8 @@ Archive website for the GraphQL Weekly newsletter at [graphqlweekly.com](https:/
 packages/
 ├── web/         # Astro static site (graphqlweekly.com)
 ├── api/         # Cloudflare Worker + D1 (GraphQL API)
-└── cms/         # Astro + React curator app
+├── cms/         # Astro + React curator app
+└── e2e/         # Playwright end-to-end tests
 ```
 
 ## Domains
@@ -43,18 +45,36 @@ packages/
 
 ## Development
 
+**Prerequisites:** Bun 1.3.5, Node >=24.1.0
+
+### Setup
+
 ```bash
-bun dev          # Dev server
-bun run preview  # Preview with Wrangler
-bun run deploy   # Build and deploy
-bun run test         # Unit and end-to-end tests
-bun run codegen  # GraphQL types
+bun install
+cd packages/api && cp .dev.vars.e2e .dev.vars  # then fill in real secrets
+bun run migrate:up                              # apply D1 migrations locally
 ```
 
-Build for production:
+### Commands
+
+All commands run through Turbo from the root.
 
 ```bash
-bun run build
+bun dev              # start all dev servers concurrently
+bun run build        # production build
+bun run test         # unit (Vitest) + e2e (Playwright)
+bun run codegen      # regenerate GraphQL types (run after schema changes)
+bun run lint         # ESLint
+bun run format       # Prettier
+bun run typecheck    # TypeScript across all packages
+bun run deploy       # build + deploy to Cloudflare
+```
+
+E2E tests seed a local D1 database and start all services automatically. For interactive debugging:
+
+```bash
+cd packages/e2e
+bun run test:ui      # Playwright UI mode
 ```
 
 ## Architecture
@@ -93,14 +113,13 @@ GraphQL API running on Cloudflare Workers with D1 database. Handles mutations at
 | `createSubscriber`     | Newsletter signup   | `src/components/home/Subscription/index.tsx`                                              |
 | `createSubmissionLink` | Submit article link | `src/components/home/Header/SubmitForm.tsx`, `src/components/shared/SubmitForm/index.tsx` |
 
-## Deployment
+## CI/CD
 
-Site deployed to **Cloudflare**.
+GitHub Actions runs lint, typecheck, and tests on every PR. On merge to `main`, all packages deploy to Cloudflare.
 
-Build command: `bun run build`
-Output directory: `dist`
+PRs with changes get preview deployments at `https://{branch-slug}-api.graphqlweekly.com` (and equivalent for CMS/web).
 
-No environment variables required.
+**Required secrets:** `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ZONE_ID`, `TURBO_TOKEN`, `TURBO_TEAM`
 
 ## CMS (Curator App)
 
