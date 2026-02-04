@@ -23,6 +23,7 @@
     },
   ],
   "vars": {
+    "PREVIEW_API_WORKER_NAME": "graphqlweekly-api-preview",
     "WORKERS_DEV_SUBDOMAIN": "recc",
   },
   "d1_databases": [
@@ -32,4 +33,32 @@
       "database_id": "f7a8d65f-a03c-4505-b7bb-5cd48ad7f390",
     },
   ],
+  // Preview env for staging auth isolation.
+  // OAuth App: "GraphQL Weekly Preview Auth" (hasparus personal, Client ID: Ov23li0sI1qf2Z5UVhfw)
+  // Secrets GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET must be set via `wrangler secret put --env preview`
+  "env": {
+    "preview": {
+      "vars": {
+        "AUTH_BASE_URL": "https://preview-auth.graphqlweekly.com",
+        "AUTH_COOKIE_DOMAIN": ".graphqlweekly.com",
+        "AUTH_COOKIE_PREFIX": "preview-auth",
+        "AUTH_TRUSTED_ORIGINS": "https://graphqlweekly.com,https://*.graphqlweekly.com,http://localhost:*",
+        "PREVIEW_API_WORKER_NAME": "graphqlweekly-api-preview",
+        "WORKERS_DEV_SUBDOMAIN": "recc",
+      },
+      "routes": [
+        {
+          "pattern": "preview-auth.graphqlweekly.com/*",
+          "zone_name": "graphqlweekly.com",
+        },
+      ],
+      "d1_databases": [
+        {
+          "binding": "graphqlweekly",
+          "database_name": "graphql-weekly-staging",
+          "database_id": "8ec31975-3073-4350-99c5-971a5cda12cf",
+        },
+      ],
+    },
+  },
 }

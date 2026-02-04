@@ -7,7 +7,7 @@ type ServerAuth = ReturnType<
 
 const baseURL = import.meta.env.DEV
   ? "http://localhost:2012"
-  : "https://api.graphqlweekly.com";
+  : import.meta.env.PUBLIC_AUTH_URL || "https://api.graphqlweekly.com";
 
 const authClient = createAuthClient({
   basePath: "/auth",
