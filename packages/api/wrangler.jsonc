@@ -23,6 +23,7 @@
     },
   ],
   "vars": {
+    "PREVIEW_API_WORKER_NAME": "graphqlweekly-api-preview",
     "WORKERS_DEV_SUBDOMAIN": "recc",
   },
   "d1_databases": [
