@@ -82,6 +82,8 @@ export async function serverFetch<TData>(
   try {
     return await withRetry(() => serverClient.request<TData>(query, variables));
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("[serverFetch] failed:", error);
     throw normalizePossiblyUnauthedGraphQLError(error);
   }
 }

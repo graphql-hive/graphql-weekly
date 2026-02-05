@@ -6,6 +6,10 @@ import { D1Dialect } from 'kysely-d1'
 import { createDb } from '../db'
 
 export interface AuthEnv {
+  AUTH_BASE_URL?: string
+  AUTH_COOKIE_DOMAIN?: string
+  AUTH_COOKIE_PREFIX?: string
+  AUTH_TRUSTED_ORIGINS?: string
   BETTER_AUTH_SECRET: string
   E2E_TEST?: string
   GITHUB_API_URL?: string // For E2E mocking, defaults to https://api.github.com
@@ -19,6 +23,37 @@ export const GITHUB_REPO_OWNER = 'graphql-hive'
 export const GITHUB_REPO_NAME = 'graphql-weekly'
 
 const DEFAULT_GITHUB_API_URL = 'https://api.github.com'
+const DEFAULT_BASE_URL = 'https://api.graphqlweekly.com'
+const DEFAULT_TRUSTED_ORIGINS = [
+  'https://graphqlweekly.com',
+  'https://*.graphqlweekly.com',
+  'http://localhost:*',
+]
+
+function parseTrustedOrigins(value?: string): string[] | null {
+  if (!value) return null
+  const origins = value
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0)
+  return origins.length > 0 ? origins : null
+}
+
+function buildAdvancedOptions(
+  cookieDomain?: string,
+  cookiePrefix?: string,
+): {
+  cookiePrefix?: string
+  crossSubDomainCookies?: { domain: string; enabled: true }
+} | null {
+  if (!cookieDomain && !cookiePrefix) return null
+  return {
+    ...(cookiePrefix ? { cookiePrefix } : {}),
+    ...(cookieDomain
+      ? { crossSubDomainCookies: { domain: cookieDomain, enabled: true } }
+      : {}),
+  }
+}
 
 export async function getVerifiedEmails(
   accessToken: string,
@@ -105,13 +140,22 @@ async function checkIsCollaborator(
 export function createAuth(env: AuthEnv) {
   const isTestMode = !!(env.LOCAL_DEV || env.E2E_TEST)
   const githubApiUrl = env.GITHUB_API_URL || DEFAULT_GITHUB_API_URL
+  const trustedOrigins =
+    parseTrustedOrigins(env.AUTH_TRUSTED_ORIGINS) || DEFAULT_TRUSTED_ORIGINS
+  const baseURL = isTestMode
+    ? 'http://localhost:2012'
+    : env.AUTH_BASE_URL || DEFAULT_BASE_URL
+  const cookieDomain = isTestMode
+    ? undefined
+    : env.AUTH_COOKIE_DOMAIN || '.graphqlweekly.com'
+  const advanced = isTestMode
+    ? undefined
+    : buildAdvancedOptions(cookieDomain, env.AUTH_COOKIE_PREFIX) || undefined
   const db = createDb(env.graphqlweekly)
 
   return betterAuth({
     basePath: '/auth',
-    baseURL: isTestMode
-      ? 'http://localhost:2012'
-      : 'https://api.graphqlweekly.com',
+    baseURL,
     database: {
       dialect: new D1Dialect({ database: env.graphqlweekly }),
       type: 'sqlite',
@@ -136,14 +180,7 @@ export function createAuth(env: AuthEnv) {
       },
     },
     // Enable email/password auth for E2E tests
-    advanced: isTestMode
-      ? undefined
-      : {
-          crossSubDomainCookies: {
-            domain: '.graphqlweekly.com',
-            enabled: true,
-          },
-        },
+    advanced,
     emailAndPassword: isTestMode ? { enabled: true } : undefined,
     secret: env.BETTER_AUTH_SECRET,
     session: {
@@ -170,11 +207,7 @@ export function createAuth(env: AuthEnv) {
         scope: ['read:user', 'user:email', 'read:org'],
       },
     },
-    trustedOrigins: [
-      'https://graphqlweekly.com',
-      'https://*.graphqlweekly.com',
-      'http://localhost:*',
-    ],
+    trustedOrigins,
     user: {
       additionalFields: {
         handle: {

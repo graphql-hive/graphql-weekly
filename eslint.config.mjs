@@ -11,7 +11,9 @@ export default [
     files: ["**/*.ts", "**/*.tsx", "**/*.mjs"],
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["scripts/*.ts"],
+        },
       },
     },
   },
