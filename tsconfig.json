@@ -6,7 +6,6 @@
     { "path": "packages/cms" },
     { "path": "packages/e2e" },
     { "path": "packages/web" },
-    { "path": "packages/web/tests/visually-same" },
-    { "path": "scripts" }
+    { "path": "packages/web/tests/visually-same" }
   ]
 }
