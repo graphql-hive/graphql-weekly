@@ -23,7 +23,6 @@
     },
   ],
   "vars": {
-    "PREVIEW_API_WORKER_NAME": "graphqlweekly-api-preview",
     "WORKERS_DEV_SUBDOMAIN": "recc",
   },
   "d1_databases": [
@@ -43,8 +42,6 @@
         "AUTH_COOKIE_DOMAIN": ".graphqlweekly.com",
         "AUTH_COOKIE_PREFIX": "preview-auth",
         "AUTH_TRUSTED_ORIGINS": "https://graphqlweekly.com,https://*.graphqlweekly.com,http://localhost:*",
-        "PREVIEW_API_WORKER_NAME": "graphqlweekly-api-preview",
-        "WORKERS_DEV_SUBDOMAIN": "recc",
       },
       "routes": [
         {

@@ -73,12 +73,13 @@ jobs:
         run: |
           BRANCH_SLUG=$(echo "${{ github.head_ref }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | cut -c1-63)
           echo "branch-slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
-          echo "preview-url=https://${BRANCH_SLUG}-api.graphqlweekly.com" >> $GITHUB_OUTPUT
+          echo "api-preview-url=https://${BRANCH_SLUG}-graphqlweekly-api-preview.recc.workers.dev" >> $GITHUB_OUTPUT
+          echo "cms-preview-url=https://${BRANCH_SLUG}-graphqlweekly-cms.recc.workers.dev" >> $GITHUB_OUTPUT
 
       - name: Build
         run: bun turbo build
         env:
-          PUBLIC_API_URL: ${{ steps.url.outputs.preview-url }}/graphql
+          PUBLIC_API_URL: ${{ steps.url.outputs.api-preview-url }}/graphql
           PUBLIC_AUTH_URL: ${{ github.event_name == 'pull_request' && 'https://preview-auth.graphqlweekly.com' || '' }}
 
       - name: Upload API Preview Version
@@ -129,8 +130,8 @@ jobs:
 
             | Package | URL |
             |---------|-----|
-            | API | https://${{ steps.url.outputs.branch-slug }}-api.graphqlweekly.com/graphql |
-            | CMS | https://${{ steps.url.outputs.branch-slug }}-cms.graphqlweekly.com |
+            | API | ${{ steps.url.outputs.api-preview-url }}/graphql |
+            | CMS | ${{ steps.url.outputs.cms-preview-url }} |
             | Web | https://${{ steps.url.outputs.branch-slug }}-graphqlweekly-v2.recc.workers.dev |
           edit-mode: replace
 

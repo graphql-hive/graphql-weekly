@@ -13,8 +13,6 @@ export interface Env extends AuthEnv {
   LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
   MAILCHIMP_SERVER_PREFIX?: string
-  PREVIEW_API_WORKER_NAME?: string
-  PREVIEW_CMS_WORKER_NAME?: string
   WORKERS_DEV_SUBDOMAIN?: string
 }
 
@@ -113,9 +111,7 @@ export default {
       }
 
       const workerName =
-        preview.service === 'api'
-          ? env.PREVIEW_API_WORKER_NAME || 'graphqlweekly-api'
-          : env.PREVIEW_CMS_WORKER_NAME || 'graphqlweekly-cms'
+        preview.service === 'api' ? 'graphqlweekly-api' : 'graphqlweekly-cms'
       const previewUrl = `https://${preview.subdomain}-${workerName}.${env.WORKERS_DEV_SUBDOMAIN}.workers.dev${url.pathname}${url.search}`
       const proxyRequest = new Request(previewUrl, {
         body: request.body,
