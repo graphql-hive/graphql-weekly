@@ -12,7 +12,7 @@ const URLS: Record<Package, (slug: string) => string> = {
 function generateComment(
   branchSlug: string,
   deployed: Package[],
-  commitSha: string
+  commitSha: string,
 ): string | null {
   if (deployed.length === 0) return null;
 
@@ -30,7 +30,7 @@ function generateComment(
 
   for (const pkg of deployed) {
     lines.push(
-      `| ${pkg} | ${URLS[pkg](branchSlug)} | \`${shortSha}\` | ${timestamp} |`
+      `| ${pkg} | ${URLS[pkg](branchSlug)} | \`${shortSha}\` | ${timestamp} |`,
     );
   }
 
