@@ -6,3 +6,6 @@
 **/playwright-report/
 **/test-results/
 .wrangler
+.claude/
+.agents/
+.cursor/
