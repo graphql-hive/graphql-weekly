@@ -81,6 +81,7 @@ jobs:
           PUBLIC_AUTH_URL: ${{ github.event_name == 'pull_request' && 'https://preview-auth.graphqlweekly.com' || '' }}
 
       - name: Upload API Preview Version
+        id: deploy-api
         working-directory: packages/api
         run: bunx wrangler versions upload --env preview --preview-alias "${{ steps.url.outputs.branch-slug }}" --message "$PR_TITLE | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
         if: github.event_name == 'pull_request' && steps.changes.outputs.api == 'true'
@@ -90,6 +91,7 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: Upload CMS Preview Version
+        id: deploy-cms
         working-directory: packages/cms
         run: bunx wrangler versions upload --preview-alias "${{ steps.url.outputs.branch-slug }}" --message "$PR_TITLE | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
         if: github.event_name == 'pull_request' && steps.changes.outputs.cms == 'true'
@@ -99,6 +101,7 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: Upload Web Preview Version
+        id: deploy-web
         working-directory: packages/web
         run: bunx wrangler versions upload --preview-alias "${{ steps.url.outputs.branch-slug }}" --message "$PR_TITLE | $(git rev-parse --short HEAD^2) | $(git log -1 --format=%s HEAD^2)"
         if: github.event_name == 'pull_request' && steps.changes.outputs.web == 'true'
@@ -107,10 +110,21 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PR_TITLE: ${{ github.event.pull_request.title }}
 
+      - name: Generate PR comment
+        id: comment
+        if: github.event_name == 'pull_request'
+        run: echo "body<<EOF" >> $GITHUB_OUTPUT && bun scripts/generate-preview-comment.ts >> $GITHUB_OUTPUT && echo "EOF" >> $GITHUB_OUTPUT
+        env:
+          BRANCH_SLUG: ${{ steps.url.outputs.branch-slug }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          DEPLOYED_API: ${{ steps.deploy-api.outcome == 'success' }}
+          DEPLOYED_CMS: ${{ steps.deploy-cms.outcome == 'success' }}
+          DEPLOYED_WEB: ${{ steps.deploy-web.outcome == 'success' }}
+
       - name: Find PR comment
         uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3.1.0
         id: find-comment
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.comment.outputs.body != ''
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
@@ -118,19 +132,11 @@ jobs:
 
       - name: Create or update PR comment
         uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.comment.outputs.body != ''
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            <!--- preview-deployment --->
-            ### 🔮 Preview Deployment
-
-            | Package | URL |
-            |---------|-----|
-            | API | https://${{ steps.url.outputs.branch-slug }}-api.graphqlweekly.com/graphql |
-            | CMS | https://${{ steps.url.outputs.branch-slug }}-cms.graphqlweekly.com |
-            | Web | https://${{ steps.url.outputs.branch-slug }}-graphqlweekly-v2.recc.workers.dev |
+          body: ${{ steps.comment.outputs.body }}
           edit-mode: replace
 
       - name: Deploy preview auth worker
