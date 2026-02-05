@@ -5,8 +5,13 @@ import { IndexPage } from '../islands/index'
 import { serverFetch } from '../client/fetcher'
 import { AllIssuesDocument, type AllIssuesQuery } from '../generated/graphql'
 
-const data = await serverFetch<AllIssuesQuery>(AllIssuesDocument)
-const initialIssues = data.allIssues ?? []
+let initialIssues: AllIssuesQuery['allIssues'] = []
+try {
+  const data = await serverFetch<AllIssuesQuery>(AllIssuesDocument)
+  initialIssues = data.allIssues ?? []
+} catch (e) {
+  console.error('[index.astro] SSR fetch failed:', e)
+}
 ---
 
 <Layout title="GraphQL Weekly CMS">
