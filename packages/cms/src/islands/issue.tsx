@@ -489,12 +489,12 @@ function IssuePageContent({ id }: { id: string }) {
       removeTopicMutation.mutate(
         { id: topicId },
         {
+          onError: (err) => {
+            console.error("[handleTopicRemove] error:", err);
+          },
           onSuccess: () => {
             console.log("[handleTopicRemove] success, invalidating queries");
             invalidateQueries();
-          },
-          onError: (err) => {
-            console.error("[handleTopicRemove] error:", err);
           },
         },
       );
