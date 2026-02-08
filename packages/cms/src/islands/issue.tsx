@@ -484,11 +484,19 @@ function IssuePageContent({ id }: { id: string }) {
   }, []);
 
   const handleTopicRemove = useCallback(
-    (topicId: string, topicTitle: string) => {
-      if (!confirm(`Remove topic "${topicTitle}" from this issue?`)) return;
+    (topicId: string, _topicTitle: string) => {
+      console.log("[handleTopicRemove] removing topic", topicId);
       removeTopicMutation.mutate(
         { id: topicId },
-        { onSuccess: invalidateQueries },
+        {
+          onSuccess: () => {
+            console.log("[handleTopicRemove] success, invalidating queries");
+            invalidateQueries();
+          },
+          onError: (err) => {
+            console.error("[handleTopicRemove] error:", err);
+          },
+        },
       );
     },
     [removeTopicMutation, invalidateQueries],
@@ -621,14 +629,14 @@ function IssuePageContent({ id }: { id: string }) {
   return (
     <div
       className={cn(
-        "min-h-screen bg-neu-50 dark:bg-neu-950",
+        "min-h-screen flex flex-col bg-neu-50 dark:bg-neu-950",
         isMutating && "cursor-progress",
       )}
     >
       <Navbar />
       <PageHeader {...issue} topics={topics} />
 
-      <div className="xl:grid xl:grid-cols-[1fr_864px_1fr] xl:justify-center xl:gap-6">
+      <div className="flex-1 xl:grid xl:grid-cols-[1fr_864px_1fr] xl:justify-center xl:gap-6">
         <div />
 
         <main className="max-w-4xl w-full mx-auto xl:mx-0 px-4 py-6">
