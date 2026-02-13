@@ -1,0 +1,1 @@
+../packages/api/scripts/send-test-email.ts

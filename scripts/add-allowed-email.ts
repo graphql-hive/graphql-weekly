@@ -1,0 +1,1 @@
+../packages/api/scripts/add-allowed-email.ts
