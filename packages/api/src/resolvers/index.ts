@@ -191,19 +191,22 @@ export const resolvers: Resolvers = {
         throw error
       }
     },
-    createLink: async (_parent, { url }, ctx) => {
+    createLink: async (_parent, { text, title, url }, ctx) => {
       requireCollaborator(ctx)
       const id = generateId()
       const now = new Date().toISOString()
-      const metadata = await fetchUrlMetadata(url)
+      const metadata =
+        title != null || text != null
+          ? { description: text ?? null, title: title ?? null }
+          : await fetchUrlMetadata(url)
       await ctx.db
         .insertInto('Link')
         .values({
           createdAt: now,
           createdBy: ctx.user.id,
           id,
-          text: metadata.description ?? null,
-          title: metadata.title ?? null,
+          text: text ?? metadata.description ?? null,
+          title: title ?? metadata.title ?? null,
           updatedAt: now,
           updatedBy: ctx.user.id,
           url,
@@ -338,6 +341,7 @@ export const resolvers: Resolvers = {
             .selectAll()
             .where('topicId', '=', topic.id)
             .orderBy('position', 'asc')
+            .orderBy('createdAt', 'asc')
             .execute()
           return {
             links: links.map((link) => ({
@@ -411,12 +415,13 @@ export const resolvers: Resolvers = {
     },
     updateIssue: async (
       _parent,
-      { id, previewImage, published, versionCount },
+      { deleteLinks, id, previewImage, published, updateLinks, versionCount },
       ctx,
     ) => {
       requireCollaborator(ctx)
+      const now = new Date().toISOString()
       const updates: Record<string, unknown> = {
-        updatedAt: new Date().toISOString(),
+        updatedAt: now,
         updatedBy: ctx.user.id,
       }
       if (published !== null && published !== undefined)
@@ -431,6 +436,31 @@ export const resolvers: Resolvers = {
         .set(updates)
         .where('id', '=', id)
         .execute()
+
+      if (deleteLinks?.length) {
+        for (const linkId of deleteLinks) {
+          await ctx.db.deleteFrom('Link').where('id', '=', linkId).execute()
+        }
+      }
+
+      if (updateLinks?.length) {
+        for (const link of updateLinks) {
+          await ctx.db
+            .updateTable('Link')
+            .set({
+              updatedAt: now,
+              updatedBy: ctx.user.id,
+              ...(link.title == null ? {} : { title: link.title }),
+              ...(link.text == null ? {} : { text: link.text }),
+              ...(link.url == null ? {} : { url: link.url }),
+              ...(link.position == null ? {} : { position: link.position }),
+              ...(link.topicId === undefined ? {} : { topicId: link.topicId }),
+            })
+            .where('id', '=', link.id)
+            .execute()
+        }
+      }
+
       const issue = await ctx.db
         .selectFrom('Issue')
         .selectAll()
@@ -438,7 +468,7 @@ export const resolvers: Resolvers = {
         .executeTakeFirst()
       return issue ?? null
     },
-    updateLink: async (_parent, { id, text, title, url }, ctx) => {
+    updateLink: async (_parent, { id, position, text, title, url }, ctx) => {
       requireCollaborator(ctx)
       await ctx.db
         .updateTable('Link')
@@ -448,6 +478,7 @@ export const resolvers: Resolvers = {
           updatedBy: ctx.user.id,
           ...(text !== null && text !== undefined ? { text } : {}),
           ...(url !== null && url !== undefined ? { url } : {}),
+          ...(position !== null && position !== undefined ? { position } : {}),
         })
         .where('id', '=', id)
         .execute()
@@ -519,6 +550,7 @@ export const resolvers: Resolvers = {
           .selectFrom('Link')
           .selectAll()
           .orderBy('position', 'asc')
+          .orderBy('createdAt', 'asc')
           .execute(),
       ])
 
@@ -631,6 +663,7 @@ export const resolvers: Resolvers = {
           .selectAll()
           .where('topicId', 'in', batch)
           .orderBy('position', 'asc')
+          .orderBy('createdAt', 'asc')
           .execute()
         allLinks.push(...rows)
       }
@@ -752,6 +785,7 @@ export const resolvers: Resolvers = {
         .selectAll()
         .where('topicId', 'in', topicIds)
         .orderBy('position', 'asc')
+        .orderBy('createdAt', 'asc')
         .execute()
 
       // Group links by topicId and attach to topics
@@ -812,6 +846,8 @@ export const resolvers: Resolvers = {
         .selectFrom('Link')
         .selectAll()
         .where('topicId', '=', parent.id)
+        .orderBy('position', 'asc')
+        .orderBy('createdAt', 'asc')
         .execute()
     },
   },

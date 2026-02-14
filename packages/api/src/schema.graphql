@@ -87,6 +87,15 @@ input IssueBy @oneOf {
   number: Int
 }
 
+input UpdateLinkInput {
+  id: String!
+  title: String
+  text: String
+  url: String
+  position: Int
+  topicId: String
+}
+
 type Query {
   me: Me
   allIssues(skip: Int, limit: Int): [Issue!]!
@@ -101,7 +110,7 @@ type Query {
 
 type Mutation {
   createSubscriber(email: String!, name: String!): Subscriber
-  createLink(url: String!): Link
+  createLink(url: String!, title: String, text: String): Link
   createIssue(
     title: String!
     number: Int!
@@ -116,12 +125,20 @@ type Mutation {
     title: String!
     url: String!
   ): LinkSubmission
-  updateLink(id: String!, title: String!, text: String, url: String): Link
+  updateLink(
+    id: String!
+    title: String!
+    text: String
+    url: String
+    position: Int
+  ): Link
   updateIssue(
     id: String!
     published: Boolean
     versionCount: Int
     previewImage: String
+    updateLinks: [UpdateLinkInput!]
+    deleteLinks: [String!]
   ): Issue
   updateTopic(id: String!, position: Int): Topic
   updateTopicWhenIssueDeleted(id: String!): Topic

@@ -61,21 +61,8 @@ const ISSUE_WITH_TOPICS = gql`
 `;
 
 const CREATE_LINK = gql`
-  mutation CreateLink($url: String!) {
-    createLink(url: $url) {
-      id
-    }
-  }
-`;
-
-const UPDATE_LINK = gql`
-  mutation UpdateLink(
-    $id: String!
-    $title: String!
-    $text: String!
-    $url: String!
-  ) {
-    updateLink(id: $id, title: $title, text: $text, url: $url) {
+  mutation CreateLink($url: String!, $title: String, $text: String) {
+    createLink(url: $url, title: $title, text: $text) {
       id
     }
   }
@@ -131,21 +118,16 @@ async function getIssueWithTopics(issueId: string): Promise<Issue | null> {
   return data.issue;
 }
 
-async function createLink(url: string): Promise<string> {
+async function createLink(
+  url: string,
+  title?: string,
+  text?: string,
+): Promise<string> {
   const data = await client.request<{ createLink: { id: string } }>(
     CREATE_LINK,
-    { url },
+    { text, title, url },
   );
   return data.createLink.id;
-}
-
-async function updateLink(
-  id: string,
-  title: string,
-  text: string,
-  url: string,
-): Promise<void> {
-  await client.request(UPDATE_LINK, { id, text, title, url });
 }
 
 async function createTopic(issueId: string, title: string): Promise<string> {
@@ -196,13 +178,8 @@ async function main() {
   for (const link of links) {
     console.log(`\nProcessing: ${link.title}`);
 
-    // Create link
-    const linkId = await createLink(link.url);
+    const linkId = await createLink(link.url, link.title, link.description);
     console.log(`  Created link: ${linkId}`);
-
-    // Update link with title and description
-    await updateLink(linkId, link.title, link.description, link.url);
-    console.log(`  Updated with title/description`);
 
     // Find or create topic
     let topicId = existingTopics.get(link.tag.toLowerCase());

@@ -211,8 +211,11 @@ test.describe("Partial Link Updates", () => {
     await titleInput.click();
     await titleInput.fill("Initial Title");
 
-    const saveBtn = page.getByRole("button", { name: "Save" });
-    await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
+    await expect(page.getByText(/\d+ unsaved/)).toBeVisible({
+      timeout: 10_000,
+    });
+    const saveBtn = page.getByRole("button", { exact: true, name: "Save" });
+    await expect(saveBtn).toBeEnabled({ timeout: 5000 });
 
     const saveResponse = page.waitForResponse(async (res) => {
       if (!res.url().includes("/graphql")) return false;
@@ -273,15 +276,8 @@ test.describe("Table of Contents", () => {
   test.use({ storageState: "src/.auth/user.json" });
 
   test("ToC sidebar shows topics and unassigned section", async ({ page }) => {
-    // Set large viewport to show the xl sidebar
     await page.setViewportSize({ height: 900, width: 1400 });
-
-    await page.goto(CMS_URL);
-    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
-    await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await createFreshIssue(page);
 
     // ToC should be visible in aside
     const toc = page.locator("aside nav");
