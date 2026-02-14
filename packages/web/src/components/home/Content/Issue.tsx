@@ -55,7 +55,7 @@ export const Issue = ({ firstIssueNumber, issue, lastIssueNumber }: Props) => {
         return (
           <TopicBox
             articles={topic.links
-              .sort((a, b) => b.position - a.position)
+              .sort((a, b) => a.position - b.position)
               .map((link) => (
                 <TopicArticle
                   key={link.title}
