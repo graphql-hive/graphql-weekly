@@ -148,6 +148,8 @@ export type MutationCreateIssueArgs = {
 }
 
 export type MutationCreateLinkArgs = {
+  text?: InputMaybe<Scalars['String']['input']>
+  title?: InputMaybe<Scalars['String']['input']>
   url: Scalars['String']['input']
 }
 
@@ -185,9 +187,11 @@ export type MutationPublishEmailDraftArgs = {
 }
 
 export type MutationUpdateIssueArgs = {
+  deleteLinks?: InputMaybe<Array<Scalars['String']['input']>>
   id: Scalars['String']['input']
   previewImage?: InputMaybe<Scalars['String']['input']>
   published?: InputMaybe<Scalars['Boolean']['input']>
+  updateLinks?: InputMaybe<Array<UpdateLinkInput>>
   versionCount?: InputMaybe<Scalars['Int']['input']>
 }
 
@@ -276,6 +280,15 @@ export type Topic = {
 
 export enum TopicOrderBy {
   IssueCount = 'ISSUE_COUNT',
+}
+
+export type UpdateLinkInput = {
+  id: Scalars['String']['input']
+  position?: InputMaybe<Scalars['Int']['input']>
+  text?: InputMaybe<Scalars['String']['input']>
+  title?: InputMaybe<Scalars['String']['input']>
+  topicId?: InputMaybe<Scalars['String']['input']>
+  url?: InputMaybe<Scalars['String']['input']>
 }
 
 export type ResolverTypeWrapper<T> = Promise<T> | T
@@ -417,6 +430,7 @@ export type ResolversTypes = {
   Subscriber: ResolverTypeWrapper<SubscriberRow>
   Topic: ResolverTypeWrapper<TopicRow>
   TopicOrderBy: TopicOrderBy
+  UpdateLinkInput: UpdateLinkInput
 }
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -438,6 +452,7 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output']
   Subscriber: SubscriberRow
   Topic: TopicRow
+  UpdateLinkInput: UpdateLinkInput
 }
 
 export type AuthorResolvers<

@@ -191,19 +191,22 @@ export const resolvers: Resolvers = {
         throw error
       }
     },
-    createLink: async (_parent, { url }, ctx) => {
+    createLink: async (_parent, { url, title, text }, ctx) => {
       requireCollaborator(ctx)
       const id = generateId()
       const now = new Date().toISOString()
-      const metadata = await fetchUrlMetadata(url)
+      const metadata =
+        title != null || text != null
+          ? { title: title ?? null, description: text ?? null }
+          : await fetchUrlMetadata(url)
       await ctx.db
         .insertInto('Link')
         .values({
           createdAt: now,
           createdBy: ctx.user.id,
           id,
-          text: metadata.description ?? null,
-          title: metadata.title ?? null,
+          text: text ?? metadata.description ?? null,
+          title: title ?? metadata.title ?? null,
           updatedAt: now,
           updatedBy: ctx.user.id,
           url,
@@ -412,12 +415,13 @@ export const resolvers: Resolvers = {
     },
     updateIssue: async (
       _parent,
-      { id, previewImage, published, versionCount },
+      { deleteLinks, id, previewImage, published, updateLinks, versionCount },
       ctx,
     ) => {
       requireCollaborator(ctx)
+      const now = new Date().toISOString()
       const updates: Record<string, unknown> = {
-        updatedAt: new Date().toISOString(),
+        updatedAt: now,
         updatedBy: ctx.user.id,
       }
       if (published !== null && published !== undefined)
@@ -427,11 +431,38 @@ export const resolvers: Resolvers = {
       if (previewImage !== null && previewImage !== undefined)
         updates.previewImage = previewImage
 
-      await ctx.db
-        .updateTable('Issue')
-        .set(updates)
-        .where('id', '=', id)
-        .execute()
+      await ctx.db.transaction().execute(async (trx) => {
+        await trx
+          .updateTable('Issue')
+          .set(updates)
+          .where('id', '=', id)
+          .execute()
+
+        if (deleteLinks?.length) {
+          for (const linkId of deleteLinks) {
+            await trx.deleteFrom('Link').where('id', '=', linkId).execute()
+          }
+        }
+
+        if (updateLinks?.length) {
+          for (const link of updateLinks) {
+            await trx
+              .updateTable('Link')
+              .set({
+                updatedAt: now,
+                updatedBy: ctx.user.id,
+                ...(link.title == null ? {} : { title: link.title }),
+                ...(link.text == null ? {} : { text: link.text }),
+                ...(link.url == null ? {} : { url: link.url }),
+                ...(link.position == null ? {} : { position: link.position }),
+                ...(link.topicId == null ? {} : { topicId: link.topicId }),
+              })
+              .where('id', '=', link.id)
+              .execute()
+          }
+        }
+      })
+
       const issue = await ctx.db
         .selectFrom('Issue')
         .selectAll()
@@ -449,9 +480,7 @@ export const resolvers: Resolvers = {
           updatedBy: ctx.user.id,
           ...(text !== null && text !== undefined ? { text } : {}),
           ...(url !== null && url !== undefined ? { url } : {}),
-          ...(position !== null && position !== undefined
-            ? { position }
-            : {}),
+          ...(position !== null && position !== undefined ? { position } : {}),
         })
         .where('id', '=', id)
         .execute()

@@ -58,28 +58,20 @@ query TopTopicTitles($limit: Int) {
   }
 }
 
-mutation CreateLink($url: String!) {
-  createLink(url: $url) {
+mutation CreateLink($url: String!, $title: String, $text: String) {
+  createLink(url: $url, title: $title, text: $text) {
     id
     title
     text
   }
 }
 
-mutation UpdateLink(
+mutation SaveIssueLinks(
   $id: String!
-  $title: String!
-  $text: String!
-  $url: String!
-  $position: Int
+  $updateLinks: [UpdateLinkInput!]
+  $deleteLinks: [String!]
 ) {
-  updateLink(id: $id, title: $title, text: $text, url: $url, position: $position) {
-    id
-  }
-}
-
-mutation DeleteLink($id: String!) {
-  deleteLink(id: $id) {
+  updateIssue(id: $id, updateLinks: $updateLinks, deleteLinks: $deleteLinks) {
     id
   }
 }
@@ -130,13 +122,6 @@ mutation DeleteIssue($id: String!) {
 mutation UpdateTopicWhenIssueDeleted($id: String!) {
   updateTopicWhenIssueDeleted(id: $id) {
     id
-  }
-}
-
-mutation AddLinksToTopic($topicId: String!, $linkId: String!) {
-  addLinksToTopic(topicId: $topicId, linkId: $linkId) {
-    id
-    issueId
   }
 }
 

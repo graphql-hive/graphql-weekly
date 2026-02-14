@@ -42,13 +42,11 @@ import { Loading } from "../components/Loading";
 import { Navbar } from "../components/Navbar";
 import {
   type IssueQuery,
-  useAddLinksToTopicMutation,
   useCreateLinkMutation,
   useCreateTopicMutation,
-  useDeleteLinkMutation,
   useIssueQuery,
+  useSaveIssueLinksMutation,
   useUnassignedLinksQuery,
-  useUpdateLinkMutation,
   useUpdateTopicMutation,
   useUpdateTopicWhenIssueDeletedMutation,
 } from "../generated/graphql";
@@ -228,11 +226,9 @@ function IssuePageContent({ id }: { id: string }) {
 
   const createTopicMutation = useCreateTopicMutation();
   const createLinkMutation = useCreateLinkMutation();
-  const updateLinkMutation = useUpdateLinkMutation();
-  const deleteLinkMutation = useDeleteLinkMutation();
+  const saveIssueLinksMutation = useSaveIssueLinksMutation();
   const updateTopicMutation = useUpdateTopicMutation();
   const removeTopicMutation = useUpdateTopicWhenIssueDeletedMutation();
-  const addLinksToTopicMutation = useAddLinksToTopicMutation();
 
   const invalidateQueries = useCallback(() => {
     qc.invalidateQueries({ queryKey: ["UnassignedLinks"] });
@@ -539,86 +535,60 @@ function IssuePageContent({ id }: { id: string }) {
   );
 
   const hasUnsavedChanges =
-    editedLinks.size > 0 || deletedLinkIds.size > 0 || linkMoves.size > 0 || reorderedContainers.size > 0;
-  const changesCount = editedLinks.size + deletedLinkIds.size + linkMoves.size + reorderedContainers.size;
+    editedLinks.size > 0 ||
+    deletedLinkIds.size > 0 ||
+    linkMoves.size > 0 ||
+    reorderedContainers.size > 0;
+  const changesCount =
+    editedLinks.size +
+    deletedLinkIds.size +
+    linkMoves.size +
+    reorderedContainers.size;
 
   const saveAll = useCallback(async () => {
     setSaveError(null);
 
     try {
-      const deletePromises = [...deletedLinkIds].map((lid) =>
-        deleteLinkMutation.mutateAsync({ id: lid }),
-      );
+      // Build link updates: positions, content edits, and topic moves
+      const updates = new Map<
+        string,
+        { id: string; title?: string; text?: string; url?: string; position?: number; topicId?: string }
+      >();
 
-      const movePromises = [...linkMoves.entries()].map(([linkId, topicId]) => {
-        if (topicId === UNASSIGNED_ID) {
-          // TODO: Need a mutation to unassign link from topic
-          return Promise.resolve();
-        }
-        return addLinksToTopicMutation.mutateAsync({ linkId, topicId });
-      });
-
-      // Save link positions for reordered containers
-      const positionPromises: Promise<unknown>[] = [];
+      // Collect position updates from reordered containers
       for (const containerId of reorderedContainers) {
         const containerItems = items[containerId];
         if (!containerItems || containerId === UNASSIGNED_ID) continue;
         for (const [i, containerItem] of containerItems.entries()) {
           const linkId = String(containerItem);
           const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
-          // Skip if this link already has a content edit (position will be set alongside it)
-          if (editedLinks.has(resolvedId)) continue;
-          const current = linkMap.get(linkId);
-          positionPromises.push(
-            updateLinkMutation.mutateAsync({
-              id: resolvedId,
-              position: i,
-              text: current?.text ?? "",
-              title: current?.title ?? "",
-              url: current?.url ?? "",
-            }),
-          );
+          updates.set(resolvedId, { id: resolvedId, position: i });
         }
       }
 
-      // For edited links in reordered containers, include position
-      const linkPromisesWithPositions = [...editedLinks.entries()].map(
-        ([lid, changes]) => {
-          const current = linkMap.get(lid);
-          // Find the link's container and position
-          let position: number | undefined;
-          for (const containerId of reorderedContainers) {
-            const idx = items[containerId]?.indexOf(lid);
-            if (idx !== undefined && idx >= 0) {
-              position = idx;
-              break;
-            }
-          }
-          return updateLinkMutation.mutateAsync({
-            id: lid,
-            ...(position === undefined ? {} : { position }),
-            text:
-              changes.text === undefined
-                ? (current?.text ?? "")
-                : (changes.text ?? ""),
-            title:
-              changes.title === undefined
-                ? (current?.title ?? "")
-                : (changes.title ?? ""),
-            url:
-              changes.url === undefined
-                ? (current?.url ?? "")
-                : (changes.url ?? ""),
-          });
-        },
-      );
+      // Merge topic moves
+      for (const [linkId, topicId] of linkMoves) {
+        if (topicId === UNASSIGNED_ID) continue; // TODO: unassign mutation
+        const existing = updates.get(linkId) ?? { id: linkId };
+        updates.set(linkId, { ...existing, topicId });
+      }
 
-      await Promise.all([
-        ...linkPromisesWithPositions,
-        ...deletePromises,
-        ...movePromises,
-        ...positionPromises,
-      ]);
+      // Merge content edits
+      for (const [lid, changes] of editedLinks) {
+        const existing = updates.get(lid) ?? { id: lid };
+        updates.set(lid, {
+          ...existing,
+          ...(changes.title != null ? { title: changes.title } : {}),
+          ...(changes.text != null ? { text: changes.text } : {}),
+          ...(changes.url != null ? { url: changes.url } : {}),
+        });
+      }
+
+      await saveIssueLinksMutation.mutateAsync({
+        id,
+        updateLinks: updates.size > 0 ? [...updates.values()] : null,
+        deleteLinks: deletedLinkIds.size > 0 ? [...deletedLinkIds] : null,
+      });
 
       setEditedLinks(new Map());
       setDeletedLinkIds(new Set());
@@ -631,15 +601,13 @@ function IssuePageContent({ id }: { id: string }) {
       setSaveError(message);
     }
   }, [
+    id,
     editedLinks,
     deletedLinkIds,
     items,
-    linkMap,
     linkMoves,
     reorderedContainers,
-    updateLinkMutation,
-    deleteLinkMutation,
-    addLinksToTopicMutation,
+    saveIssueLinksMutation,
     invalidateQueries,
   ]);
 
@@ -660,17 +628,13 @@ function IssuePageContent({ id }: { id: string }) {
   }
 
   const isSaving =
-    updateLinkMutation.isPending ||
-    deleteLinkMutation.isPending ||
-    addLinksToTopicMutation.isPending ||
-    createLinkMutation.isPending;
+    saveIssueLinksMutation.isPending || createLinkMutation.isPending;
 
   const isMutating =
     isSaving ||
     updateTopicMutation.isPending ||
     removeTopicMutation.isPending ||
-    createTopicMutation.isPending ||
-    createLinkMutation.isPending;
+    createTopicMutation.isPending;
 
   const activeLink = activeId ? linkMap.get(String(activeId)) : null;
 
@@ -749,9 +713,16 @@ function IssuePageContent({ id }: { id: string }) {
                   | undefined;
 
                 if (submissionData?.url) {
-                  // Create link from submission
                   createLinkMutation.mutate(
-                    { url: submissionData.url },
+                    {
+                      url: submissionData.url,
+                      ...(submissionData.title && {
+                        title: submissionData.title,
+                      }),
+                      ...(submissionData.description && {
+                        text: submissionData.description,
+                      }),
+                    },
                     {
                       onSuccess: async (data) => {
                         const newLinkId = data.createLink?.id;
@@ -760,15 +731,6 @@ function IssuePageContent({ id }: { id: string }) {
                           return;
                         }
 
-                        // Prefill link data from submission
-                        await updateLinkMutation.mutateAsync({
-                          id: newLinkId,
-                          text: submissionData.description || "",
-                          title: submissionData.title || "",
-                          url: submissionData.url,
-                        });
-
-                        // Mark submission as consumed
                         if (submissionData.id) {
                           markSubmissionConsumed(submissionData.id);
                         }
@@ -776,14 +738,13 @@ function IssuePageContent({ id }: { id: string }) {
                         if (overContainer === UNASSIGNED_ID) {
                           invalidateQueries();
                         } else {
-                          // If dropped on a topic, also assign it
-                          addLinksToTopicMutation.mutate(
-                            {
-                              linkId: newLinkId,
-                              topicId: String(overContainer),
-                            },
-                            { onSuccess: invalidateQueries },
-                          );
+                          await saveIssueLinksMutation.mutateAsync({
+                            id,
+                            updateLinks: [
+                              { id: newLinkId, topicId: String(overContainer) },
+                            ],
+                          });
+                          invalidateQueries();
                         }
                       },
                     },
