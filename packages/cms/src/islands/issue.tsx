@@ -559,7 +559,7 @@ function IssuePageContent({ id }: { id: string }) {
           position?: number;
           text?: string;
           title?: string;
-          topicId?: string;
+          topicId?: string | null;
           url?: string;
         }
       >();
@@ -567,7 +567,7 @@ function IssuePageContent({ id }: { id: string }) {
       // Collect position updates from reordered containers
       for (const containerId of reorderedContainers) {
         const containerItems = items[containerId];
-        if (!containerItems || containerId === UNASSIGNED_ID) continue;
+        if (!containerItems) continue;
         for (const [i, containerItem] of containerItems.entries()) {
           const linkId = String(containerItem);
           const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
@@ -577,10 +577,12 @@ function IssuePageContent({ id }: { id: string }) {
 
       // Merge topic moves
       for (const [linkId, topicId] of linkMoves) {
-        if (topicId === UNASSIGNED_ID) continue; // TODO: unassign mutation
         const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
         const existing = updates.get(resolvedId) ?? { id: resolvedId };
-        updates.set(resolvedId, { ...existing, topicId });
+        updates.set(resolvedId, {
+          ...existing,
+          topicId: topicId === UNASSIGNED_ID ? null : topicId,
+        });
       }
 
       // Merge content edits

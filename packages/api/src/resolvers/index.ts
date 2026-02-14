@@ -454,7 +454,7 @@ export const resolvers: Resolvers = {
               ...(link.text == null ? {} : { text: link.text }),
               ...(link.url == null ? {} : { url: link.url }),
               ...(link.position == null ? {} : { position: link.position }),
-              ...(link.topicId == null ? {} : { topicId: link.topicId }),
+              ...(link.topicId === undefined ? {} : { topicId: link.topicId }),
             })
             .where('id', '=', link.id)
             .execute()

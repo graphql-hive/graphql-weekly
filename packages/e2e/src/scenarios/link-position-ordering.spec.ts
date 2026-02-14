@@ -282,4 +282,39 @@ test.describe("Link Position Ordering", () => {
       },
     );
   });
+
+  test("updateIssue with updateLinks unassigns link via topicId: null", async () => {
+    const { unassignedLinks: before } = await gql<{
+      unassignedLinks: { id: string }[];
+    }>(requestContext, `query { unassignedLinks { id } }`);
+
+    await gql(
+      requestContext,
+      `mutation($id: String!, $updateLinks: [UpdateLinkInput!]) {
+        updateIssue(id: $id, updateLinks: $updateLinks) { id }
+      }`,
+      {
+        id: issueId,
+        updateLinks: [{ id: linkIds[1], topicId: null }],
+      },
+    );
+
+    const { unassignedLinks: after } = await gql<{
+      unassignedLinks: { id: string }[];
+    }>(requestContext, `query { unassignedLinks { id } }`);
+
+    expect(after.some((l) => l.id === linkIds[1])).toBe(true);
+    expect(after.length).toBe(before.length + 1);
+
+    await gql(
+      requestContext,
+      `mutation($id: String!, $updateLinks: [UpdateLinkInput!]) {
+        updateIssue(id: $id, updateLinks: $updateLinks) { id }
+      }`,
+      {
+        id: issueId,
+        updateLinks: [{ id: linkIds[1], topicId }],
+      },
+    );
+  });
 });
