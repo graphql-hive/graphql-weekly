@@ -276,9 +276,9 @@ function IssuePageContent({ id }: { id: string }) {
         ]),
     );
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from server data
     setItems({ [UNASSIGNED_ID]: unassigned, ...topicItems });
-  }, [issue, unassignedLinks, topics, deletedLinkIds]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- omit deletedLinkIds to avoid discarding local reorder on delete
+  }, [issue, unassignedLinks, topics]);
 
   // Containers list (for iteration)
   const containers = useMemo(
@@ -480,6 +480,17 @@ function IssuePageContent({ id }: { id: string }) {
   const handleLinkDelete = useCallback((linkId: string) => {
     const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
     setDeletedLinkIds((prev) => new Set(prev).add(resolvedId));
+    setItems((prev) => {
+      const container = Object.keys(prev).find((key) =>
+        prev[key]?.includes(linkId),
+      );
+      const containerItems = container ? prev[container] : undefined;
+      if (!container || !containerItems) return prev;
+      return {
+        ...prev,
+        [container]: containerItems.filter((id) => id !== linkId),
+      };
+    });
   }, []);
 
   const handleTopicRemove = useCallback(
@@ -567,14 +578,16 @@ function IssuePageContent({ id }: { id: string }) {
       // Merge topic moves
       for (const [linkId, topicId] of linkMoves) {
         if (topicId === UNASSIGNED_ID) continue; // TODO: unassign mutation
-        const existing = updates.get(linkId) ?? { id: linkId };
-        updates.set(linkId, { ...existing, topicId });
+        const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+        const existing = updates.get(resolvedId) ?? { id: resolvedId };
+        updates.set(resolvedId, { ...existing, topicId });
       }
 
       // Merge content edits
       for (const [lid, changes] of editedLinks) {
-        const existing = updates.get(lid) ?? { id: lid };
-        updates.set(lid, {
+        const resolvedId = tempToRealIdRef.current.get(lid) ?? lid;
+        const existing = updates.get(resolvedId) ?? { id: resolvedId };
+        updates.set(resolvedId, {
           ...existing,
           ...(changes.title == null ? {} : { title: changes.title }),
           ...(changes.text == null ? {} : { text: changes.text }),
@@ -615,7 +628,23 @@ function IssuePageContent({ id }: { id: string }) {
     setLinkMoves(new Map());
     setReorderedContainers(new Set());
     setSaveError(null);
-  }, []);
+    setItems(() => {
+      const unassigned = unassignedLinks
+        .filter((link) => link.id)
+        .map((link) => link.id!);
+      const topicItems = Object.fromEntries(
+        topics
+          .filter((topic) => topic.id)
+          .map((topic) => [
+            topic.id,
+            (topic.links ?? [])
+              .filter((link) => link.id)
+              .map((link) => link.id!),
+          ]),
+      );
+      return { [UNASSIGNED_ID]: unassigned, ...topicItems };
+    });
+  }, [unassignedLinks, topics]);
 
   if (linksLoading || issueLoading || !issue) {
     return (
