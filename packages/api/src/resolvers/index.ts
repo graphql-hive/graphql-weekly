@@ -126,6 +126,30 @@ async function fetchUrlMetadata(
   return metadata
 }
 
+async function triggerDeploy(
+  githubToken: string,
+  issueNumber: number,
+): Promise<void> {
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/dispatches`,
+    {
+      body: JSON.stringify({
+        client_payload: { issue_number: issueNumber },
+        event_type: 'cms-publish',
+      }),
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${githubToken}`,
+        'User-Agent': 'GraphQL-Weekly-API',
+      },
+      method: 'POST',
+    },
+  )
+  if (!res.ok) {
+    throw new Error(`GitHub dispatch failed: ${res.status} ${await res.text()}`)
+  }
+}
+
 export const resolvers: Resolvers = {
   DateTime: DateTimeResolver,
 
@@ -466,6 +490,16 @@ export const resolvers: Resolvers = {
         .selectAll()
         .where('id', '=', id)
         .executeTakeFirst()
+
+      if (published && issue && ctx.env.GITHUB_TOKEN) {
+        ctx.waitUntil(
+          triggerDeploy(ctx.env.GITHUB_TOKEN, issue.number).catch(
+            // eslint-disable-next-line no-console
+            (error: unknown) => console.error('Failed to trigger deploy:', error),
+          ),
+        )
+      }
+
       return issue ?? null
     },
     updateLink: async (_parent, { id, position, text, title, url }, ctx) => {

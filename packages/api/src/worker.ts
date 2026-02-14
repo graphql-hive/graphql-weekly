@@ -10,6 +10,7 @@ import typeDefs from './schema.graphql'
 
 export interface Env extends AuthEnv {
   E2E_TEST?: string
+  GITHUB_TOKEN?: string
   LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
   MAILCHIMP_SERVER_PREFIX?: string
@@ -29,6 +30,7 @@ export interface GraphQLContext {
   db: Kysely<Database>
   env: Env
   user: User | null
+  waitUntil: ExecutionContext['waitUntil']
 }
 
 const schema = createSchema<GraphQLContext>({ resolvers, typeDefs })
@@ -87,7 +89,7 @@ export default {
   async fetch(
     request: Request,
     env: Env,
-    _ctx: ExecutionContext,
+    ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url)
     const { hostname } = url
@@ -171,7 +173,12 @@ export default {
           // No session or invalid session
         }
 
-        const response = await yoga.fetch(request, { db, env, user })
+        const response = await yoga.fetch(request, {
+          db,
+          env,
+          user,
+          waitUntil: ctx.waitUntil.bind(ctx),
+        })
         return addCorsHeaders(response, corsOrigin)
       }
 
