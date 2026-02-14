@@ -431,37 +431,35 @@ export const resolvers: Resolvers = {
       if (previewImage !== null && previewImage !== undefined)
         updates.previewImage = previewImage
 
-      await ctx.db.transaction().execute(async (trx) => {
-        await trx
-          .updateTable('Issue')
-          .set(updates)
-          .where('id', '=', id)
-          .execute()
+      await ctx.db
+        .updateTable('Issue')
+        .set(updates)
+        .where('id', '=', id)
+        .execute()
 
-        if (deleteLinks?.length) {
-          for (const linkId of deleteLinks) {
-            await trx.deleteFrom('Link').where('id', '=', linkId).execute()
-          }
+      if (deleteLinks?.length) {
+        for (const linkId of deleteLinks) {
+          await ctx.db.deleteFrom('Link').where('id', '=', linkId).execute()
         }
+      }
 
-        if (updateLinks?.length) {
-          for (const link of updateLinks) {
-            await trx
-              .updateTable('Link')
-              .set({
-                updatedAt: now,
-                updatedBy: ctx.user.id,
-                ...(link.title == null ? {} : { title: link.title }),
-                ...(link.text == null ? {} : { text: link.text }),
-                ...(link.url == null ? {} : { url: link.url }),
-                ...(link.position == null ? {} : { position: link.position }),
-                ...(link.topicId == null ? {} : { topicId: link.topicId }),
-              })
-              .where('id', '=', link.id)
-              .execute()
-          }
+      if (updateLinks?.length) {
+        for (const link of updateLinks) {
+          await ctx.db
+            .updateTable('Link')
+            .set({
+              updatedAt: now,
+              updatedBy: ctx.user.id,
+              ...(link.title == null ? {} : { title: link.title }),
+              ...(link.text == null ? {} : { text: link.text }),
+              ...(link.url == null ? {} : { url: link.url }),
+              ...(link.position == null ? {} : { position: link.position }),
+              ...(link.topicId == null ? {} : { topicId: link.topicId }),
+            })
+            .where('id', '=', link.id)
+            .execute()
         }
-      })
+      }
 
       const issue = await ctx.db
         .selectFrom('Issue')
