@@ -208,9 +208,9 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Track moves for saving (linkId -> newContainerId)
   const [linkMoves, setLinkMoves] = useState<Map<string, string>>(new Map());
-  const [reorderedContainers, setReorderedContainers] = useState<
-    Set<string>
-  >(new Set());
+  const [reorderedContainers, setReorderedContainers] = useState<Set<string>>(
+    new Set(),
+  );
   const [deletedLinkIds, setDeletedLinkIds] = useState<Set<string>>(new Set());
   const [saveError, setSaveError] = useState<string | null>(null);
   const tempToRealIdRef = useRef<Map<string, string>>(new Map());
@@ -484,18 +484,9 @@ function IssuePageContent({ id }: { id: string }) {
 
   const handleTopicRemove = useCallback(
     (topicId: string, _topicTitle: string) => {
-      console.log("[handleTopicRemove] removing topic", topicId);
       removeTopicMutation.mutate(
         { id: topicId },
-        {
-          onError: (err) => {
-            console.error("[handleTopicRemove] error:", err);
-          },
-          onSuccess: () => {
-            console.log("[handleTopicRemove] success, invalidating queries");
-            invalidateQueries();
-          },
-        },
+        { onSuccess: invalidateQueries },
       );
     },
     [removeTopicMutation, invalidateQueries],
@@ -552,7 +543,14 @@ function IssuePageContent({ id }: { id: string }) {
       // Build link updates: positions, content edits, and topic moves
       const updates = new Map<
         string,
-        { id: string; title?: string; text?: string; url?: string; position?: number; topicId?: string }
+        {
+          id: string;
+          position?: number;
+          text?: string;
+          title?: string;
+          topicId?: string;
+          url?: string;
+        }
       >();
 
       // Collect position updates from reordered containers
@@ -578,16 +576,16 @@ function IssuePageContent({ id }: { id: string }) {
         const existing = updates.get(lid) ?? { id: lid };
         updates.set(lid, {
           ...existing,
-          ...(changes.title != null ? { title: changes.title } : {}),
-          ...(changes.text != null ? { text: changes.text } : {}),
-          ...(changes.url != null ? { url: changes.url } : {}),
+          ...(changes.title == null ? {} : { title: changes.title }),
+          ...(changes.text == null ? {} : { text: changes.text }),
+          ...(changes.url == null ? {} : { url: changes.url }),
         });
       }
 
       await saveIssueLinksMutation.mutateAsync({
+        deleteLinks: deletedLinkIds.size > 0 ? [...deletedLinkIds] : null,
         id,
         updateLinks: updates.size > 0 ? [...updates.values()] : null,
-        deleteLinks: deletedLinkIds.size > 0 ? [...deletedLinkIds] : null,
       });
 
       setEditedLinks(new Map());

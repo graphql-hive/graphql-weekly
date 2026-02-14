@@ -11,7 +11,10 @@ async function gql<T>(
   const res = await request.post(`${API_URL}/graphql`, {
     data: { query, variables },
   });
-  const json = (await res.json()) as { data: T; errors?: { message: string }[] };
+  const json = (await res.json()) as {
+    data: T;
+    errors?: { message: string }[];
+  };
   if (json.errors?.length) {
     throw new Error(json.errors.map((e) => e.message).join(", "));
   }
@@ -67,7 +70,9 @@ test.describe("Link Position Ordering", () => {
       const { createLink } = await gql<{ createLink: { id: string } }>(
         requestContext,
         `mutation($url: String!) { createLink(url: $url) { id } }`,
-        { url: `https://example.com/${title.toLowerCase().replace(" ", "-")}-${timestamp}` },
+        {
+          url: `https://example.com/${title.toLowerCase().replace(" ", "-")}-${timestamp}`,
+        },
       );
       linkIds.push(createLink.id);
 
@@ -93,14 +98,14 @@ test.describe("Link Position Ordering", () => {
           requestContext,
           `mutation($id: String!) { deleteLink(id: $id) { id } }`,
           { id },
-        ).catch(() => {});
+        ).catch(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function -- cleanup
       }
     }
     await gql(
       requestContext,
       `mutation($id: String!) { deleteIssue(id: $id) { id } }`,
       { id: issueId },
-    ).catch(() => {});
+    ).catch(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function -- cleanup
   });
 
   test("updateIssue with updateLinks persists positions", async () => {
@@ -161,7 +166,12 @@ test.describe("Link Position Ordering", () => {
     const { issue } = await gql<{
       issue: {
         topics: {
-          links: { id: string; position: number; text: string | null; title: string }[];
+          links: {
+            id: string;
+            position: number;
+            text: string | null;
+            title: string;
+          }[];
         }[];
       };
     }>(
@@ -202,7 +212,7 @@ test.describe("Link Position Ordering", () => {
       `mutation($id: String!, $deleteLinks: [String!]) {
         updateIssue(id: $id, deleteLinks: $deleteLinks) { id }
       }`,
-      { id: issueId, deleteLinks: [deleteLinkId] },
+      { deleteLinks: [deleteLinkId], id: issueId },
     );
 
     // Verify deleted

@@ -125,7 +125,7 @@ async function createLink(
 ): Promise<string> {
   const data = await client.request<{ createLink: { id: string } }>(
     CREATE_LINK,
-    { url, title, text },
+    { text, title, url },
   );
   return data.createLink.id;
 }
@@ -178,11 +178,7 @@ async function main() {
   for (const link of links) {
     console.log(`\nProcessing: ${link.title}`);
 
-    const linkId = await createLink(
-      link.url,
-      link.title,
-      link.description,
-    );
+    const linkId = await createLink(link.url, link.title, link.description);
     console.log(`  Created link: ${linkId}`);
 
     // Find or create topic

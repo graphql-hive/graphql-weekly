@@ -125,7 +125,13 @@ type Mutation {
     title: String!
     url: String!
   ): LinkSubmission
-  updateLink(id: String!, title: String!, text: String, url: String, position: Int): Link
+  updateLink(
+    id: String!
+    title: String!
+    text: String
+    url: String
+    position: Int
+  ): Link
   updateIssue(
     id: String!
     published: Boolean

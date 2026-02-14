@@ -49,7 +49,9 @@ test.describe("Save Issue Links", () => {
     await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
 
     await saveBtn.click();
-    await expect(page.getByText(/unsaved/)).not.toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/unsaved/)).not.toBeVisible({
+      timeout: 15_000,
+    });
 
     // Verify persistence after reload
     await page.reload();

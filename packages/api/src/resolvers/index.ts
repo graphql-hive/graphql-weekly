@@ -191,13 +191,13 @@ export const resolvers: Resolvers = {
         throw error
       }
     },
-    createLink: async (_parent, { url, title, text }, ctx) => {
+    createLink: async (_parent, { text, title, url }, ctx) => {
       requireCollaborator(ctx)
       const id = generateId()
       const now = new Date().toISOString()
       const metadata =
         title != null || text != null
-          ? { title: title ?? null, description: text ?? null }
+          ? { description: text ?? null, title: title ?? null }
           : await fetchUrlMetadata(url)
       await ctx.db
         .insertInto('Link')
