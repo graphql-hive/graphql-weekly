@@ -210,6 +210,9 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Track moves for saving (linkId -> newContainerId)
   const [linkMoves, setLinkMoves] = useState<Map<string, string>>(new Map());
+  const [reorderedContainers, setReorderedContainers] = useState<
+    Set<string>
+  >(new Set());
   const [deletedLinkIds, setDeletedLinkIds] = useState<Set<string>>(new Set());
   const [saveError, setSaveError] = useState<string | null>(null);
   const tempToRealIdRef = useRef<Map<string, string>>(new Map());
@@ -536,32 +539,13 @@ function IssuePageContent({ id }: { id: string }) {
   );
 
   const hasUnsavedChanges =
-    editedLinks.size > 0 || deletedLinkIds.size > 0 || linkMoves.size > 0;
-  const changesCount = editedLinks.size + deletedLinkIds.size + linkMoves.size;
+    editedLinks.size > 0 || deletedLinkIds.size > 0 || linkMoves.size > 0 || reorderedContainers.size > 0;
+  const changesCount = editedLinks.size + deletedLinkIds.size + linkMoves.size + reorderedContainers.size;
 
   const saveAll = useCallback(async () => {
     setSaveError(null);
 
     try {
-      const linkPromises = [...editedLinks.entries()].map(([lid, changes]) => {
-        const current = linkMap.get(lid);
-        return updateLinkMutation.mutateAsync({
-          id: lid,
-          text:
-            changes.text === undefined
-              ? (current?.text ?? "")
-              : (changes.text ?? ""),
-          title:
-            changes.title === undefined
-              ? (current?.title ?? "")
-              : (changes.title ?? ""),
-          url:
-            changes.url === undefined
-              ? (current?.url ?? "")
-              : (changes.url ?? ""),
-        });
-      });
-
       const deletePromises = [...deletedLinkIds].map((lid) =>
         deleteLinkMutation.mutateAsync({ id: lid }),
       );
@@ -574,11 +558,72 @@ function IssuePageContent({ id }: { id: string }) {
         return addLinksToTopicMutation.mutateAsync({ linkId, topicId });
       });
 
-      await Promise.all([...linkPromises, ...deletePromises, ...movePromises]);
+      // Save link positions for reordered containers
+      const positionPromises: Promise<unknown>[] = [];
+      for (const containerId of reorderedContainers) {
+        const containerItems = items[containerId];
+        if (!containerItems || containerId === UNASSIGNED_ID) continue;
+        for (const [i, containerItem] of containerItems.entries()) {
+          const linkId = String(containerItem);
+          const resolvedId = tempToRealIdRef.current.get(linkId) ?? linkId;
+          // Skip if this link already has a content edit (position will be set alongside it)
+          if (editedLinks.has(resolvedId)) continue;
+          const current = linkMap.get(linkId);
+          positionPromises.push(
+            updateLinkMutation.mutateAsync({
+              id: resolvedId,
+              position: i,
+              text: current?.text ?? "",
+              title: current?.title ?? "",
+              url: current?.url ?? "",
+            }),
+          );
+        }
+      }
+
+      // For edited links in reordered containers, include position
+      const linkPromisesWithPositions = [...editedLinks.entries()].map(
+        ([lid, changes]) => {
+          const current = linkMap.get(lid);
+          // Find the link's container and position
+          let position: number | undefined;
+          for (const containerId of reorderedContainers) {
+            const idx = items[containerId]?.indexOf(lid);
+            if (idx !== undefined && idx >= 0) {
+              position = idx;
+              break;
+            }
+          }
+          return updateLinkMutation.mutateAsync({
+            id: lid,
+            ...(position === undefined ? {} : { position }),
+            text:
+              changes.text === undefined
+                ? (current?.text ?? "")
+                : (changes.text ?? ""),
+            title:
+              changes.title === undefined
+                ? (current?.title ?? "")
+                : (changes.title ?? ""),
+            url:
+              changes.url === undefined
+                ? (current?.url ?? "")
+                : (changes.url ?? ""),
+          });
+        },
+      );
+
+      await Promise.all([
+        ...linkPromisesWithPositions,
+        ...deletePromises,
+        ...movePromises,
+        ...positionPromises,
+      ]);
 
       setEditedLinks(new Map());
       setDeletedLinkIds(new Set());
       setLinkMoves(new Map());
+      setReorderedContainers(new Set());
       invalidateQueries();
     } catch (error) {
       const message =
@@ -588,8 +633,10 @@ function IssuePageContent({ id }: { id: string }) {
   }, [
     editedLinks,
     deletedLinkIds,
+    items,
     linkMap,
     linkMoves,
+    reorderedContainers,
     updateLinkMutation,
     deleteLinkMutation,
     addLinksToTopicMutation,
@@ -600,6 +647,7 @@ function IssuePageContent({ id }: { id: string }) {
     setEditedLinks(new Map());
     setDeletedLinkIds(new Set());
     setLinkMoves(new Map());
+    setReorderedContainers(new Set());
     setSaveError(null);
   }, []);
 
@@ -810,6 +858,10 @@ function IssuePageContent({ id }: { id: string }) {
                       ),
                     };
                   });
+                  // Track that this container's link order changed
+                  setReorderedContainers((prev) =>
+                    new Set(prev).add(String(overContainer)),
+                  );
                 }
 
                 // Track move if container changed
@@ -820,6 +872,13 @@ function IssuePageContent({ id }: { id: string }) {
                   setLinkMoves((prev) =>
                     new Map(prev).set(resolvedId, String(overContainer)),
                   );
+                  // Both containers' positions changed
+                  setReorderedContainers((prev) => {
+                    const next = new Set(prev);
+                    next.add(String(activeContainer));
+                    next.add(String(overContainer));
+                    return next;
+                  });
                 }
               }
 

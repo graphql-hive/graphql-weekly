@@ -71,8 +71,9 @@ mutation UpdateLink(
   $title: String!
   $text: String!
   $url: String!
+  $position: Int
 ) {
-  updateLink(id: $id, title: $title, text: $text, url: $url) {
+  updateLink(id: $id, title: $title, text: $text, url: $url, position: $position) {
     id
   }
 }

@@ -193,6 +193,7 @@ export type MutationUpdateIssueArgs = {
 
 export type MutationUpdateLinkArgs = {
   id: Scalars['String']['input']
+  position?: InputMaybe<Scalars['Int']['input']>
   text?: InputMaybe<Scalars['String']['input']>
   title: Scalars['String']['input']
   url?: InputMaybe<Scalars['String']['input']>

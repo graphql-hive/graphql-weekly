@@ -338,6 +338,7 @@ export const resolvers: Resolvers = {
             .selectAll()
             .where('topicId', '=', topic.id)
             .orderBy('position', 'asc')
+            .orderBy('createdAt', 'asc')
             .execute()
           return {
             links: links.map((link) => ({
@@ -438,7 +439,7 @@ export const resolvers: Resolvers = {
         .executeTakeFirst()
       return issue ?? null
     },
-    updateLink: async (_parent, { id, text, title, url }, ctx) => {
+    updateLink: async (_parent, { id, position, text, title, url }, ctx) => {
       requireCollaborator(ctx)
       await ctx.db
         .updateTable('Link')
@@ -448,6 +449,9 @@ export const resolvers: Resolvers = {
           updatedBy: ctx.user.id,
           ...(text !== null && text !== undefined ? { text } : {}),
           ...(url !== null && url !== undefined ? { url } : {}),
+          ...(position !== null && position !== undefined
+            ? { position }
+            : {}),
         })
         .where('id', '=', id)
         .execute()
@@ -519,6 +523,7 @@ export const resolvers: Resolvers = {
           .selectFrom('Link')
           .selectAll()
           .orderBy('position', 'asc')
+          .orderBy('createdAt', 'asc')
           .execute(),
       ])
 
@@ -631,6 +636,7 @@ export const resolvers: Resolvers = {
           .selectAll()
           .where('topicId', 'in', batch)
           .orderBy('position', 'asc')
+          .orderBy('createdAt', 'asc')
           .execute()
         allLinks.push(...rows)
       }
@@ -752,6 +758,7 @@ export const resolvers: Resolvers = {
         .selectAll()
         .where('topicId', 'in', topicIds)
         .orderBy('position', 'asc')
+        .orderBy('createdAt', 'asc')
         .execute()
 
       // Group links by topicId and attach to topics
@@ -812,6 +819,8 @@ export const resolvers: Resolvers = {
         .selectFrom('Link')
         .selectAll()
         .where('topicId', '=', parent.id)
+        .orderBy('position', 'asc')
+        .orderBy('createdAt', 'asc')
         .execute()
     },
   },
