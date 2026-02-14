@@ -1,0 +1,1 @@
+../packages/cms/scripts/batch-add-links.ts
