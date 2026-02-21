@@ -302,6 +302,24 @@ export const resolvers: Resolvers = {
       }
       return link ?? null
     },
+    deleteTopic: async (_parent, { id }, ctx) => {
+      requireCollaborator(ctx)
+      const topic = await ctx.db
+        .selectFrom('Topic')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst()
+      if (topic) {
+        // Unlink any links assigned to this topic
+        await ctx.db
+          .updateTable('Link')
+          .set({ topicId: null })
+          .where('topicId', '=', id)
+          .execute()
+        await ctx.db.deleteFrom('Topic').where('id', '=', id).execute()
+      }
+      return topic ?? null
+    },
     publishEmailDraft: async (
       _parent,
       { id, isFoundation, versionCount },

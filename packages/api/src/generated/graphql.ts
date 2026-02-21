@@ -128,6 +128,7 @@ export type Mutation = {
   createTopic?: Maybe<Topic>
   deleteIssue?: Maybe<Issue>
   deleteLink?: Maybe<Link>
+  deleteTopic?: Maybe<Topic>
   publishEmailDraft?: Maybe<Issue>
   updateIssue?: Maybe<Issue>
   updateLink?: Maybe<Link>
@@ -177,6 +178,10 @@ export type MutationDeleteIssueArgs = {
 }
 
 export type MutationDeleteLinkArgs = {
+  id: Scalars['String']['input']
+}
+
+export type MutationDeleteTopicArgs = {
   id: Scalars['String']['input']
 }
 
@@ -637,6 +642,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationDeleteLinkArgs, 'id'>
+  >
+  deleteTopic?: Resolver<
+    Maybe<ResolversTypes['Topic']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteTopicArgs, 'id'>
   >
   publishEmailDraft?: Resolver<
     Maybe<ResolversTypes['Issue']>,

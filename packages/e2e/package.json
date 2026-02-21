@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "seed": "bun run src/seed-database.ts",
-    "test": "rm -f ../api/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite* && bun run --cwd ../api migrate:up && bun run seed && CI=true playwright test",
-    "test:dev": "rm -f ../api/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite* && bun run --cwd ../api migrate:up && bun run seed && playwright test",
-    "test:ui": "rm -f ../api/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite* && bun run --cwd ../api migrate:up && bun run seed && playwright test --ui",
+    "test": "bun run --cwd ../api migrate:up && bun run seed && CI=true playwright test",
+    "test:dev": "bun run --cwd ../api migrate:up && bun run seed && playwright test",
+    "test:ui": "bun run --cwd ../api migrate:up && bun run seed && playwright test --ui",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

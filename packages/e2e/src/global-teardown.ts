@@ -4,10 +4,10 @@ import { cleanupAll } from "./cleanup";
 // eslint-disable-next-line import/no-default-export
 export default async function globalTeardown() {
   try {
-    const { issues, links } = await cleanupAll();
-    if (links > 0 || issues > 0) {
+    const { issues, links, topics } = await cleanupAll();
+    if (links > 0 || topics > 0 || issues > 0) {
       console.log(
-        `\n🧹 Cleaned up ${links} test links and ${issues} test issues`,
+        `\n🧹 Cleaned up ${links} test links, ${topics} test topics, and ${issues} test issues`,
       );
     }
   } catch (error) {
