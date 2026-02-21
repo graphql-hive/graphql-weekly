@@ -11,13 +11,11 @@ const INITIAL_DISPLAY_LIMIT = 5;
 export function TopicAutocomplete({
   disabled,
   inputRef,
-  onSubmit,
   onValueChange,
   value,
 }: {
   disabled?: boolean;
   inputRef?: React.Ref<HTMLInputElement>;
-  onSubmit: () => void;
   onValueChange: (value: string) => void;
   value: string;
 }) {
@@ -48,11 +46,6 @@ export function TopicAutocomplete({
       <Autocomplete.Input
         className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
         disabled={disabled ?? false}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && value && !e.defaultPrevented) {
-            onSubmit();
-          }
-        }}
         placeholder="New topic name..."
         ref={inputRef}
       />

@@ -1159,29 +1159,32 @@ function IssuePageContent({ id }: { id: string }) {
             <SubmissionsPanel />
           </DndContext>
 
-          <div className="flex gap-2">
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!newTopic) {
+                topicInputRef.current?.focus();
+                return;
+              }
+              submitTopic();
+            }}
+          >
             <TopicAutocomplete
               disabled={createTopicMutation.isPending}
               inputRef={topicInputRef}
-              onSubmit={submitTopic}
               onValueChange={setNewTopic}
               value={newTopic}
             />
             <Button
               className={cn(!newTopic && "opacity-30")}
               disabled={createTopicMutation.isPending}
-              onClick={() => {
-                if (!newTopic) {
-                  topicInputRef.current?.focus();
-                  return;
-                }
-                submitTopic();
-              }}
+              type="submit"
               variant="secondary"
             >
               Add Topic
             </Button>
-          </div>
+          </form>
         </main>
 
         <aside className="hidden xl:block shrink-0 py-6">
