@@ -9,14 +9,7 @@ test.describe("Topic Autocomplete & New Features", () => {
   test("topic autocomplete shows suggestions from existing topics", async ({
     page,
   }) => {
-    // Navigate to an existing issue (seeded data has "Articles" topic)
-    await page.goto(CMS_URL);
-    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
-
-    await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await createFreshIssue(page);
 
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.scrollIntoViewIfNeeded();
