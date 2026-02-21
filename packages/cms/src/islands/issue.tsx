@@ -1174,7 +1174,7 @@ function IssuePageContent({ id }: { id: string }) {
             className="flex gap-2"
             onSubmit={(e) => {
               e.preventDefault();
-              if (!newTopic) {
+              if (!newTopicRef.current) {
                 topicInputRef.current?.focus();
                 return;
               }
