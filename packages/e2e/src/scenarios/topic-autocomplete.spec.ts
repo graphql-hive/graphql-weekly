@@ -132,9 +132,9 @@ test.describe("Topic Autocomplete & New Features", () => {
 
     // The created topic should be "Articles", not "a"
     await expect(topicInput).toHaveValue("");
-    await expect(
-      page.getByRole("heading", { name: "Articles" }),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole("heading", { name: "Articles" })).toBeVisible({
+      timeout: 10_000,
+    });
 
     // Ensure no topic named "a" was created
     const allHeadings = page.locator("main h2, main h3");

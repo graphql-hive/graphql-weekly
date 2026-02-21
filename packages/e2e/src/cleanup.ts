@@ -43,8 +43,8 @@ interface Link {
 
 interface Topic {
   id: string;
-  title: string;
   issue: { id: string; number: number } | null;
+  title: string;
 }
 
 interface Issue {

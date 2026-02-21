@@ -277,7 +277,7 @@ function IssuePageContent({ id }: { id: string }) {
     );
 
     setItems({ [UNASSIGNED_ID]: unassigned, ...topicItems });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- omit deletedLinkIds to avoid discarding local reorder on delete
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- omit deletedLinkIds to avoid discarding local reorder on delete
   }, [issue, unassignedLinks, topics]);
 
   // Containers list (for iteration)
