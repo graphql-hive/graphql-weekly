@@ -681,7 +681,17 @@ function IssuePageContent({ id }: { id: string }) {
         <div />
 
         <main className="max-w-4xl w-full mx-auto xl:mx-0 px-4 py-6">
-          <div className="mb-6 flex gap-2">
+          <form
+            className="mb-6 flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!newLink) {
+                linkInputRef.current?.focus();
+                return;
+              }
+              submitLink();
+            }}
+          >
             <input
               className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
               onChange={(e) => setNewLink(e.target.value)}
@@ -693,18 +703,12 @@ function IssuePageContent({ id }: { id: string }) {
             <Button
               className={cn(!newLink && "opacity-30")}
               disabled={createLinkMutation.isPending}
-              onClick={() => {
-                if (!newLink) {
-                  linkInputRef.current?.focus();
-                  return;
-                }
-                submitLink();
-              }}
+              type="submit"
               variant="secondary"
             >
               Add
             </Button>
-          </div>
+          </form>
 
           <DndContext
             collisionDetection={collisionDetectionStrategy}
