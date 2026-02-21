@@ -188,10 +188,21 @@ export function IssuePage({ id }: { id: string }) {
   );
 }
 
+/** useState that also keeps a ref in sync for reading latest value in stale closures. */
+function useStateRef<T>(initial: T) {
+  const [value, setValue] = useState(initial);
+  const ref = useRef(value);
+  const set = useCallback((v: T) => {
+    ref.current = v;
+    setValue(v);
+  }, []);
+  return [value, set, ref] as const;
+}
+
 function IssuePageContent({ id }: { id: string }) {
   const qc = useQueryClient();
 
-  const [newTopic, setNewTopic] = useState("");
+  const [newTopic, setNewTopic, newTopicRef] = useStateRef("");
   const [newLink, setNewLink] = useState("");
   const linkInputRef = useRef<HTMLInputElement>(null);
   const topicInputRef = useRef<HTMLInputElement>(null);
@@ -277,7 +288,7 @@ function IssuePageContent({ id }: { id: string }) {
     );
 
     setItems({ [UNASSIGNED_ID]: unassigned, ...topicItems });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- omit deletedLinkIds to avoid discarding local reorder on delete
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- omit deletedLinkIds to avoid discarding local reorder on delete
   }, [issue, unassignedLinks, topics]);
 
   // Containers list (for iteration)
@@ -369,14 +380,14 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Other handlers
   const submitTopic = useCallback(() => {
-    if (!newTopic.trim()) return;
-    const topicTitle = newTopic;
+    const topic = newTopicRef.current;
+    if (!topic.trim()) return;
     setNewTopic("");
     createTopicMutation.mutate(
-      { issue_comment: " ", issueId: id, title: topicTitle },
+      { issue_comment: " ", issueId: id, title: topic },
       { onSuccess: invalidateQueries },
     );
-  }, [createTopicMutation, newTopic, id, invalidateQueries]);
+  }, [createTopicMutation, id, invalidateQueries, setNewTopic, newTopicRef]);
 
   const submitLink = useCallback(() => {
     if (!newLink || !/^https?:\/\/.+/.test(newLink)) return;
@@ -681,7 +692,17 @@ function IssuePageContent({ id }: { id: string }) {
         <div />
 
         <main className="max-w-4xl w-full mx-auto xl:mx-0 px-4 py-6">
-          <div className="mb-6 flex gap-2">
+          <form
+            className="mb-6 flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!newLink) {
+                linkInputRef.current?.focus();
+                return;
+              }
+              submitLink();
+            }}
+          >
             <input
               className="flex-1 px-3 py-2 border border-neu-300 dark:border-neu-600 dark:bg-neu-800 dark:text-neu-100 text-sm focus:border-primary focus:shadow-[inset_0_0_0_1px_var(--color-primary)] outline-none"
               onChange={(e) => setNewLink(e.target.value)}
@@ -693,18 +714,12 @@ function IssuePageContent({ id }: { id: string }) {
             <Button
               className={cn(!newLink && "opacity-30")}
               disabled={createLinkMutation.isPending}
-              onClick={() => {
-                if (!newLink) {
-                  linkInputRef.current?.focus();
-                  return;
-                }
-                submitLink();
-              }}
+              type="submit"
               variant="secondary"
             >
               Add
             </Button>
-          </div>
+          </form>
 
           <DndContext
             collisionDetection={collisionDetectionStrategy}
@@ -1155,29 +1170,32 @@ function IssuePageContent({ id }: { id: string }) {
             <SubmissionsPanel />
           </DndContext>
 
-          <div className="flex gap-2">
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!newTopicRef.current) {
+                topicInputRef.current?.focus();
+                return;
+              }
+              submitTopic();
+            }}
+          >
             <TopicAutocomplete
               disabled={createTopicMutation.isPending}
               inputRef={topicInputRef}
-              onSubmit={submitTopic}
               onValueChange={setNewTopic}
               value={newTopic}
             />
             <Button
               className={cn(!newTopic && "opacity-30")}
               disabled={createTopicMutation.isPending}
-              onClick={() => {
-                if (!newTopic) {
-                  topicInputRef.current?.focus();
-                  return;
-                }
-                submitTopic();
-              }}
+              type="submit"
               variant="secondary"
             >
               Add Topic
             </Button>
-          </div>
+          </form>
         </main>
 
         <aside className="hidden xl:block shrink-0 py-6">

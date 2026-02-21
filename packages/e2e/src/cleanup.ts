@@ -41,6 +41,12 @@ interface Link {
   url: string;
 }
 
+interface Topic {
+  id: string;
+  issue: { id: string; number: number } | null;
+  title: string;
+}
+
 interface Issue {
   id: string;
   number: number;
@@ -69,6 +75,26 @@ export async function cleanupTestLinks(): Promise<number> {
   return testLinks.length;
 }
 
+export async function cleanupTestTopics(): Promise<number> {
+  const { allTopics } = await gql<{ allTopics: Topic[] }>(`
+    query { allTopics { id title issue { id number } } }
+  `);
+
+  // Only delete topics on test issues (number > 1000).
+  // Topics with issue === null may be legitimate orphans (updateTopicWhenIssueDeleted).
+  const testTopics = allTopics.filter(
+    (t) => t.issue !== null && t.issue.number > 1000,
+  );
+
+  for (const topic of testTopics) {
+    await gql(`mutation($id: String!) { deleteTopic(id: $id) { id } }`, {
+      id: topic.id,
+    });
+  }
+
+  return testTopics.length;
+}
+
 export async function cleanupTestIssues(): Promise<number> {
   const { allIssues } = await gql<{ allIssues: Issue[] }>(`
     query { allIssues { id number title } }
@@ -88,8 +114,13 @@ export async function cleanupTestIssues(): Promise<number> {
   return testIssues.length;
 }
 
-export async function cleanupAll(): Promise<{ issues: number; links: number }> {
+export async function cleanupAll(): Promise<{
+  issues: number;
+  links: number;
+  topics: number;
+}> {
   const links = await cleanupTestLinks();
+  const topics = await cleanupTestTopics();
   const issues = await cleanupTestIssues();
-  return { issues, links };
+  return { issues, links, topics };
 }

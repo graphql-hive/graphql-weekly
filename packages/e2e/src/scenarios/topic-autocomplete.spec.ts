@@ -9,14 +9,7 @@ test.describe("Topic Autocomplete & New Features", () => {
   test("topic autocomplete shows suggestions from existing topics", async ({
     page,
   }) => {
-    // Navigate to an existing issue (seeded data has "Articles" topic)
-    await page.goto(CMS_URL);
-    await expect(page.getByText(/\d+ issues/)).toBeVisible({ timeout: 15_000 });
-
-    await page.locator('a[href^="/issue/"]').first().click();
-    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await createFreshIssue(page);
 
     const topicInput = page.getByPlaceholder("New topic name...");
     await topicInput.scrollIntoViewIfNeeded();
@@ -38,11 +31,15 @@ test.describe("Topic Autocomplete & New Features", () => {
     const items = popup.locator("[role='option']");
     await expect(items.first()).toBeVisible();
 
-    // Selecting a suggestion should fill the input
-    const firstSuggestionText = await items.first().textContent();
+    // Clicking a suggestion submits the form (submitOnItemClick)
+    const firstSuggestionText = (await items.first().textContent())!.trim();
     await items.first().click();
 
-    await expect(topicInput).toHaveValue(firstSuggestionText!.trim());
+    // Input clears and topic is created
+    await expect(topicInput).toHaveValue("");
+    await expect(
+      page.getByRole("heading", { name: firstSuggestionText }),
+    ).toBeVisible({ timeout: 10_000 });
   });
 
   test("topic autocomplete filters suggestions as you type", async ({
@@ -100,6 +97,46 @@ test.describe("Topic Autocomplete & New Features", () => {
     await expect(page.getByRole("heading", { name: topicName })).toBeVisible({
       timeout: 10_000,
     });
+  });
+
+  test("selecting autocomplete suggestion with Enter submits full topic name, not partial", async ({
+    page,
+  }) => {
+    await createFreshIssue(page);
+
+    const topicInput = page.getByPlaceholder("New topic name...");
+    await topicInput.scrollIntoViewIfNeeded();
+
+    // Wait for autocomplete suggestions to load
+    await expect(async () => {
+      const isEmpty = await topicInput.getAttribute("data-list-empty");
+      expect(isEmpty).toBeNull();
+    }).toPass({ timeout: 10_000 });
+
+    // Type "a" — should match "Articles" from seed data
+    await topicInput.click({ force: true });
+    await topicInput.fill("a");
+
+    const popup = page.locator("[role='listbox']");
+    await expect(popup).toBeVisible({ timeout: 5000 });
+
+    const articlesOption = popup.getByRole("option", {
+      exact: true,
+      name: "Articles",
+    });
+    await expect(articlesOption).toBeVisible();
+
+    // Click "Articles" — submitOnItemClick submits in one step
+    await articlesOption.click();
+    await expect(topicInput).toHaveValue("");
+    await expect(page.getByRole("heading", { name: "Articles" })).toBeVisible({
+      timeout: 10_000,
+    });
+
+    // Ensure no topic named "a" was created
+    const allHeadings = page.locator("main h2, main h3");
+    const headingTexts = await allHeadings.allTextContents();
+    expect(headingTexts).not.toContain("a");
   });
 });
 
