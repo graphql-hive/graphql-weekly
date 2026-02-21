@@ -188,10 +188,21 @@ export function IssuePage({ id }: { id: string }) {
   );
 }
 
+/** useState that also keeps a ref in sync for reading latest value in stale closures. */
+function useStateRef<T>(initial: T) {
+  const [value, setValue] = useState(initial);
+  const ref = useRef(value);
+  const set = useCallback((v: T) => {
+    ref.current = v;
+    setValue(v);
+  }, []);
+  return [value, set, ref] as const;
+}
+
 function IssuePageContent({ id }: { id: string }) {
   const qc = useQueryClient();
 
-  const [newTopic, setNewTopic] = useState("");
+  const [newTopic, setNewTopic, newTopicRef] = useStateRef("");
   const [newLink, setNewLink] = useState("");
   const linkInputRef = useRef<HTMLInputElement>(null);
   const topicInputRef = useRef<HTMLInputElement>(null);
@@ -369,14 +380,14 @@ function IssuePageContent({ id }: { id: string }) {
 
   // Other handlers
   const submitTopic = useCallback(() => {
-    if (!newTopic.trim()) return;
-    const topicTitle = newTopic;
+    const topic = newTopicRef.current;
+    if (!topic.trim()) return;
     setNewTopic("");
     createTopicMutation.mutate(
-      { issue_comment: " ", issueId: id, title: topicTitle },
+      { issue_comment: " ", issueId: id, title: topic },
       { onSuccess: invalidateQueries },
     );
-  }, [createTopicMutation, newTopic, id, invalidateQueries]);
+  }, [createTopicMutation, id, invalidateQueries, setNewTopic, newTopicRef]);
 
   const submitLink = useCallback(() => {
     if (!newLink || !/^https?:\/\/.+/.test(newLink)) return;

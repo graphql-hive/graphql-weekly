@@ -41,6 +41,7 @@ export function TopicAutocomplete({
       items={suggestions}
       onValueChange={(v) => onValueChange(v ?? "")}
       openOnInputClick
+      submitOnItemClick
       value={value}
     >
       <Autocomplete.Input
