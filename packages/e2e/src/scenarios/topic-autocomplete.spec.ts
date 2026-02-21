@@ -31,15 +31,11 @@ test.describe("Topic Autocomplete & New Features", () => {
     const items = popup.locator("[role='option']");
     await expect(items.first()).toBeVisible();
 
-    // Clicking a suggestion submits the form (submitOnItemClick)
+    // Clicking a suggestion fills the input
     const firstSuggestionText = (await items.first().textContent())!.trim();
     await items.first().click();
 
-    // Input clears and topic is created
-    await expect(topicInput).toHaveValue("");
-    await expect(
-      page.getByRole("heading", { name: firstSuggestionText }),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(topicInput).toHaveValue(firstSuggestionText);
   });
 
   test("topic autocomplete filters suggestions as you type", async ({
@@ -126,11 +122,15 @@ test.describe("Topic Autocomplete & New Features", () => {
     });
     await expect(articlesOption).toBeVisible();
 
-    // Use arrow keys to highlight "Articles", then press Enter
+    // Use arrow keys to highlight "Articles", then press Enter to select
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
-    // The created topic should be "Articles", not "a"
+    // First Enter selects the suggestion — input should now show "Articles"
+    await expect(topicInput).toHaveValue("Articles");
+
+    // Second Enter submits the form
+    await page.keyboard.press("Enter");
     await expect(topicInput).toHaveValue("");
     await expect(page.getByRole("heading", { name: "Articles" })).toBeVisible({
       timeout: 10_000,
