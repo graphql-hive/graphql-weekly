@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { cn } from "../cn";
@@ -31,6 +32,7 @@ export function PageHeader({
   topics = [],
   versionCount,
 }: PageHeaderProps) {
+  const qc = useQueryClient();
   const [isFoundation, setIsFoundation] = useState(false);
 
   const publishIssueMutation = usePublishIssueMutation();
@@ -46,16 +48,18 @@ export function PageHeader({
 
   const handlePublish = () => {
     if (!id) return;
-    publishIssueMutation.mutate({ id, published: true });
+    publishIssueMutation.mutate(
+      { id, published: true },
+      { onSuccess: () => qc.invalidateQueries({ queryKey: ["Issue", { id }] }) },
+    );
   };
 
   const increaseVersion = () => {
     if (!id) return;
-    publishEmailDraftMutation.mutate({
-      id,
-      isFoundation,
-      versionCount: (versionCount ?? 0) + 1,
-    });
+    publishEmailDraftMutation.mutate(
+      { id, isFoundation, versionCount: (versionCount ?? 0) + 1 },
+      { onSuccess: () => qc.invalidateQueries({ queryKey: ["Issue", { id }] }) },
+    );
   };
 
   const handleDeleteIssue = async () => {
