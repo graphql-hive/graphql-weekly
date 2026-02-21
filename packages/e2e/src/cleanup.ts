@@ -80,9 +80,10 @@ export async function cleanupTestTopics(): Promise<number> {
     query { allTopics { id title issue { id number } } }
   `);
 
-  // Topics on test issues (number > 1000) or not on seeded issue #1
+  // Only delete topics on test issues (number > 1000).
+  // Topics with issue === null may be legitimate orphans (updateTopicWhenIssueDeleted).
   const testTopics = allTopics.filter(
-    (t) => t.issue === null || t.issue.number > 1000,
+    (t) => t.issue !== null && t.issue.number > 1000,
   );
 
   for (const topic of testTopics) {
