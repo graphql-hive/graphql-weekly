@@ -101,6 +101,48 @@ test.describe("Topic Autocomplete & New Features", () => {
       timeout: 10_000,
     });
   });
+
+  test("selecting autocomplete suggestion with Enter submits full topic name, not partial", async ({
+    page,
+  }) => {
+    await createFreshIssue(page);
+
+    const topicInput = page.getByPlaceholder("New topic name...");
+    await topicInput.scrollIntoViewIfNeeded();
+
+    // Wait for autocomplete suggestions to load
+    await expect(async () => {
+      const isEmpty = await topicInput.getAttribute("data-list-empty");
+      expect(isEmpty).toBeNull();
+    }).toPass({ timeout: 10_000 });
+
+    // Type "a" — should match "Articles" from seed data
+    await topicInput.click({ force: true });
+    await topicInput.fill("a");
+
+    const popup = page.locator("[role='listbox']");
+    await expect(popup).toBeVisible({ timeout: 5000 });
+
+    const articlesOption = popup.locator("[role='option']", {
+      hasText: "Articles",
+    });
+    await expect(articlesOption).toBeVisible();
+
+    // Use arrow keys to highlight "Articles", then press Enter
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+
+    // The created topic should be "Articles", not "a"
+    await expect(topicInput).toHaveValue("");
+    await expect(
+      page.getByRole("heading", { name: "Articles" }),
+    ).toBeVisible({ timeout: 10_000 });
+
+    // Ensure no topic named "a" was created
+    const allHeadings = page.locator("main h2, main h3");
+    const headingTexts = await allHeadings.allTextContents();
+    expect(headingTexts).not.toContain("a");
+  });
 });
 
 test.describe("Link Metadata Prefill", () => {
