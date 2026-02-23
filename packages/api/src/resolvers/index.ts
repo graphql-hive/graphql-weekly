@@ -126,27 +126,23 @@ async function fetchUrlMetadata(
   return metadata
 }
 
-async function triggerDeploy(
-  githubToken: string,
-  issueNumber: number,
-): Promise<void> {
+async function triggerDeploy(env: {
+  CLOUDFLARE_ACCOUNT_ID: string
+  CLOUDFLARE_BUILDS_API_TOKEN: string
+  CLOUDFLARE_BUILDS_TRIGGER_ID: string
+}): Promise<void> {
   const res = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/dispatches`,
+    `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/builds/triggers/${env.CLOUDFLARE_BUILDS_TRIGGER_ID}/builds`,
     {
-      body: JSON.stringify({
-        client_payload: { issue_number: issueNumber },
-        event_type: 'cms-publish',
-      }),
       headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${githubToken}`,
-        'User-Agent': 'GraphQL-Weekly-API',
+        Authorization: `Bearer ${env.CLOUDFLARE_BUILDS_API_TOKEN}`,
+        'Content-Type': 'application/json',
       },
       method: 'POST',
     },
   )
   if (!res.ok) {
-    throw new Error(`GitHub dispatch failed: ${res.status} ${await res.text()}`)
+    throw new Error(`Cloudflare build trigger failed: ${res.status} ${await res.text()}`)
   }
 }
 
@@ -509,9 +505,9 @@ export const resolvers: Resolvers = {
         .where('id', '=', id)
         .executeTakeFirst()
 
-      if (published && issue && ctx.env.GITHUB_TOKEN) {
+      if (published && issue && ctx.env.CLOUDFLARE_BUILDS_API_TOKEN) {
         ctx.waitUntil(
-          triggerDeploy(ctx.env.GITHUB_TOKEN, issue.number).catch(
+          triggerDeploy(ctx.env as Required<Pick<typeof ctx.env, 'CLOUDFLARE_ACCOUNT_ID' | 'CLOUDFLARE_BUILDS_API_TOKEN' | 'CLOUDFLARE_BUILDS_TRIGGER_ID'>>).catch(
             // eslint-disable-next-line no-console
             (error: unknown) => console.error('Failed to trigger deploy:', error),
           ),
