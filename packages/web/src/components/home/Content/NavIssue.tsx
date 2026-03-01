@@ -13,7 +13,7 @@ export const NavIssue = ({
   prevNumber: number;
 }) => (
   <div className="w-full flex justify-between px-10.25 pt-8 pb-15.5">
-    {prevNumber && firstIssueNumber !== prevNumber + 1 && (
+    {prevNumber && firstIssueNumber !== prevNumber + 1 ? (
       <a
         className="inline-flex items-center no-underline font-medium leading-none text-lg text-footer-dark h-6 p-2 -mx-2 focus-visible:outline-2 focus-visible:outline-purple focus-visible:outline-offset-2 rounded-sm"
         href={`/issues/${prevNumber}/#content`}
@@ -21,7 +21,7 @@ export const NavIssue = ({
         <ArrowLeft />
         <span className="mx-2.5">View issue {prevNumber}</span>
       </a>
-    )}
+    ) : null}
 
     <div className="grow mx-auto shrink-0" />
 
