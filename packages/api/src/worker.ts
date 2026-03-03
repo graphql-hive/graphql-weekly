@@ -9,8 +9,10 @@ import { resolvers } from './resolvers'
 import typeDefs from './schema.graphql'
 
 export interface Env extends AuthEnv {
+  CLOUDFLARE_ACCOUNT_ID?: string
+  CLOUDFLARE_BUILDS_API_TOKEN?: string
+  CLOUDFLARE_BUILDS_TRIGGER_ID?: string
   E2E_TEST?: string
-  GITHUB_TOKEN?: string
   LOCAL_DEV?: string
   MAILCHIMP_API_KEY?: string
   MAILCHIMP_SERVER_PREFIX?: string
