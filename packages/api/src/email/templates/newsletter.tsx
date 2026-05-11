@@ -19,6 +19,8 @@ import { issue399 } from './newsletter.fixture'
 export const colorMap: Record<string, string> = {
   announcements: '#fe6319',
   articles: '#f531b1',
+  events: '#009BE3',
+  community: '#009BE3',
   'community & events': '#009BE3',
   conference: '#6560E2',
   default: '#f531b1',
