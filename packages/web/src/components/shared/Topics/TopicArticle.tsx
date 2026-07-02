@@ -15,7 +15,7 @@ export function TopicArticle({
   topicColor,
   url,
 }: TopicArticleProps) {
-  const isTextSafe = !text.includes("<") || /<(p|strong|i|a) ?.*>/.test(text);
+  const isTextSafe = !(text || '').includes("<") || /<(p|strong|i|a) ?.*>/.test(text);
   const arrowColor = topicColor || "#0a1659";
 
   return (
